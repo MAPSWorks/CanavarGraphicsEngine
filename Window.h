@@ -1,9 +1,11 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include "Light.h"
+#include "LightManager.h"
 #include "RendererManager.h"
 
-#include <QOpenGLFunctions>
+#include <QOpenGLFunctionsPrivate>
 #include <QOpenGLWindow>
 
 class Window : public QOpenGLWindow, protected QOpenGLFunctions
@@ -12,38 +14,42 @@ class Window : public QOpenGLWindow, protected QOpenGLFunctions
 
 public:
     Window(QWindow *parent = nullptr);
-    ~Window();
 
-protected:
-    virtual void initializeGL() override;
-    virtual void resizeGL(int w, int h) override;
-    virtual void paintGL() override;
-    virtual void keyPressEvent(QKeyEvent *) override;
-    virtual void keyReleaseEvent(QKeyEvent *) override;
-    virtual void mousePressEvent(QMouseEvent *) override;
-    virtual void mouseReleaseEvent(QMouseEvent *) override;
-    virtual void mouseMoveEvent(QMouseEvent *) override;
-    virtual void wheelEvent(QWheelEvent *) override;
+    bool imguiWantCapture() const;
+
+signals:
+    void init();
+    void resized(int w, int h);
+    void render(float ifps);
+    void keyPressed(QKeyEvent *);
+    void keyReleased(QKeyEvent *);
+    void mousePressed(QMouseEvent *);
+    void mouseReleased(QMouseEvent *);
+    void mouseMoved(QMouseEvent *);
+    void wheelMoved(QWheelEvent *);
+    void mouseDoubleClicked(QMouseEvent *);
 
 private:
+    void initializeGL() override;
+    void resizeGL(int w, int h) override;
+    void paintGL() override;
+    void keyPressEvent(QKeyEvent *) override;
+    void keyReleaseEvent(QKeyEvent *) override;
+    void mousePressEvent(QMouseEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+    void mouseMoveEvent(QMouseEvent *) override;
+    void wheelEvent(QWheelEvent *) override;
+    void mouseDoubleClickEvent(QMouseEvent *) override;
+
+private:
+    long long mPreviousTime;
+    long long mCurrentTime;
+
+    bool mImguiWantCapture;
+
     RendererManager *mRendererManager;
-    QMatrix4x4 mProjection;
-    Camera *mCamera;
-    Light *mLight;
+    LightManager *mLightManager;
 
-    QList<Model *> mModels;
-    Model *mPlane;
-    Model *mCube;
-    Model *mSuzanne;
-
-    struct ImGuiParameters
-    {
-        float position[3];
-        float properties[4];
-        float color[4];
-    };
-    bool mImGuiWantsCapture;
-    ImGuiParameters mModelParameters[4];
-    ImGuiParameters mLightParameters;
+    Light *mActiveLight;
 };
 #endif // WINDOW_H

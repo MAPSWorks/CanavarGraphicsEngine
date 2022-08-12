@@ -8,48 +8,58 @@
 class Camera : public QObject
 {
     Q_OBJECT
-public:
+protected:
     explicit Camera(QObject *parent = nullptr);
 
-    QVector3D position() const;
-    void setPosition(const QVector3D &newPosition);
+public:
+    virtual const QVector3D &position() const;
+    virtual void setPosition(const QVector3D &newPosition);
 
-    QQuaternion rotation() const;
-    void setRotation(const QQuaternion &newRotation);
+    virtual const QQuaternion &rotation() const;
+    virtual void setRotation(const QQuaternion &newRotation);
 
-    const QMatrix4x4 &transformation();
+    virtual float verticalFov() const;
+    virtual void setVerticalFov(float newVerticalFov);
 
-    const QMatrix4x4 &projection() const;
-    void setProjection(const QMatrix4x4 &newProjection);
+    virtual float horizontalFov() const;
+    virtual void setHorizontalFov(float newHorizontalFov);
 
-    void onKeyPressed(QKeyEvent *event);
-    void onKeyReleased(QKeyEvent *event);
-    void onMousePressed(QMouseEvent *event);
-    void onMouseReleased(QMouseEvent *event);
-    void onMouseMoved(QMouseEvent *event);
+    virtual float aspectRatio() const;
+    virtual void setAspectRatio(float newAspectRatio);
 
-private slots:
-    void update();
+    virtual float zNear() const;
+    virtual void setZNear(float newZNear);
+
+    virtual float zFar() const;
+    virtual void setZFar(float newZFar);
+
+    virtual const QMatrix4x4 &transformation() const;
+    virtual const QMatrix4x4 &projection() const;
+
+    virtual QVector3D getViewDirection();
+
+    virtual void onKeyPressed(QKeyEvent *) = 0;
+    virtual void onKeyReleased(QKeyEvent *) = 0;
+    virtual void onMousePressed(QMouseEvent *) = 0;
+    virtual void onMouseReleased(QMouseEvent *) = 0;
+    virtual void onMouseMoved(QMouseEvent *) = 0;
+    virtual void update(float) = 0;
 
 private:
-    QMatrix4x4 mProjection;
-    QMatrix4x4 mTransformation;
+    void updateTransformation();
+    void updateProjection();
+
+protected:
     QVector3D mPosition;
     QQuaternion mRotation;
+    QMatrix4x4 mProjection;
+    QMatrix4x4 mTransformation;
 
-    QTimer mTimer;
-    QMap<Qt::Key, bool> mPressedKeys;
-
-    float mMovementSpeed;
-    float mAngularSpeed;
-
-    bool mMousePressed;
-    float mMousePreviousX;
-    float mMousePreviousY;
-    float mMouseDeltaX;
-    float mMouseDeltaY;
-
-    static const QMap<Qt::Key, QVector3D> KEY_BINDINGS;
+    float mVerticalFov;
+    float mHorizontalFov;
+    float mAspectRatio;
+    float mZNear;
+    float mZFar;
 };
 
 #endif // CAMERA_H

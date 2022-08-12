@@ -1,13 +1,12 @@
-#include "Window.h"
+#include "Controller.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
-    Window window;
-    window.show();
+    Controller controller;
+    controller.run();
 
     return a.exec();
 }

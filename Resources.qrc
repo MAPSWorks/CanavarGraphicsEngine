@@ -13,7 +13,7 @@
         <file>Resources/Models/Tetrahedron.obj</file>
         <file>Resources/Models/Torus.obj</file>
         <file>Resources/Models/TorusKnot.obj</file>
-        <file>Resources/Shaders/Basic/FragmentShader.frag</file>
-        <file>Resources/Shaders/Basic/VertexShader.vert</file>
+        <file>Resources/Shaders/Basic.frag</file>
+        <file>Resources/Shaders/Basic.vert</file>
     </qresource>
 </RCC>

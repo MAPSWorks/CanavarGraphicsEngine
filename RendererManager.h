@@ -1,39 +1,40 @@
 #ifndef RENDERERMANAGER_H
 #define RENDERERMANAGER_H
 
-#include "BasicShader.h"
-#include "Camera.h"
+#include "CameraManager.h"
 #include "Light.h"
-#include "Model.h"
+#include "LightManager.h"
 #include "ModelData.h"
+#include "ModelManager.h"
+#include "ShaderManager.h"
 
 #include <QMap>
+#include <QMatrix4x4>
 #include <QObject>
 
 class RendererManager : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
-public:
-    explicit RendererManager(QObject *parent = nullptr);
-    ~RendererManager();
-
-    bool init();
-    void render();
-    void addModel(Model *model);
-    bool removeModel(Model *model);
-
-    Light *light();
-    void setLight(Light *newLight);
-
-    Camera *camera();
-    void setCamera(Camera *newCamera);
 
 private:
-    QList<Model *> mModels;
+    explicit RendererManager(QObject *parent = nullptr);
+
+public:
+    static RendererManager *instance();
+
+    bool init();
+    void render(float ifps);
+
+private:
     QMap<Model::Type, ModelData *> mTypeToModelData;
-    BasicShader *mBasicShader;
-    Light *mLight;
+
+    ModelManager *mModelManager;
+    CameraManager *mCameraManager;
+    LightManager *mLightManager;
+    ShaderManager *mShaderManager;
+
     Camera *mCamera;
+    Light *mLight;
 };
 
 #endif // RENDERERMANAGER_H

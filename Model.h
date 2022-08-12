@@ -9,9 +9,10 @@
 class Model : public Node
 {
 public:
-    enum Type
-    { //
-        Camera,
+    explicit Model(QObject *parent = nullptr);
+    virtual ~Model();
+
+    enum Type { //
         Capsule,
         Cone,
         Cube,
@@ -26,20 +27,21 @@ public:
         TorusKnot,
     };
 
-    explicit Model(QObject *parent = nullptr);
-    virtual ~Model();
-
     Type type() const;
     void setType(Type newType);
 
     Material &material();
     void setMaterial(const Material &newMaterial);
 
+    bool visible() const;
+    void setVisible(bool newVisible);
+
     static const QVector<Model::Type> ALL_MODEL_TYPES;
 
-protected:
+private:
     Type mType;
     Material mMaterial;
+    bool mVisible;
 };
 
 #endif // MODEL_H

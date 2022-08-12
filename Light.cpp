@@ -8,6 +8,8 @@ Light::Light(QObject *parent)
     , mSpecular(1.0f)
 {}
 
+Light::~Light() {}
+
 const QVector4D &Light::color() const
 {
     return mColor;

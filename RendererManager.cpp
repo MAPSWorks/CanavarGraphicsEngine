@@ -1,16 +1,22 @@
 #include "RendererManager.h"
+#include "Camera.h"
+#include "Light.h"
+
+#include <QtMath>
 
 RendererManager::RendererManager(QObject *parent)
     : QObject(parent)
-    , mBasicShader(nullptr)
-    , mLight(nullptr)
-    , mCamera(nullptr)
-
-{}
-
-RendererManager::~RendererManager()
 {
-    // TODO
+    mModelManager = ModelManager::instance();
+    mCameraManager = CameraManager::instance();
+    mLightManager = LightManager::instance();
+    mShaderManager = ShaderManager::instance();
+}
+
+RendererManager *RendererManager::instance()
+{
+    static RendererManager instance;
+    return &instance;
 }
 
 bool RendererManager::init()
@@ -20,14 +26,13 @@ bool RendererManager::init()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LINE_SMOOTH);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glLineWidth(1.5f);
+    glLineWidth(2.5f);
 
-    qInfo() << Q_FUNC_INFO << "Initializing BasicShader...";
-    mBasicShader = new BasicShader;
+    qInfo() << Q_FUNC_INFO << "Initializing ShaderManager...";
 
-    if (!mBasicShader->init())
+    if (!mShaderManager->init())
     {
-        qWarning() << Q_FUNC_INFO << "BasicShader could not be initialized.";
+        qWarning() << Q_FUNC_INFO << "ShaderManager could not be initialized.";
         return false;
     }
 
@@ -45,98 +50,62 @@ bool RendererManager::init()
         mTypeToModelData.insert(type, data);
     }
 
-    if (!mLight)
-    {
-        qWarning() << Q_FUNC_INFO << "Light is not set.";
-        return false;
-    }
-
-    if (!mCamera)
-    {
-        qWarning() << Q_FUNC_INFO << "Camera is not set.";
-        return false;
-    }
-
     return true;
 }
 
-void RendererManager::render()
+void RendererManager::render(float ifps)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    mBasicShader->bind();
 
-    // Camera
+    mCamera = mCameraManager->activeCamera();
+    mLight = mLightManager->activeLight();
+
+    Q_UNUSED(ifps);
+
+    mShaderManager->bind(ShaderManager::Shader::Basic);
+
+    if (mCamera)
     {
-        if (mCamera)
-        {
-            mBasicShader->setUniformValue("projectionMatrix", mCamera->projection());
-            mBasicShader->setUniformValue("viewMatrix", mCamera->transformation());
-            mBasicShader->setUniformValue("cameraPosition", mCamera->position());
-        }
+        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
+        mShaderManager->setUniformValue("view_matrix", mCamera->transformation());
+        mShaderManager->setUniformValue("camera_position", mCamera->position());
     }
 
-    // Light
+    if (mLight)
     {
-        if (mLight)
-        {
-            mBasicShader->setUniformValue("light.position", mLight->position());
-            mBasicShader->setUniformValue("light.color", mLight->color());
-            mBasicShader->setUniformValue("light.ambient", mLight->ambient());
-            mBasicShader->setUniformValue("light.diffuse", mLight->diffuse());
-            mBasicShader->setUniformValue("light.specular", mLight->specular());
-        }
+        mShaderManager->setUniformValue("light.position", mLight->position());
+        mShaderManager->setUniformValue("light.color", mLight->color());
+        mShaderManager->setUniformValue("light.ambient", mLight->ambient());
+        mShaderManager->setUniformValue("light.diffuse", mLight->diffuse());
+        mShaderManager->setUniformValue("light.specular", mLight->specular());
     }
 
-    for (Model *model : qAsConst(mModels))
+    QList<Model *> models = mModelManager->models();
+
+    for (Model *model : qAsConst(models))
     {
+        if (!model->visible())
+            continue;
+
         ModelData *data = mTypeToModelData.value(model->type(), nullptr);
 
         if (data)
         {
             data->bind();
-            mBasicShader->setUniformValue("node.transformation", model->transformation());
-            mBasicShader->setUniformValue("node.color", model->material().color());
-            mBasicShader->setUniformValue("node.ambient", model->material().ambient());
-            mBasicShader->setUniformValue("node.diffuse", model->material().diffuse());
-            mBasicShader->setUniformValue("node.specular", model->material().specular());
-            mBasicShader->setUniformValue("node.shininess", model->material().shininess());
+
+            mShaderManager->setUniformValue("node.transformation", model->transformation());
+            mShaderManager->setUniformValue("node.color", model->material().color());
+            mShaderManager->setUniformValue("node.ambient", model->material().ambient());
+            mShaderManager->setUniformValue("node.diffuse", model->material().diffuse());
+            mShaderManager->setUniformValue("node.specular", model->material().specular());
+            mShaderManager->setUniformValue("node.shininess", model->material().shininess());
+
+            // Draw
             glDrawArrays(GL_TRIANGLES, 0, data->count());
+
             data->release();
         }
     }
 
-    mBasicShader->release();
-}
-
-void RendererManager::addModel(Model *model)
-{
-    mModels << model;
-}
-
-bool RendererManager::removeModel(Model *model)
-{
-    int number = mModels.removeAll(model);
-    model->deleteLater();
-
-    return number > 0;
-}
-
-Light *RendererManager::light()
-{
-    return mLight;
-}
-
-void RendererManager::setLight(Light *newLight)
-{
-    mLight = newLight;
-}
-
-Camera *RendererManager::camera()
-{
-    return mCamera;
-}
-
-void RendererManager::setCamera(Camera *newCamera)
-{
-    mCamera = newCamera;
+    mShaderManager->release();
 }

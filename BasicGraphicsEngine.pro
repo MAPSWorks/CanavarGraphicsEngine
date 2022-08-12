@@ -8,30 +8,6 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += \
-    BasicShader.cpp \
-    Camera.cpp \
-    Helper.cpp \
-    Light.cpp \
-    Main.cpp \
-    Material.cpp \
-    Model.cpp \
-    ModelData.cpp \
-    Node.cpp \
-    RendererManager.cpp \
-    Window.cpp
-
-HEADERS += \
-    BasicShader.h \
-    Camera.h \
-    Helper.h \
-    Light.h \
-    Material.h \
-    Model.h \
-    ModelData.h \
-    Node.h \
-    RendererManager.h \
-    Window.h
 
 include(Dependencies/qtimgui/qtimgui.pri)
 
@@ -42,3 +18,42 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Resources.qrc
+
+HEADERS += \
+    Camera.h \
+    CameraManager.h \
+    Controller.h \
+    DummyCamera.h \
+    FreeCamera.h \
+    Helper.h \
+    Light.h \
+    LightManager.h \
+    Material.h \
+    Model.h \
+    ModelData.h \
+    ModelManager.h \
+    Node.h \
+    RendererManager.h \
+    ShaderManager.h \
+    Window.h
+
+SOURCES += \
+    Camera.cpp \
+    CameraManager.cpp \
+    Controller.cpp \
+    DummyCamera.cpp \
+    FreeCamera.cpp \
+    Helper.cpp \
+    Light.cpp \
+    LightManager.cpp \
+    Main.cpp \
+    Material.cpp \
+    Model.cpp \
+    ModelData.cpp \
+    ModelManager.cpp \
+    Node.cpp \
+    RendererManager.cpp \
+    ShaderManager.cpp \
+    Window.cpp
+
+INCLUDEPATH += $$PWD/Dependencies/Eigen/

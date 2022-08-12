@@ -1,13 +1,13 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "Model.h"
 #include "Node.h"
 
 class Light : public Node
 {
 public:
     explicit Light(QObject *parent = nullptr);
+    virtual ~Light();
 
     const QVector4D &color() const;
     void setColor(const QVector4D &newColor);
