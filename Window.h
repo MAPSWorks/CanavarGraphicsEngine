@@ -49,7 +49,13 @@ private:
 
     RendererManager *mRendererManager;
     LightManager *mLightManager;
+    ModelManager *mModelManager;
 
     Light *mActiveLight;
+
+    QList<Model *> mModels;
+
+    int mSelectedIndex;
+    Model *mSelectedModel;
 };
 #endif // WINDOW_H

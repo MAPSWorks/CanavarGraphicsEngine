@@ -38,6 +38,7 @@ private:
 
     Model *mPlane;
     Model *mSuzanne;
+    Model *mCube;
 
     Qt::MouseButton mPressedButton;
 };

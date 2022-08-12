@@ -54,6 +54,7 @@ void Controller::init()
         mModelManager->addModel(mPlane);
     }
 
+    // Suzanne
     {
         mSuzanne = new Model;
         mSuzanne->setType(Model::Suzanne);
@@ -61,6 +62,17 @@ void Controller::init()
         mSuzanne->setPosition(QVector3D(0, 5, 0));
         mSuzanne->setVisible(true);
         mModelManager->addModel(mSuzanne);
+    }
+
+    // Cube
+    {
+        mCube = new Model;
+        mCube->setType(Model::Cube);
+        mCube->setObjectName("Cube");
+        mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
+        mCube->setPosition(QVector3D(2.5, 5, -5));
+        mCube->setVisible(true);
+        mModelManager->addModel(mCube);
     }
 }
 

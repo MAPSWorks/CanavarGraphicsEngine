@@ -8,10 +8,12 @@
 
 Window::Window(QWindow *parent)
     : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, parent)
+    , mSelectedIndex(0)
 
 {
     mRendererManager = RendererManager::instance();
     mLightManager = LightManager::instance();
+    mModelManager = ModelManager::instance();
 
     QSurfaceFormat format;
     format.setMajorVersion(3);
@@ -43,6 +45,9 @@ void Window::resizeGL(int w, int h)
 void Window::paintGL()
 {
     mActiveLight = mLightManager->activeLight();
+    mModels = mModelManager->models();
+
+    mSelectedModel = mModels.at(mSelectedIndex);
 
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
@@ -98,6 +103,64 @@ void Window::paintGL()
 
             if (ImGui::ColorEdit4("Color##Light", (float *) &color))
                 mActiveLight->setColor(QVector4D(color[0], color[1], color[2], color[3]));
+        }
+    }
+
+    ImGui::Spacing();
+
+    // Models
+    if (!ImGui::CollapsingHeader("Select a model"))
+    {
+        if (ImGui::BeginCombo("Models", mSelectedModel->objectName().toStdString().c_str()))
+        {
+            for (int i = 0; i < mModels.size(); ++i)
+            {
+                if (ImGui::Selectable(mModels.at(i)->objectName().toStdString().c_str()))
+                    mSelectedIndex = i;
+            }
+
+            ImGui::EndCombo();
+        }
+
+        // Position
+        {
+            ImGui::Text("Position:");
+            QVector3D position = mSelectedModel->position();
+            float x = position.x();
+            float y = position.y();
+            float z = position.z();
+
+            if (ImGui::SliderFloat("x##Model", &x, -20.0f, 20.0f, "%.3f"))
+                mSelectedModel->setPosition(QVector3D(x, y, z));
+            if (ImGui::SliderFloat("y##Model", &y, -20.0f, 20.0f, "%.3f"))
+                mSelectedModel->setPosition(QVector3D(x, y, z));
+            if (ImGui::SliderFloat("z##Model", &z, -20.0f, 20.0f, "%.3f"))
+                mSelectedModel->setPosition(QVector3D(x, y, z));
+        }
+
+        // Shading Parameters
+        {
+            ImGui::Text("Shading Parameters:");
+            float ambient = mSelectedModel->material().ambient();
+            float diffuse = mSelectedModel->material().diffuse();
+            float specular = mSelectedModel->material().specular();
+
+            if (ImGui::SliderFloat("Ambient##Model", &ambient, 0.0f, 1.0f, "%.3f"))
+                mSelectedModel->material().setAmbient(ambient);
+
+            if (ImGui::SliderFloat("Diffuse##Model", &diffuse, 0.0f, 1.0f, "%.3f"))
+                mSelectedModel->material().setDiffuse(diffuse);
+
+            if (ImGui::SliderFloat("Specular##Model", &specular, 0.0f, 1.0f, "%.3f"))
+                mSelectedModel->material().setSpecular(specular);
+
+            float color[4] = {mSelectedModel->material().color().x(), //
+                              mSelectedModel->material().color().y(),
+                              mSelectedModel->material().color().z(),
+                              mSelectedModel->material().color().w()};
+
+            if (ImGui::ColorEdit4("Color##Model", (float *) &color))
+                mSelectedModel->material().setColor(QVector4D(color[0], color[1], color[2], color[3]));
         }
     }
 
