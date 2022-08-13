@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include "Camera.h"
+#include "Helper.h"
 #include "RendererManager.h"
 #include "Window.h"
 

@@ -6,6 +6,11 @@ ShaderManager::ShaderManager(QObject *parent)
     , mActiveShader(Shader::None)
 {}
 
+QOpenGLShaderProgram *ShaderManager::getShader(Shader shader)
+{
+    return mPrograms.value(shader);
+}
+
 bool ShaderManager::init()
 {
     initializeOpenGLFunctions();
@@ -58,8 +63,8 @@ bool ShaderManager::init()
         locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
         locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
 
-        shader->bindAttributeLocation("position", 0);
-        shader->bindAttributeLocation("normal", 1);
+        //shader->bindAttributeLocation("position", 0);
+        //shader->bindAttributeLocation("normal", 1);
 
         shader->release();
 

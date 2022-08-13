@@ -29,12 +29,17 @@ HEADERS += \
     Light.h \
     LightManager.h \
     Material.h \
+    Mesh.h \
     Model.h \
     ModelData.h \
     ModelManager.h \
     Node.h \
     RendererManager.h \
     ShaderManager.h \
+    TextureMaterial.h \
+    TexturedModel.h \
+    TexturedModelData.h \
+    TexturedModelDataNode.h \
     Window.h
 
 SOURCES += \
@@ -48,12 +53,23 @@ SOURCES += \
     LightManager.cpp \
     Main.cpp \
     Material.cpp \
+    Mesh.cpp \
     Model.cpp \
     ModelData.cpp \
     ModelManager.cpp \
     Node.cpp \
     RendererManager.cpp \
     ShaderManager.cpp \
+    TextureMaterial.cpp \
+    TexturedModel.cpp \
+    TexturedModelData.cpp \
+    TexturedModelDataNode.cpp \
     Window.cpp
 
 INCLUDEPATH += $$PWD/Dependencies/Eigen/
+INCLUDEPATH += $$PWD/Dependencies/Assimp/include
+DEPENDPATH += $$PWD/Dependencies/Assimp/include
+
+LIBS += -L$$PWD/Dependencies/Assimp/lib/ -lassimp-vc142-mt
+
+

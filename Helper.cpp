@@ -1,4 +1,5 @@
 #include "Helper.h"
+#include "Mesh.h"
 
 #include <QDebug>
 #include <QFile>
@@ -50,4 +51,89 @@ QVector3D Helper::projectOntoPlane(const QVector3D &normal, const QVector3D &poi
     Eigen::Vector3f projection = plane.projection(subjectEigen);
 
     return QVector3D(projection.x(), projection.y(), projection.z());
+}
+
+TexturedModelData *Helper::loadTexturedModel(const QString &path)
+{
+    Assimp::Importer importer;
+    const aiScene *scene = importer.ReadFile(path.toStdString(),              //
+                                             aiProcess_Triangulate |          //
+                                                 aiProcess_GenSmoothNormals | //
+                                                 aiProcess_FlipUVs |          //
+                                                 aiProcess_CalcTangentSpace);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    {
+        qCritical() << Q_FUNC_INFO << importer.GetErrorString();
+        return nullptr;
+    }
+
+    TexturedModelData *data = new TexturedModelData(path);
+
+    // Meshes
+    for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+    {
+        aiMesh *aiMesh = scene->mMeshes[i];
+        Mesh *mesh = processMesh(aiMesh);
+        data->addMesh(mesh);
+    }
+
+    // Node
+    TexturedModelDataNode *rootNode = processNode(scene->mRootNode);
+    data->setRootNode(rootNode);
+
+    // TODO: Material
+
+    return data;
+}
+
+Mesh *Helper::processMesh(aiMesh *aiMesh)
+{
+    Mesh *mesh = new Mesh;
+
+    for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
+    {
+        Mesh::Vertex vertex;
+
+        vertex.position = QVector3D(aiMesh->mVertices[i].x, aiMesh->mVertices[i].y, aiMesh->mVertices[i].z);
+
+        if (aiMesh->HasNormals())
+            vertex.normal = QVector3D(aiMesh->mNormals[i].x, aiMesh->mNormals[i].y, aiMesh->mNormals[i].z);
+
+        mesh->addVertex(vertex);
+    }
+
+    for (unsigned int i = 0; i < aiMesh->mNumFaces; i++)
+    {
+        aiFace aiFace = aiMesh->mFaces[i];
+
+        for (unsigned int j = 0; j < aiFace.mNumIndices; j++)
+            mesh->addIndex(aiFace.mIndices[j]);
+    }
+
+    mesh->setName(aiMesh->mName.C_Str());
+    mesh->setMaterialIndex(aiMesh->mMaterialIndex);
+
+    return mesh;
+}
+
+TexturedModelDataNode *Helper::processNode(aiNode *aiParentNode)
+{
+    TexturedModelDataNode *parentNode = new TexturedModelDataNode;
+
+    for (unsigned int i = 0; i < aiParentNode->mNumMeshes; ++i)
+        parentNode->addMeshIndex(aiParentNode->mMeshes[i]);
+
+    parentNode->setName(aiParentNode->mName.C_Str());
+    parentNode->setInitialTransformation(toQMatrix(aiParentNode->mTransformation));
+
+    for (unsigned int i = 0; i < aiParentNode->mNumChildren; ++i)
+        parentNode->addChild(processNode(aiParentNode->mChildren[i]));
+
+    return parentNode;
+}
+
+QMatrix4x4 Helper::toQMatrix(const aiMatrix4x4 &matrix)
+{
+    return QMatrix4x4();
 }

@@ -17,6 +17,8 @@ public:
         Basic,
     };
 
+    QOpenGLShaderProgram *getShader(Shader shader);
+
     bool init();
     bool bind(Shader shader);
     void release();

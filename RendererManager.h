@@ -7,6 +7,7 @@
 #include "ModelData.h"
 #include "ModelManager.h"
 #include "ShaderManager.h"
+#include "TexturedModelData.h"
 
 #include <QMap>
 #include <QMatrix4x4>
@@ -25,8 +26,14 @@ public:
     bool init();
     void render(float ifps);
 
+private slots:
+    void renderModels(float ifps);
+    void renderTexturedModels(float ifps);
+    void renderTexturedModelDataNode(TexturedModelData *data, TexturedModelDataNode *node);
+
 private:
     QMap<Model::Type, ModelData *> mTypeToModelData;
+    QMap<QString, TexturedModelData *> mPathToTexturedModelData;
 
     ModelManager *mModelManager;
     CameraManager *mCameraManager;
