@@ -16,72 +16,6 @@ ModelData::~ModelData()
     mTextureCoordsBuffer.destroy();
 }
 
-bool ModelData::load()
-{
-    qInfo() << Q_FUNC_INFO << "Loading model" << (int) mType;
-
-    QVector<QVector3D> vertices;
-    QVector<QVector3D> normals;
-    QVector<QVector2D> textureCoords;
-
-    QFile file(MODEL_TO_PATH[mType]);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QTextStream fileText(&file);
-        while (!fileText.atEnd())
-        {
-            QString fileLine = fileText.readLine();
-            if (fileLine.startsWith("vn "))
-            {
-                QStringList lineList = fileLine.split(" ");
-                normals << QVector3D(lineList[1].toFloat(), lineList[2].toFloat(), lineList[3].toFloat());
-            } else if (fileLine.startsWith("vt "))
-            {
-                QStringList lineList = fileLine.split(" ");
-                textureCoords << QVector2D(lineList[1].toFloat(), lineList[2].toFloat());
-            } else if (fileLine.startsWith("v "))
-            {
-                QStringList lineList = fileLine.split(" ");
-                vertices << QVector3D(lineList[1].toFloat(), lineList[2].toFloat(), lineList[3].toFloat());
-            } else if (fileLine.startsWith("f "))
-            {
-                QStringList lineList = fileLine.split(" ");
-                for (int i = 1; i <= 3; i++)
-                {
-                    QStringList arg = lineList[i].split("/");
-                    if (arg.size() == 2)
-                    {
-                        if (arg[0].toInt() - 1 < vertices.size())
-                            mVertices << vertices[arg[0].toInt() - 1];
-
-                        if (arg[1].toInt() - 1 < normals.size())
-                            mNormals << normals[arg[1].toInt() - 1];
-                    } else if (arg.size() == 3)
-                    {
-                        if (arg[0].toInt() - 1 < vertices.size())
-                            mVertices << vertices[arg[0].toInt() - 1];
-
-                        if (arg[1].toInt() - 1 < textureCoords.size())
-                            mTextureCoords << textureCoords[arg[1].toInt() - 1];
-
-                        if (arg[2].toInt() - 1 < normals.size())
-                            mNormals << normals[arg[2].toInt() - 1];
-                    }
-                }
-            } else if (fileLine.startsWith("mtllib "))
-            {}
-        }
-        file.close();
-        qInfo() << Q_FUNC_INFO << "Model" << (int) mType << "is loaded.";
-        return true;
-    } else
-    {
-        qWarning() << Q_FUNC_INFO << QString("Could not open file '%1'.").arg(file.fileName());
-        qWarning() << Q_FUNC_INFO << "Could not load model" << (int) mType;
-        return false;
-    }
-}
-
 bool ModelData::create()
 {
     qInfo() << Q_FUNC_INFO << "Creating VAO for model" << (int) mType;
@@ -148,6 +82,21 @@ void ModelData::render()
     mVertexArray.bind();
     glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
     mVertexArray.release();
+}
+
+void ModelData::setVertices(const QVector<QVector3D> &newVertices)
+{
+    mVertices = newVertices;
+}
+
+void ModelData::setNormals(const QVector<QVector3D> &newNormals)
+{
+    mNormals = newNormals;
+}
+
+void ModelData::setTextureCoords(const QVector<QVector2D> &newTextureCoords)
+{
+    mTextureCoords = newTextureCoords;
 }
 
 const QString ModelData::ROOT_PATH = ":/Resources/Models/";

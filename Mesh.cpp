@@ -5,6 +5,16 @@ Mesh::Mesh(QObject *parent)
     : QObject{parent}
 {}
 
+Mesh::~Mesh()
+{
+    mVertexArray.bind();
+    glDeleteBuffers(1, &mEBO);
+    glDeleteBuffers(1, &mVBO);
+    mVertexArray.release();
+
+    mVertexArray.destroy();
+}
+
 void Mesh::addVertex(const Vertex &vertex)
 {
     mVertices << vertex;

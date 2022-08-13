@@ -1,6 +1,7 @@
 #ifndef HELPER_H
 #define HELPER_H
 
+#include "ModelData.h"
 #include "TexturedModelData.h"
 #include "TexturedModelDataNode.h"
 
@@ -23,6 +24,7 @@ public:
     static QQuaternion rotateY(float angleRadians);
     static QQuaternion rotateZ(float angleRadians);
     static QVector3D projectOntoPlane(const QVector3D &normal, const QVector3D &point, const QVector3D &subject);
+    static ModelData *loadModel(Model::Type type, const QString &path);
     static TexturedModelData *loadTexturedModel(const QString &name, const QString &path);
 
 private:

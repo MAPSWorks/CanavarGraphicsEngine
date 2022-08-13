@@ -43,11 +43,15 @@ bool RendererManager::init()
 
     for (Model::Type type : Model::ALL_MODEL_TYPES)
     {
-        ModelData *data = new ModelData(type);
-        if (!data->load() || !data->create())
+        ModelData *data = Helper::loadModel(type, ModelData::MODEL_TO_PATH[type]);
+
+        if (data)
         {
-            data->deleteLater();
-            continue;
+            if (!data->create())
+            {
+                data->deleteLater();
+                continue;
+            }
         }
 
         mTypeToModelData.insert(type, data);

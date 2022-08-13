@@ -53,6 +53,81 @@ QVector3D Helper::projectOntoPlane(const QVector3D &normal, const QVector3D &poi
     return QVector3D(projection.x(), projection.y(), projection.z());
 }
 
+ModelData *Helper::loadModel(Model::Type type, const QString &path)
+{
+    qInfo() << Q_FUNC_INFO << "Loading model" << (int) type;
+
+    QVector<QVector3D> tempVertices;
+    QVector<QVector3D> tempNormals;
+    QVector<QVector2D> tempTextureCoords;
+
+    QVector<QVector3D> vertices;
+    QVector<QVector3D> normals;
+    QVector<QVector2D> textureCoords;
+
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream fileText(&file);
+        while (!fileText.atEnd())
+        {
+            QString fileLine = fileText.readLine();
+            if (fileLine.startsWith("vn "))
+            {
+                QStringList lineList = fileLine.split(" ");
+                tempNormals << QVector3D(lineList[1].toFloat(), lineList[2].toFloat(), lineList[3].toFloat());
+            } else if (fileLine.startsWith("vt "))
+            {
+                QStringList lineList = fileLine.split(" ");
+                tempTextureCoords << QVector2D(lineList[1].toFloat(), lineList[2].toFloat());
+            } else if (fileLine.startsWith("v "))
+            {
+                QStringList lineList = fileLine.split(" ");
+                tempVertices << QVector3D(lineList[1].toFloat(), lineList[2].toFloat(), lineList[3].toFloat());
+            } else if (fileLine.startsWith("f "))
+            {
+                QStringList lineList = fileLine.split(" ");
+                for (int i = 1; i <= 3; i++)
+                {
+                    QStringList arg = lineList[i].split("/");
+                    if (arg.size() == 2)
+                    {
+                        if (arg[0].toInt() - 1 < tempVertices.size())
+                            vertices << tempVertices[arg[0].toInt() - 1];
+
+                        if (arg[1].toInt() - 1 < tempNormals.size())
+                            normals << tempNormals[arg[1].toInt() - 1];
+                    } else if (arg.size() == 3)
+                    {
+                        if (arg[0].toInt() - 1 < tempVertices.size())
+                            vertices << tempVertices[arg[0].toInt() - 1];
+
+                        if (arg[1].toInt() - 1 < tempTextureCoords.size())
+                            textureCoords << tempTextureCoords[arg[1].toInt() - 1];
+
+                        if (arg[2].toInt() - 1 < tempNormals.size())
+                            normals << tempNormals[arg[2].toInt() - 1];
+                    }
+                }
+            }
+        }
+        file.close();
+        qInfo() << Q_FUNC_INFO << "Model" << (int) type << "is loaded.";
+
+        ModelData *data = new ModelData(type);
+        data->setVertices(vertices);
+        data->setNormals(normals);
+        data->setTextureCoords(textureCoords);
+
+        return data;
+    } else
+    {
+        qWarning() << Q_FUNC_INFO << QString("Could not open file '%1'.").arg(file.fileName());
+        qWarning() << Q_FUNC_INFO << "Could not load model" << (int) type;
+        return nullptr;
+    }
+}
+
 TexturedModelData *Helper::loadTexturedModel(const QString &name, const QString &path)
 {
     Assimp::Importer importer;
@@ -133,6 +208,7 @@ TexturedModelDataNode *Helper::processNode(TexturedModelData *data, aiNode *aiPa
     return parentNode;
 }
 
+// TODO
 QMatrix4x4 Helper::toQMatrix(const aiMatrix4x4 &matrix)
 {
     return QMatrix4x4();

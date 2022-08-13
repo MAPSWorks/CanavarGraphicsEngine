@@ -15,9 +15,14 @@ public:
     explicit ModelData(Model::Type type, QObject *parent = nullptr);
     virtual ~ModelData();
 
-    bool load();
     bool create();
     void render();
+
+    void setVertices(const QVector<QVector3D> &newVertices);
+    void setNormals(const QVector<QVector3D> &newNormals);
+    void setTextureCoords(const QVector<QVector2D> &newTextureCoords);
+
+    static const QMap<Model::Type, QString> MODEL_TO_PATH;
 
 private:
     Model::Type mType;
@@ -29,7 +34,6 @@ private:
     QVector<QVector3D> mNormals;
     QVector<QVector2D> mTextureCoords;
 
-    static const QMap<Model::Type, QString> MODEL_TO_PATH;
     static const QString ROOT_PATH;
 };
 
