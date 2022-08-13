@@ -11,6 +11,9 @@ class Camera : public QObject
 protected:
     explicit Camera(QObject *parent = nullptr);
 
+signals:
+    void activeChanged(bool active);
+
 public:
     virtual const QVector3D &position() const;
     virtual void setPosition(const QVector3D &newPosition);
@@ -45,6 +48,9 @@ public:
     virtual void onMouseMoved(QMouseEvent *event) = 0;
     virtual void update(float) = 0;
 
+    bool active() const;
+    void setActive(bool newActive);
+
 private:
     void updateTransformation();
     void updateProjection();
@@ -60,6 +66,8 @@ protected:
     float mAspectRatio;
     float mZNear;
     float mZFar;
+
+    bool mActive;
 };
 
 #endif // CAMERA_H

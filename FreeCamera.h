@@ -24,6 +24,8 @@ public:
         RotateWhileMouseIsMoving
     };
 
+    bool getMouseGrabbed() const;
+
 signals:
     emit void mouseGrabbed(bool grabbed);
     emit void setCursorPosition(QPoint mouseGrabPosition);

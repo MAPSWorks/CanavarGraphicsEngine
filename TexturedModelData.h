@@ -11,7 +11,7 @@ class TexturedModelData : public QObject
 {
     Q_OBJECT
 public:
-    explicit TexturedModelData(const QString &name, QObject *parent = nullptr);
+    explicit TexturedModelData(const QString &modelName, QObject *parent = nullptr);
 
     void addMesh(Mesh *mesh);
     void addMaterial(TexturedMaterial *material);
@@ -20,13 +20,13 @@ public:
     void setRootNode(TexturedModelDataNode *newRootNode);
 
     const QVector<Mesh *> &meshes() const;
-    const QString &name() const;
+    const QString &modelName() const;
     const QVector<TexturedMaterial *> &materials() const;
 
     void render();
 
 private:
-    QString mName;
+    QString mModelName;
     TexturedModelDataNode *mRootNode;
     QVector<Mesh *> mMeshes;
     QVector<TexturedMaterial *> mMaterials;

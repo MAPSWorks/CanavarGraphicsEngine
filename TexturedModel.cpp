@@ -1,15 +1,10 @@
 #include "TexturedModel.h"
 
-TexturedModel::TexturedModel(const QString &name, QObject *parent)
+TexturedModel::TexturedModel(const QString &modelName, QObject *parent)
     : Node(parent)
-    , mName(name)
     , mShininess(32.0f)
+    , mModelName(modelName)
 {}
-
-const QString &TexturedModel::name() const
-{
-    return mName;
-}
 
 float TexturedModel::shininess() const
 {
@@ -19,4 +14,9 @@ float TexturedModel::shininess() const
 void TexturedModel::setShininess(float newShininess)
 {
     mShininess = newShininess;
+}
+
+const QString &TexturedModel::modelName() const
+{
+    return mModelName;
 }

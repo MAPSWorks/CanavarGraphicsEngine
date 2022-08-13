@@ -30,6 +30,18 @@ Camera *CameraManager::activeCamera() const
 
 void CameraManager::setActiveCamera(Camera *newActiveCamera)
 {
+    if (mActiveCamera == newActiveCamera)
+        return;
+
+    if (mActiveCamera)
+        mActiveCamera->setActive(false);
+
+    if (newActiveCamera)
+    {
+        newActiveCamera->setActive(true);
+        newActiveCamera->setAspectRatio(mAspectRatio);
+    }
+
     mActiveCamera = newActiveCamera;
 }
 
@@ -61,6 +73,14 @@ void CameraManager::onMouseMoved(QMouseEvent *event)
 {
     if (mActiveCamera)
         mActiveCamera->onMouseMoved(event);
+}
+
+void CameraManager::setAspectRatio(float newAspectRatio)
+{
+    mAspectRatio = newAspectRatio;
+
+    if (mActiveCamera)
+        mActiveCamera->setAspectRatio(newAspectRatio);
 }
 
 void CameraManager::update(float ifps)

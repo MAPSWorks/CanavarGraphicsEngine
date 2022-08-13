@@ -53,3 +53,13 @@ void Node::updateTransformation()
     mTransformation.rotate(mRotation);
     mTransformation.setColumn(3, QVector4D(mPosition, 1.0f));
 }
+
+const QString &Node::name() const
+{
+    return mName;
+}
+
+void Node::setName(const QString &newName)
+{
+    mName = newName;
+}

@@ -14,6 +14,8 @@ protected:
     virtual ~Node();
 
 public:
+    const QMatrix4x4 &transformation() const;
+
     const QVector3D &position() const;
     void setPosition(const QVector3D &newPosition);
 
@@ -23,7 +25,8 @@ public:
     const QVector3D &scale() const;
     void setScale(const QVector3D &newScale);
 
-    const QMatrix4x4 &transformation() const;
+    const QString &name() const;
+    void setName(const QString &newName);
 
 private:
     void updateTransformation();
@@ -33,6 +36,7 @@ protected:
     QVector3D mPosition;
     QQuaternion mRotation;
     QVector3D mScale;
+    QString mName;
 };
 
 #endif // NODE_H

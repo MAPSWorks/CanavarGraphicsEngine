@@ -64,33 +64,43 @@ bool RendererManager::init()
 
     QDir dir("Resources/Objects");
     auto dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QStringList extensions;
+    extensions << "*.obj"
+               << "*.blend"
+               << "*.dae";
 
     for (const auto &dirName : qAsConst(dirs))
     {
-        TexturedModelData *data = Helper::loadTexturedModel(dirName, //
-                                                            "Resources/Objects/" + dirName + "/" + dirName + ".obj");
+        QDir childDir(dir.path() + "/" + dirName);
+        childDir.setNameFilters(extensions);
+        auto files = childDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
 
-        if (data)
+        for (const auto &file : qAsConst(files))
         {
-            bool failure = false;
-            auto meshes = data->meshes();
+            TexturedModelData *data = Helper::loadTexturedModel(dirName, childDir.path() + "/" + file);
 
-            for (auto mesh : meshes)
+            if (data)
             {
-                if (!mesh->create())
+                bool failure = false;
+                auto meshes = data->meshes();
+
+                for (auto mesh : meshes)
                 {
-                    failure = true;
-                    break;
+                    if (!mesh->create())
+                    {
+                        failure = true;
+                        break;
+                    }
                 }
-            }
 
-            if (failure)
-            {
-                data->deleteLater();
-                continue;
-            }
+                if (failure)
+                {
+                    data->deleteLater();
+                    continue;
+                }
 
-            mNameToTexturedModelData.insert(data->name(), data);
+                mNameToTexturedModelData.insert(data->modelName(), data);
+            }
         }
     }
 
@@ -183,7 +193,7 @@ void RendererManager::renderTexturedModels(float ifps)
 
     for (TexturedModel *model : mModelManager->texturedModel())
     {
-        TexturedModelData *data = mNameToTexturedModelData.value(model->name(), nullptr);
+        TexturedModelData *data = mNameToTexturedModelData.value(model->modelName(), nullptr);
 
         if (data)
         {

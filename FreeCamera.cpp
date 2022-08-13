@@ -20,6 +20,14 @@ FreeCamera::FreeCamera(QObject *parent)
 {
     mTransformation.setToIdentity();
     mProjection.setToIdentity();
+
+    connect(this, &Camera::activeChanged, this, [=](bool active) {
+        if (!active)
+        {
+            mMouseGrabbed = false;
+            emit mouseGrabbed(false);
+        }
+    });
 }
 
 void FreeCamera::onKeyPressed(QKeyEvent *event)
@@ -135,6 +143,11 @@ void FreeCamera::update(float ifps)
     {
         mUpdatePosition = false;
     }
+}
+
+bool FreeCamera::getMouseGrabbed() const
+{
+    return mMouseGrabbed;
 }
 
 const QMap<Qt::Key, QVector3D> FreeCamera::KEY_BINDINGS = {

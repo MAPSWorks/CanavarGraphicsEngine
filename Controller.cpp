@@ -28,15 +28,15 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mWindow, &Window::render, this, &Controller::render);
     connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
 
-    mCamera = new FreeCamera(mWindow);
-    mCamera->setPosition(QVector3D(0, 10, 10));
-    mCamera->setVerticalFov(60.0f);
-    mCamera->setZNear(0.1f);
-    mCamera->setZFar(10000.0f);
-    mCameraManager->addCamera(mCamera);
-    mCameraManager->setActiveCamera(mCamera);
+    mFreeCamera = new FreeCamera;
+    mFreeCamera->setPosition(QVector3D(0, 10, 10));
+    mFreeCamera->setVerticalFov(60.0f);
+    mFreeCamera->setZNear(0.1f);
+    mFreeCamera->setZFar(10000.0f);
+    mCameraManager->addCamera(mFreeCamera);
+    mCameraManager->setActiveCamera(mFreeCamera);
 
-    connect(mCamera, &FreeCamera::mouseGrabbed, this, [=](bool grabbed) {
+    connect(mFreeCamera, &FreeCamera::mouseGrabbed, this, [=](bool grabbed) {
         mMouseCaptured = grabbed;
 
         if (mMouseCaptured)
@@ -45,7 +45,7 @@ Controller::Controller(QApplication *app, QObject *parent)
             mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
     });
 
-    connect(mCamera, &FreeCamera::setCursorPosition, this, [=](QPoint position) { //
+    connect(mFreeCamera, &FreeCamera::setCursorPosition, this, [=](QPoint position) { //
         mWindow->cursor().setPos(mWindow->mapToGlobal(position));
     });
 }
@@ -53,6 +53,13 @@ Controller::Controller(QApplication *app, QObject *parent)
 void Controller::init()
 {
     mRendererManager->init();
+
+    mDummyCamera = new DummyCamera;
+    mDummyCamera->setPosition(QVector3D(0, 10, 10));
+    mDummyCamera->setVerticalFov(80.0f);
+    mDummyCamera->setZNear(0.1f);
+    mDummyCamera->setZFar(10000.0f);
+    mCameraManager->addCamera(mDummyCamera);
 
     mLight = new Light;
     mLight->setPosition(QVector3D(5, 20, 35));
@@ -64,6 +71,7 @@ void Controller::init()
     mPlane->setType(Model::Plane);
     mPlane->setObjectName("Plane");
     mPlane->setPosition(QVector3D(0, 0, 0));
+    mPlane->setScale(QVector3D(10.0f, 10.0f, 10.0f));
     mPlane->setVisible(true);
     mModelManager->addModel(mPlane);
 
@@ -104,6 +112,10 @@ void Controller::init()
     mRock = new TexturedModel("rock");
     mRock->setPosition(QVector3D(15, 15, -5));
     mModelManager->addTexturedModel(mRock);
+
+    mF16 = new TexturedModel("f16");
+    mF16->setPosition(QVector3D(15, 15, 15));
+    mModelManager->addTexturedModel(mF16);
 }
 
 void Controller::run()
@@ -150,7 +162,23 @@ void Controller::onMouseMoved(QMouseEvent *event)
 
 void Controller::onKeyPressed(QKeyEvent *event)
 {
-    mCameraManager->onKeyPressed(event);
+    if (event->key() == Qt::Key_1)
+    {
+        mCameraManager->setActiveCamera(mFreeCamera);
+
+        if (mFreeCamera->getMouseGrabbed())
+            mApp->setOverrideCursor(QCursor(Qt::BlankCursor));
+        else
+            mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
+
+    } else if (event->key() == Qt::Key_2)
+    {
+        mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
+        mCameraManager->setActiveCamera(mDummyCamera);
+    } else
+    {
+        mCameraManager->onKeyPressed(event);
+    }
 }
 
 void Controller::onKeyReleased(QKeyEvent *event)
@@ -160,7 +188,7 @@ void Controller::onKeyReleased(QKeyEvent *event)
 
 void Controller::onResized(int w, int h)
 {
-    mCamera->setAspectRatio((float) (w) / h);
+    mCameraManager->setAspectRatio((float) (w) / h);
 }
 
 void Controller::onMouseDoubleClicked(QMouseEvent *) {}

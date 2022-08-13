@@ -130,3 +130,15 @@ void Camera::updateProjection()
     mProjection.setToIdentity();
     mProjection.perspective(mVerticalFov, mAspectRatio, mZNear, mZFar);
 }
+
+bool Camera::active() const
+{
+    return mActive;
+}
+
+void Camera::setActive(bool newActive)
+{
+    mActive = newActive;
+
+    emit activeChanged(mActive);
+}

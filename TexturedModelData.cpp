@@ -1,8 +1,8 @@
 #include "TexturedModelData.h"
 
-TexturedModelData::TexturedModelData(const QString &name, QObject *parent)
+TexturedModelData::TexturedModelData(const QString &modelName, QObject *parent)
     : QObject(parent)
-    , mName(name)
+    , mModelName(modelName)
 {}
 
 void TexturedModelData::addMesh(Mesh *mesh)
@@ -22,9 +22,9 @@ const QVector<Mesh *> &TexturedModelData::meshes() const
     return mMeshes;
 }
 
-const QString &TexturedModelData::name() const
+const QString &TexturedModelData::modelName() const
 {
-    return mName;
+    return mModelName;
 }
 
 void TexturedModelData::render()

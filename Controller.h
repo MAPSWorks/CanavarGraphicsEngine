@@ -1,6 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include "DummyCamera.h"
 #include "FreeCamera.h"
 #include "RendererManager.h"
 #include "Window.h"
@@ -33,7 +34,9 @@ private:
     ModelManager *mModelManager;
     Window *mWindow;
 
-    FreeCamera *mCamera;
+    FreeCamera *mFreeCamera;
+    DummyCamera *mDummyCamera;
+
     Light *mLight;
 
     Model *mPlane;
@@ -47,6 +50,7 @@ private:
     TexturedModel *mNanoSuit;
     TexturedModel *mPlanet;
     TexturedModel *mRock;
+    TexturedModel *mF16;
 
     QApplication *mApp;
 

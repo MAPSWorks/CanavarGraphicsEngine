@@ -21,6 +21,8 @@ public:
     void onMousePressed(QMouseEvent *event);
     void onMouseReleased(QMouseEvent *event);
     void onMouseMoved(QMouseEvent *event);
+    void setAspectRatio(float newAspectRatio);
+
     void update(float ifps);
 
     QVector3D getViewDirection();
@@ -34,6 +36,8 @@ public:
 private:
     Camera *mActiveCamera;
     QList<Camera *> mCameras;
+
+    float mAspectRatio;
 };
 
 #endif // CAMERAMANAGER_H

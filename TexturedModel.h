@@ -6,16 +6,16 @@
 class TexturedModel : public Node
 {
 public:
-    explicit TexturedModel(const QString &name, QObject *parent = nullptr);
-
-    const QString &name() const;
+    explicit TexturedModel(const QString &modelName, QObject *parent = nullptr);
 
     float shininess() const;
     void setShininess(float newShininess);
 
+    const QString &modelName() const;
+
 private:
-    QString mName;
     float mShininess;
+    QString mModelName;
 };
 
 #endif // TEXTUREDMODEL_H
