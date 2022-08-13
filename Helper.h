@@ -23,11 +23,11 @@ public:
     static QQuaternion rotateY(float angleRadians);
     static QQuaternion rotateZ(float angleRadians);
     static QVector3D projectOntoPlane(const QVector3D &normal, const QVector3D &point, const QVector3D &subject);
-    static TexturedModelData *loadTexturedModel(const QString &path);
+    static TexturedModelData *loadTexturedModel(const QString &name, const QString &path);
 
 private:
     static Mesh *processMesh(aiMesh *aiMesh);
-    static TexturedModelDataNode *processNode(aiNode *node);
+    static TexturedModelDataNode *processNode(TexturedModelData *data, aiNode *node);
     static QMatrix4x4 toQMatrix(const aiMatrix4x4 &matrix);
 };
 

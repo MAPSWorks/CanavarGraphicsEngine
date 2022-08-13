@@ -3,6 +3,7 @@
 #include "Helper.h"
 #include "Light.h"
 
+#include <QDir>
 #include <QtMath>
 
 RendererManager::RendererManager(QObject *parent)
@@ -37,6 +38,7 @@ bool RendererManager::init()
         return false;
     }
 
+    // Models
     qInfo() << Q_FUNC_INFO << "Loading and creating all models...";
 
     for (Model::Type type : Model::ALL_MODEL_TYPES)
@@ -53,28 +55,43 @@ bool RendererManager::init()
 
     qInfo() << Q_FUNC_INFO << "All models are loaded.";
 
-    // FIXME
+    // Textured Models
     qInfo() << Q_FUNC_INFO << "Loading and creating all textured models...";
-    TexturedModelData *backpack = Helper::loadTexturedModel("backpack/backpack.obj");
-    mPathToTexturedModelData.insert(backpack->path(), backpack);
 
-    // Create Texture Model Data
-    auto texturedModelData = mPathToTexturedModelData.values();
+    QDir dir("Resources/Objects");
+    auto dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
-    for (auto data : qAsConst(texturedModelData))
+    for (const auto &dirName : qAsConst(dirs))
     {
-        auto meshes = data->meshes();
+        qDebug() << dirName;
+        TexturedModelData *data = Helper::loadTexturedModel(dirName, //
+                                                            "Resources/Objects/" + dirName + "/" + dirName + ".obj");
 
-        for (auto mesh : meshes)
-            mesh->create();
+        if (data)
+        {
+            bool failure = false;
+            auto meshes = data->meshes();
+
+            for (auto mesh : meshes)
+            {
+                if (!mesh->create())
+                {
+                    failure = true;
+                    break;
+                }
+            }
+
+            if (failure)
+            {
+                data->deleteLater();
+                continue;
+            }
+
+            mNameToTexturedModelData.insert(data->name(), data);
+        }
     }
 
     qInfo() << Q_FUNC_INFO << "All textured models are loaded.";
-
-    TexturedModel *backpackModel = new TexturedModel;
-    backpackModel->setPosition(QVector3D(-15, 15, 0));
-    backpackModel->setPath("backpack/backpack.obj");
-    mModelManager->addTexturedModel(backpackModel);
 
     return true;
 }
@@ -125,8 +142,6 @@ void RendererManager::renderModels(float ifps)
 
         if (data)
         {
-            data->bind();
-
             mShaderManager->setUniformValue("node.transformation", model->transformation());
             mShaderManager->setUniformValue("node.color", model->material().color());
             mShaderManager->setUniformValue("node.ambient", model->material().ambient());
@@ -134,9 +149,7 @@ void RendererManager::renderModels(float ifps)
             mShaderManager->setUniformValue("node.specular", model->material().specular());
             mShaderManager->setUniformValue("node.shininess", model->material().shininess());
 
-            glDrawArrays(GL_TRIANGLES, 0, data->count());
-
-            data->release();
+            data->render();
         }
     }
 
@@ -167,7 +180,7 @@ void RendererManager::renderTexturedModels(float ifps)
 
     for (TexturedModel *model : mModelManager->texturedModel())
     {
-        TexturedModelData *data = mPathToTexturedModelData.value(model->path(), nullptr);
+        TexturedModelData *data = mNameToTexturedModelData.value(model->name(), nullptr);
 
         if (data)
         {
@@ -178,34 +191,9 @@ void RendererManager::renderTexturedModels(float ifps)
             mShaderManager->setUniformValue("node.specular", 0.25f);
             mShaderManager->setUniformValue("node.shininess", 32.0f);
 
-            auto meshes = data->meshes();
-
-            for (auto mesh : meshes)
-            {
-                mesh->bind();
-                renderTexturedModelDataNode(data, data->rootNode());
-                mesh->release();
-            }
+            data->render();
         }
     }
 
     mShaderManager->release();
-}
-
-void RendererManager::renderTexturedModelDataNode(TexturedModelData *data, TexturedModelDataNode *node)
-{
-    auto meshes = data->meshes();
-    auto meshIndices = node->meshIndices();
-
-    for (auto index : meshIndices)
-    {
-        meshes[index]->bind();
-        glDrawElements(GL_TRIANGLES, meshes[index]->count(), GL_UNSIGNED_INT, 0);
-        meshes[index]->release();
-    }
-
-    auto children = node->children();
-
-    for (int i = 0; i < children.size(); i++)
-        renderTexturedModelDataNode(data, children[i]);
 }

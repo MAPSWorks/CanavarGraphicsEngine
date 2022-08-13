@@ -28,7 +28,6 @@ Controller::Controller(QObject *parent)
 
 void Controller::init()
 {
-    // Initialize Managers
     mRendererManager->init();
 
     mCamera = new FreeCamera;
@@ -45,35 +44,49 @@ void Controller::init()
     mLightManager->setActiveLight(mLight);
 
     // Plane
-    {
-        mPlane = new Model;
-        mPlane->setType(Model::Plane);
-        mPlane->setObjectName("Plane");
-        mPlane->setPosition(QVector3D(0, 0, 0));
-        mPlane->setVisible(true);
-        mModelManager->addModel(mPlane);
-    }
+    mPlane = new Model;
+    mPlane->setType(Model::Plane);
+    mPlane->setObjectName("Plane");
+    mPlane->setPosition(QVector3D(0, 0, 0));
+    mPlane->setVisible(true);
+    mModelManager->addModel(mPlane);
 
     // Suzanne
-    {
-        mSuzanne = new Model;
-        mSuzanne->setType(Model::Suzanne);
-        mSuzanne->setObjectName("Suzanne");
-        mSuzanne->setPosition(QVector3D(0, 5, 0));
-        mSuzanne->setVisible(true);
-        mModelManager->addModel(mSuzanne);
-    }
+    mSuzanne = new Model;
+    mSuzanne->setType(Model::Suzanne);
+    mSuzanne->setObjectName("Suzanne");
+    mSuzanne->setPosition(QVector3D(0, 5, 0));
+    mSuzanne->setVisible(true);
+    mModelManager->addModel(mSuzanne);
 
     // Cube
-    {
-        mCube = new Model;
-        mCube->setType(Model::Cube);
-        mCube->setObjectName("Cube");
-        mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
-        mCube->setPosition(QVector3D(2.5, 5, -5));
-        mCube->setVisible(true);
-        mModelManager->addModel(mCube);
-    }
+    mCube = new Model;
+    mCube->setType(Model::Cube);
+    mCube->setObjectName("Cube");
+    mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
+    mCube->setPosition(QVector3D(2.5, 5, -5));
+    mCube->setVisible(true);
+    mModelManager->addModel(mCube);
+
+    mBackpack = new TexturedModel("backpack");
+    mBackpack->setPosition(QVector3D(-5, 5, -5));
+    mModelManager->addTexturedModel(mBackpack);
+
+    mCyborg = new TexturedModel("cyborg");
+    mCyborg->setPosition(QVector3D(-5, 10, -5));
+    mModelManager->addTexturedModel(mCyborg);
+
+    mNanoSuit = new TexturedModel("nanosuit");
+    mNanoSuit->setPosition(QVector3D(-5, 15, -5));
+    mModelManager->addTexturedModel(mNanoSuit);
+
+    mPlanet = new TexturedModel("planet");
+    mPlanet->setPosition(QVector3D(15, 5, -5));
+    mModelManager->addTexturedModel(mPlanet);
+
+    mRock = new TexturedModel("rock");
+    mRock->setPosition(QVector3D(15, 15, -5));
+    mModelManager->addTexturedModel(mRock);
 }
 
 void Controller::run()

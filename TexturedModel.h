@@ -6,13 +6,12 @@
 class TexturedModel : public Node
 {
 public:
-    explicit TexturedModel(QObject *parent = nullptr);
+    explicit TexturedModel(const QString &name, QObject *parent = nullptr);
 
-    const QString &path() const;
-    void setPath(const QString &newPath);
+    const QString &name() const;
 
 private:
-    QString mPath;
+    QString mName;
 };
 
 #endif // TEXTUREDMODEL_H

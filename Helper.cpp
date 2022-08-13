@@ -53,7 +53,7 @@ QVector3D Helper::projectOntoPlane(const QVector3D &normal, const QVector3D &poi
     return QVector3D(projection.x(), projection.y(), projection.z());
 }
 
-TexturedModelData *Helper::loadTexturedModel(const QString &path)
+TexturedModelData *Helper::loadTexturedModel(const QString &name, const QString &path)
 {
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(path.toStdString(),              //
@@ -68,7 +68,7 @@ TexturedModelData *Helper::loadTexturedModel(const QString &path)
         return nullptr;
     }
 
-    TexturedModelData *data = new TexturedModelData(path);
+    TexturedModelData *data = new TexturedModelData(name);
 
     // Meshes
     for (unsigned int i = 0; i < scene->mNumMeshes; i++)
@@ -79,7 +79,7 @@ TexturedModelData *Helper::loadTexturedModel(const QString &path)
     }
 
     // Node
-    TexturedModelDataNode *rootNode = processNode(scene->mRootNode);
+    TexturedModelDataNode *rootNode = processNode(data, scene->mRootNode);
     data->setRootNode(rootNode);
 
     // TODO: Material
@@ -117,9 +117,9 @@ Mesh *Helper::processMesh(aiMesh *aiMesh)
     return mesh;
 }
 
-TexturedModelDataNode *Helper::processNode(aiNode *aiParentNode)
+TexturedModelDataNode *Helper::processNode(TexturedModelData *data, aiNode *aiParentNode)
 {
-    TexturedModelDataNode *parentNode = new TexturedModelDataNode;
+    TexturedModelDataNode *parentNode = new TexturedModelDataNode(data);
 
     for (unsigned int i = 0; i < aiParentNode->mNumMeshes; ++i)
         parentNode->addMeshIndex(aiParentNode->mMeshes[i]);
@@ -128,7 +128,7 @@ TexturedModelDataNode *Helper::processNode(aiNode *aiParentNode)
     parentNode->setInitialTransformation(toQMatrix(aiParentNode->mTransformation));
 
     for (unsigned int i = 0; i < aiParentNode->mNumChildren; ++i)
-        parentNode->addChild(processNode(aiParentNode->mChildren[i]));
+        parentNode->addChild(processNode(data, aiParentNode->mChildren[i]));
 
     return parentNode;
 }

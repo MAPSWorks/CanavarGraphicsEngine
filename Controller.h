@@ -2,7 +2,6 @@
 #define CONTROLLER_H
 
 #include "Camera.h"
-#include "Helper.h"
 #include "RendererManager.h"
 #include "Window.h"
 
@@ -42,6 +41,12 @@ private:
     Model *mCube;
 
     Qt::MouseButton mPressedButton;
+
+    TexturedModel *mBackpack;
+    TexturedModel *mCyborg;
+    TexturedModel *mNanoSuit;
+    TexturedModel *mPlanet;
+    TexturedModel *mRock;
 };
 
 #endif // CONTROLLER_H

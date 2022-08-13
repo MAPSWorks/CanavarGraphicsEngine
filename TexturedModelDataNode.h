@@ -4,17 +4,16 @@
 #include <QMatrix4x4>
 #include <QObject>
 
+class TexturedModelData;
+
 class TexturedModelDataNode : public QObject
 {
     Q_OBJECT
 public:
-    explicit TexturedModelDataNode(QObject *parent = nullptr);
+    explicit TexturedModelDataNode(TexturedModelData *data, QObject *parent = nullptr);
 
     void addChild(TexturedModelDataNode *child);
     void addMeshIndex(int index);
-
-    const QVector<int> &meshIndices() const;
-    void setMeshIndices(const QVector<int> &newMeshIndices);
 
     const QVector<TexturedModelDataNode *> &children() const;
 
@@ -24,11 +23,14 @@ public:
     const QMatrix4x4 &initialTransformation() const;
     void setInitialTransformation(const QMatrix4x4 &newInitialTransformation);
 
+    void render();
+
 private:
     QVector<TexturedModelDataNode *> mChildren;
     QVector<int> mMeshIndices;
     QString mName;
     QMatrix4x4 mInitialTransformation;
+    TexturedModelData *mData;
 };
 
 #endif // TEXTUREDMODELDATANODE_H

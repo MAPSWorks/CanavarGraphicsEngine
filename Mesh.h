@@ -31,14 +31,10 @@ public:
     void setMaterialIndex(int newMaterialIndex);
 
     bool create();
-    void bind();
-    void release();
-    int count();
+    void render();
 
     const QString &name() const;
     void setName(const QString &newName);
-
-    const QVector<unsigned int> &indices() const;
 
 private:
     QVector<Vertex> mVertices;

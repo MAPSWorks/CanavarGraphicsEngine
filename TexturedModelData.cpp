@@ -1,8 +1,8 @@
 #include "TexturedModelData.h"
 
-TexturedModelData::TexturedModelData(QString path, QObject *parent)
+TexturedModelData::TexturedModelData(const QString &name, QObject *parent)
     : QObject(parent)
-    , mPath(path)
+    , mName(name)
 {}
 
 void TexturedModelData::addMesh(Mesh *mesh)
@@ -32,9 +32,9 @@ const QString &TexturedModelData::name() const
     return mName;
 }
 
-void TexturedModelData::setName(const QString &newName)
+void TexturedModelData::render()
 {
-    mName = newName;
+    mRootNode->render();
 }
 
 TexturedModelDataNode *TexturedModelData::rootNode() const
@@ -45,9 +45,4 @@ TexturedModelDataNode *TexturedModelData::rootNode() const
 void TexturedModelData::setRootNode(TexturedModelDataNode *newRootNode)
 {
     mRootNode = newRootNode;
-}
-
-const QString &TexturedModelData::path() const
-{
-    return mPath;
 }

@@ -1,15 +1,11 @@
 #include "TexturedModel.h"
 
-TexturedModel::TexturedModel(QObject *parent)
-    : Node{parent}
+TexturedModel::TexturedModel(const QString &name, QObject *parent)
+    : Node(parent)
+    , mName(name)
 {}
 
-const QString &TexturedModel::path() const
+const QString &TexturedModel::name() const
 {
-    return mPath;
-}
-
-void TexturedModel::setPath(const QString &newPath)
-{
-    mPath = newPath;
+    return mName;
 }

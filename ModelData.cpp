@@ -143,19 +143,11 @@ bool ModelData::create()
     return true;
 }
 
-void ModelData::bind()
+void ModelData::render()
 {
     mVertexArray.bind();
-}
-
-void ModelData::release()
-{
+    glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
     mVertexArray.release();
-}
-
-int ModelData::count()
-{
-    return mVertices.count();
 }
 
 const QString ModelData::ROOT_PATH = ":/Resources/Models/";

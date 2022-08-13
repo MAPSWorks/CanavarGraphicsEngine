@@ -55,14 +55,7 @@ bool Mesh::create()
 
     // Normals
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1,
-                          3,                                // Size
-                          GL_FLOAT,                         // Type
-                          GL_FALSE,                         // Normalized
-                          sizeof(Vertex),                   // Stride
-                          (void *) offsetof(Vertex, normal) // Offset
-    );
-
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
     //Texture Cooords
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, textureCoord));
@@ -84,19 +77,11 @@ bool Mesh::create()
     return true;
 }
 
-void Mesh::bind()
+void Mesh::render()
 {
     mVertexArray.bind();
-}
-
-void Mesh::release()
-{
+    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
     mVertexArray.release();
-}
-
-int Mesh::count()
-{
-    return mIndices.size();
 }
 
 const QString &Mesh::name() const
@@ -108,9 +93,4 @@ void Mesh::setName(const QString &newName)
 {
     setObjectName(newName);
     mName = newName;
-}
-
-const QVector<unsigned int> &Mesh::indices() const
-{
-    return mIndices;
 }

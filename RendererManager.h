@@ -29,11 +29,10 @@ public:
 private slots:
     void renderModels(float ifps);
     void renderTexturedModels(float ifps);
-    void renderTexturedModelDataNode(TexturedModelData *data, TexturedModelDataNode *node);
 
 private:
     QMap<Model::Type, ModelData *> mTypeToModelData;
-    QMap<QString, TexturedModelData *> mPathToTexturedModelData;
+    QMap<QString, TexturedModelData *> mNameToTexturedModelData;
 
     ModelManager *mModelManager;
     CameraManager *mCameraManager;

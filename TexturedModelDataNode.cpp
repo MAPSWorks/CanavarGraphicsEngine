@@ -1,7 +1,9 @@
 #include "TexturedModelDataNode.h"
+#include "TexturedModelData.h"
 
-TexturedModelDataNode::TexturedModelDataNode(QObject *parent)
-    : QObject{parent}
+TexturedModelDataNode::TexturedModelDataNode(TexturedModelData *data, QObject *parent)
+    : QObject(parent)
+    , mData(data)
 {}
 
 void TexturedModelDataNode::addChild(TexturedModelDataNode *child)
@@ -13,16 +15,6 @@ void TexturedModelDataNode::addChild(TexturedModelDataNode *child)
 void TexturedModelDataNode::addMeshIndex(int index)
 {
     mMeshIndices << index;
-}
-
-const QVector<int> &TexturedModelDataNode::meshIndices() const
-{
-    return mMeshIndices;
-}
-
-void TexturedModelDataNode::setMeshIndices(const QVector<int> &newMeshIndices)
-{
-    mMeshIndices = newMeshIndices;
 }
 
 const QVector<TexturedModelDataNode *> &TexturedModelDataNode::children() const
@@ -49,4 +41,15 @@ const QMatrix4x4 &TexturedModelDataNode::initialTransformation() const
 void TexturedModelDataNode::setInitialTransformation(const QMatrix4x4 &newInitialTransformation)
 {
     mInitialTransformation = newInitialTransformation;
+}
+
+void TexturedModelDataNode::render()
+{
+    auto meshes = mData->meshes();
+
+    for (auto index : qAsConst(mMeshIndices))
+        meshes[index]->render();
+
+    for (int i = 0; i < mChildren.size(); i++)
+        mChildren[i]->render();
 }
