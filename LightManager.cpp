@@ -4,11 +4,14 @@
 LightManager::LightManager(QObject *parent)
     : QObject(parent)
     , mActiveLight(nullptr)
-{}
+{
+    mNodeManager = NodeManager::instance();
+}
 
 void LightManager::addLight(Light *light)
 {
     mLights << light;
+    mNodeManager->addNode(light);
 }
 
 void LightManager::removeLight(Light *light)
@@ -20,6 +23,7 @@ void LightManager::removeLight(Light *light)
             mActiveLight = nullptr;
         }
 
+        mNodeManager->removeNode(light);
         mLights.removeAll(light);
         light->deleteLater();
     }

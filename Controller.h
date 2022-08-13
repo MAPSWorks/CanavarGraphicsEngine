@@ -4,6 +4,7 @@
 #include "DummyCamera.h"
 #include "FreeCamera.h"
 #include "RendererManager.h"
+#include "TexturedModel.h"
 #include "Window.h"
 
 #include <QObject>
@@ -31,7 +32,7 @@ private:
     RendererManager *mRendererManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
-    ModelManager *mModelManager;
+    NodeManager *mNodeManager;
     Window *mWindow;
 
     FreeCamera *mFreeCamera;

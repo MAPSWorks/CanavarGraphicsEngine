@@ -18,9 +18,6 @@ FreeCamera::FreeCamera(QObject *parent)
     , mMouseGrabbed(false)
 
 {
-    mTransformation.setToIdentity();
-    mProjection.setToIdentity();
-
     connect(this, &Camera::activeChanged, this, [=](bool active) {
         if (!active)
         {
@@ -132,17 +129,8 @@ void FreeCamera::update(float ifps)
                 mPosition += mMovementSpeed * ifps * mRotation.rotatedVector(KEY_BINDINGS.value(key, QVector3D(0, 0, 0)));
     }
 
-    if (mUpdatePosition | mUpdateRotation)
-    {
-        mTransformation.setToIdentity();
-        mTransformation.rotate(mRotation.conjugated());
-        mTransformation.translate(-mPosition);
-    }
-
     if (mPressedKeys.empty())
-    {
         mUpdatePosition = false;
-    }
 }
 
 bool FreeCamera::getMouseGrabbed() const

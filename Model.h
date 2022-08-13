@@ -33,15 +33,11 @@ public:
     Material &material();
     void setMaterial(const Material &newMaterial);
 
-    bool visible() const;
-    void setVisible(bool newVisible);
-
     static const QVector<Model::Type> ALL_MODEL_TYPES;
 
 private:
     Type mType;
     Material mMaterial;
-    bool mVisible;
 };
 
 #endif // MODEL_H

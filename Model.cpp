@@ -2,7 +2,6 @@
 
 Model::Model(QObject *parent)
     : Node(parent)
-    , mVisible(true)
 {}
 
 Model::~Model() {}
@@ -25,16 +24,6 @@ Material &Model::material()
 void Model::setMaterial(const Material &newMaterial)
 {
     mMaterial = newMaterial;
-}
-
-bool Model::visible() const
-{
-    return mVisible;
-}
-
-void Model::setVisible(bool newVisible)
-{
-    mVisible = newVisible;
 }
 
 const QVector<Model::Type> Model::ALL_MODEL_TYPES = {

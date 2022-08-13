@@ -14,29 +14,39 @@ protected:
     virtual ~Node();
 
 public:
-    const QMatrix4x4 &transformation() const;
+    virtual QMatrix4x4 transformation() const;
+    virtual QMatrix4x4 worldTransformation() const;
 
-    const QVector3D &position() const;
-    void setPosition(const QVector3D &newPosition);
+    virtual const QVector3D &position() const;
+    virtual void setPosition(const QVector3D &newPosition);
 
-    const QQuaternion &rotation() const;
-    void setRotation(const QQuaternion &newRotation);
+    virtual QVector3D worldPosition() const;
+    virtual void setWorldPosition(const QVector3D &newWorldPosition);
 
-    const QVector3D &scale() const;
-    void setScale(const QVector3D &newScale);
+    virtual const QQuaternion &rotation() const;
+    virtual void setRotation(const QQuaternion &newRotation);
+
+    virtual QQuaternion worldRotation() const;
+    virtual void setWorldRotation(const QQuaternion &newWorldRotation);
+
+    virtual const QVector3D &scale() const;
+    virtual void setScale(const QVector3D &newScale);
 
     const QString &name() const;
     void setName(const QString &newName);
 
-private:
-    void updateTransformation();
+    virtual void addChild(Node *child);
+    virtual void removeChild(Node *child);
+
+    const QList<Node *> &children() const;
 
 protected:
-    QMatrix4x4 mTransformation;
     QVector3D mPosition;
     QQuaternion mRotation;
     QVector3D mScale;
     QString mName;
+
+    QList<Node *> mChildren;
 };
 
 #endif // NODE_H

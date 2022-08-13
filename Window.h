@@ -41,6 +41,8 @@ private:
     void wheelEvent(QWheelEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent *) override;
 
+    void populateComboBox(Node *node);
+
 private:
     long long mPreviousTime;
     long long mCurrentTime;
@@ -49,13 +51,12 @@ private:
 
     RendererManager *mRendererManager;
     LightManager *mLightManager;
-    ModelManager *mModelManager;
+    NodeManager *mNodeManager;
 
     Light *mActiveLight;
 
-    QList<Model *> mModels;
+    QList<Node *> mNodes;
 
-    int mSelectedIndex;
-    Model *mSelectedModel;
+    Node *mSelectedNode;
 };
 #endif // WINDOW_H

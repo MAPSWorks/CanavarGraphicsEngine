@@ -2,6 +2,7 @@
 #define LIGHTMANAGER_H
 
 #include "Light.h"
+#include "NodeManager.h"
 
 #include <QObject>
 
@@ -24,6 +25,7 @@ public:
     static LightManager *instance();
 
 private:
+    NodeManager *mNodeManager;
     QList<Light *> mLights;
     Light *mActiveLight;
 };

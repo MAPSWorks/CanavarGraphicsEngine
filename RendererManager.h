@@ -5,7 +5,7 @@
 #include "Light.h"
 #include "LightManager.h"
 #include "ModelData.h"
-#include "ModelManager.h"
+#include "NodeManager.h"
 #include "ShaderManager.h"
 #include "TexturedModelData.h"
 
@@ -27,14 +27,13 @@ public:
     void render(float ifps);
 
 private slots:
-    void renderModels(float ifps);
-    void renderTexturedModels(float ifps);
+    void renderNode(Node *node);
 
 private:
     QMap<Model::Type, ModelData *> mTypeToModelData;
     QMap<QString, TexturedModelData *> mNameToTexturedModelData;
 
-    ModelManager *mModelManager;
+    NodeManager *mNodeManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
     ShaderManager *mShaderManager;

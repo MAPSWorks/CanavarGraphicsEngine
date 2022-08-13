@@ -8,11 +8,11 @@
 
 Window::Window(QWindow *parent)
     : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, parent)
-    , mSelectedIndex(0)
+    , mSelectedNode(nullptr)
 {
     mRendererManager = RendererManager::instance();
     mLightManager = LightManager::instance();
-    mModelManager = ModelManager::instance();
+    mNodeManager = NodeManager::instance();
 
     QSurfaceFormat format;
     format.setMajorVersion(3);
@@ -44,9 +44,7 @@ void Window::resizeGL(int w, int h)
 void Window::paintGL()
 {
     mActiveLight = mLightManager->activeLight();
-    mModels = mModelManager->models();
-
-    mSelectedModel = mModels.at(mSelectedIndex);
+    mNodes = mNodeManager->nodes();
 
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
@@ -107,60 +105,63 @@ void Window::paintGL()
 
     ImGui::Spacing();
 
-    // Models
-    if (!ImGui::CollapsingHeader("Select a model"))
+    // Nodes
+    if (!ImGui::CollapsingHeader("Select a Node"))
     {
-        if (ImGui::BeginCombo("Models", mSelectedModel->objectName().toStdString().c_str()))
+        QString preview = mSelectedNode ? mSelectedNode->name() : "-";
+        if (ImGui::BeginCombo("Nodes", preview.toStdString().c_str()))
         {
-            for (int i = 0; i < mModels.size(); ++i)
-            {
-                if (ImGui::Selectable(mModels.at(i)->objectName().toStdString().c_str()))
-                    mSelectedIndex = i;
-            }
+            for (int i = 0; i < mNodes.size(); ++i)
+                populateComboBox(mNodes[i]);
 
             ImGui::EndCombo();
         }
 
         // Position
         {
+            ImGui::BeginDisabled(mSelectedNode == nullptr);
+
             ImGui::Text("Position:");
-            QVector3D position = mSelectedModel->position();
+            QVector3D position = mSelectedNode ? mSelectedNode->position() : QVector3D();
             float x = position.x();
             float y = position.y();
             float z = position.z();
 
-            if (ImGui::SliderFloat("x##Model", &x, -20.0f, 20.0f, "%.3f"))
-                mSelectedModel->setPosition(QVector3D(x, y, z));
-            if (ImGui::SliderFloat("y##Model", &y, -20.0f, 20.0f, "%.3f"))
-                mSelectedModel->setPosition(QVector3D(x, y, z));
-            if (ImGui::SliderFloat("z##Model", &z, -20.0f, 20.0f, "%.3f"))
-                mSelectedModel->setPosition(QVector3D(x, y, z));
+            if (ImGui::SliderFloat("x##Node", &x, -20.0f, 20.0f, "%.3f"))
+                mSelectedNode->setPosition(QVector3D(x, y, z));
+            if (ImGui::SliderFloat("y##Node", &y, -20.0f, 20.0f, "%.3f"))
+                mSelectedNode->setPosition(QVector3D(x, y, z));
+            if (ImGui::SliderFloat("z##Node", &z, -20.0f, 20.0f, "%.3f"))
+                mSelectedNode->setPosition(QVector3D(x, y, z));
+
+            ImGui::EndDisabled();
         }
 
         // Shading Parameters
-        {
-            ImGui::Text("Shading Parameters:");
-            float ambient = mSelectedModel->material().ambient();
-            float diffuse = mSelectedModel->material().diffuse();
-            float specular = mSelectedModel->material().specular();
+        //        {
 
-            if (ImGui::SliderFloat("Ambient##Model", &ambient, 0.0f, 1.0f, "%.3f"))
-                mSelectedModel->material().setAmbient(ambient);
+        //            ImGui::Text("Shading Parameters:");
+        //            float ambient = mSelectedNode->material().ambient();
+        //            float diffuse = mSelectedNode->material().diffuse();
+        //            float specular = mSelectedNode->material().specular();
 
-            if (ImGui::SliderFloat("Diffuse##Model", &diffuse, 0.0f, 1.0f, "%.3f"))
-                mSelectedModel->material().setDiffuse(diffuse);
+        //            if (ImGui::SliderFloat("Ambient##Model", &ambient, 0.0f, 1.0f, "%.3f"))
+        //                mSelectedModel->material().setAmbient(ambient);
 
-            if (ImGui::SliderFloat("Specular##Model", &specular, 0.0f, 1.0f, "%.3f"))
-                mSelectedModel->material().setSpecular(specular);
+        //            if (ImGui::SliderFloat("Diffuse##Model", &diffuse, 0.0f, 1.0f, "%.3f"))
+        //                mSelectedModel->material().setDiffuse(diffuse);
 
-            float color[4] = {mSelectedModel->material().color().x(), //
-                              mSelectedModel->material().color().y(),
-                              mSelectedModel->material().color().z(),
-                              mSelectedModel->material().color().w()};
+        //            if (ImGui::SliderFloat("Specular##Model", &specular, 0.0f, 1.0f, "%.3f"))
+        //                mSelectedModel->material().setSpecular(specular);
 
-            if (ImGui::ColorEdit4("Color##Model", (float *) &color))
-                mSelectedModel->material().setColor(QVector4D(color[0], color[1], color[2], color[3]));
-        }
+        //            float color[4] = {mSelectedModel->material().color().x(), //
+        //                              mSelectedModel->material().color().y(),
+        //                              mSelectedModel->material().color().z(),
+        //                              mSelectedModel->material().color().w()};
+
+        //            if (ImGui::ColorEdit4("Color##Model", (float *) &color))
+        //                mSelectedModel->material().setColor(QVector4D(color[0], color[1], color[2], color[3]));
+        //        }
     }
 
     ImGui::Spacing();
@@ -205,6 +206,21 @@ void Window::wheelEvent(QWheelEvent *event)
 void Window::mouseDoubleClickEvent(QMouseEvent *event)
 {
     emit mouseDoubleClicked(event);
+}
+
+void Window::populateComboBox(Node *node)
+{
+    if (dynamic_cast<Light *>(node))
+        return;
+
+    if (dynamic_cast<Camera *>(node))
+        return;
+
+    if (ImGui::Selectable(node->name().toStdString().c_str()))
+        mSelectedNode = node;
+
+    for (auto child : node->children())
+        populateComboBox(child);
 }
 
 bool Window::imguiWantCapture() const

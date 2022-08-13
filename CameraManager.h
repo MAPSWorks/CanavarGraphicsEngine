@@ -2,6 +2,7 @@
 #define CAMERAMANAGER_H
 
 #include "Camera.h"
+#include "NodeManager.h"
 
 #include <QObject>
 
@@ -34,6 +35,7 @@ public:
     static CameraManager *instance();
 
 private:
+    NodeManager *mNodeManager;
     Camera *mActiveCamera;
     QList<Camera *> mCameras;
 

@@ -1,11 +1,13 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "Node.h"
+
 #include <QMatrix4x4>
 #include <QMouseEvent>
 #include <QTimer>
 
-class Camera : public QObject
+class Camera : public Node
 {
     Q_OBJECT
 protected:
@@ -15,12 +17,6 @@ signals:
     void activeChanged(bool active);
 
 public:
-    virtual const QVector3D &position() const;
-    virtual void setPosition(const QVector3D &newPosition);
-
-    virtual const QQuaternion &rotation() const;
-    virtual void setRotation(const QQuaternion &newRotation);
-
     virtual float verticalFov() const;
     virtual void setVerticalFov(float newVerticalFov);
 
@@ -36,9 +32,9 @@ public:
     virtual float zFar() const;
     virtual void setZFar(float newZFar);
 
-    virtual const QMatrix4x4 &transformation() const;
-    virtual const QMatrix4x4 &projection() const;
-
+    virtual QMatrix4x4 transformation() const;
+    virtual QMatrix4x4 worldTransformation() const;
+    virtual QMatrix4x4 projection() const;
     virtual QVector3D getViewDirection();
 
     virtual void onKeyPressed(QKeyEvent *) = 0;
@@ -51,16 +47,7 @@ public:
     bool active() const;
     void setActive(bool newActive);
 
-private:
-    void updateTransformation();
-    void updateProjection();
-
 protected:
-    QVector3D mPosition;
-    QQuaternion mRotation;
-    QMatrix4x4 mProjection;
-    QMatrix4x4 mTransformation;
-
     float mVerticalFov;
     float mHorizontalFov;
     float mAspectRatio;

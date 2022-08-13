@@ -14,7 +14,7 @@ Controller::Controller(QApplication *app, QObject *parent)
     mRendererManager = RendererManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
-    mModelManager = ModelManager::instance();
+    mNodeManager = NodeManager::instance();
     mWindow = new Window;
 
     connect(mWindow, &Window::wheelMoved, this, &Controller::onWheelMoved);
@@ -55,7 +55,7 @@ void Controller::init()
     mRendererManager->init();
 
     mDummyCamera = new DummyCamera;
-    mDummyCamera->setPosition(QVector3D(0, 10, 10));
+    mDummyCamera->setPosition(QVector3D(0, 0, 5));
     mDummyCamera->setVerticalFov(80.0f);
     mDummyCamera->setZNear(0.1f);
     mDummyCamera->setZFar(10000.0f);
@@ -69,53 +69,52 @@ void Controller::init()
     // Plane
     mPlane = new Model;
     mPlane->setType(Model::Plane);
-    mPlane->setObjectName("Plane");
+    mPlane->setName("Plane");
     mPlane->setPosition(QVector3D(0, 0, 0));
     mPlane->setScale(QVector3D(10.0f, 10.0f, 10.0f));
-    mPlane->setVisible(true);
-    mModelManager->addModel(mPlane);
+    mNodeManager->addNode(mPlane);
 
     // Suzanne
     mSuzanne = new Model;
     mSuzanne->setType(Model::Suzanne);
-    mSuzanne->setObjectName("Suzanne");
-    mSuzanne->setPosition(QVector3D(0, 5, 0));
-    mSuzanne->setVisible(true);
-    mModelManager->addModel(mSuzanne);
+    mSuzanne->setName("Suzanne");
+    mSuzanne->setPosition(QVector3D(0, 0, 0));
+
+    mSuzanne->addChild(mDummyCamera);
 
     // Cube
     mCube = new Model;
     mCube->setType(Model::Cube);
-    mCube->setObjectName("Cube");
+    mCube->setName("Cube");
     mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
     mCube->setPosition(QVector3D(2.5, 5, -5));
-    mCube->setVisible(true);
-    mModelManager->addModel(mCube);
+    mNodeManager->addNode(mCube);
+    mCube->addChild(mSuzanne);
 
     mBackpack = new TexturedModel("backpack");
     mBackpack->setPosition(QVector3D(-5, 5, -5));
     mBackpack->setShininess(1.0f);
-    mModelManager->addTexturedModel(mBackpack);
+    mNodeManager->addNode(mBackpack);
 
     mCyborg = new TexturedModel("cyborg");
     mCyborg->setPosition(QVector3D(-5, 10, -5));
-    mModelManager->addTexturedModel(mCyborg);
+    mNodeManager->addNode(mCyborg);
 
     mNanoSuit = new TexturedModel("nanosuit");
     mNanoSuit->setPosition(QVector3D(-5, 15, -5));
-    mModelManager->addTexturedModel(mNanoSuit);
+    mNodeManager->addNode(mNanoSuit);
 
     mPlanet = new TexturedModel("planet");
     mPlanet->setPosition(QVector3D(15, 5, -5));
-    mModelManager->addTexturedModel(mPlanet);
+    mNodeManager->addNode(mPlanet);
 
     mRock = new TexturedModel("rock");
     mRock->setPosition(QVector3D(15, 15, -5));
-    mModelManager->addTexturedModel(mRock);
+    mNodeManager->addNode(mRock);
 
     mF16 = new TexturedModel("f16");
     mF16->setPosition(QVector3D(15, 15, 15));
-    mModelManager->addTexturedModel(mF16);
+    mNodeManager->addNode(mF16);
 }
 
 void Controller::run()

@@ -32,8 +32,8 @@ HEADERS += \
     Mesh.h \
     Model.h \
     ModelData.h \
-    ModelManager.h \
     Node.h \
+    NodeManager.h \
     RendererManager.h \
     ShaderManager.h \
     Texture.h \
@@ -57,8 +57,8 @@ SOURCES += \
     Mesh.cpp \
     Model.cpp \
     ModelData.cpp \
-    ModelManager.cpp \
     Node.cpp \
+    NodeManager.cpp \
     RendererManager.cpp \
     ShaderManager.cpp \
     Texture.cpp \

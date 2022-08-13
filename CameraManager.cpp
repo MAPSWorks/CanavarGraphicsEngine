@@ -4,11 +4,14 @@
 CameraManager::CameraManager(QObject *parent)
     : QObject(parent)
     , mActiveCamera(nullptr)
-{}
+{
+    mNodeManager = NodeManager::instance();
+}
 
 void CameraManager::addCamera(Camera *camera)
 {
     mCameras << camera;
+    mNodeManager->addNode(camera);
 }
 
 void CameraManager::removeCamera(Camera *camera)
@@ -18,6 +21,7 @@ void CameraManager::removeCamera(Camera *camera)
         if (camera == mActiveCamera)
             mActiveCamera = nullptr;
 
+        mNodeManager->removeNode(camera);
         mCameras.removeAll(camera);
         camera->deleteLater();
     }

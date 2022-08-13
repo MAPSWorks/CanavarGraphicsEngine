@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "Helper.h"
 #include "Light.h"
+#include "TexturedModel.h"
 
 #include <QDir>
 #include <QtMath>
@@ -9,7 +10,7 @@
 RendererManager::RendererManager(QObject *parent)
     : QObject(parent)
 {
-    mModelManager = ModelManager::instance();
+    mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
@@ -118,20 +119,12 @@ void RendererManager::render(float ifps)
     mCamera = mCameraManager->activeCamera();
     mLight = mLightManager->activeLight();
 
-    renderModels(ifps);
-    renderTexturedModels(ifps);
-}
-
-void RendererManager::renderModels(float ifps)
-{
-    Q_UNUSED(ifps);
-
     mShaderManager->bind(ShaderManager::Shader::BasicShader);
 
     if (mCamera)
     {
         mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
-        mShaderManager->setUniformValue("view_matrix", mCamera->transformation());
+        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
         mShaderManager->setUniformValue("camera_position", mCamera->position());
     }
 
@@ -144,18 +137,46 @@ void RendererManager::renderModels(float ifps)
         mShaderManager->setUniformValue("light.specular", mLight->specular());
     }
 
-    QList<Model *> models = mModelManager->models();
+    mShaderManager->release();
 
-    for (Model *model : qAsConst(models))
+    mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
+
+    if (mCamera)
     {
-        if (!model->visible())
-            continue;
+        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
+        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
+        mShaderManager->setUniformValue("camera_position", mCamera->position());
+    }
 
+    if (mLight)
+    {
+        mShaderManager->setUniformValue("light.position", mLight->position());
+        mShaderManager->setUniformValue("light.color", mLight->color());
+        mShaderManager->setUniformValue("light.ambient", mLight->ambient());
+        mShaderManager->setUniformValue("light.diffuse", mLight->diffuse());
+        mShaderManager->setUniformValue("light.specular", mLight->specular());
+    }
+
+    mShaderManager->release();
+
+    auto nodes = mNodeManager->nodes();
+    for (auto node : nodes)
+        renderNode(node);
+}
+
+void RendererManager::renderNode(Node *node)
+{
+    Model *model = dynamic_cast<Model *>(node);
+    TexturedModel *texturedModel = dynamic_cast<TexturedModel *>(node);
+
+    if (model)
+    {
         ModelData *data = mTypeToModelData.value(model->type(), nullptr);
 
         if (data)
         {
-            mShaderManager->setUniformValue("node.transformation", model->transformation());
+            mShaderManager->bind(ShaderManager::Shader::BasicShader);
+            mShaderManager->setUniformValue("node.transformation", model->worldTransformation());
             mShaderManager->setUniformValue("node.color", model->material().color());
             mShaderManager->setUniformValue("node.ambient", model->material().ambient());
             mShaderManager->setUniformValue("node.diffuse", model->material().diffuse());
@@ -163,46 +184,27 @@ void RendererManager::renderModels(float ifps)
             mShaderManager->setUniformValue("node.shininess", model->material().shininess());
 
             data->render();
+            mShaderManager->release();
         }
     }
 
-    mShaderManager->release();
-}
-
-void RendererManager::renderTexturedModels(float ifps)
-{
-    Q_UNUSED(ifps);
-
-    mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
-
-    if (mCamera)
+    if (texturedModel)
     {
-        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
-        mShaderManager->setUniformValue("view_matrix", mCamera->transformation());
-        mShaderManager->setUniformValue("camera_position", mCamera->position());
-    }
-
-    if (mLight)
-    {
-        mShaderManager->setUniformValue("light.position", mLight->position());
-        mShaderManager->setUniformValue("light.color", mLight->color());
-        mShaderManager->setUniformValue("light.ambient", mLight->ambient());
-        mShaderManager->setUniformValue("light.diffuse", mLight->diffuse());
-        mShaderManager->setUniformValue("light.specular", mLight->specular());
-    }
-
-    for (TexturedModel *model : mModelManager->texturedModel())
-    {
-        TexturedModelData *data = mNameToTexturedModelData.value(model->modelName(), nullptr);
+        TexturedModelData *data = mNameToTexturedModelData.value(texturedModel->modelName(), nullptr);
 
         if (data)
         {
-            mShaderManager->setUniformValue("node.transformation", model->transformation());
-            mShaderManager->setUniformValue("node.shininess", model->shininess());
+            mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
+            mShaderManager->setUniformValue("node.transformation", texturedModel->worldTransformation());
+            mShaderManager->setUniformValue("node.shininess", texturedModel->shininess());
 
             data->render();
+            mShaderManager->release();
         }
     }
 
-    mShaderManager->release();
+    auto children = node->children();
+
+    for (auto child : children)
+        renderNode(child);
 }
