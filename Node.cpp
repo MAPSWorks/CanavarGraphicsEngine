@@ -103,15 +103,14 @@ QMatrix4x4 Node::worldTransformation() const
 
     if (parent)
     {
-        QVector3D worldPosition = this->worldPosition();
-        QQuaternion worldRotation = this->worldRotation();
+        QMatrix4x4 parentWorldTransformation = parent->worldTransformation();
+        float x = parent->scale().x();
+        float y = parent->scale().y();
+        float z = parent->scale().z();
 
-        QMatrix4x4 worldTransformation;
-        worldTransformation.scale(mScale);
-        worldTransformation.rotate(worldRotation);
-        worldTransformation.setColumn(3, QVector4D(worldPosition, 1.0f));
+        parentWorldTransformation.scale(1 / x, 1 / y, 1 / z);
 
-        return worldTransformation;
+        return parentWorldTransformation * transformation();
     } else
     {
         return transformation();

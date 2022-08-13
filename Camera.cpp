@@ -87,7 +87,7 @@ QVector3D Camera::getViewDirection()
 QMatrix4x4 Camera::transformation() const
 {
     QMatrix4x4 transformation;
-    transformation.rotate(mRotation);
+    transformation.rotate(mRotation.conjugated());
     transformation.translate(-mPosition);
 
     return transformation;
@@ -95,11 +95,19 @@ QMatrix4x4 Camera::transformation() const
 
 QMatrix4x4 Camera::worldTransformation() const
 {
-    QMatrix4x4 transformation;
-    transformation.rotate(worldRotation().conjugated());
-    transformation.translate(-worldPosition());
+    Node *parent = dynamic_cast<Node *>(this->parent());
 
-    return transformation;
+    if (parent)
+    {
+        QMatrix4x4 transformation;
+        transformation.rotate(mRotation);
+        transformation.translate(-mPosition);
+
+        return transformation * parent->worldTransformation().inverted();
+    } else
+    {
+        return transformation();
+    }
 }
 
 bool Camera::active() const

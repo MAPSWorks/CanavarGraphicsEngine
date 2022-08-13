@@ -32,8 +32,8 @@ public:
     virtual float zFar() const;
     virtual void setZFar(float newZFar);
 
-    virtual QMatrix4x4 transformation() const;
-    virtual QMatrix4x4 worldTransformation() const;
+    virtual QMatrix4x4 transformation() const override;
+    virtual QMatrix4x4 worldTransformation() const override;
     virtual QMatrix4x4 projection() const;
     virtual QVector3D getViewDirection();
 

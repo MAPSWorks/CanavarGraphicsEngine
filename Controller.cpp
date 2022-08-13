@@ -55,7 +55,7 @@ void Controller::init()
     mRendererManager->init();
 
     mDummyCamera = new DummyCamera;
-    mDummyCamera->setPosition(QVector3D(0, 0, 5));
+    mDummyCamera->setPosition(QVector3D(0, 0, 3));
     mDummyCamera->setVerticalFov(80.0f);
     mDummyCamera->setZNear(0.1f);
     mDummyCamera->setZFar(10000.0f);
@@ -87,7 +87,7 @@ void Controller::init()
     mCube->setType(Model::Cube);
     mCube->setName("Cube");
     mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
-    mCube->setPosition(QVector3D(2.5, 5, -5));
+    mCube->setPosition(QVector3D(0, 0, 0));
     mNodeManager->addNode(mCube);
     mCube->addChild(mSuzanne);
 

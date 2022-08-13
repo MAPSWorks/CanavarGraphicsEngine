@@ -137,6 +137,27 @@ void Window::paintGL()
             ImGui::EndDisabled();
         }
 
+        // Rotation
+        {
+            ImGui::BeginDisabled(mSelectedNode == nullptr);
+
+            ImGui::Text("Rotation:");
+            QQuaternion rotation = mSelectedNode ? mSelectedNode->rotation() : QQuaternion();
+            QVector3D eulerAngles = rotation.toEulerAngles();
+            float pitch = eulerAngles.x();
+            float yaw = eulerAngles.y();
+            float roll = eulerAngles.z();
+
+            if (ImGui::SliderFloat("Pitch##Node", &pitch, -90.0f, 90.0f, "%.3f"))
+                mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+            if (ImGui::SliderFloat("Yaw##Node", &yaw, -179.999, 179.999, "%.3f"))
+                mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+            if (ImGui::SliderFloat("Roll##Node", &roll, -179.999, 179.999, "%.3f"))
+                mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+
+            ImGui::EndDisabled();
+        }
+
         // Shading Parameters
         //        {
 
