@@ -26,7 +26,7 @@ public:
 
 signals:
     emit void mouseGrabbed(bool grabbed);
-    emit void setCursorPosition(QPointF mouseGrabPosition);
+    emit void setCursorPosition(QPoint mouseGrabPosition);
 
 private:
     QMap<Qt::Key, bool> mPressedKeys;
@@ -46,7 +46,7 @@ private:
     Mode mMode;
 
     bool mMouseGrabbed;
-    QPointF mMouseGrabPosition;
+    QPoint mMouseGrabPosition;
 
     static const QMap<Qt::Key, QVector3D> KEY_BINDINGS;
 };

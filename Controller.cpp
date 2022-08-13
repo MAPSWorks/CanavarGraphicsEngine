@@ -45,8 +45,8 @@ Controller::Controller(QApplication *app, QObject *parent)
             mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
     });
 
-    connect(mCamera, &FreeCamera::setCursorPosition, this, [=](QPointF position) { //
-        mWindow->cursor().setPos(mWindow->mapToGlobal(position.toPoint()));
+    connect(mCamera, &FreeCamera::setCursorPosition, this, [=](QPoint position) { //
+        mWindow->cursor().setPos(mWindow->mapToGlobal(position));
     });
 }
 

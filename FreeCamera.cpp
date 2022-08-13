@@ -47,7 +47,7 @@ void FreeCamera::onMousePressed(QMouseEvent *event)
         if (event->button() == Qt::LeftButton)
         {
             mMouseGrabbed = !mMouseGrabbed;
-            mMouseGrabPosition = QPointF(event->localPos().x(), event->localPos().y());
+            mMouseGrabPosition = QPoint(event->localPos().x(), event->localPos().y());
             emit mouseGrabbed(mMouseGrabbed);
         }
         break;
@@ -79,10 +79,10 @@ void FreeCamera::onMouseMoved(QMouseEvent *event)
     case Mode::RotateWhileMouseIsMoving: {
         if (mMouseGrabbed)
         {
-            if (mMouseGrabPosition.x() != event->localPos().x() && mMouseGrabPosition.y() != event->localPos().y())
+            if (mMouseGrabPosition.x() != event->pos().x() || mMouseGrabPosition.y() != event->pos().y())
             {
-                mMouseDeltaX += mMouseGrabPosition.x() - event->localPos().x();
-                mMouseDeltaY += mMouseGrabPosition.y() - event->localPos().y();
+                mMouseDeltaX += mMouseGrabPosition.x() - event->x();
+                mMouseDeltaY += mMouseGrabPosition.y() - event->y();
                 mUpdateRotation = true;
             }
 
