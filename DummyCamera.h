@@ -16,9 +16,9 @@ public:
 public:
     void onKeyPressed(QKeyEvent *);
     void onKeyReleased(QKeyEvent *);
-    void onMousePressed(QMouseEvent *);
-    void onMouseReleased(QMouseEvent *);
-    void onMouseMoved(QMouseEvent *);
+    void onMousePressed(CustomMouseEvent);
+    void onMouseReleased(CustomMouseEvent);
+    void onMouseMoved(CustomMouseEvent);
     void update(float);
 };
 

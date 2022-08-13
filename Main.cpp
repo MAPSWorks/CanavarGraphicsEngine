@@ -4,9 +4,9 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    Controller controller;
+    QApplication app(argc, argv);
+    Controller controller(&app);
     controller.run();
 
-    return a.exec();
+    return app.exec();
 }

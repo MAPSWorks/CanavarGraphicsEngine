@@ -11,19 +11,19 @@ class Controller : public QObject
 {
     Q_OBJECT
 public:
-    explicit Controller(QObject *parent = nullptr);
+    explicit Controller(QApplication *app, QObject *parent = nullptr);
     void run();
 
 private slots:
     void init();
     void onWheelMoved(QWheelEvent *event);
-    void onMousePressed(QMouseEvent *event);
-    void onMouseReleased(QMouseEvent *event);
-    void onMouseMoved(QMouseEvent *event);
+    void onMousePressed(CustomMouseEvent event);
+    void onMouseReleased(CustomMouseEvent event);
+    void onMouseMoved(CustomMouseEvent event);
     void onKeyPressed(QKeyEvent *event);
     void onKeyReleased(QKeyEvent *event);
     void onResized(int w, int h);
-    void onMouseDoubleClicked(QMouseEvent *event);
+    void onMouseDoubleClicked(CustomMouseEvent event);
     void render(float ifps);
 
 private:
@@ -47,6 +47,10 @@ private:
     TexturedModel *mNanoSuit;
     TexturedModel *mPlanet;
     TexturedModel *mRock;
+
+    QApplication *mApp;
+
+    bool mMouseCaptured;
 };
 
 #endif // CONTROLLER_H

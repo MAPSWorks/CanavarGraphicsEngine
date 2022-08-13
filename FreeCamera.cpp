@@ -14,6 +14,8 @@ FreeCamera::FreeCamera(QObject *parent)
     , mMouseDeltaY(0.0f)
     , mUpdateRotation(true)
     , mUpdatePosition(true)
+    , mMode(Mode::RotateWhileMouseIsMoving)
+
 {
     mTransformation.setToIdentity();
     mProjection.setToIdentity();
@@ -30,28 +32,50 @@ void FreeCamera::onKeyReleased(QKeyEvent *event)
     mPressedKeys.insert((Qt::Key) event->key(), false);
 }
 
-void FreeCamera::onMousePressed(QMouseEvent *event)
+void FreeCamera::onMousePressed(CustomMouseEvent event)
 {
-    mMousePreviousX = event->x();
-    mMousePreviousY = event->y();
-    mMousePressed = true;
+    switch (mMode)
+    {
+    case Mode::RotateWhileMouseIsPressing: {
+        mMousePreviousX = event.mouseEvent()->x();
+        mMousePreviousY = event.mouseEvent()->y();
+        mMousePressed = true;
+        break;
+    }
+    case Mode::RotateWhileMouseIsMoving: {
+        break;
+    }
+    }
 }
 
-void FreeCamera::onMouseReleased(QMouseEvent *)
+void FreeCamera::onMouseReleased(CustomMouseEvent)
 {
     mMousePressed = false;
 }
 
-void FreeCamera::onMouseMoved(QMouseEvent *event)
+void FreeCamera::onMouseMoved(CustomMouseEvent event)
 {
-    if (mMousePressed)
+    switch (mMode)
     {
-        mMouseDeltaX += mMousePreviousX - event->x();
-        mMouseDeltaY += mMousePreviousY - event->y();
+    case Mode::RotateWhileMouseIsPressing: {
+        if (mMousePressed)
+        {
+            mMouseDeltaX += mMousePreviousX - event.mouseEvent()->x();
+            mMouseDeltaY += mMousePreviousY - event.mouseEvent()->y();
 
-        mMousePreviousX = event->x();
-        mMousePreviousY = event->y();
+            mMousePreviousX = event.mouseEvent()->x();
+            mMousePreviousY = event.mouseEvent()->y();
+            mUpdateRotation = true;
+        }
+        break;
+    }
+    case Mode::RotateWhileMouseIsMoving: {
+        mMouseDeltaX += event.mouseGrabPosition().x() - event.mouseEvent()->x();
+        mMouseDeltaY += event.mouseGrabPosition().y() - event.mouseEvent()->y();
         mUpdateRotation = true;
+    }
+
+    break;
     }
 }
 

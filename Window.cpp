@@ -9,6 +9,7 @@
 Window::Window(QWindow *parent)
     : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, parent)
     , mSelectedIndex(0)
+    , mMouseCaptured(false)
 
 {
     mRendererManager = RendererManager::instance();
@@ -185,17 +186,48 @@ void Window::keyReleaseEvent(QKeyEvent *event)
 
 void Window::mousePressEvent(QMouseEvent *event)
 {
-    emit mousePressed(event);
+    if (event->button() == Qt::LeftButton)
+    {
+        if (!mImguiWantCapture)
+        {
+            mMouseCaptured = !mMouseCaptured;
+            mMouseGrabPosition = QPoint(event->localPos().x(), event->localPos().y());
+            emit mouseCaptured(mMouseCaptured);
+        }
+    }
+
+    CustomMouseEvent customEvent;
+    customEvent.setMouseEvent(event);
+
+    emit mousePressed(customEvent);
 }
 
 void Window::mouseReleaseEvent(QMouseEvent *event)
 {
-    emit mouseReleased(event);
+    CustomMouseEvent customEvent;
+    customEvent.setMouseEvent(event);
+
+    emit mouseReleased(customEvent);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)
 {
-    emit mouseMoved(event);
+    CustomMouseEvent customEvent;
+    customEvent.setMouseEvent(event);
+    customEvent.setMouseGrabPosition(mMouseGrabPosition);
+
+    if (mMouseCaptured)
+    {
+        if (event->pos().x() == mMouseGrabPosition.x() && event->pos().y() == mMouseGrabPosition.y())
+        {
+            // DO NOT EMIT SIGNAL HERE
+        } else
+        {
+            emit mouseMoved(customEvent);
+        }
+
+        cursor().setPos(mapToGlobal(mMouseGrabPosition));
+    }
 }
 
 void Window::wheelEvent(QWheelEvent *event)
@@ -205,7 +237,9 @@ void Window::wheelEvent(QWheelEvent *event)
 
 void Window::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    emit mouseDoubleClicked(event);
+    CustomMouseEvent customEvent;
+    customEvent.setMouseEvent(event);
+    emit mouseDoubleClicked(customEvent);
 }
 
 bool Window::imguiWantCapture() const

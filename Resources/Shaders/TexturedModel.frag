@@ -26,16 +26,16 @@ out vec4 out_color;
 
 void main()
 {
-    // ambient
+    // Ambient
     vec3 ambient = light.ambient * texture(texture_diffuse, fs_texture_coord).rgb;
 
-    // diffuse
+    // Diffuse
     vec3 norm = normalize(fs_normal);
     vec3 lightDir = normalize(light.position - fs_position);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * texture(texture_diffuse, fs_texture_coord).rgb;
 
-    // specular
+    // Specular
     vec3 viewDir = normalize(camera_position - fs_position);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);

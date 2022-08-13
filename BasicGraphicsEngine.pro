@@ -23,6 +23,7 @@ HEADERS += \
     Camera.h \
     CameraManager.h \
     Controller.h \
+    CustomMouseEvent.h \
     DummyCamera.h \
     FreeCamera.h \
     Helper.h \
@@ -47,6 +48,7 @@ SOURCES += \
     Camera.cpp \
     CameraManager.cpp \
     Controller.cpp \
+    CustomMouseEvent.cpp \
     DummyCamera.cpp \
     FreeCamera.cpp \
     Helper.cpp \

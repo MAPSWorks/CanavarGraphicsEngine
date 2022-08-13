@@ -14,12 +14,17 @@ public:
 
     void onKeyPressed(QKeyEvent *event) override;
     void onKeyReleased(QKeyEvent *event) override;
-    void onMousePressed(QMouseEvent *event) override;
-    void onMouseReleased(QMouseEvent *event) override;
-    void onMouseMoved(QMouseEvent *event) override;
+    void onMousePressed(CustomMouseEvent event) override;
+    void onMouseReleased(CustomMouseEvent event) override;
+    void onMouseMoved(CustomMouseEvent event) override;
     void update(float ifps) override;
 
-public:
+    enum class Mode { //
+        RotateWhileMouseIsPressing,
+        RotateWhileMouseIsMoving
+    };
+
+private:
     QMap<Qt::Key, bool> mPressedKeys;
 
     float mMovementSpeed;
@@ -33,6 +38,8 @@ public:
 
     bool mUpdateRotation;
     bool mUpdatePosition;
+
+    Mode mMode;
 
     static const QMap<Qt::Key, QVector3D> KEY_BINDINGS;
 };

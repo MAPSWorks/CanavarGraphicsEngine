@@ -1,6 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "CustomMouseEvent.h"
+
 #include <QMatrix4x4>
 #include <QMouseEvent>
 #include <QTimer>
@@ -40,9 +42,9 @@ public:
 
     virtual void onKeyPressed(QKeyEvent *) = 0;
     virtual void onKeyReleased(QKeyEvent *) = 0;
-    virtual void onMousePressed(QMouseEvent *) = 0;
-    virtual void onMouseReleased(QMouseEvent *) = 0;
-    virtual void onMouseMoved(QMouseEvent *) = 0;
+    virtual void onMousePressed(CustomMouseEvent event) = 0;
+    virtual void onMouseReleased(CustomMouseEvent event) = 0;
+    virtual void onMouseMoved(CustomMouseEvent event) = 0;
     virtual void update(float) = 0;
 
 private:

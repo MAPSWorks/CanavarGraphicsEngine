@@ -2,11 +2,14 @@
 #include "FreeCamera.h"
 #include "Light.h"
 
+#include <QApplication>
 #include <QDebug>
 
-Controller::Controller(QObject *parent)
+Controller::Controller(QApplication *app, QObject *parent)
     : QObject(parent)
     , mPressedButton(Qt::NoButton)
+    , mApp(app)
+    , mMouseCaptured(false)
 {
     mRendererManager = RendererManager::instance();
     mCameraManager = CameraManager::instance();
@@ -24,6 +27,14 @@ Controller::Controller(QObject *parent)
     connect(mWindow, &Window::init, this, &Controller::init);
     connect(mWindow, &Window::render, this, &Controller::render);
     connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
+    connect(mWindow, &Window::mouseCaptured, this, [=](bool captured) {
+        mMouseCaptured = captured;
+
+        if (mMouseCaptured)
+            mApp->setOverrideCursor(QCursor(Qt::BlankCursor));
+        else
+            mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
+    });
 }
 
 void Controller::init()
@@ -104,17 +115,17 @@ void Controller::onWheelMoved(QWheelEvent *)
         return;
 }
 
-void Controller::onMousePressed(QMouseEvent *event)
+void Controller::onMousePressed(CustomMouseEvent event)
 {
     if (mWindow->imguiWantCapture())
         return;
 
-    mPressedButton = event->button();
+    mPressedButton = event.mouseEvent()->button();
 
     mCameraManager->onMousePressed(event);
 }
 
-void Controller::onMouseReleased(QMouseEvent *event)
+void Controller::onMouseReleased(CustomMouseEvent event)
 {
     if (mWindow->imguiWantCapture())
         return;
@@ -124,7 +135,7 @@ void Controller::onMouseReleased(QMouseEvent *event)
     mCameraManager->onMouseReleased(event);
 }
 
-void Controller::onMouseMoved(QMouseEvent *event)
+void Controller::onMouseMoved(CustomMouseEvent event)
 {
     if (mWindow->imguiWantCapture())
         return;
@@ -147,7 +158,7 @@ void Controller::onResized(int w, int h)
     mCamera->setAspectRatio((float) (w) / h);
 }
 
-void Controller::onMouseDoubleClicked(QMouseEvent *) {}
+void Controller::onMouseDoubleClicked(CustomMouseEvent) {}
 
 void Controller::render(float ifps)
 {
