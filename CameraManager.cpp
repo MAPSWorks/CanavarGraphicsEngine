@@ -45,19 +45,19 @@ void CameraManager::onKeyReleased(QKeyEvent *event)
         mActiveCamera->onKeyReleased(event);
 }
 
-void CameraManager::onMousePressed(CustomMouseEvent event)
+void CameraManager::onMousePressed(QMouseEvent *event)
 {
     if (mActiveCamera)
         mActiveCamera->onMousePressed(event);
 }
 
-void CameraManager::onMouseReleased(CustomMouseEvent event)
+void CameraManager::onMouseReleased(QMouseEvent *event)
 {
     if (mActiveCamera)
         mActiveCamera->onMouseReleased(event);
 }
 
-void CameraManager::onMouseMoved(CustomMouseEvent event)
+void CameraManager::onMouseMoved(QMouseEvent *event)
 {
     if (mActiveCamera)
         mActiveCamera->onMouseMoved(event);

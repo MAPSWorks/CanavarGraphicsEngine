@@ -1,7 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "CustomMouseEvent.h"
 #include "Light.h"
 #include "LightManager.h"
 #include "RendererManager.h"
@@ -24,12 +23,11 @@ signals:
     void render(float ifps);
     void keyPressed(QKeyEvent *);
     void keyReleased(QKeyEvent *);
-    void mousePressed(CustomMouseEvent);
-    void mouseReleased(CustomMouseEvent);
-    void mouseMoved(CustomMouseEvent);
+    void mousePressed(QMouseEvent *);
+    void mouseReleased(QMouseEvent *);
+    void mouseMoved(QMouseEvent *);
     void wheelMoved(QWheelEvent *);
-    void mouseDoubleClicked(CustomMouseEvent);
-    void mouseCaptured(bool captured);
+    void mouseDoubleClicked(QMouseEvent *);
 
 private:
     void initializeGL() override;
@@ -59,9 +57,5 @@ private:
 
     int mSelectedIndex;
     Model *mSelectedModel;
-
-    bool mMouseCaptured;
-
-    QPoint mMouseGrabPosition;
 };
 #endif // WINDOW_H

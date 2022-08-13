@@ -1,7 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "Camera.h"
+#include "FreeCamera.h"
 #include "RendererManager.h"
 #include "Window.h"
 
@@ -17,13 +17,13 @@ public:
 private slots:
     void init();
     void onWheelMoved(QWheelEvent *event);
-    void onMousePressed(CustomMouseEvent event);
-    void onMouseReleased(CustomMouseEvent event);
-    void onMouseMoved(CustomMouseEvent event);
+    void onMousePressed(QMouseEvent *event);
+    void onMouseReleased(QMouseEvent *event);
+    void onMouseMoved(QMouseEvent *event);
     void onKeyPressed(QKeyEvent *event);
     void onKeyReleased(QKeyEvent *event);
     void onResized(int w, int h);
-    void onMouseDoubleClicked(CustomMouseEvent event);
+    void onMouseDoubleClicked(QMouseEvent *event);
     void render(float ifps);
 
 private:
@@ -33,7 +33,7 @@ private:
     ModelManager *mModelManager;
     Window *mWindow;
 
-    Camera *mCamera;
+    FreeCamera *mCamera;
     Light *mLight;
 
     Model *mPlane;

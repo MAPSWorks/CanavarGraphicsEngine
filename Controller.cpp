@@ -27,27 +27,32 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mWindow, &Window::init, this, &Controller::init);
     connect(mWindow, &Window::render, this, &Controller::render);
     connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
-    connect(mWindow, &Window::mouseCaptured, this, [=](bool captured) {
-        mMouseCaptured = captured;
 
-        if (mMouseCaptured)
-            mApp->setOverrideCursor(QCursor(Qt::BlankCursor));
-        else
-            mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
-    });
-}
-
-void Controller::init()
-{
-    mRendererManager->init();
-
-    mCamera = new FreeCamera;
+    mCamera = new FreeCamera(mWindow);
     mCamera->setPosition(QVector3D(0, 10, 10));
     mCamera->setVerticalFov(60.0f);
     mCamera->setZNear(0.1f);
     mCamera->setZFar(10000.0f);
     mCameraManager->addCamera(mCamera);
     mCameraManager->setActiveCamera(mCamera);
+
+    connect(mCamera, &FreeCamera::mouseGrabbed, this, [=](bool grabbed) {
+        mMouseCaptured = grabbed;
+
+        if (mMouseCaptured)
+            mApp->setOverrideCursor(QCursor(Qt::BlankCursor));
+        else
+            mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
+    });
+
+    connect(mCamera, &FreeCamera::setCursorPosition, this, [=](QPointF position) { //
+        mWindow->cursor().setPos(mWindow->mapToGlobal(position.toPoint()));
+    });
+}
+
+void Controller::init()
+{
+    mRendererManager->init();
 
     mLight = new Light;
     mLight->setPosition(QVector3D(5, 20, 35));
@@ -115,17 +120,17 @@ void Controller::onWheelMoved(QWheelEvent *)
         return;
 }
 
-void Controller::onMousePressed(CustomMouseEvent event)
+void Controller::onMousePressed(QMouseEvent *event)
 {
     if (mWindow->imguiWantCapture())
         return;
 
-    mPressedButton = event.mouseEvent()->button();
+    mPressedButton = event->button();
 
     mCameraManager->onMousePressed(event);
 }
 
-void Controller::onMouseReleased(CustomMouseEvent event)
+void Controller::onMouseReleased(QMouseEvent *event)
 {
     if (mWindow->imguiWantCapture())
         return;
@@ -135,7 +140,7 @@ void Controller::onMouseReleased(CustomMouseEvent event)
     mCameraManager->onMouseReleased(event);
 }
 
-void Controller::onMouseMoved(CustomMouseEvent event)
+void Controller::onMouseMoved(QMouseEvent *event)
 {
     if (mWindow->imguiWantCapture())
         return;
@@ -158,7 +163,7 @@ void Controller::onResized(int w, int h)
     mCamera->setAspectRatio((float) (w) / h);
 }
 
-void Controller::onMouseDoubleClicked(CustomMouseEvent) {}
+void Controller::onMouseDoubleClicked(QMouseEvent *) {}
 
 void Controller::render(float ifps)
 {

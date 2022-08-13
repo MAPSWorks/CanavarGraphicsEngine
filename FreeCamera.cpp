@@ -15,6 +15,7 @@ FreeCamera::FreeCamera(QObject *parent)
     , mUpdateRotation(true)
     , mUpdatePosition(true)
     , mMode(Mode::RotateWhileMouseIsMoving)
+    , mMouseGrabbed(false)
 
 {
     mTransformation.setToIdentity();
@@ -32,47 +33,61 @@ void FreeCamera::onKeyReleased(QKeyEvent *event)
     mPressedKeys.insert((Qt::Key) event->key(), false);
 }
 
-void FreeCamera::onMousePressed(CustomMouseEvent event)
+void FreeCamera::onMousePressed(QMouseEvent *event)
 {
     switch (mMode)
     {
     case Mode::RotateWhileMouseIsPressing: {
-        mMousePreviousX = event.mouseEvent()->x();
-        mMousePreviousY = event.mouseEvent()->y();
+        mMousePreviousX = event->x();
+        mMousePreviousY = event->y();
         mMousePressed = true;
         break;
     }
     case Mode::RotateWhileMouseIsMoving: {
+        if (event->button() == Qt::LeftButton)
+        {
+            mMouseGrabbed = !mMouseGrabbed;
+            mMouseGrabPosition = QPointF(event->localPos().x(), event->localPos().y());
+            emit mouseGrabbed(mMouseGrabbed);
+        }
         break;
     }
     }
 }
 
-void FreeCamera::onMouseReleased(CustomMouseEvent)
+void FreeCamera::onMouseReleased(QMouseEvent *)
 {
     mMousePressed = false;
 }
 
-void FreeCamera::onMouseMoved(CustomMouseEvent event)
+void FreeCamera::onMouseMoved(QMouseEvent *event)
 {
     switch (mMode)
     {
     case Mode::RotateWhileMouseIsPressing: {
         if (mMousePressed)
         {
-            mMouseDeltaX += mMousePreviousX - event.mouseEvent()->x();
-            mMouseDeltaY += mMousePreviousY - event.mouseEvent()->y();
+            mMouseDeltaX += mMousePreviousX - event->x();
+            mMouseDeltaY += mMousePreviousY - event->y();
 
-            mMousePreviousX = event.mouseEvent()->x();
-            mMousePreviousY = event.mouseEvent()->y();
+            mMousePreviousX = event->x();
+            mMousePreviousY = event->y();
             mUpdateRotation = true;
         }
         break;
     }
     case Mode::RotateWhileMouseIsMoving: {
-        mMouseDeltaX += event.mouseGrabPosition().x() - event.mouseEvent()->x();
-        mMouseDeltaY += event.mouseGrabPosition().y() - event.mouseEvent()->y();
-        mUpdateRotation = true;
+        if (mMouseGrabbed)
+        {
+            if (mMouseGrabPosition.x() != event->localPos().x() && mMouseGrabPosition.y() != event->localPos().y())
+            {
+                mMouseDeltaX += mMouseGrabPosition.x() - event->localPos().x();
+                mMouseDeltaY += mMouseGrabPosition.y() - event->localPos().y();
+                mUpdateRotation = true;
+            }
+
+            emit setCursorPosition(mMouseGrabPosition);
+        }
     }
 
     break;

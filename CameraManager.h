@@ -2,7 +2,6 @@
 #define CAMERAMANAGER_H
 
 #include "Camera.h"
-#include "CustomMouseEvent.h"
 
 #include <QObject>
 
@@ -19,9 +18,9 @@ public:
 
     void onKeyPressed(QKeyEvent *event);
     void onKeyReleased(QKeyEvent *event);
-    void onMousePressed(CustomMouseEvent event);
-    void onMouseReleased(CustomMouseEvent event);
-    void onMouseMoved(CustomMouseEvent event);
+    void onMousePressed(QMouseEvent *event);
+    void onMouseReleased(QMouseEvent *event);
+    void onMouseMoved(QMouseEvent *event);
     void update(float ifps);
 
     QVector3D getViewDirection();

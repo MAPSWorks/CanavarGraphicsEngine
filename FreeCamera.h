@@ -14,15 +14,19 @@ public:
 
     void onKeyPressed(QKeyEvent *event) override;
     void onKeyReleased(QKeyEvent *event) override;
-    void onMousePressed(CustomMouseEvent event) override;
-    void onMouseReleased(CustomMouseEvent event) override;
-    void onMouseMoved(CustomMouseEvent event) override;
+    void onMousePressed(QMouseEvent *event) override;
+    void onMouseReleased(QMouseEvent *event) override;
+    void onMouseMoved(QMouseEvent *event) override;
     void update(float ifps) override;
 
     enum class Mode { //
         RotateWhileMouseIsPressing,
         RotateWhileMouseIsMoving
     };
+
+signals:
+    emit void mouseGrabbed(bool grabbed);
+    emit void setCursorPosition(QPointF mouseGrabPosition);
 
 private:
     QMap<Qt::Key, bool> mPressedKeys;
@@ -40,6 +44,9 @@ private:
     bool mUpdatePosition;
 
     Mode mMode;
+
+    bool mMouseGrabbed;
+    QPointF mMouseGrabPosition;
 
     static const QMap<Qt::Key, QVector3D> KEY_BINDINGS;
 };

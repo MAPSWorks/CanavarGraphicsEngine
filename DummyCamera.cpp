@@ -10,10 +10,10 @@ void DummyCamera::onKeyPressed(QKeyEvent *) {}
 
 void DummyCamera::onKeyReleased(QKeyEvent *) {}
 
-void DummyCamera::onMousePressed(CustomMouseEvent) {}
+void DummyCamera::onMousePressed(QMouseEvent *) {}
 
-void DummyCamera::onMouseReleased(CustomMouseEvent) {}
+void DummyCamera::onMouseReleased(QMouseEvent *) {}
 
-void DummyCamera::onMouseMoved(CustomMouseEvent) {}
+void DummyCamera::onMouseMoved(QMouseEvent *) {}
 
 void DummyCamera::update(float) {}
