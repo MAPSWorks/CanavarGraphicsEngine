@@ -3,6 +3,7 @@
 
 #include <QMatrix4x4>
 #include <QObject>
+#include <QOpenGLShaderProgram>
 
 class TexturedModelData;
 

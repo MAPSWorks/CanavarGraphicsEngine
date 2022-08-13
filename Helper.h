@@ -30,6 +30,8 @@ public:
 private:
     static Mesh *processMesh(aiMesh *aiMesh);
     static TexturedModelDataNode *processNode(TexturedModelData *data, aiNode *node);
+    static TexturedMaterial *processMaterial(aiMaterial *aiMaterial, const QString &directory);
+    static void processTexture(TexturedMaterial *material, aiMaterial *aiMaterial, aiTextureType aiType, Texture::Type type, const QString &directory);
     static QMatrix4x4 toQMatrix(const aiMatrix4x4 &matrix);
 };
 

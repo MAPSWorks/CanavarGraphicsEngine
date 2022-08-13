@@ -11,7 +11,7 @@ void TexturedModelData::addMesh(Mesh *mesh)
     mMeshes << mesh;
 }
 
-void TexturedModelData::addTextureMaterial(TextureMaterial *material)
+void TexturedModelData::addMaterial(TexturedMaterial *material)
 {
     material->setParent(this);
     mMaterials << material;
@@ -22,11 +22,6 @@ const QVector<Mesh *> &TexturedModelData::meshes() const
     return mMeshes;
 }
 
-const QVector<TextureMaterial *> &TexturedModelData::materials() const
-{
-    return mMaterials;
-}
-
 const QString &TexturedModelData::name() const
 {
     return mName;
@@ -35,6 +30,11 @@ const QString &TexturedModelData::name() const
 void TexturedModelData::render()
 {
     mRootNode->render();
+}
+
+const QVector<TexturedMaterial *> &TexturedModelData::materials() const
+{
+    return mMaterials;
 }
 
 TexturedModelDataNode *TexturedModelData::rootNode() const

@@ -17,8 +17,10 @@ bool ShaderManager::init()
 
     // Basic
     {
+        qInfo() << "BasicShader is initializing...";
+
         QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
-        mPrograms.insert(Shader::Basic, shader);
+        mPrograms.insert(Shader::BasicShader, shader);
 
         if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/Basic.vert")))
         {
@@ -63,15 +65,80 @@ bool ShaderManager::init()
         locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
         locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
 
-        //shader->bindAttributeLocation("position", 0);
-        //shader->bindAttributeLocation("normal", 1);
+        shader->bindAttributeLocation("position", 0);
+        shader->bindAttributeLocation("normal", 1);
 
         shader->release();
 
-        mLocations.insert(Shader::Basic, locations);
+        mLocations.insert(Shader::BasicShader, locations);
 
-        qInfo() << Q_FUNC_INFO << "BasicShader is initialized.";
-        qInfo() << Q_FUNC_INFO << "Uniform locations are:" << locations;
+        qInfo() << "BasicShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
+    }
+
+    // Textured Model
+    {
+        qInfo() << "TexturedModelShader is initializing...";
+
+        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
+        mPrograms.insert(Shader::TexturedModelShader, shader);
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/TexturedModel.vert")))
+        {
+            qWarning() << "Could not load vertex shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/TexturedModel.frag")))
+        {
+            qWarning() << "Could not load fragment shader.";
+            return false;
+        }
+
+        if (!shader->link())
+        {
+            qWarning() << "Could not link shader program.";
+            return false;
+        }
+
+        if (!shader->bind())
+        {
+            qWarning() << "Could not bind shader program.";
+            return false;
+        }
+
+        QMap<QString, GLuint> locations;
+
+        locations.insert("light.color", shader->uniformLocation("light.color"));
+        locations.insert("light.position", shader->uniformLocation("light.position"));
+        locations.insert("light.ambient", shader->uniformLocation("light.ambient"));
+        locations.insert("light.diffuse", shader->uniformLocation("light.diffuse"));
+        locations.insert("light.specular", shader->uniformLocation("light.specular"));
+
+        locations.insert("node.transformation", shader->uniformLocation("node.transformation"));
+        locations.insert("node.shininess", shader->uniformLocation("node.shininess"));
+
+        locations.insert("camera_position", shader->uniformLocation("camera_position"));
+        locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
+        locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
+
+        locations.insert("texture_diffuse", shader->uniformLocation("texture_diffuse"));
+        locations.insert("texture_specular", shader->uniformLocation("texture_specular"));
+
+        shader->bindAttributeLocation("position", 0);
+        shader->bindAttributeLocation("normal", 1);
+        shader->bindAttributeLocation("texture_coord", 2);
+        shader->bindAttributeLocation("tangent", 3);
+        shader->bindAttributeLocation("bitangent", 4);
+        shader->bindAttributeLocation("ids", 5);
+        shader->bindAttributeLocation("weights", 6);
+
+        shader->release();
+
+        mLocations.insert(Shader::TexturedModelShader, locations);
+
+        qInfo() << "TexturedModelShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
     }
     return true;
 }
@@ -88,6 +155,11 @@ void ShaderManager::release()
 }
 
 void ShaderManager::setUniformValue(const QString &name, int value)
+{
+    mPrograms.value(mActiveShader)->setUniformValue(mLocations.value(mActiveShader).value(name), value);
+}
+
+void ShaderManager::setUniformValue(const QString &name, unsigned int value)
 {
     mPrograms.value(mActiveShader)->setUniformValue(mLocations.value(mActiveShader).value(name), value);
 }

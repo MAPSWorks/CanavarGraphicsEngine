@@ -14,7 +14,8 @@ public:
 
     enum class Shader { //
         None,
-        Basic,
+        BasicShader,
+        TexturedModelShader
     };
 
     QOpenGLShaderProgram *getShader(Shader shader);
@@ -24,6 +25,7 @@ public:
     void release();
 
     void setUniformValue(const QString &name, int value);
+    void setUniformValue(const QString &name, unsigned int value);
     void setUniformValue(const QString &name, float value);
     void setUniformValue(const QString &name, const QVector3D &value);
     void setUniformValue(const QString &name, const QVector4D &value);

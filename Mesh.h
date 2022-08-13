@@ -1,12 +1,17 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include "ShaderManager.h"
+
 #include <QObject>
 #include <QOpenGLBuffer>
 #include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 #include <QVector2D>
 #include <QVector3D>
+
+class TexturedModelData;
 
 class Mesh : public QObject, protected QOpenGLFunctions
 {
@@ -23,6 +28,7 @@ public:
     };
 
     explicit Mesh(QObject *parent = nullptr);
+    virtual ~Mesh();
 
     void addVertex(const Vertex &vertex);
     void addIndex(unsigned int index);
@@ -36,6 +42,9 @@ public:
     const QString &name() const;
     void setName(const QString &newName);
 
+    TexturedModelData *data() const;
+    void setData(TexturedModelData *newData);
+
 private:
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;
@@ -46,6 +55,9 @@ private:
     QOpenGLVertexArrayObject mVertexArray;
     unsigned int mEBO;
     unsigned int mVBO;
+
+    TexturedModelData *mData;
+    ShaderManager *mShaderManager;
 };
 
 #endif // MESH_H

@@ -1,9 +1,11 @@
 #include "Mesh.h"
-#include "qdebug.h"
+#include "TexturedModelData.h"
 
 Mesh::Mesh(QObject *parent)
-    : QObject{parent}
-{}
+    : QObject(parent)
+{
+    mShaderManager = ShaderManager::instance();
+}
 
 Mesh::~Mesh()
 {
@@ -89,9 +91,29 @@ bool Mesh::create()
 
 void Mesh::render()
 {
+    auto materials = mData->materials();
+    auto textures = materials[mMaterialIndex]->textures();
+
+    for (int i = 0; i < textures.size(); i++)
+    {
+        if (textures[i]->type() == Texture::Type::Diffuse)
+            mShaderManager->setUniformValue("texture_diffuse", i);
+        else if (textures[i]->type() == Texture::Type::Specular)
+            mShaderManager->setUniformValue("texture_specular", i);
+        else if (textures[i]->type() == Texture::Type::Ambient)
+            mShaderManager->setUniformValue("texture_ambient", i);
+        else if (textures[i]->type() == Texture::Type::Height)
+            mShaderManager->setUniformValue("texture_height", i);
+
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, textures[i]->id());
+    }
+
     mVertexArray.bind();
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
     mVertexArray.release();
+
+    glActiveTexture(GL_TEXTURE0);
 }
 
 const QString &Mesh::name() const
@@ -103,4 +125,14 @@ void Mesh::setName(const QString &newName)
 {
     setObjectName(newName);
     mName = newName;
+}
+
+TexturedModelData *Mesh::data() const
+{
+    return mData;
+}
+
+void Mesh::setData(TexturedModelData *newData)
+{
+    mData = newData;
 }

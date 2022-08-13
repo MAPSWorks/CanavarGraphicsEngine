@@ -67,7 +67,6 @@ bool RendererManager::init()
 
     for (const auto &dirName : qAsConst(dirs))
     {
-        qDebug() << dirName;
         TexturedModelData *data = Helper::loadTexturedModel(dirName, //
                                                             "Resources/Objects/" + dirName + "/" + dirName + ".obj");
 
@@ -117,7 +116,7 @@ void RendererManager::renderModels(float ifps)
 {
     Q_UNUSED(ifps);
 
-    mShaderManager->bind(ShaderManager::Shader::Basic);
+    mShaderManager->bind(ShaderManager::Shader::BasicShader);
 
     if (mCamera)
     {
@@ -164,7 +163,7 @@ void RendererManager::renderTexturedModels(float ifps)
 {
     Q_UNUSED(ifps);
 
-    mShaderManager->bind(ShaderManager::Shader::Basic);
+    mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
 
     if (mCamera)
     {
@@ -189,11 +188,7 @@ void RendererManager::renderTexturedModels(float ifps)
         if (data)
         {
             mShaderManager->setUniformValue("node.transformation", model->transformation());
-            mShaderManager->setUniformValue("node.color", QVector4D(1, 1, 1, 1));
-            mShaderManager->setUniformValue("node.ambient", 0.25f);
-            mShaderManager->setUniformValue("node.diffuse", 0.75f);
-            mShaderManager->setUniformValue("node.specular", 0.25f);
-            mShaderManager->setUniformValue("node.shininess", 32.0f);
+            mShaderManager->setUniformValue("node.shininess", model->shininess());
 
             data->render();
         }

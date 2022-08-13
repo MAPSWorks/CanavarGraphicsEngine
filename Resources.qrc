@@ -15,5 +15,7 @@
         <file>Resources/Models/TorusKnot.obj</file>
         <file>Resources/Shaders/Basic.frag</file>
         <file>Resources/Shaders/Basic.vert</file>
+        <file>Resources/Shaders/TexturedModel.frag</file>
+        <file>Resources/Shaders/TexturedModel.vert</file>
     </qresource>
 </RCC>

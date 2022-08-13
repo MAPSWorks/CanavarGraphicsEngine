@@ -36,7 +36,8 @@ HEADERS += \
     Node.h \
     RendererManager.h \
     ShaderManager.h \
-    TextureMaterial.h \
+    Texture.h \
+    TexturedMaterial.h \
     TexturedModel.h \
     TexturedModelData.h \
     TexturedModelDataNode.h \
@@ -60,7 +61,8 @@ SOURCES += \
     Node.cpp \
     RendererManager.cpp \
     ShaderManager.cpp \
-    TextureMaterial.cpp \
+    Texture.cpp \
+    TexturedMaterial.cpp \
     TexturedModel.cpp \
     TexturedModelData.cpp \
     TexturedModelDataNode.cpp \

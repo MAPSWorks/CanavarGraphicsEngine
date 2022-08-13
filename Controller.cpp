@@ -70,6 +70,7 @@ void Controller::init()
 
     mBackpack = new TexturedModel("backpack");
     mBackpack->setPosition(QVector3D(-5, 5, -5));
+    mBackpack->setShininess(1.0f);
     mModelManager->addTexturedModel(mBackpack);
 
     mCyborg = new TexturedModel("cyborg");

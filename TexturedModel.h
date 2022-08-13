@@ -10,8 +10,12 @@ public:
 
     const QString &name() const;
 
+    float shininess() const;
+    void setShininess(float newShininess);
+
 private:
     QString mName;
+    float mShininess;
 };
 
 #endif // TEXTUREDMODEL_H
