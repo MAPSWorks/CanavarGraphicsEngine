@@ -1,6 +1,8 @@
 #ifndef AIRCRAFT_H
 #define AIRCRAFT_H
 
+#include "Converter.h"
+
 #include <QObject>
 #include <QThread>
 #include <QTimer>
@@ -76,7 +78,7 @@ private:
     JSBSim::FGPropagate *mPropagate;
     JSBSim::FGPropulsion *mPropulsion;
     JSBSim::FGAuxiliary *mAuxiliary;
-    QVector3D mReferencePosition;
+    Converter *mConverter;
 
     QThread mThread;
     QTimer mTimer;

@@ -38,6 +38,7 @@ HEADERS += \
     ShaderManager.h \
     Simulator/Aircraft.h \
     Simulator/AircraftController.h \
+    Simulator/Converter.h \
     Texture.h \
     TexturedMaterial.h \
     TexturedModel.h \
@@ -65,6 +66,7 @@ SOURCES += \
     ShaderManager.cpp \
     Simulator/Aircraft.cpp \
     Simulator/AircraftController.cpp \
+    Simulator/Converter.cpp \
     Texture.cpp \
     TexturedMaterial.cpp \
     TexturedModel.cpp \

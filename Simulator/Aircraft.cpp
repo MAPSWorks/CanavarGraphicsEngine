@@ -6,17 +6,7 @@
 
 Aircraft::Aircraft(QObject *parent)
     : QObject(parent)
-{
-    double lat = qDegreesToRadians(0.0);
-    double lon = 0;
-    double r = 6378137.05;
-    double h = 0;
-    float x = (r + h) * cos(lat) * cos(lon);
-    float y = (r + h) * cos(lat) * sin(lon);
-    float z = (r + h) * sin(lat);
-
-    mReferencePosition = QVector3D(x, y, z);
-}
+{}
 
 bool Aircraft::init()
 {
@@ -48,6 +38,11 @@ bool Aircraft::init()
     mPropulsion = mExecutor->GetPropulsion();
     mAuxiliary = mExecutor->GetAuxiliary();
     mExecutor->Setdt(0.01);
+
+    double latitude = mExecutor->GetIC()->GetLatitudeDegIC();
+    double longitude = mExecutor->GetIC()->GetLongitudeDegIC();
+
+    mConverter = new Converter(latitude, longitude, 0.0);
 
     moveToThread(&mThread);
     mThread.start();
@@ -143,35 +138,11 @@ void Aircraft::tick()
     pfd.longitude = mPropagate->GetLongitudeDeg();
     pfd.altitude = 0.3048 * mPropagate->GetGeodeticAltitude();
 
-    QQuaternion ecefToLocal = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 90 - pfd.latitude) * //
-                              QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), pfd.longitude);
+    JSBSim::FGQuaternion rotation = mPropagate->GetQuaternion();
+    QQuaternion localToBody = QQuaternion(rotation(1), rotation(2), rotation(3), rotation(4));
 
-    {
-        JSBSim::FGQuaternion rotation = mPropagate->GetQuaternion();
-        QQuaternion localToBody = QQuaternion(rotation(1), rotation(2), rotation(3), rotation(4));
-
-        float x;
-        float y;
-        float z;
-        float angle;
-        localToBody.getAxisAndAngle(&x, &y, &z, &angle);
-
-        pfd.rotation = QQuaternion::fromAxisAndAngle(QVector3D(y, -z, -x), angle);
-    }
-
-    {
-        double lat = mPropagate->GetLatitude();
-        double lon = mPropagate->GetLongitude();
-        double r = 6378137.05;
-        double h = pfd.altitude;
-        float x = (r + h) * cos(lat) * cos(lon);
-        float y = (r + h) * cos(lat) * sin(lon);
-        float z = (r + h) * sin(lat);
-
-        QVector3D ecef = ecefToLocal.inverted() * (QVector3D(x, y, z) - mReferencePosition);
-
-        pfd.position = QVector3D(ecef.y(), ecef.z(), ecef.x());
-    }
+    pfd.rotation = mConverter->toOpenGL(pfd.latitude, pfd.longitude, localToBody);
+    pfd.position = mConverter->toOpenGL(pfd.latitude, pfd.longitude, pfd.altitude);
 
     emit pfdChanged(pfd);
 }
