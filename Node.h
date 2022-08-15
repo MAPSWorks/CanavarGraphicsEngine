@@ -9,11 +9,10 @@
 class Node : public QObject
 {
     Q_OBJECT
-protected:
+public:
     explicit Node(QObject *parent = nullptr);
     virtual ~Node();
 
-public:
     virtual QMatrix4x4 transformation() const;
     virtual QMatrix4x4 worldTransformation() const;
 

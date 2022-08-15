@@ -17,20 +17,20 @@ signals:
     void activeChanged(bool active);
 
 public:
-    virtual float verticalFov() const;
-    virtual void setVerticalFov(float newVerticalFov);
+    float verticalFov() const;
+    void setVerticalFov(float newVerticalFov);
 
-    virtual float horizontalFov() const;
-    virtual void setHorizontalFov(float newHorizontalFov);
+    float horizontalFov() const;
+    void setHorizontalFov(float newHorizontalFov);
 
-    virtual float aspectRatio() const;
-    virtual void setAspectRatio(float newAspectRatio);
+    float aspectRatio() const;
+    void setAspectRatio(float newAspectRatio);
 
-    virtual float zNear() const;
-    virtual void setZNear(float newZNear);
+    float zNear() const;
+    void setZNear(float newZNear);
 
-    virtual float zFar() const;
-    virtual void setZFar(float newZFar);
+    float zFar() const;
+    void setZFar(float newZFar);
 
     virtual QMatrix4x4 transformation() const override;
     virtual QMatrix4x4 worldTransformation() const override;

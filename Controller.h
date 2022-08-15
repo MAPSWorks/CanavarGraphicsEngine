@@ -4,16 +4,20 @@
 #include "DummyCamera.h"
 #include "FreeCamera.h"
 #include "RendererManager.h"
+#include "Simulator/AircraftController.h"
 #include "TexturedModel.h"
 #include "Window.h"
 
 #include <QObject>
+
+#include <Simulator/Aircraft.h>
 
 class Controller : public QObject
 {
     Q_OBJECT
 public:
     explicit Controller(QApplication *app, QObject *parent = nullptr);
+    ~Controller();
     void run();
 
 private slots:
@@ -52,10 +56,15 @@ private:
     TexturedModel *mPlanet;
     TexturedModel *mRock;
     TexturedModel *mF16;
+    Node *mRootF16Node;
 
     QApplication *mApp;
 
     bool mMouseCaptured;
+
+    Aircraft *mAircraft;
+    AircraftController *mAircraftController;
+    Aircraft::PrimaryFlightData mPfd;
 };
 
 #endif // CONTROLLER_H

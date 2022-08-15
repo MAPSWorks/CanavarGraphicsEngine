@@ -248,7 +248,7 @@ void Helper::processTexture(TexturedMaterial *material, aiMaterial *aiMaterial, 
         texture->create();
         material->addTexture(texture);
 
-        qInfo() << "Texture" << texture->path() << "is loaded and created. ID is" << texture->id();
+        //qInfo() << "Texture" << texture->path() << "is loaded and created. ID is" << texture->id();
     }
 }
 

@@ -17,6 +17,14 @@ Controller::Controller(QApplication *app, QObject *parent)
     mNodeManager = NodeManager::instance();
     mWindow = new Window;
 
+    mAircraft = new Aircraft;
+    mAircraftController = new AircraftController(mAircraft);
+    mAircraftController->init();
+    mAircraft->init();
+
+    connect(
+        mAircraft, &Aircraft::pfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
+
     connect(mWindow, &Window::wheelMoved, this, &Controller::onWheelMoved);
     connect(mWindow, &Window::mousePressed, this, &Controller::onMousePressed);
     connect(mWindow, &Window::mouseReleased, this, &Controller::onMouseReleased);
@@ -50,15 +58,22 @@ Controller::Controller(QApplication *app, QObject *parent)
     });
 }
 
+Controller::~Controller()
+{
+    qDebug() << thread() << "Controller is being deleted...";
+    mAircraft->stop();
+}
+
 void Controller::init()
 {
     mRendererManager->init();
 
     mDummyCamera = new DummyCamera;
-    mDummyCamera->setPosition(QVector3D(0, 0, 3));
+    mDummyCamera->setPosition(QVector3D(0, 6, -14));
     mDummyCamera->setVerticalFov(80.0f);
     mDummyCamera->setZNear(0.1f);
-    mDummyCamera->setZFar(10000.0f);
+    mDummyCamera->setZFar(100000.0f);
+    mDummyCamera->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
     mCameraManager->addCamera(mDummyCamera);
 
     mLight = new Light;
@@ -71,8 +86,20 @@ void Controller::init()
     mPlane->setType(Model::Plane);
     mPlane->setName("Plane");
     mPlane->setPosition(QVector3D(0, 0, 0));
-    mPlane->setScale(QVector3D(10.0f, 10.0f, 10.0f));
+    mPlane->setScale(QVector3D(100.0f, 100.0f, 100.0f));
     mNodeManager->addNode(mPlane);
+
+    for (int i = -10000; i < 10000; i += 400)
+    {
+        for (int j = -10000; j < 10000; j += 400)
+        {
+            Model *cube = new Model;
+            cube->setType(Model::Cube);
+            cube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
+            cube->setPosition(QVector3D(i, 1, j));
+            mPlane->addChild(cube);
+        }
+    }
 
     // Suzanne
     mSuzanne = new Model;
@@ -80,13 +107,12 @@ void Controller::init()
     mSuzanne->setName("Suzanne");
     mSuzanne->setPosition(QVector3D(0, 0, 0));
 
-    mSuzanne->addChild(mDummyCamera);
-
     // Cube
     mCube = new Model;
     mCube->setType(Model::Cube);
-    mCube->setName("Cube");
     mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
+    mCube->setName("Cube");
+
     mCube->setPosition(QVector3D(0, 0, 0));
     mNodeManager->addNode(mCube);
     mCube->addChild(mSuzanne);
@@ -113,8 +139,13 @@ void Controller::init()
     mNodeManager->addNode(mRock);
 
     mF16 = new TexturedModel("f16");
-    mF16->setPosition(QVector3D(15, 15, 15));
-    mNodeManager->addNode(mF16);
+    mF16->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
+    mF16->setPosition(QVector3D(0, -3.5, 0));
+    mF16->addChild(mDummyCamera);
+
+    mRootF16Node = new Node;
+    mRootF16Node->addChild(mF16);
+    mNodeManager->addNode(mRootF16Node);
 }
 
 void Controller::run()
@@ -178,11 +209,15 @@ void Controller::onKeyPressed(QKeyEvent *event)
     {
         mCameraManager->onKeyPressed(event);
     }
+
+    mAircraftController->onKeyPressed(event);
 }
 
 void Controller::onKeyReleased(QKeyEvent *event)
 {
     mCameraManager->onKeyReleased(event);
+
+    mAircraftController->onKeyReleased(event);
 }
 
 void Controller::onResized(int w, int h)
@@ -194,6 +229,9 @@ void Controller::onMouseDoubleClicked(QMouseEvent *) {}
 
 void Controller::render(float ifps)
 {
+    mRootF16Node->setRotation(mPfd.rotation);
+    mRootF16Node->setPosition(mPfd.position);
+
     mCameraManager->update(ifps);
     mRendererManager->render(ifps);
 }

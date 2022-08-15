@@ -36,6 +36,8 @@ HEADERS += \
     NodeManager.h \
     RendererManager.h \
     ShaderManager.h \
+    Simulator/Aircraft.h \
+    Simulator/AircraftController.h \
     Texture.h \
     TexturedMaterial.h \
     TexturedModel.h \
@@ -61,6 +63,8 @@ SOURCES += \
     NodeManager.cpp \
     RendererManager.cpp \
     ShaderManager.cpp \
+    Simulator/Aircraft.cpp \
+    Simulator/AircraftController.cpp \
     Texture.cpp \
     TexturedMaterial.cpp \
     TexturedModel.cpp \
@@ -74,4 +78,11 @@ DEPENDPATH += $$PWD/Dependencies/Assimp/include
 
 LIBS += -L$$PWD/Dependencies/Assimp/lib/ -lassimp-vc142-mt
 
+LIBS += -L$$PWD/Dependencies/JSBSim/lib/ -lJSBSim
+LIBS += -lws2_32
 
+INCLUDEPATH += $$PWD/Dependencies/JSBSim/include
+DEPENDPATH += $$PWD/Dependencies/JSBSim/include
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/Dependencies/JSBSim/lib/JSBSim.lib
+else:win32-g++: PRE_TARGETDEPS += $$PWD/Dependencies/JSBSim/lib/libJSBSim.a

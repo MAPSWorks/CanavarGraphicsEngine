@@ -39,7 +39,7 @@ void Mesh::setMaterialIndex(int newMaterialIndex)
 
 bool Mesh::create()
 {
-    qInfo() << Q_FUNC_INFO << "Creating VAO for mesh [" << mName << "] of model [" << parent()->objectName() << "]...";
+    //qInfo() << Q_FUNC_INFO << "Creating VAO for mesh [" << mName << "] of model [" << parent()->objectName() << "]...";
 
     initializeOpenGLFunctions();
 
