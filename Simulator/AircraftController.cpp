@@ -26,10 +26,7 @@ void AircraftController::onKeyReleased(QKeyEvent *event)
 
 void AircraftController::init()
 {
-    emit command(Aircraft::Command::Resume);
-    emit command(Aircraft::Command::InitRunning, 0);
-    emit command(Aircraft::Command::Mixture, 1);
-    emit command(Aircraft::Command::Throttle, 1);
+    emit command(Aircraft::Command::Hold);
 
     mTimer.start(10);
 }
@@ -40,6 +37,10 @@ void AircraftController::tick()
         mElevator += 0.025;
     else if (mPressedKeys.value(Qt::Key_Down))
         mElevator -= 0.025;
+    else if (mElevator < -0.025)
+        mElevator += 0.025;
+    else if (mElevator > 0.025)
+        mElevator -= 0.025;
     else
         mElevator = 0.0;
 
@@ -47,6 +48,10 @@ void AircraftController::tick()
         mAileron -= 0.025;
     else if (mPressedKeys.value(Qt::Key_Right))
         mAileron += 0.025;
+    else if (mAileron < -0.025)
+        mAileron += 0.025;
+    else if (mAileron > 0.025)
+        mAileron -= 0.025;
     else
         mAileron = 0.0;
 
@@ -54,14 +59,18 @@ void AircraftController::tick()
         mRudder += 0.025;
     else if (mPressedKeys.value(Qt::Key_C))
         mRudder -= 0.025;
+    else if (mRudder < -0.025)
+        mRudder += 0.025;
+    else if (mRudder > 0.025)
+        mRudder -= 0.025;
     else
         mRudder = 0.0;
 
     if (mPressedKeys.value(Qt::Key_Plus))
-        mThrottle += 0.025;
+        mThrottle += 0.01;
 
     if (mPressedKeys.value(Qt::Key_Minus))
-        mThrottle -= 0.025;
+        mThrottle -= 0.01;
 
     mElevator = qBound(-1.0, mElevator, 1.0);
     mAileron = qBound(-1.0, mAileron, 1.0);
@@ -72,6 +81,29 @@ void AircraftController::tick()
     emit command(Aircraft::Command::Aileron, mAileron);
     emit command(Aircraft::Command::Rudder, mRudder);
     emit command(Aircraft::Command::Throttle, mThrottle);
+}
 
-    qDebug() << mElevator << mThrottle << mPfd.position << mPfd.altitude << mPfd.latitude << mPfd.longitude;
+double AircraftController::throttle() const
+{
+    return mThrottle;
+}
+
+bool AircraftController::holding() const
+{
+    return mAircraft->holding();
+}
+
+double AircraftController::rudder() const
+{
+    return mRudder;
+}
+
+double AircraftController::elevator() const
+{
+    return mElevator;
+}
+
+double AircraftController::aileron() const
+{
+    return mAileron;
 }

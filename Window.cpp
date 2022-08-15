@@ -46,6 +46,11 @@ void Window::paintGL()
     mActiveLight = mLightManager->activeLight();
     mNodes = mNodeManager->nodes();
 
+    mAileron = mAircraftController->aileron();
+    mElevator = mAircraftController->elevator();
+    mRudder = mAircraftController->rudder();
+    mThrottle = mAircraftController->throttle();
+
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
     mPreviousTime = mCurrentTime;
@@ -189,6 +194,38 @@ void Window::paintGL()
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
+    // Simulator
+    {
+        ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Simulator", NULL, ImGuiWindowFlags_MenuBar);
+
+        ImGui::BeginDisabled();
+
+        ImGui::SliderFloat("Elevator", &mElevator, -1.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Aileron", &mAileron, -1.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Rudder", &mRudder, -1.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Throttle", &mThrottle, 0.0f, 1.0f, "%.3f");
+
+        ImGui::EndDisabled();
+
+        if (ImGui::Button("Init Running"))
+            emit command(Aircraft::Command::InitRunning);
+
+        if (ImGui::Button("Hold"))
+            emit command(Aircraft::Command::Hold);
+
+        if (ImGui::Button("Resume"))
+            emit command(Aircraft::Command::Resume);
+
+        ImGui::Text("Airspeed:    %.2f knots", mPfd.airspeed);
+        ImGui::Text("Latitude:    %.6f °", mPfd.latitude);
+        ImGui::Text("Longitude:   %.6f °", mPfd.longitude);
+        ImGui::Text("Altitude:    %.2f meters", mPfd.altitude);
+        ImGui::Text("Roll:        %.1f °", mPfd.roll);
+        ImGui::Text("Pitch:       %.1f °", mPfd.pitch);
+        ImGui::Text("Heading:     %.1f °", mPfd.heading);
+    }
+
     glViewport(0, 0, width(), height());
     ImGui::Render();
     QtImGui::render();
@@ -242,6 +279,16 @@ void Window::populateComboBox(Node *node)
 
     for (auto child : node->children())
         populateComboBox(child);
+}
+
+void Window::setAircraftController(AircraftController *newAircraftController)
+{
+    mAircraftController = newAircraftController;
+}
+
+void Window::onPfdChanged(Aircraft::PrimaryFlightData pfd)
+{
+    mPfd = pfd;
 }
 
 bool Window::imguiWantCapture() const

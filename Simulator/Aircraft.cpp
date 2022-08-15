@@ -155,3 +155,8 @@ void Aircraft::stop()
 
     qDebug() << thread() << "Aircraft is stopped.";
 }
+
+bool Aircraft::holding() const
+{
+    return mExecutor->Holding();
+}

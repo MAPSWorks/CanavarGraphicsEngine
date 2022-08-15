@@ -22,8 +22,12 @@ Controller::Controller(QApplication *app, QObject *parent)
     mAircraftController->init();
     mAircraft->init();
 
+    mWindow->setAircraftController(mAircraftController);
+
     connect(
         mAircraft, &Aircraft::pfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
+
+    connect(mAircraft, &Aircraft::pfdChanged, mWindow, &Window::onPfdChanged, Qt::QueuedConnection);
 
     connect(mWindow, &Window::wheelMoved, this, &Controller::onWheelMoved);
     connect(mWindow, &Window::mousePressed, this, &Controller::onMousePressed);
@@ -35,6 +39,7 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mWindow, &Window::init, this, &Controller::init);
     connect(mWindow, &Window::render, this, &Controller::render);
     connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
+    connect(mWindow, &Window::command, mAircraft, &Aircraft::onCommand);
 
     mFreeCamera = new FreeCamera;
     mFreeCamera->setPosition(QVector3D(0, 10, 10));
@@ -150,10 +155,10 @@ void Controller::init()
 
 void Controller::run()
 {
-    // mWindow->showMaximized();
-    // mWindow->showFullScreen();
-    mWindow->resize(1280, 800);
-    mWindow->show();
+    mWindow->showMaximized();
+    mWindow->showFullScreen();
+    //    mWindow->resize(1280, 800);
+    //    mWindow->show();
 }
 
 void Controller::onWheelMoved(QWheelEvent *)

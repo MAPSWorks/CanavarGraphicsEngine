@@ -16,6 +16,12 @@ public:
     void onKeyPressed(QKeyEvent *);
     void onKeyReleased(QKeyEvent *);
 
+    double aileron() const;
+    double elevator() const;
+    double rudder() const;
+    double throttle() const;
+    bool holding() const;
+
 signals:
     void command(Aircraft::Command command, QVariant variant = QVariant());
 

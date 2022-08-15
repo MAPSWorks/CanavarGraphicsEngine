@@ -4,6 +4,7 @@
 #include "Light.h"
 #include "LightManager.h"
 #include "RendererManager.h"
+#include "Simulator/AircraftController.h"
 
 #include <QOpenGLFunctionsPrivate>
 #include <QOpenGLWindow>
@@ -17,6 +18,11 @@ public:
 
     bool imguiWantCapture() const;
 
+    void setAircraftController(AircraftController *newAircraftController);
+
+public slots:
+    void onPfdChanged(Aircraft::PrimaryFlightData pfd);
+
 signals:
     void init();
     void resized(int w, int h);
@@ -28,6 +34,7 @@ signals:
     void mouseMoved(QMouseEvent *);
     void wheelMoved(QWheelEvent *);
     void mouseDoubleClicked(QMouseEvent *);
+    void command(Aircraft::Command command, QVariant variant = QVariant());
 
 private:
     void initializeGL() override;
@@ -58,5 +65,12 @@ private:
     QList<Node *> mNodes;
 
     Node *mSelectedNode;
+
+    AircraftController *mAircraftController;
+    float mAileron;  // [-1, 1]
+    float mElevator; // [-1, 1]
+    float mRudder;   // [-1, 1]
+    float mThrottle; // [0, 1]
+    Aircraft::PrimaryFlightData mPfd;
 };
 #endif // WINDOW_H
