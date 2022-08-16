@@ -5,6 +5,7 @@ DirectionalLight::DirectionalLight(QObject *parent)
     , mDirection(0, -1, 0)
 
 {
+    mAmbient = 0.8f;
     mDiffuse = 0.5f;
     mNodeType = Node::NodeType::DirectionalLight;
 
