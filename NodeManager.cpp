@@ -9,8 +9,8 @@ void NodeManager::addNode(Node *node)
 {
     mNodes << node;
 
-    if (node->name().isEmpty())
-        node->setName(QString("Node #%1").arg(mNumberOfNodes));
+    if (node->name().simplified().isEmpty())
+        node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
 
     mNumberOfNodes++;
 }

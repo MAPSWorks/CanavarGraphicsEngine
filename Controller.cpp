@@ -129,11 +129,13 @@ void Controller::init()
     mNodeManager->addNode(mRock);
 
     mF16 = new TexturedModel("f16");
+    mF16->setName("f16");
     mF16->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
     mF16->setPosition(QVector3D(0, -3.5, 0));
     mF16->addChild(mDummyCamera);
 
     mRootF16Node = new Node;
+    mRootF16Node->setName("f16_root_node");
     mRootF16Node->addChild(mF16);
     mNodeManager->addNode(mRootF16Node);
 }

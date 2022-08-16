@@ -18,6 +18,8 @@ FreeCamera::FreeCamera(QObject *parent)
     , mMouseGrabbed(false)
 
 {
+    mNodeType = Node::NodeType::FreeCamera;
+
     connect(this, &Camera::activeChanged, this, [=](bool active) {
         if (!active)
         {

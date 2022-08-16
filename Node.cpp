@@ -4,6 +4,7 @@ Node::Node(QObject *parent)
     : QObject{parent}
     , mPosition(0, 0, 0)
     , mScale(1, 1, 1)
+    , mNodeType(NodeType::DummyNode)
 
 {}
 
@@ -143,4 +144,32 @@ void Node::removeChild(Node *child)
 const QList<Node *> &Node::children() const
 {
     return mChildren;
+}
+
+Node::NodeType Node::nodeType() const
+{
+    return mNodeType;
+}
+
+QString Node::nodeTypeString()
+{
+    switch (mNodeType)
+    {
+    case NodeType::DummyNode:
+        return "DummyNode";
+    case NodeType::Model:
+        return "Model";
+    case NodeType::TexturedModel:
+        return "Textured Model";
+    case NodeType::FreeCamera:
+        return "Free Camera";
+    case NodeType::DummyCamera:
+        return "Dummy Camera";
+    case NodeType::DirectionalLight:
+        return "Directional Light";
+    case NodeType::PointLight:
+        return "Point Light";
+    case NodeType::SpotLight:
+        return "Spot Light";
+    }
 }

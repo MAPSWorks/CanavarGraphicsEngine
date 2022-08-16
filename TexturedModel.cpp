@@ -4,7 +4,9 @@ TexturedModel::TexturedModel(const QString &modelName, QObject *parent)
     : Node(parent)
     , mShininess(32.0f)
     , mModelName(modelName)
-{}
+{
+    mNodeType = Node::NodeType::TexturedModel;
+}
 
 float TexturedModel::shininess() const
 {

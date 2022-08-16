@@ -2,7 +2,9 @@
 
 DummyCamera::DummyCamera(QObject *parent)
     : Camera(parent)
-{}
+{
+    mNodeType = Node::NodeType::DummyCamera;
+}
 
 DummyCamera::~DummyCamera() {}
 

@@ -2,7 +2,9 @@
 
 Model::Model(QObject *parent)
     : Node(parent)
-{}
+{
+    mNodeType = Node::NodeType::Model;
+}
 
 Model::~Model() {}
 

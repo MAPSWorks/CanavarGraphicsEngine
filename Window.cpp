@@ -140,45 +140,81 @@ void Window::paintGL()
             ImGui::EndCombo();
         }
 
-        // Position
+        // Metadata
+        if (mSelectedNode)
         {
-            ImGui::BeginDisabled(mSelectedNode == nullptr);
+            ImGui::Text("Type: %s", mSelectedNode->nodeTypeString().toStdString().c_str());
+            ImGui::Text("Parent: 0x%p", static_cast<void *>(mSelectedNode->parent()));
+        }
 
-            ImGui::Text("Position:");
-            QVector3D position = mSelectedNode ? mSelectedNode->position() : QVector3D();
-            float x = position.x();
-            float y = position.y();
-            float z = position.z();
+        // Position
+        if (mSelectedNode)
+        {
+            {
+                ImGui::Text("Position:");
+                QVector3D position = mSelectedNode->position();
+                float x = position.x();
+                float y = position.y();
+                float z = position.z();
 
-            if (ImGui::SliderFloat("x##Node", &x, -20.0f, 20.0f, "%.3f"))
-                mSelectedNode->setPosition(QVector3D(x, y, z));
-            if (ImGui::SliderFloat("y##Node", &y, -20.0f, 20.0f, "%.3f"))
-                mSelectedNode->setPosition(QVector3D(x, y, z));
-            if (ImGui::SliderFloat("z##Node", &z, -20.0f, 20.0f, "%.3f"))
-                mSelectedNode->setPosition(QVector3D(x, y, z));
+                if (ImGui::SliderFloat("x##NodePosition", &x, -100.0f, 100.0f, "%.3f"))
+                    mSelectedNode->setPosition(QVector3D(x, y, z));
+                if (ImGui::SliderFloat("y##NodePosition", &y, -100.0f, 100.0f, "%.3f"))
+                    mSelectedNode->setPosition(QVector3D(x, y, z));
+                if (ImGui::SliderFloat("z##NodePosition", &z, -100.0f, 100.0f, "%.3f"))
+                    mSelectedNode->setPosition(QVector3D(x, y, z));
+            }
 
-            ImGui::EndDisabled();
+            {
+                ImGui::Text("World Position:");
+                QVector3D worldPosition = mSelectedNode->worldPosition();
+                float x = worldPosition.x();
+                float y = worldPosition.y();
+                float z = worldPosition.z();
+
+                if (ImGui::SliderFloat("x##NodeWorldPosition", &x, -100.0f, 100.0f, "%.3f"))
+                    mSelectedNode->setWorldPosition(QVector3D(x, y, z));
+                if (ImGui::SliderFloat("y##NodeWorldPosition", &y, -100.0f, 100.0f, "%.3f"))
+                    mSelectedNode->setWorldPosition(QVector3D(x, y, z));
+                if (ImGui::SliderFloat("z##NodeWorldPosition", &z, -100.0f, 100.0f, "%.3f"))
+                    mSelectedNode->setWorldPosition(QVector3D(x, y, z));
+            }
         }
 
         // Rotation
+        if (mSelectedNode)
         {
-            ImGui::BeginDisabled(mSelectedNode == nullptr);
+            {
+                ImGui::Text("Rotation:");
+                QQuaternion rotation = mSelectedNode->rotation();
+                QVector3D eulerAngles = rotation.toEulerAngles();
+                float pitch = eulerAngles.x();
+                float yaw = eulerAngles.y();
+                float roll = eulerAngles.z();
 
-            ImGui::Text("Rotation:");
-            QQuaternion rotation = mSelectedNode ? mSelectedNode->rotation() : QQuaternion();
-            QVector3D eulerAngles = rotation.toEulerAngles();
-            float pitch = eulerAngles.x();
-            float yaw = eulerAngles.y();
-            float roll = eulerAngles.z();
+                if (ImGui::SliderFloat("Pitch##NodeRotation", &pitch, -90.0f, 90.0f, "%.3f"))
+                    mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+                if (ImGui::SliderFloat("Yaw##NodeRotation", &yaw, -180.0f, 180.0f, "%.3f"))
+                    mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+                if (ImGui::SliderFloat("Roll##NodeRotation", &roll, -180.0f, 180.0f, "%.3f"))
+                    mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+            }
 
-            if (ImGui::SliderFloat("Pitch##Node", &pitch, -90.0f, 90.0f, "%.3f"))
-                mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
-            if (ImGui::SliderFloat("Yaw##Node", &yaw, -179.999, 179.999, "%.3f"))
-                mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
-            if (ImGui::SliderFloat("Roll##Node", &roll, -179.999, 179.999, "%.3f"))
-                mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+            {
+                ImGui::Text("World Rotation:");
+                QQuaternion rotation = mSelectedNode->worldRotation();
+                QVector3D eulerAngles = rotation.toEulerAngles();
+                float pitch = eulerAngles.x();
+                float yaw = eulerAngles.y();
+                float roll = eulerAngles.z();
 
-            ImGui::EndDisabled();
+                if (ImGui::SliderFloat("Pitch##NodeWorldRotation", &pitch, -90.0f, 90.0f, "%.3f"))
+                    mSelectedNode->setWorldRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+                if (ImGui::SliderFloat("Yaw##NodeWorldRotation", &yaw, -180.0f, 180.0f, "%.3f"))
+                    mSelectedNode->setWorldRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+                if (ImGui::SliderFloat("Roll##NodeWorldRotation", &roll, -180.0f, 180.0f, "%.3f"))
+                    mSelectedNode->setWorldRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+            }
         }
 
         // Shading Parameters
@@ -286,11 +322,15 @@ void Window::mouseDoubleClickEvent(QMouseEvent *event)
 
 void Window::populateComboBox(Node *node)
 {
-    if (dynamic_cast<Light *>(node))
+    switch (node->nodeType())
+    {
+    case Node::NodeType::FreeCamera:
+    case Node::NodeType::DummyCamera:
+    case Node::NodeType::DirectionalLight:
         return;
-
-    if (dynamic_cast<Camera *>(node))
-        return;
+    default:
+        break;
+    }
 
     if (ImGui::Selectable(node->name().toStdString().c_str()))
         mSelectedNode = node;

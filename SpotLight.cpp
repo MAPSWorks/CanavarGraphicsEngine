@@ -5,7 +5,9 @@ SpotLight::SpotLight(QObject *parent)
     , mDirection(0, -1, 0)
     , mCutOffAngle(0.25f)
     , mOuterCutOffAngle(1.0f)
-{}
+{
+    mNodeType = Node::NodeType::SpotLight;
+}
 
 const QVector3D &SpotLight::direction() const
 {

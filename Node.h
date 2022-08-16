@@ -13,6 +13,17 @@ public:
     explicit Node(QObject *parent = nullptr);
     virtual ~Node();
 
+    enum class NodeType { //
+        DummyNode,
+        Model,
+        TexturedModel,
+        FreeCamera,
+        DummyCamera,
+        DirectionalLight,
+        PointLight,
+        SpotLight
+    };
+
     virtual QMatrix4x4 transformation() const;
     virtual QMatrix4x4 worldTransformation() const;
 
@@ -39,12 +50,15 @@ public:
 
     const QList<Node *> &children() const;
 
+    NodeType nodeType() const;
+    QString nodeTypeString();
+
 protected:
     QVector3D mPosition;
     QQuaternion mRotation;
     QVector3D mScale;
     QString mName;
-
+    NodeType mNodeType;
     QList<Node *> mChildren;
 };
 

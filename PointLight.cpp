@@ -5,7 +5,9 @@ PointLight::PointLight(QObject *parent)
     , mConstant(1.0f)
     , mLinear(0.09f)
     , mQuadratic(0.032f)
-{}
+{
+    mNodeType = Node::NodeType::PointLight;
+}
 
 float PointLight::constant() const
 {
