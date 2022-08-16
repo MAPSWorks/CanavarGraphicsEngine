@@ -213,6 +213,42 @@ void RendererManager::renderNode(Node *node)
                 mShaderManager->setUniformValue("node.diffuse", model->material().diffuse());
                 mShaderManager->setUniformValue("node.specular", model->material().specular());
                 mShaderManager->setUniformValue("node.shininess", model->material().shininess());
+
+                QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), node);
+
+                mShaderManager->setUniformValue("number_of_point_lights", pointLights.size());
+
+                for (int i = 0; i < pointLights.size(); i++)
+                {
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].color", pointLights[i]->color());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].position", pointLights[i]->position());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].specular", pointLights[i]->specular());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].constant", pointLights[i]->constant());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].linear", pointLights[i]->linear());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
+                }
+
+                QVector<SpotLight *> spotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), node);
+
+                mShaderManager->setUniformValue("number_of_spot_lights", spotLights.size());
+
+                for (int i = 0; i < spotLights.size(); i++)
+                {
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].color", spotLights[i]->color());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].position", spotLights[i]->position());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].specular", spotLights[i]->specular());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].constant", spotLights[i]->constant());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].linear", spotLights[i]->linear());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].direction", spotLights[i]->direction());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].cut_off_angle", spotLights[i]->cutOffAngle());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].outer_cut_off_angle", spotLights[i]->outerCutOffAngle());
+                }
+
                 data->render();
                 mShaderManager->release();
             }
@@ -246,6 +282,42 @@ void RendererManager::renderNode(Node *node)
                 mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
                 mShaderManager->setUniformValue("node.transformation", texturedModel->worldTransformation());
                 mShaderManager->setUniformValue("node.shininess", texturedModel->shininess());
+
+                QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), node);
+
+                mShaderManager->setUniformValue("number_of_point_lights", pointLights.size());
+
+                for (int i = 0; i < pointLights.size(); i++)
+                {
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].color", pointLights[i]->color());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].position", pointLights[i]->position());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].specular", pointLights[i]->specular());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].constant", pointLights[i]->constant());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].linear", pointLights[i]->linear());
+                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
+                }
+
+                QVector<SpotLight *> spotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), node);
+
+                mShaderManager->setUniformValue("number_of_spot_lights", spotLights.size());
+
+                for (int i = 0; i < spotLights.size(); i++)
+                {
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].color", spotLights[i]->color());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].position", spotLights[i]->position());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].specular", spotLights[i]->specular());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].constant", spotLights[i]->constant());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].linear", spotLights[i]->linear());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].direction", spotLights[i]->direction());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].cut_off_angle", spotLights[i]->cutOffAngle());
+                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].outer_cut_off_angle", spotLights[i]->outerCutOffAngle());
+                }
+
                 data->render();
                 mShaderManager->release();
             }

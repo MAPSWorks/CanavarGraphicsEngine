@@ -54,6 +54,36 @@ bool ShaderManager::init()
         locations.insert("directional_light.diffuse", shader->uniformLocation("directional_light.diffuse"));
         locations.insert("directional_light.specular", shader->uniformLocation("directional_light.specular"));
 
+        locations.insert("number_of_point_lights", shader->uniformLocation("number_of_point_lights"));
+        locations.insert("number_of_spot_lights", shader->uniformLocation("number_of_spot_lights"));
+
+        for (int i = 0; i < 8; i++)
+        {
+            locations.insert("point_lights[" + QString::number(i) + "].color", shader->uniformLocation("point_lights[" + QString::number(i) + "].color"));
+            locations.insert("point_lights[" + QString::number(i) + "].position", shader->uniformLocation("point_lights[" + QString::number(i) + "].position"));
+            locations.insert("point_lights[" + QString::number(i) + "].ambient", shader->uniformLocation("point_lights[" + QString::number(i) + "].ambient"));
+            locations.insert("point_lights[" + QString::number(i) + "].diffuse", shader->uniformLocation("point_lights[" + QString::number(i) + "].diffuse"));
+            locations.insert("point_lights[" + QString::number(i) + "].specular", shader->uniformLocation("point_lights[" + QString::number(i) + "].specular"));
+            locations.insert("point_lights[" + QString::number(i) + "].constant", shader->uniformLocation("point_lights[" + QString::number(i) + "].constant"));
+            locations.insert("point_lights[" + QString::number(i) + "].linear", shader->uniformLocation("point_lights[" + QString::number(i) + "].linear"));
+            locations.insert("point_lights[" + QString::number(i) + "].quadratic", shader->uniformLocation("point_lights[" + QString::number(i) + "].quadratic"));
+        }
+
+        for (int i = 0; i < 8; i++)
+        {
+            locations.insert("spot_lights[" + QString::number(i) + "].color", shader->uniformLocation("spot_lights[" + QString::number(i) + "].color"));
+            locations.insert("spot_lights[" + QString::number(i) + "].position", shader->uniformLocation("spot_lights[" + QString::number(i) + "].position"));
+            locations.insert("spot_lights[" + QString::number(i) + "].direction", shader->uniformLocation("spot_lights[" + QString::number(i) + "].direction"));
+            locations.insert("spot_lights[" + QString::number(i) + "].ambient", shader->uniformLocation("spot_lights[" + QString::number(i) + "].ambient"));
+            locations.insert("spot_lights[" + QString::number(i) + "].diffuse", shader->uniformLocation("spot_lights[" + QString::number(i) + "].diffuse"));
+            locations.insert("spot_lights[" + QString::number(i) + "].specular", shader->uniformLocation("spot_lights[" + QString::number(i) + "].specular"));
+            locations.insert("spot_lights[" + QString::number(i) + "].constant", shader->uniformLocation("spot_lights[" + QString::number(i) + "].constant"));
+            locations.insert("spot_lights[" + QString::number(i) + "].linear", shader->uniformLocation("spot_lights[" + QString::number(i) + "].linear"));
+            locations.insert("spot_lights[" + QString::number(i) + "].quadratic", shader->uniformLocation("spot_lights[" + QString::number(i) + "].quadratic"));
+            locations.insert("spot_lights[" + QString::number(i) + "].cut_off_angle", shader->uniformLocation("spot_lights[" + QString::number(i) + "].cut_off_angle"));
+            locations.insert("spot_lights[" + QString::number(i) + "].outer_cut_off_angle", shader->uniformLocation("spot_lights[" + QString::number(i) + "].outer_cut_off_angle"));
+        }
+
         locations.insert("node.transformation", shader->uniformLocation("node.transformation"));
         locations.insert("node.color", shader->uniformLocation("node.color"));
         locations.insert("node.ambient", shader->uniformLocation("node.ambient"));
@@ -114,6 +144,36 @@ bool ShaderManager::init()
         locations.insert("directional_light.ambient", shader->uniformLocation("directional_light.ambient"));
         locations.insert("directional_light.diffuse", shader->uniformLocation("directional_light.diffuse"));
         locations.insert("directional_light.specular", shader->uniformLocation("directional_light.specular"));
+
+        locations.insert("number_of_point_lights", shader->uniformLocation("number_of_point_lights"));
+        locations.insert("number_of_spot_lights", shader->uniformLocation("number_of_spot_lights"));
+
+        for (int i = 0; i < 8; i++)
+        {
+            locations.insert("point_lights[" + QString::number(i) + "].color", shader->uniformLocation("point_lights[" + QString::number(i) + "].color"));
+            locations.insert("point_lights[" + QString::number(i) + "].position", shader->uniformLocation("point_lights[" + QString::number(i) + "].position"));
+            locations.insert("point_lights[" + QString::number(i) + "].ambient", shader->uniformLocation("point_lights[" + QString::number(i) + "].ambient"));
+            locations.insert("point_lights[" + QString::number(i) + "].diffuse", shader->uniformLocation("point_lights[" + QString::number(i) + "].diffuse"));
+            locations.insert("point_lights[" + QString::number(i) + "].specular", shader->uniformLocation("point_lights[" + QString::number(i) + "].specular"));
+            locations.insert("point_lights[" + QString::number(i) + "].constant", shader->uniformLocation("point_lights[" + QString::number(i) + "].constant"));
+            locations.insert("point_lights[" + QString::number(i) + "].linear", shader->uniformLocation("point_lights[" + QString::number(i) + "].linear"));
+            locations.insert("point_lights[" + QString::number(i) + "].quadratic", shader->uniformLocation("point_lights[" + QString::number(i) + "].quadratic"));
+        }
+
+        for (int i = 0; i < 8; i++)
+        {
+            locations.insert("spot_lights[" + QString::number(i) + "].color", shader->uniformLocation("spot_lights[" + QString::number(i) + "].color"));
+            locations.insert("spot_lights[" + QString::number(i) + "].position", shader->uniformLocation("spot_lights[" + QString::number(i) + "].position"));
+            locations.insert("spot_lights[" + QString::number(i) + "].direction", shader->uniformLocation("spot_lights[" + QString::number(i) + "].direction"));
+            locations.insert("spot_lights[" + QString::number(i) + "].ambient", shader->uniformLocation("spot_lights[" + QString::number(i) + "].ambient"));
+            locations.insert("spot_lights[" + QString::number(i) + "].diffuse", shader->uniformLocation("spot_lights[" + QString::number(i) + "].diffuse"));
+            locations.insert("spot_lights[" + QString::number(i) + "].specular", shader->uniformLocation("spot_lights[" + QString::number(i) + "].specular"));
+            locations.insert("spot_lights[" + QString::number(i) + "].constant", shader->uniformLocation("spot_lights[" + QString::number(i) + "].constant"));
+            locations.insert("spot_lights[" + QString::number(i) + "].linear", shader->uniformLocation("spot_lights[" + QString::number(i) + "].linear"));
+            locations.insert("spot_lights[" + QString::number(i) + "].quadratic", shader->uniformLocation("spot_lights[" + QString::number(i) + "].quadratic"));
+            locations.insert("spot_lights[" + QString::number(i) + "].cut_off_angle", shader->uniformLocation("spot_lights[" + QString::number(i) + "].cut_off_angle"));
+            locations.insert("spot_lights[" + QString::number(i) + "].outer_cut_off_angle", shader->uniformLocation("spot_lights[" + QString::number(i) + "].outer_cut_off_angle"));
+        }
 
         locations.insert("node.transformation", shader->uniformLocation("node.transformation"));
         locations.insert("node.shininess", shader->uniformLocation("node.shininess"));

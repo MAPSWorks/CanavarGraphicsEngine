@@ -169,6 +169,48 @@ TexturedModelData *Helper::loadTexturedModel(const QString &name, const QString 
     return data;
 }
 
+QVector<PointLight *> Helper::getClosePointLights(const QList<PointLight *> &pointLights, Node *node)
+{
+    QMap<float, PointLight *> distanceToLight;
+
+    for (const auto &light : pointLights)
+    {
+        distanceToLight.insert((light->position() - node->position()).length(), light);
+    }
+
+    QList<PointLight *> lights = distanceToLight.values();
+
+    QVector<PointLight *> lightsVector;
+
+    for (int i = 0; i < qMin(8, lights.size()); ++i)
+    {
+        lightsVector << lights[i];
+    }
+
+    return lightsVector;
+}
+
+QVector<SpotLight *> Helper::getCloseSpotLights(const QList<SpotLight *> &spotLights, Node *node)
+{
+    QMap<float, SpotLight *> distanceToLight;
+
+    for (const auto &light : spotLights)
+    {
+        distanceToLight.insert((light->position() - node->position()).length(), light);
+    }
+
+    QList<SpotLight *> lights = distanceToLight.values();
+
+    QVector<SpotLight *> lightsVector;
+
+    for (int i = 0; i < qMin(8, lights.size()); ++i)
+    {
+        lightsVector << lights[i];
+    }
+
+    return lightsVector;
+}
+
 Mesh *Helper::processMesh(aiMesh *aiMesh)
 {
     Mesh *mesh = new Mesh;

@@ -2,6 +2,8 @@
 #define HELPER_H
 
 #include "ModelData.h"
+#include "PointLight.h"
+#include "SpotLight.h"
 #include "TexturedModelData.h"
 #include "TexturedModelDataNode.h"
 
@@ -26,6 +28,8 @@ public:
     static QVector3D projectOntoPlane(const QVector3D &normal, const QVector3D &point, const QVector3D &subject);
     static ModelData *loadModel(Model::Type type, const QString &path);
     static TexturedModelData *loadTexturedModel(const QString &name, const QString &path);
+    static QVector<PointLight *> getClosePointLights(const QList<PointLight *> &pointLights, Node *node);
+    static QVector<SpotLight *> getCloseSpotLights(const QList<SpotLight *> &spotLights, Node *node);
 
 private:
     static Mesh *processMesh(aiMesh *aiMesh);

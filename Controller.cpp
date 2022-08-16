@@ -84,6 +84,21 @@ void Controller::init()
     mSun->setDirection(QVector3D(0, -1, 0));
     mLightManager->setDirectionalLight(mSun);
 
+    for (int i = 0; i < 4; i++)
+    {
+        PointLight *light = new PointLight;
+        light->setPosition(QVector3D(10 * i + 10, 3, 0));
+        mLightManager->addLight(light);
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        SpotLight *light = new SpotLight;
+        light->setDirection(QVector3D(0, -1, 0));
+        light->setPosition(QVector3D(-100 * i - 10, 3, 0));
+        mLightManager->addLight(light);
+    }
+
     // Plane
     mPlane = new Model;
     mPlane->setType(Model::Plane);

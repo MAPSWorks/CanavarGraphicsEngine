@@ -3,8 +3,8 @@
 SpotLight::SpotLight(QObject *parent)
     : PointLight(parent)
     , mDirection(0, -1, 0)
-    , mCutOffAngle(1.04f)
-    , mOuterCutOffAngle(2.1f)
+    , mCutOffAngle(0.25f)
+    , mOuterCutOffAngle(1.0f)
 {}
 
 const QVector3D &SpotLight::direction() const

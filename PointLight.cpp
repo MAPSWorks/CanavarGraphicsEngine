@@ -3,8 +3,8 @@
 PointLight::PointLight(QObject *parent)
     : Light(parent)
     , mConstant(1.0f)
-    , mLinear(0.07f)
-    , mQuadratic(0.017f)
+    , mLinear(0.09f)
+    , mQuadratic(0.032f)
 {}
 
 float PointLight::constant() const
