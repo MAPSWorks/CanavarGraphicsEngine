@@ -14,6 +14,10 @@ bool Aircraft::init()
     QDir::setCurrent("Resources/Data");
 
     mExecutor = new JSBSim::FGFDMExec;
+    mExecutor->SetDebugLevel(0);
+    mExecutor->DisableOutput();
+
+    qInfo() << "Aircraft is being initializing...";
 
     if (!mExecutor->LoadModel("f16"))
     {
@@ -51,6 +55,9 @@ bool Aircraft::init()
     mTimer.start(10);
 
     QDir::setCurrent(currentPath);
+
+    qInfo() << "Aircraft is initialized.";
+
     return true;
 }
 
@@ -149,11 +156,11 @@ void Aircraft::tick()
 
 void Aircraft::stop()
 {
-    qDebug() << thread() << "Stopping Aircraft...";
+    qInfo() << thread() << "Stopping Aircraft...";
 
     mTimer.stop();
 
-    qDebug() << thread() << "Aircraft is stopped.";
+    qInfo() << thread() << "Aircraft is stopped.";
 }
 
 bool Aircraft::holding() const

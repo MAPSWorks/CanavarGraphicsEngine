@@ -91,7 +91,7 @@ void Controller::init()
     mPlane->setType(Model::Plane);
     mPlane->setName("Plane");
     mPlane->setPosition(QVector3D(0, 0, 0));
-    mPlane->setScale(QVector3D(100.0f, 100.0f, 100.0f));
+    mPlane->setScale(QVector3D(10.0f, 10.0f, 10.0f));
     mNodeManager->addNode(mPlane);
 
     mBackpack = new TexturedModel("backpack");

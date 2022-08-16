@@ -22,5 +22,7 @@
         <file>Resources/Shaders/Normals.frag</file>
         <file>Resources/Shaders/Normals.geom</file>
         <file>Resources/Shaders/Normals.vert</file>
+        <file>Resources/Shaders/SkyBox.frag</file>
+        <file>Resources/Shaders/SkyBox.vert</file>
     </qresource>
 </RCC>

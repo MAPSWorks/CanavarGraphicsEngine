@@ -18,7 +18,7 @@ ModelData::~ModelData()
 
 bool ModelData::create()
 {
-    qInfo() << Q_FUNC_INFO << "Creating VAO for model" << (int) mType;
+    //qInfo() << "Creating VAO for model" << (int) mType;
 
     initializeOpenGLFunctions();
 
@@ -72,7 +72,7 @@ bool ModelData::create()
 
     mVertexArray.release();
 
-    qInfo() << Q_FUNC_INFO << "VAO for model" << (int) mType << "is created.";
+    //qInfo() << "VAO for model" << (int) mType << "is created.";
 
     return true;
 }

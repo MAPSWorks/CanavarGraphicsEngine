@@ -39,6 +39,7 @@ HEADERS += \
     Simulator/Aircraft.h \
     Simulator/AircraftController.h \
     Simulator/Converter.h \
+    SkyBox.h \
     Texture.h \
     TexturedMaterial.h \
     TexturedModel.h \
@@ -67,6 +68,7 @@ SOURCES += \
     Simulator/Aircraft.cpp \
     Simulator/AircraftController.cpp \
     Simulator/Converter.cpp \
+    SkyBox.cpp \
     Texture.cpp \
     TexturedMaterial.cpp \
     TexturedModel.cpp \

@@ -17,7 +17,8 @@ public:
         BasicShader,
         TexturedModelShader,
         WireframeShader,
-        NormalsShader
+        NormalsShader,
+        SkyBoxShader,
     };
 
     QOpenGLShaderProgram *getShader(Shader shader);

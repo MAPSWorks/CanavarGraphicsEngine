@@ -34,7 +34,7 @@ bool RendererManager::init()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glLineWidth(2.5f);
 
-    qInfo() << Q_FUNC_INFO << "Initializing ShaderManager...";
+    qInfo() << "Initializing ShaderManager...";
 
     if (!mShaderManager->init())
     {
@@ -43,7 +43,7 @@ bool RendererManager::init()
     }
 
     // Models
-    qInfo() << Q_FUNC_INFO << "Loading and creating all models...";
+    qInfo() << "Loading and creating all models...";
 
     for (Model::Type type : Model::ALL_MODEL_TYPES)
     {
@@ -61,10 +61,10 @@ bool RendererManager::init()
         mTypeToModelData.insert(type, data);
     }
 
-    qInfo() << Q_FUNC_INFO << "All models are loaded.";
+    qInfo() << "All models are loaded.";
 
     // Textured Models
-    qInfo() << Q_FUNC_INFO << "Loading and creating all textured models...";
+    qInfo() << "Loading and creating all textured models...";
 
     QDir dir("Resources/Objects");
     auto dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -108,7 +108,16 @@ bool RendererManager::init()
         }
     }
 
-    qInfo() << Q_FUNC_INFO << "All textured models are loaded.";
+    qInfo() << "All textured models are loaded.";
+
+    mSkyBox = new SkyBox;
+    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_X, "Resources/Sky/1/right.png");
+    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, "Resources/Sky/1/left.png");
+    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, "Resources/Sky/1/top.png");
+    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, "Resources/Sky/1/bottom.png");
+    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, "Resources/Sky/1/front.png");
+    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/1/back.png");
+    mSkyBox->create();
 
     return true;
 }
@@ -145,6 +154,14 @@ void RendererManager::render(float ifps)
         mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
         mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
         mShaderManager->release();
+
+        mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
+        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
+
+        QMatrix4x4 transformation = mCamera->worldTransformation();
+        transformation.setColumn(3, QVector4D(0, 0, 0, 1));
+        mShaderManager->setUniformValue("view_matrix", transformation);
+        mShaderManager->release();
     }
 
     if (mLight)
@@ -167,8 +184,16 @@ void RendererManager::render(float ifps)
     }
 
     auto nodes = mNodeManager->nodes();
+
     for (auto node : nodes)
+    {
         renderNode(node);
+    }
+
+    mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
+    mShaderManager->setUniformValue("skybox", 0);
+    mSkyBox->render();
+    mShaderManager->release();
 }
 
 void RendererManager::renderNode(Node *node)

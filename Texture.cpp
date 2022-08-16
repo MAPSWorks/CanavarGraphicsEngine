@@ -6,26 +6,19 @@ Texture::Texture(Type type, const QString &path, QObject *parent)
     , mPath(path)
 {}
 
-Texture::~Texture()
-{
-    // TODO
-}
+Texture::~Texture() {}
 
 void Texture::create()
 {
     initializeOpenGLFunctions();
 
-    unsigned int id;
-    glGenTextures(1, &id);
-
-    mId = id;
-
+    glGenTextures(1, &mId);
     QImage image(mPath);
 
     // FIXME
     QImage formattedImage = image.convertToFormat(QImage::Format_RGB888);
 
-    glBindTexture(GL_TEXTURE_2D, id);
+    glBindTexture(GL_TEXTURE_2D, mId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, formattedImage.width(), formattedImage.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, formattedImage.constBits());
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

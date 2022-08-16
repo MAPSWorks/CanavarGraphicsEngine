@@ -242,6 +242,53 @@ bool ShaderManager::init()
         qInfo() << "Uniform locations are:" << locations;
     }
 
+    // SkyBoxShader
+    {
+        qInfo() << "SkyBoxShader is initializing...";
+
+        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
+        mPrograms.insert(Shader::SkyBoxShader, shader);
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/SkyBox.vert")))
+        {
+            qWarning() << Q_FUNC_INFO << "Could not load vertex shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/SkyBox.frag")))
+        {
+            qWarning() << Q_FUNC_INFO << "Could not load fragment shader.";
+            return false;
+        }
+
+        if (!shader->link())
+        {
+            qWarning() << Q_FUNC_INFO << "Could not link shader program.";
+            return false;
+        }
+
+        if (!shader->bind())
+        {
+            qWarning() << Q_FUNC_INFO << "Could not bind shader program.";
+            return false;
+        }
+
+        QMap<QString, GLuint> locations;
+
+        locations.insert("skybox", shader->uniformLocation("skybox"));
+        locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
+        locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
+
+        shader->bindAttributeLocation("position", 0);
+
+        shader->release();
+
+        mLocations.insert(Shader::SkyBoxShader, locations);
+
+        qInfo() << "SkyBoxShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
+    }
+
     return true;
 }
 

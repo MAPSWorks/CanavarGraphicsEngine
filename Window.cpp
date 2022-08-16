@@ -27,7 +27,6 @@ Window::Window(QWindow *parent)
 void Window::initializeGL()
 {
     initializeOpenGLFunctions();
-    glEnable(GL_MULTISAMPLE);
 
     QtImGui::initialize(this);
 

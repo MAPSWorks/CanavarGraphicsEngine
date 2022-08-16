@@ -55,7 +55,7 @@ QVector3D Helper::projectOntoPlane(const QVector3D &normal, const QVector3D &poi
 
 ModelData *Helper::loadModel(Model::Type type, const QString &path)
 {
-    qInfo() << Q_FUNC_INFO << "Loading model" << (int) type;
+    //qInfo() << "Loading model" << (int) type;
 
     QVector<QVector3D> tempVertices;
     QVector<QVector3D> tempNormals;
@@ -112,7 +112,7 @@ ModelData *Helper::loadModel(Model::Type type, const QString &path)
             }
         }
         file.close();
-        qInfo() << Q_FUNC_INFO << "Model" << (int) type << "is loaded.";
+        //qInfo() << "Model" << (int) type << "is loaded.";
 
         ModelData *data = new ModelData(type);
         data->setVertices(vertices);
@@ -122,8 +122,8 @@ ModelData *Helper::loadModel(Model::Type type, const QString &path)
         return data;
     } else
     {
-        qWarning() << Q_FUNC_INFO << QString("Could not open file '%1'.").arg(file.fileName());
-        qWarning() << Q_FUNC_INFO << "Could not load model" << (int) type;
+        qWarning() << QString("Could not open file '%1'.").arg(file.fileName());
+        qWarning() << "Could not load model" << (int) type;
         return nullptr;
     }
 }

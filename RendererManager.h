@@ -7,6 +7,7 @@
 #include "ModelData.h"
 #include "NodeManager.h"
 #include "ShaderManager.h"
+#include "SkyBox.h"
 #include "TexturedModelData.h"
 
 #include <QMap>
@@ -53,6 +54,8 @@ private:
     bool mRenderObjects;
     bool mRenderWireframe;
     bool mRenderNormals;
+
+    SkyBox *mSkyBox;
 };
 
 #endif // RENDERERMANAGER_H
