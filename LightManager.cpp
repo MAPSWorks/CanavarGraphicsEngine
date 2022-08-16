@@ -1,42 +1,67 @@
 #include "LightManager.h"
-#include "Light.h"
 
 LightManager::LightManager(QObject *parent)
     : QObject(parent)
-    , mActiveLight(nullptr)
+    , mDirectionalLight(nullptr)
 {
     mNodeManager = NodeManager::instance();
 }
 
 void LightManager::addLight(Light *light)
 {
-    mLights << light;
+    PointLight *pointLight = dynamic_cast<PointLight *>(light);
+    SpotLight *spotLight = dynamic_cast<SpotLight *>(light);
+    DirectionalLight *directionalLight = dynamic_cast<DirectionalLight *>(light);
+
+    if (pointLight)
+    {
+        mPointLights << pointLight;
+
+    } else if (spotLight)
+    {
+        mSpotLights << spotLight;
+
+    } else if (directionalLight)
+    {
+        qWarning() << "Could not add a directional light. Directional light must be set via set method because there must be only one directional light in the scene.";
+        return;
+
+    } else
+    {
+        qWarning() << "Light is nullptr.";
+        return;
+    }
+
     mNodeManager->addNode(light);
 }
 
 void LightManager::removeLight(Light *light)
 {
-    if (light)
+    PointLight *pointLight = dynamic_cast<PointLight *>(light);
+    SpotLight *spotLight = dynamic_cast<SpotLight *>(light);
+    DirectionalLight *directionalLight = dynamic_cast<DirectionalLight *>(light);
+
+    if (pointLight)
     {
-        if (light == mActiveLight)
-        {
-            mActiveLight = nullptr;
-        }
+        mNodeManager->removeNode(pointLight);
+        mPointLights.removeAll(pointLight);
+        pointLight->deleteLater();
 
-        mNodeManager->removeNode(light);
-        mLights.removeAll(light);
-        light->deleteLater();
+    } else if (spotLight)
+    {
+        mNodeManager->removeNode(spotLight);
+        mPointLights.removeAll(spotLight);
+        spotLight->deleteLater();
+
+    } else if (directionalLight)
+    {
+        qWarning() << "Directional light cannot be removed.";
+        return;
+    } else
+    {
+        qWarning() << "Light is nullptr.";
+        return;
     }
-}
-
-Light *LightManager::activeLight() const
-{
-    return mActiveLight;
-}
-
-void LightManager::setActiveLight(Light *newActiveLight)
-{
-    mActiveLight = newActiveLight;
 }
 
 LightManager *LightManager::instance()
@@ -46,7 +71,22 @@ LightManager *LightManager::instance()
     return &instance;
 }
 
-const QList<Light *> &LightManager::lights() const
+const QList<PointLight *> &LightManager::pointLights() const
 {
-    return mLights;
+    return mPointLights;
+}
+
+const QList<SpotLight *> &LightManager::spotLights() const
+{
+    return mSpotLights;
+}
+
+DirectionalLight *LightManager::directionalLight() const
+{
+    return mDirectionalLight;
+}
+
+void LightManager::setDirectionalLight(DirectionalLight *newDirectionalLight)
+{
+    mDirectionalLight = newDirectionalLight;
 }

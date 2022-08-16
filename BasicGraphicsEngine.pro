@@ -23,6 +23,7 @@ HEADERS += \
     Camera.h \
     CameraManager.h \
     Controller.h \
+    DirectionalLight.h \
     DummyCamera.h \
     FreeCamera.h \
     Helper.h \
@@ -34,12 +35,14 @@ HEADERS += \
     ModelData.h \
     Node.h \
     NodeManager.h \
+    PointLight.h \
     RendererManager.h \
     ShaderManager.h \
     Simulator/Aircraft.h \
     Simulator/AircraftController.h \
     Simulator/Converter.h \
     SkyBox.h \
+    SpotLight.h \
     Texture.h \
     TexturedMaterial.h \
     TexturedModel.h \
@@ -51,6 +54,7 @@ SOURCES += \
     Camera.cpp \
     CameraManager.cpp \
     Controller.cpp \
+    DirectionalLight.cpp \
     DummyCamera.cpp \
     FreeCamera.cpp \
     Helper.cpp \
@@ -63,12 +67,14 @@ SOURCES += \
     ModelData.cpp \
     Node.cpp \
     NodeManager.cpp \
+    PointLight.cpp \
     RendererManager.cpp \
     ShaderManager.cpp \
     Simulator/Aircraft.cpp \
     Simulator/AircraftController.cpp \
     Simulator/Converter.cpp \
     SkyBox.cpp \
+    SpotLight.cpp \
     Texture.cpp \
     TexturedMaterial.cpp \
     TexturedModel.cpp \

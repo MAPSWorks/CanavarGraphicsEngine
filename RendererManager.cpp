@@ -129,7 +129,7 @@ void RendererManager::render(float ifps)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     mCamera = mCameraManager->activeCamera();
-    mLight = mLightManager->activeLight();
+    mSun = mLightManager->directionalLight();
 
     if (mCamera)
     {
@@ -164,22 +164,22 @@ void RendererManager::render(float ifps)
         mShaderManager->release();
     }
 
-    if (mLight)
+    if (mSun)
     {
         mShaderManager->bind(ShaderManager::Shader::BasicShader);
-        mShaderManager->setUniformValue("light.position", mLight->position());
-        mShaderManager->setUniformValue("light.color", mLight->color());
-        mShaderManager->setUniformValue("light.ambient", mLight->ambient());
-        mShaderManager->setUniformValue("light.diffuse", mLight->diffuse());
-        mShaderManager->setUniformValue("light.specular", mLight->specular());
+        mShaderManager->setUniformValue("directional_light.direction", mSun->direction());
+        mShaderManager->setUniformValue("directional_light.color", mSun->color());
+        mShaderManager->setUniformValue("directional_light.ambient", mSun->ambient());
+        mShaderManager->setUniformValue("directional_light.diffuse", mSun->diffuse());
+        mShaderManager->setUniformValue("directional_light.specular", mSun->specular());
         mShaderManager->release();
 
         mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
-        mShaderManager->setUniformValue("light.position", mLight->position());
-        mShaderManager->setUniformValue("light.color", mLight->color());
-        mShaderManager->setUniformValue("light.ambient", mLight->ambient());
-        mShaderManager->setUniformValue("light.diffuse", mLight->diffuse());
-        mShaderManager->setUniformValue("light.specular", mLight->specular());
+        mShaderManager->setUniformValue("directional_light.direction", mSun->direction());
+        mShaderManager->setUniformValue("directional_light.color", mSun->color());
+        mShaderManager->setUniformValue("directional_light.ambient", mSun->ambient());
+        mShaderManager->setUniformValue("directional_light.diffuse", mSun->diffuse());
+        mShaderManager->setUniformValue("directional_light.specular", mSun->specular());
         mShaderManager->release();
     }
 
@@ -190,10 +190,7 @@ void RendererManager::render(float ifps)
         renderNode(node);
     }
 
-    mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
-    mShaderManager->setUniformValue("skybox", 0);
-    mSkyBox->render();
-    mShaderManager->release();
+    renderSkyBox();
 }
 
 void RendererManager::renderNode(Node *node)
@@ -278,6 +275,14 @@ void RendererManager::renderNode(Node *node)
         for (auto child : children)
             renderNode(child);
     }
+}
+
+void RendererManager::renderSkyBox()
+{
+    mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
+    mShaderManager->setUniformValue("skybox", 0);
+    mSkyBox->render();
+    mShaderManager->release();
 }
 
 bool RendererManager::renderObjects() const

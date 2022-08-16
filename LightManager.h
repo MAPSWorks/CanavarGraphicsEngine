@@ -1,8 +1,10 @@
 #ifndef LIGHTMANAGER_H
 #define LIGHTMANAGER_H
 
-#include "Light.h"
+#include "DirectionalLight.h"
 #include "NodeManager.h"
+#include "PointLight.h"
+#include "SpotLight.h"
 
 #include <QObject>
 
@@ -17,17 +19,19 @@ public:
     void addLight(Light *light);
     void removeLight(Light *light);
 
-    const QList<Light *> &lights() const;
+    DirectionalLight *directionalLight() const;
+    void setDirectionalLight(DirectionalLight *newDirectionalLight);
 
-    Light *activeLight() const;
-    void setActiveLight(Light *newActiveLight);
+    const QList<PointLight *> &pointLights() const;
+    const QList<SpotLight *> &spotLights() const;
 
     static LightManager *instance();
 
 private:
     NodeManager *mNodeManager;
-    QList<Light *> mLights;
-    Light *mActiveLight;
+    QList<PointLight *> mPointLights;
+    QList<SpotLight *> mSpotLights;
+    DirectionalLight *mDirectionalLight;
 };
 
 #endif // LIGHTMANAGER_H

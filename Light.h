@@ -5,10 +5,11 @@
 
 class Light : public Node
 {
-public:
+protected:
     explicit Light(QObject *parent = nullptr);
     virtual ~Light();
 
+public:
     const QVector4D &color() const;
     void setColor(const QVector4D &newColor);
 
@@ -21,7 +22,7 @@ public:
     float specular() const;
     void setSpecular(float newSpecular);
 
-private:
+protected:
     QVector4D mColor;
     float mAmbient;
     float mDiffuse;

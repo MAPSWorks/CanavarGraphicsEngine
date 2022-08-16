@@ -1,6 +1,5 @@
 #include "Controller.h"
 #include "FreeCamera.h"
-#include "Light.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -81,10 +80,9 @@ void Controller::init()
     mDummyCamera->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
     mCameraManager->addCamera(mDummyCamera);
 
-    mLight = new Light;
-    mLight->setPosition(QVector3D(5, 20, 35));
-    mLightManager->addLight(mLight);
-    mLightManager->setActiveLight(mLight);
+    mSun = new DirectionalLight;
+    mSun->setDirection(QVector3D(0, -1, 0));
+    mLightManager->setDirectionalLight(mSun);
 
     // Plane
     mPlane = new Model;

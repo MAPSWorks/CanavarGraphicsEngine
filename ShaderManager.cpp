@@ -48,11 +48,11 @@ bool ShaderManager::init()
 
         QMap<QString, GLuint> locations;
 
-        locations.insert("light.color", shader->uniformLocation("light.color"));
-        locations.insert("light.position", shader->uniformLocation("light.position"));
-        locations.insert("light.ambient", shader->uniformLocation("light.ambient"));
-        locations.insert("light.diffuse", shader->uniformLocation("light.diffuse"));
-        locations.insert("light.specular", shader->uniformLocation("light.specular"));
+        locations.insert("directional_light.color", shader->uniformLocation("directional_light.color"));
+        locations.insert("directional_light.direction", shader->uniformLocation("directional_light.direction"));
+        locations.insert("directional_light.ambient", shader->uniformLocation("directional_light.ambient"));
+        locations.insert("directional_light.diffuse", shader->uniformLocation("directional_light.diffuse"));
+        locations.insert("directional_light.specular", shader->uniformLocation("directional_light.specular"));
 
         locations.insert("node.transformation", shader->uniformLocation("node.transformation"));
         locations.insert("node.color", shader->uniformLocation("node.color"));
@@ -109,11 +109,11 @@ bool ShaderManager::init()
 
         QMap<QString, GLuint> locations;
 
-        locations.insert("light.color", shader->uniformLocation("light.color"));
-        locations.insert("light.position", shader->uniformLocation("light.position"));
-        locations.insert("light.ambient", shader->uniformLocation("light.ambient"));
-        locations.insert("light.diffuse", shader->uniformLocation("light.diffuse"));
-        locations.insert("light.specular", shader->uniformLocation("light.specular"));
+        locations.insert("directional_light.color", shader->uniformLocation("directional_light.color"));
+        locations.insert("directional_light.direction", shader->uniformLocation("directional_light.direction"));
+        locations.insert("directional_light.ambient", shader->uniformLocation("directional_light.ambient"));
+        locations.insert("directional_light.diffuse", shader->uniformLocation("directional_light.diffuse"));
+        locations.insert("directional_light.specular", shader->uniformLocation("directional_light.specular"));
 
         locations.insert("node.transformation", shader->uniformLocation("node.transformation"));
         locations.insert("node.shininess", shader->uniformLocation("node.shininess"));

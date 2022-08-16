@@ -63,12 +63,12 @@ public:
 
     explicit Aircraft(QObject *parent = nullptr);
     bool init();
+    bool holding() const;
 
 public slots:
     void onCommand(Aircraft::Command command, QVariant variant = QVariant());
     void tick();
     void stop();
-    bool holding() const;
 
 signals:
     void pfdChanged(Aircraft::PrimaryFlightData);

@@ -38,6 +38,7 @@ public:
 
 private slots:
     void renderNode(Node *node);
+    void renderSkyBox();
 
 private:
     QMap<Model::Type, ModelData *> mTypeToModelData;
@@ -49,7 +50,7 @@ private:
     ShaderManager *mShaderManager;
 
     Camera *mCamera;
-    Light *mLight;
+    DirectionalLight *mSun;
 
     bool mRenderObjects;
     bool mRenderWireframe;

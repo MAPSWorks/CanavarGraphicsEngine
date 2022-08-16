@@ -43,7 +43,7 @@ void Window::resizeGL(int w, int h)
 
 void Window::paintGL()
 {
-    mActiveLight = mLightManager->activeLight();
+    mSun = mLightManager->directionalLight();
     mNodes = mNodeManager->nodes();
 
     mAileron = mAircraftController->aileron();
@@ -81,47 +81,48 @@ void Window::paintGL()
     }
 
     // Light
-    if (!ImGui::CollapsingHeader("Light"))
+    if (!ImGui::CollapsingHeader("Sun"))
     {
         {
-            ImGui::Text("Position:");
-            QVector3D position = mActiveLight->position();
-            float x = position.x();
-            float y = position.y();
-            float z = position.z();
-            float r = position.length();
+            ImGui::Text("Direction:");
+            QVector3D direction = mSun->direction();
+            float x = direction.x();
+            float y = direction.y();
+            float z = direction.z();
+            float r = direction.length();
             float theta = qRadiansToDegrees(atan2(z, x));
             float phi = qRadiansToDegrees(atan2(y, sqrt(z * z + x * x)));
-            ImGui::SliderFloat("r", &r, 1.0f, 100.0f, "%.1f");
-            ImGui::SliderFloat("theta", &theta, -179.9f, 179.9f, "%.1f");
-            ImGui::SliderFloat("phi", &phi, -89.9f, 89.9f, "%.1f");
+            if (qFuzzyCompare(abs(phi), 90.0f))
+                theta = 0.0f;
+            ImGui::SliderFloat("theta", &theta, -180.0f, 180.0f, "%.1f");
+            ImGui::SliderFloat("phi", &phi, -90.0f, 90.0f, "%.1f");
 
             x = r * cos(qDegreesToRadians(phi)) * cos(qDegreesToRadians(theta));
             y = r * sin(qDegreesToRadians(phi));
             z = r * cos(qDegreesToRadians(phi)) * sin(qDegreesToRadians(theta));
 
-            mActiveLight->setPosition(QVector3D(x, y, z));
+            mSun->setDirection(QVector3D(x, y, z));
         }
 
         {
             ImGui::Text("Shading Parameters:");
-            float ambient = mActiveLight->ambient();
-            float diffuse = mActiveLight->diffuse();
-            float specular = mActiveLight->specular();
+            float ambient = mSun->ambient();
+            float diffuse = mSun->diffuse();
+            float specular = mSun->specular();
 
             if (ImGui::SliderFloat("Ambient", &ambient, 0.0f, 1.0f, "%.3f"))
-                mActiveLight->setAmbient(ambient);
+                mSun->setAmbient(ambient);
 
             if (ImGui::SliderFloat("Diffuse", &diffuse, 0.0f, 1.0f, "%.3f"))
-                mActiveLight->setDiffuse(diffuse);
+                mSun->setDiffuse(diffuse);
 
             if (ImGui::SliderFloat("Specular", &specular, 0.0f, 1.0f, "%.3f"))
-                mActiveLight->setSpecular(specular);
+                mSun->setSpecular(specular);
 
-            float color[4] = {mActiveLight->color().x(), mActiveLight->color().y(), mActiveLight->color().z(), mActiveLight->color().w()};
+            float color[4] = {mSun->color().x(), mSun->color().y(), mSun->color().z(), mSun->color().w()};
 
             if (ImGui::ColorEdit4("Color##Light", (float *) &color))
-                mActiveLight->setColor(QVector4D(color[0], color[1], color[2], color[3]));
+                mSun->setColor(QVector4D(color[0], color[1], color[2], color[3]));
         }
     }
 

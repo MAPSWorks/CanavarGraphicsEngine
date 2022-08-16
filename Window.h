@@ -60,7 +60,7 @@ private:
     LightManager *mLightManager;
     NodeManager *mNodeManager;
 
-    Light *mActiveLight;
+    DirectionalLight *mSun;
 
     QList<Node *> mNodes;
 

@@ -42,7 +42,7 @@ private:
     FreeCamera *mFreeCamera;
     DummyCamera *mDummyCamera;
 
-    Light *mLight;
+    DirectionalLight *mSun;
 
     Model *mPlane;
 
