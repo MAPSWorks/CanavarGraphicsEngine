@@ -17,5 +17,10 @@
         <file>Resources/Shaders/Basic.vert</file>
         <file>Resources/Shaders/TexturedModel.frag</file>
         <file>Resources/Shaders/TexturedModel.vert</file>
+        <file>Resources/Shaders/Wireframe.frag</file>
+        <file>Resources/Shaders/Wireframe.vert</file>
+        <file>Resources/Shaders/Normals.frag</file>
+        <file>Resources/Shaders/Normals.geom</file>
+        <file>Resources/Shaders/Normals.vert</file>
     </qresource>
 </RCC>

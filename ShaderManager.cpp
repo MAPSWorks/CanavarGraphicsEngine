@@ -140,6 +140,108 @@ bool ShaderManager::init()
         qInfo() << "TexturedModelShader is initialized.";
         qInfo() << "Uniform locations are:" << locations;
     }
+
+    // Wireframe
+    {
+        qInfo() << "WireframeShader is initializing...";
+
+        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
+        mPrograms.insert(Shader::WireframeShader, shader);
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/Wireframe.vert")))
+        {
+            qWarning() << "Could not load vertex shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/Wireframe.frag")))
+        {
+            qWarning() << "Could not load fragment shader.";
+            return false;
+        }
+
+        if (!shader->link())
+        {
+            qWarning() << "Could not link shader program.";
+            return false;
+        }
+
+        if (!shader->bind())
+        {
+            qWarning() << "Could not bind shader program.";
+            return false;
+        }
+
+        QMap<QString, GLuint> locations;
+
+        locations.insert("node_matrix", shader->uniformLocation("node_matrix"));
+        locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
+        locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
+
+        shader->bindAttributeLocation("position", 0);
+
+        shader->release();
+
+        mLocations.insert(Shader::WireframeShader, locations);
+
+        qInfo() << "WireframeShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
+    }
+
+    // Normals
+    {
+        qInfo() << "NormalsShader is initializing...";
+
+        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
+        mPrograms.insert(Shader::NormalsShader, shader);
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/Normals.vert")))
+        {
+            qWarning() << "Could not load vertex shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Geometry, Helper::getBytes(":/Resources/Shaders/Normals.geom")))
+        {
+            qWarning() << "Could not load geometry shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/Normals.frag")))
+        {
+            qWarning() << "Could not load fragment shader.";
+            return false;
+        }
+
+        if (!shader->link())
+        {
+            qWarning() << "Could not link shader program.";
+            return false;
+        }
+
+        if (!shader->bind())
+        {
+            qWarning() << "Could not bind shader program.";
+            return false;
+        }
+
+        QMap<QString, GLuint> locations;
+
+        locations.insert("node_matrix", shader->uniformLocation("node_matrix"));
+        locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
+        locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
+
+        shader->bindAttributeLocation("position", 0);
+        shader->bindAttributeLocation("normal", 1);
+
+        shader->release();
+
+        mLocations.insert(Shader::NormalsShader, locations);
+
+        qInfo() << "NormalsShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
+    }
+
     return true;
 }
 

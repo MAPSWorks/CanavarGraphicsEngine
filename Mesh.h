@@ -38,6 +38,8 @@ public:
 
     bool create();
     void render();
+    void renderWireframe();
+    void renderNormals();
 
     const QString &name() const;
     void setName(const QString &newName);

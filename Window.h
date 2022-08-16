@@ -72,5 +72,9 @@ private:
     float mRudder;   // [-1, 1]
     float mThrottle; // [0, 1]
     Aircraft::PrimaryFlightData mPfd;
+
+    bool mRenderObjects;
+    bool mRenderWireframe;
+    bool mRenderNormals;
 };
 #endif // WINDOW_H

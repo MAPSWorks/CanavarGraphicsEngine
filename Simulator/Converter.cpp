@@ -14,9 +14,7 @@ QVector3D Converter::toOpenGL(double latitude, double longitude, double altitude
 {
     QQuaternion ecefToLocal = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 90 - latitude) * //
                               QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), longitude);
-
     QVector3D ecef = Converter::geodeticToEcef(latitude, longitude, altitude);
-
     QVector3D ecefDelta = ecefToLocal.inverted() * (ecef - mReferencePosition);
 
     return QVector3D(ecefDelta.y(), ecefDelta.z(), ecefDelta.x());

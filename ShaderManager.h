@@ -15,7 +15,9 @@ public:
     enum class Shader { //
         None,
         BasicShader,
-        TexturedModelShader
+        TexturedModelShader,
+        WireframeShader,
+        NormalsShader
     };
 
     QOpenGLShaderProgram *getShader(Shader shader);

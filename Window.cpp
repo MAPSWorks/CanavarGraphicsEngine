@@ -27,6 +27,7 @@ Window::Window(QWindow *parent)
 void Window::initializeGL()
 {
     initializeOpenGLFunctions();
+    glEnable(GL_MULTISAMPLE);
 
     QtImGui::initialize(this);
 
@@ -51,6 +52,10 @@ void Window::paintGL()
     mRudder = mAircraftController->rudder();
     mThrottle = mAircraftController->throttle();
 
+    mRenderObjects = mRendererManager->renderObjects();
+    mRenderWireframe = mRendererManager->renderWireframe();
+    mRenderNormals = mRendererManager->renderNormals();
+
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
     mPreviousTime = mCurrentTime;
@@ -62,6 +67,19 @@ void Window::paintGL()
     QtImGui::newFrame();
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Controls", NULL, ImGuiWindowFlags_MenuBar);
+
+    // Render Settings
+    if (!ImGui::CollapsingHeader("Render Settings"))
+    {
+        if (ImGui::Checkbox("Render Objects", &mRenderObjects))
+            mRendererManager->setRenderObjects(mRenderObjects);
+
+        if (ImGui::Checkbox("Wireframe", &mRenderWireframe))
+            mRendererManager->setRenderWireframe(mRenderWireframe);
+
+        if (ImGui::Checkbox("Render Normals", &mRenderNormals))
+            mRendererManager->setRenderNormals(mRenderNormals);
+    }
 
     // Light
     if (!ImGui::CollapsingHeader("Light"))

@@ -94,34 +94,6 @@ void Controller::init()
     mPlane->setScale(QVector3D(100.0f, 100.0f, 100.0f));
     mNodeManager->addNode(mPlane);
 
-    for (int i = -10000; i < 10000; i += 400)
-    {
-        for (int j = -10000; j < 10000; j += 400)
-        {
-            Model *cube = new Model;
-            cube->setType(Model::Cube);
-            cube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
-            cube->setPosition(QVector3D(i, 1, j));
-            mPlane->addChild(cube);
-        }
-    }
-
-    // Suzanne
-    mSuzanne = new Model;
-    mSuzanne->setType(Model::Suzanne);
-    mSuzanne->setName("Suzanne");
-    mSuzanne->setPosition(QVector3D(0, 0, 0));
-
-    // Cube
-    mCube = new Model;
-    mCube->setType(Model::Cube);
-    mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
-    mCube->setName("Cube");
-
-    mCube->setPosition(QVector3D(0, 0, 0));
-    mNodeManager->addNode(mCube);
-    mCube->addChild(mSuzanne);
-
     mBackpack = new TexturedModel("backpack");
     mBackpack->setPosition(QVector3D(-5, 5, -5));
     mBackpack->setShininess(1.0f);
@@ -155,10 +127,10 @@ void Controller::init()
 
 void Controller::run()
 {
-    mWindow->showMaximized();
-    mWindow->showFullScreen();
-    //    mWindow->resize(1280, 800);
-    //    mWindow->show();
+    // mWindow->showMaximized();
+    // mWindow->showFullScreen();
+    mWindow->resize(1280, 800);
+    mWindow->show();
 }
 
 void Controller::onWheelMoved(QWheelEvent *)

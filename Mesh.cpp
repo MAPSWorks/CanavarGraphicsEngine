@@ -116,6 +116,20 @@ void Mesh::render()
     glActiveTexture(GL_TEXTURE0);
 }
 
+void Mesh::renderWireframe()
+{
+    mVertexArray.bind();
+    glDrawElements(GL_LINE_STRIP, mIndices.size(), GL_UNSIGNED_INT, 0);
+    mVertexArray.release();
+}
+
+void Mesh::renderNormals()
+{
+    mVertexArray.bind();
+    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+    mVertexArray.release();
+}
+
 const QString &Mesh::name() const
 {
     return mName;

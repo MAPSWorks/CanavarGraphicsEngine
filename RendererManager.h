@@ -26,6 +26,15 @@ public:
     bool init();
     void render(float ifps);
 
+    bool renderWireframe() const;
+    void setRenderWireframe(bool newRenderWireframe);
+
+    bool renderNormals() const;
+    void setRenderNormals(bool newRenderNormals);
+
+    bool renderObjects() const;
+    void setRenderObjects(bool newRenderObjects);
+
 private slots:
     void renderNode(Node *node);
 
@@ -40,6 +49,10 @@ private:
 
     Camera *mCamera;
     Light *mLight;
+
+    bool mRenderObjects;
+    bool mRenderWireframe;
+    bool mRenderNormals;
 };
 
 #endif // RENDERERMANAGER_H

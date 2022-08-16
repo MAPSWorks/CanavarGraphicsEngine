@@ -9,6 +9,9 @@
 
 RendererManager::RendererManager(QObject *parent)
     : QObject(parent)
+    , mRenderObjects(true)
+    , mRenderWireframe(false)
+    , mRenderNormals(false)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
@@ -119,45 +122,49 @@ void RendererManager::render(float ifps)
     mCamera = mCameraManager->activeCamera();
     mLight = mLightManager->activeLight();
 
-    mShaderManager->bind(ShaderManager::Shader::BasicShader);
-
     if (mCamera)
     {
+        mShaderManager->bind(ShaderManager::Shader::BasicShader);
         mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
         mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
         mShaderManager->setUniformValue("camera_position", mCamera->position());
+        mShaderManager->release();
+
+        mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
+        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
+        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
+        mShaderManager->setUniformValue("camera_position", mCamera->position());
+        mShaderManager->release();
+
+        mShaderManager->bind(ShaderManager::Shader::WireframeShader);
+        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
+        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
+        mShaderManager->release();
+
+        mShaderManager->bind(ShaderManager::Shader::NormalsShader);
+        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
+        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
+        mShaderManager->release();
     }
 
     if (mLight)
     {
+        mShaderManager->bind(ShaderManager::Shader::BasicShader);
         mShaderManager->setUniformValue("light.position", mLight->position());
         mShaderManager->setUniformValue("light.color", mLight->color());
         mShaderManager->setUniformValue("light.ambient", mLight->ambient());
         mShaderManager->setUniformValue("light.diffuse", mLight->diffuse());
         mShaderManager->setUniformValue("light.specular", mLight->specular());
-    }
+        mShaderManager->release();
 
-    mShaderManager->release();
-
-    mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
-
-    if (mCamera)
-    {
-        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
-        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
-        mShaderManager->setUniformValue("camera_position", mCamera->position());
-    }
-
-    if (mLight)
-    {
+        mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
         mShaderManager->setUniformValue("light.position", mLight->position());
         mShaderManager->setUniformValue("light.color", mLight->color());
         mShaderManager->setUniformValue("light.ambient", mLight->ambient());
         mShaderManager->setUniformValue("light.diffuse", mLight->diffuse());
         mShaderManager->setUniformValue("light.specular", mLight->specular());
+        mShaderManager->release();
     }
-
-    mShaderManager->release();
 
     auto nodes = mNodeManager->nodes();
     for (auto node : nodes)
@@ -175,16 +182,34 @@ void RendererManager::renderNode(Node *node)
 
         if (data)
         {
-            mShaderManager->bind(ShaderManager::Shader::BasicShader);
-            mShaderManager->setUniformValue("node.transformation", model->worldTransformation());
-            mShaderManager->setUniformValue("node.color", model->material().color());
-            mShaderManager->setUniformValue("node.ambient", model->material().ambient());
-            mShaderManager->setUniformValue("node.diffuse", model->material().diffuse());
-            mShaderManager->setUniformValue("node.specular", model->material().specular());
-            mShaderManager->setUniformValue("node.shininess", model->material().shininess());
+            if (mRenderObjects)
+            {
+                mShaderManager->bind(ShaderManager::Shader::BasicShader);
+                mShaderManager->setUniformValue("node.transformation", model->worldTransformation());
+                mShaderManager->setUniformValue("node.color", model->material().color());
+                mShaderManager->setUniformValue("node.ambient", model->material().ambient());
+                mShaderManager->setUniformValue("node.diffuse", model->material().diffuse());
+                mShaderManager->setUniformValue("node.specular", model->material().specular());
+                mShaderManager->setUniformValue("node.shininess", model->material().shininess());
+                data->render();
+                mShaderManager->release();
+            }
 
-            data->render();
-            mShaderManager->release();
+            if (mRenderWireframe)
+            {
+                mShaderManager->bind(ShaderManager::Shader::WireframeShader);
+                mShaderManager->setUniformValue("node_matrix", model->worldTransformation());
+                data->renderWireframe();
+                mShaderManager->release();
+            }
+
+            if (mRenderNormals)
+            {
+                mShaderManager->bind(ShaderManager::Shader::NormalsShader);
+                mShaderManager->setUniformValue("node_matrix", model->worldTransformation());
+                data->renderNormals();
+                mShaderManager->release();
+            }
         }
     }
 
@@ -194,17 +219,68 @@ void RendererManager::renderNode(Node *node)
 
         if (data)
         {
-            mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
-            mShaderManager->setUniformValue("node.transformation", texturedModel->worldTransformation());
-            mShaderManager->setUniformValue("node.shininess", texturedModel->shininess());
+            if (mRenderObjects)
+            {
+                mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
+                mShaderManager->setUniformValue("node.transformation", texturedModel->worldTransformation());
+                mShaderManager->setUniformValue("node.shininess", texturedModel->shininess());
+                data->render();
+                mShaderManager->release();
+            }
 
-            data->render();
-            mShaderManager->release();
+            if (mRenderWireframe)
+            {
+                mShaderManager->bind(ShaderManager::Shader::WireframeShader);
+                mShaderManager->setUniformValue("node_matrix", texturedModel->worldTransformation());
+                data->renderWireframe();
+                mShaderManager->release();
+            }
+
+            if (mRenderNormals)
+            {
+                mShaderManager->bind(ShaderManager::Shader::NormalsShader);
+                mShaderManager->setUniformValue("node_matrix", texturedModel->worldTransformation());
+                data->renderNormals();
+                mShaderManager->release();
+            }
         }
     }
 
-    auto children = node->children();
+    if (node)
+    {
+        auto children = node->children();
 
-    for (auto child : children)
-        renderNode(child);
+        for (auto child : children)
+            renderNode(child);
+    }
+}
+
+bool RendererManager::renderObjects() const
+{
+    return mRenderObjects;
+}
+
+void RendererManager::setRenderObjects(bool newRenderObjects)
+{
+    mRenderObjects = newRenderObjects;
+}
+
+bool RendererManager::renderNormals() const
+{
+    return mRenderNormals;
+}
+
+void RendererManager::setRenderNormals(bool newRenderNormals)
+{
+    mRenderNormals = newRenderNormals;
+}
+
+bool RendererManager::renderWireframe() const
+{
+    return mRenderWireframe;
+}
+
+void RendererManager::setRenderWireframe(bool newRenderWireframe)
+{
+    mRenderWireframe = newRenderWireframe;
 }

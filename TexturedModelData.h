@@ -24,6 +24,8 @@ public:
     const QVector<TexturedMaterial *> &materials() const;
 
     void render();
+    void renderWireframe();
+    void renderNormals();
 
 private:
     QString mModelName;
