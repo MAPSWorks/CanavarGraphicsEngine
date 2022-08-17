@@ -17,8 +17,6 @@ public:
 
     bool create();
     void render();
-    void renderWireframe();
-    void renderNormals();
 
     void setVertices(const QVector<QVector3D> &newVertices);
     void setNormals(const QVector<QVector3D> &newNormals);

@@ -84,20 +84,6 @@ void ModelData::render()
     mVertexArray.release();
 }
 
-void ModelData::renderWireframe()
-{
-    mVertexArray.bind();
-    glDrawArrays(GL_LINE_STRIP, 0, mVertices.size());
-    mVertexArray.release();
-}
-
-void ModelData::renderNormals()
-{
-    mVertexArray.bind();
-    glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
-    mVertexArray.release();
-}
-
 void ModelData::setVertices(const QVector<QVector3D> &newVertices)
 {
     mVertices = newVertices;

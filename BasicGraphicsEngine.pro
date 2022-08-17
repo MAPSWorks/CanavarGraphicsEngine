@@ -38,6 +38,8 @@ HEADERS += \
     PointLight.h \
     RendererManager.h \
     ShaderManager.h \
+    SimpleTerrain.h \
+    SimpleTerrainTile.h \
     Simulator/Aircraft.h \
     Simulator/AircraftController.h \
     Simulator/Converter.h \
@@ -70,6 +72,8 @@ SOURCES += \
     PointLight.cpp \
     RendererManager.cpp \
     ShaderManager.cpp \
+    SimpleTerrain.cpp \
+    SimpleTerrainTile.cpp \
     Simulator/Aircraft.cpp \
     Simulator/AircraftController.cpp \
     Simulator/Converter.cpp \

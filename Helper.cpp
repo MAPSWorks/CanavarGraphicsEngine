@@ -225,9 +225,9 @@ Mesh *Helper::processMesh(aiMesh *aiMesh)
             vertex.normal = QVector3D(aiMesh->mNormals[i].x, aiMesh->mNormals[i].y, aiMesh->mNormals[i].z);
 
         if (aiMesh->mTextureCoords[0])
-            vertex.textureCoord = QVector2D(aiMesh->mTextureCoords[0][i].x, aiMesh->mTextureCoords[0][i].y);
+            vertex.texture = QVector2D(aiMesh->mTextureCoords[0][i].x, aiMesh->mTextureCoords[0][i].y);
         else
-            vertex.textureCoord = QVector2D(0, 0);
+            vertex.texture = QVector2D(0, 0);
 
         if (aiMesh->HasTangentsAndBitangents())
         {

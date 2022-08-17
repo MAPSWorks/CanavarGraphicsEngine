@@ -32,16 +32,6 @@ void TexturedModelData::render()
     mRootNode->render();
 }
 
-void TexturedModelData::renderWireframe()
-{
-    mRootNode->renderWireframe();
-}
-
-void TexturedModelData::renderNormals()
-{
-    mRootNode->renderNormals();
-}
-
 const QVector<TexturedMaterial *> &TexturedModelData::materials() const
 {
     return mMaterials;

@@ -20,7 +20,7 @@ public:
     struct Vertex {
         QVector3D position;
         QVector3D normal;
-        QVector2D textureCoord;
+        QVector2D texture;
         QVector3D tangent;
         QVector3D bitangent;
         int boneIDs[4];

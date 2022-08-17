@@ -7,6 +7,7 @@
 #include "ModelData.h"
 #include "NodeManager.h"
 #include "ShaderManager.h"
+#include "SimpleTerrainTile.h"
 #include "SkyBox.h"
 #include "TexturedModelData.h"
 
@@ -57,6 +58,7 @@ private:
     bool mRenderNormals;
 
     SkyBox *mSkyBox;
+    SimpleTerrainTile *mTile;
 };
 
 #endif // RENDERERMANAGER_H

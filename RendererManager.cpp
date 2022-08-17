@@ -128,6 +128,9 @@ bool RendererManager::init()
     mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/2/back.bmp");
     mSkyBox->create();
 
+    mTile = new SimpleTerrainTile;
+    mTile->create();
+
     return true;
 }
 
@@ -171,6 +174,12 @@ void RendererManager::render(float ifps)
         transformation.setColumn(3, QVector4D(0, 0, 0, 1));
         mShaderManager->setUniformValue("view_matrix", transformation);
         mShaderManager->release();
+
+        mShaderManager->bind(ShaderManager::Shader::SimpleTerrainShader);
+        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
+        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
+        mShaderManager->setUniformValue("camera_position", mCamera->position());
+        mShaderManager->release();
     }
 
     if (mSun)
@@ -189,6 +198,39 @@ void RendererManager::render(float ifps)
         mShaderManager->setUniformValue("directional_light.ambient", mSun->ambient());
         mShaderManager->setUniformValue("directional_light.diffuse", mSun->diffuse());
         mShaderManager->setUniformValue("directional_light.specular", mSun->specular());
+        mShaderManager->release();
+
+        mShaderManager->bind(ShaderManager::Shader::SimpleTerrainShader);
+        mShaderManager->setUniformValue("directional_light.direction", mSun->direction());
+        mShaderManager->setUniformValue("directional_light.color", mSun->color());
+        mShaderManager->setUniformValue("directional_light.ambient", mSun->ambient());
+        mShaderManager->setUniformValue("directional_light.diffuse", mSun->diffuse());
+        mShaderManager->setUniformValue("directional_light.specular", mSun->specular());
+        mShaderManager->release();
+    }
+
+    // Render Terrain
+    if (mRenderObjects)
+    {
+        mShaderManager->bind(ShaderManager::Shader::SimpleTerrainShader);
+        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
+        mTile->render();
+        mShaderManager->release();
+    }
+
+    if (mRenderWireframe)
+    {
+        mShaderManager->bind(ShaderManager::Shader::WireframeShader);
+        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
+        mTile->render();
+        mShaderManager->release();
+    }
+
+    if (mRenderNormals)
+    {
+        mShaderManager->bind(ShaderManager::Shader::NormalsShader);
+        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
+        mTile->render();
         mShaderManager->release();
     }
 
@@ -266,7 +308,7 @@ void RendererManager::renderNode(Node *node)
             {
                 mShaderManager->bind(ShaderManager::Shader::WireframeShader);
                 mShaderManager->setUniformValue("node_matrix", model->worldTransformation());
-                data->renderWireframe();
+                data->render();
                 mShaderManager->release();
             }
 
@@ -274,7 +316,7 @@ void RendererManager::renderNode(Node *node)
             {
                 mShaderManager->bind(ShaderManager::Shader::NormalsShader);
                 mShaderManager->setUniformValue("node_matrix", model->worldTransformation());
-                data->renderNormals();
+                data->render();
                 mShaderManager->release();
             }
         }
@@ -335,7 +377,7 @@ void RendererManager::renderNode(Node *node)
             {
                 mShaderManager->bind(ShaderManager::Shader::WireframeShader);
                 mShaderManager->setUniformValue("node_matrix", texturedModel->worldTransformation());
-                data->renderWireframe();
+                data->render();
                 mShaderManager->release();
             }
 
@@ -343,7 +385,7 @@ void RendererManager::renderNode(Node *node)
             {
                 mShaderManager->bind(ShaderManager::Shader::NormalsShader);
                 mShaderManager->setUniformValue("node_matrix", texturedModel->worldTransformation());
-                data->renderNormals();
+                data->render();
                 mShaderManager->release();
             }
         }

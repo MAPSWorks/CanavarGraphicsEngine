@@ -53,25 +53,3 @@ void TexturedModelDataNode::render()
     for (int i = 0; i < mChildren.size(); i++)
         mChildren[i]->render();
 }
-
-void TexturedModelDataNode::renderWireframe()
-{
-    auto meshes = mData->meshes();
-
-    for (auto index : qAsConst(mMeshIndices))
-        meshes[index]->renderWireframe();
-
-    for (int i = 0; i < mChildren.size(); i++)
-        mChildren[i]->renderWireframe();
-}
-
-void TexturedModelDataNode::renderNormals()
-{
-    auto meshes = mData->meshes();
-
-    for (auto index : qAsConst(mMeshIndices))
-        meshes[index]->renderNormals();
-
-    for (int i = 0; i < mChildren.size(); i++)
-        mChildren[i]->renderNormals();
-}

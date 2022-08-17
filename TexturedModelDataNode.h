@@ -25,8 +25,6 @@ public:
     void setInitialTransformation(const QMatrix4x4 &newInitialTransformation);
 
     void render();
-    void renderWireframe();
-    void renderNormals();
 
 private:
     QVector<TexturedModelDataNode *> mChildren;

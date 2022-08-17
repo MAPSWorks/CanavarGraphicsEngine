@@ -214,6 +214,12 @@ bool ShaderManager::init()
             return false;
         }
 
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Geometry, Helper::getBytes(":/Resources/Shaders/Wireframe.geom")))
+        {
+            qWarning() << "Could not load vertex shader.";
+            return false;
+        }
+
         if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/Wireframe.frag")))
         {
             qWarning() << "Could not load fragment shader.";
@@ -346,6 +352,62 @@ bool ShaderManager::init()
         mLocations.insert(Shader::SkyBoxShader, locations);
 
         qInfo() << "SkyBoxShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
+    }
+
+    // SimpleTerrainShader
+    {
+        qInfo() << "SimpleTerrainShader is initializing...";
+
+        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
+        mPrograms.insert(Shader::SimpleTerrainShader, shader);
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/SimpleTerrain.vert")))
+        {
+            qWarning() << Q_FUNC_INFO << "Could not load vertex shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/SimpleTerrain.frag")))
+        {
+            qWarning() << Q_FUNC_INFO << "Could not load fragment shader.";
+            return false;
+        }
+
+        if (!shader->link())
+        {
+            qWarning() << Q_FUNC_INFO << "Could not link shader program.";
+            return false;
+        }
+
+        if (!shader->bind())
+        {
+            qWarning() << Q_FUNC_INFO << "Could not bind shader program.";
+            return false;
+        }
+
+        QMap<QString, GLuint> locations;
+
+        locations.insert("directional_light.color", shader->uniformLocation("directional_light.color"));
+        locations.insert("directional_light.direction", shader->uniformLocation("directional_light.direction"));
+        locations.insert("directional_light.ambient", shader->uniformLocation("directional_light.ambient"));
+        locations.insert("directional_light.diffuse", shader->uniformLocation("directional_light.diffuse"));
+        locations.insert("directional_light.specular", shader->uniformLocation("directional_light.specular"));
+
+        locations.insert("node_matrix", shader->uniformLocation("node_matrix"));
+        locations.insert("camera_position", shader->uniformLocation("camera_position"));
+        locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
+        locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
+
+        shader->bindAttributeLocation("position", 0);
+        shader->bindAttributeLocation("normal", 1);
+        shader->bindAttributeLocation("texture_coord", 2);
+
+        shader->release();
+
+        mLocations.insert(Shader::SimpleTerrainShader, locations);
+
+        qInfo() << "SimpleTerrainShader is initialized.";
         qInfo() << "Uniform locations are:" << locations;
     }
 

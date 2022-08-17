@@ -19,6 +19,7 @@ public:
         WireframeShader,
         NormalsShader,
         SkyBoxShader,
+        SimpleTerrainShader,
     };
 
     QOpenGLShaderProgram *getShader(Shader shader);
