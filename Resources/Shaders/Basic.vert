@@ -20,8 +20,9 @@ uniform mat4 projection_matrix;
 
 void main()
 {
+    mat3 normal_matrix = mat3(transpose(inverse(node.transformation)));
     fs_position = vec3(node.transformation * vec4(position, 1.0));
-    fs_normal = mat3(transpose(inverse(node.transformation))) * normal;
+    fs_normal =  normal_matrix * normal;
 
     gl_Position = projection_matrix * view_matrix * vec4(fs_position, 1.0);
 }

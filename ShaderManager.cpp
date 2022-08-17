@@ -175,13 +175,11 @@ bool ShaderManager::init()
             locations.insert("spot_lights[" + QString::number(i) + "].outer_cut_off_angle", shader->uniformLocation("spot_lights[" + QString::number(i) + "].outer_cut_off_angle"));
         }
 
-        locations.insert("node.transformation", shader->uniformLocation("node.transformation"));
-        locations.insert("node.shininess", shader->uniformLocation("node.shininess"));
-
+        locations.insert("node_transformation", shader->uniformLocation("node_transformation"));
+        locations.insert("node_shininess", shader->uniformLocation("node_shininess"));
         locations.insert("camera_position", shader->uniformLocation("camera_position"));
         locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
         locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
-
         locations.insert("texture_diffuse", shader->uniformLocation("texture_diffuse"));
         locations.insert("texture_specular", shader->uniformLocation("texture_specular"));
 

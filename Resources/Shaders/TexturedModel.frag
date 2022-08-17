@@ -1,8 +1,4 @@
 #version 330 core
-struct Node {
-    mat4 transformation;
-    float shininess;
-};
 
 struct DirectionalLight {
     vec4 color;
@@ -38,7 +34,7 @@ struct SpotLight {
 };
 
 uniform vec3 camera_position;
-uniform Node node;
+uniform float node_shininess;
 uniform DirectionalLight directional_light;
 uniform PointLight point_lights[8];
 uniform SpotLight spot_lights[8];
@@ -59,44 +55,44 @@ void main()
     // Common Variables
     vec3 normal = normalize(fs_normal);
     vec3 directional_light_dir = normalize(-directional_light.direction);
-    vec3 texture_diffuse_rgb = texture(texture_diffuse, fs_texture_coord).rgb;
-    vec3 texture_specular_rgb = texture(texture_specular, fs_texture_coord).rgb;
+    vec4 texture_diffuse_rgba = texture(texture_diffuse, fs_texture_coord).rgba;
+    vec4 texture_specular_rgba = texture(texture_specular, fs_texture_coord).rgba;
     vec3 view_dir = normalize(camera_position - fs_position);
 
-    vec3 result = vec3(0,0,0);
+    vec4 result = vec4(0,0,0,0);
 
     // Directional Light
     {
         // Ambient
-        vec3 ambient = directional_light.ambient * texture_diffuse_rgb;
+        vec4 ambient = directional_light.ambient * texture_diffuse_rgba;
 
         // Diffuse
         float diffuse_coef = max(dot(normal, directional_light_dir), 0.0);
-        vec3 diffuse = directional_light.diffuse * diffuse_coef * texture_diffuse_rgb;
+        vec4 diffuse = directional_light.diffuse * diffuse_coef * texture_diffuse_rgba;
 
         // Specular
         vec3 reflect_dir = reflect(-directional_light_dir, normal);
-        float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node.shininess);
-        vec3 specular = directional_light.specular * specular_coef * texture_specular_rgb;
+        float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node_shininess);
+        vec4 specular = directional_light.specular * specular_coef * texture_specular_rgba;
 
-        result = ambient + diffuse + specular;
+        result = (ambient + diffuse + specular) * directional_light.color;
     }
 
     // Point Lights
     {
         for(int i = 0; i < number_of_point_lights; i++) {
             // Ambient
-            vec3 ambient  = point_lights[i].ambient  * texture_diffuse_rgb;
+            vec4 ambient  = point_lights[i].ambient  * texture_diffuse_rgba;
 
             // Diffuse
             vec3 light_dir = normalize(point_lights[i].position - fs_position);
             float diffuse_coef = max(dot(normal, light_dir), 0.0);
-            vec3 diffuse  = point_lights[i].diffuse  * diffuse_coef * texture_diffuse_rgb;
+            vec4 diffuse  = point_lights[i].diffuse  * diffuse_coef * texture_diffuse_rgba;
 
             // Specular
             vec3 reflect_dir = reflect(-light_dir, normal);
-            float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node.shininess);
-            vec3 specular = point_lights[i].specular * specular_coef * texture_specular_rgb;
+            float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node_shininess);
+            vec4 specular = point_lights[i].specular * specular_coef * texture_specular_rgba;
 
             // Attenuation
             float distance = length(point_lights[i].position - fs_position);
@@ -107,7 +103,7 @@ void main()
             ambient  *= attenuation;
             diffuse  *= attenuation;
             specular *= attenuation;
-            result += (ambient + diffuse + specular);
+            result += (ambient + diffuse + specular) * point_lights[i].color;
         }
     }
 
@@ -116,17 +112,17 @@ void main()
     {
         for(int i = 0; i < number_of_spot_lights; i++) {
             // Ambient
-            vec3 ambient = spot_lights[i].ambient * texture_diffuse_rgb;
+            vec4 ambient = spot_lights[i].ambient * texture_diffuse_rgba;
 
             // Diffuse
             vec3 light_dir = normalize(spot_lights[i].position - fs_position);
             float diffuse_coef = max(dot(normal, light_dir), 0.0);
-            vec3 diffuse = spot_lights[i].diffuse * diffuse_coef * texture_diffuse_rgb;
+            vec4 diffuse = spot_lights[i].diffuse * diffuse_coef * texture_diffuse_rgba;
 
             // Specular
             vec3 reflect_dir = reflect(-light_dir, normal);
-            float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node.shininess);
-            vec3 specular = spot_lights[i].specular * specular_coef * texture_specular_rgb;
+            float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node_shininess);
+            vec4 specular = spot_lights[i].specular * specular_coef * texture_specular_rgba;
 
             // Spotlight (soft edges)
             float theta = dot(light_dir, normalize(-spot_lights[i].direction));
@@ -144,9 +140,9 @@ void main()
             diffuse  *= attenuation;
             specular *= attenuation;
 
-            result += (ambient + diffuse + specular);
+            result += (ambient + diffuse + specular) * spot_lights[i].color;
         }
     }
 
-    out_color = vec4(result, 1.0);
+    out_color = result;
 }

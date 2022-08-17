@@ -331,8 +331,8 @@ void RendererManager::renderNode(Node *node)
             if (mRenderObjects)
             {
                 mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
-                mShaderManager->setUniformValue("node.transformation", texturedModel->worldTransformation());
-                mShaderManager->setUniformValue("node.shininess", texturedModel->shininess());
+                mShaderManager->setUniformValue("node_transformation", texturedModel->worldTransformation());
+                mShaderManager->setUniformValue("node_shininess", texturedModel->shininess());
 
                 QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), node);
 
