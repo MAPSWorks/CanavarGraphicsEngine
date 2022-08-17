@@ -40,6 +40,7 @@ public:
 private slots:
     void renderNode(Node *node);
     void renderSkyBox();
+    void renderSimpleTerrain();
 
 private:
     QMap<Model::Type, ModelData *> mTypeToModelData;

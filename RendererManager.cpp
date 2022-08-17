@@ -209,30 +209,7 @@ void RendererManager::render(float ifps)
         mShaderManager->release();
     }
 
-    // Render Terrain
-    if (mRenderObjects)
-    {
-        mShaderManager->bind(ShaderManager::Shader::SimpleTerrainShader);
-        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
-        mTile->render();
-        mShaderManager->release();
-    }
-
-    if (mRenderWireframe)
-    {
-        mShaderManager->bind(ShaderManager::Shader::WireframeShader);
-        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
-        mTile->render();
-        mShaderManager->release();
-    }
-
-    if (mRenderNormals)
-    {
-        mShaderManager->bind(ShaderManager::Shader::NormalsShader);
-        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
-        mTile->render();
-        mShaderManager->release();
-    }
+    renderSimpleTerrain();
 
     auto nodes = mNodeManager->nodes();
 
@@ -406,6 +383,43 @@ void RendererManager::renderSkyBox()
     mShaderManager->setUniformValue("skybox", 0);
     mSkyBox->render();
     mShaderManager->release();
+}
+
+void RendererManager::renderSimpleTerrain()
+{
+    // Render Terrain
+    if (mRenderObjects)
+    {
+        mShaderManager->bind(ShaderManager::Shader::SimpleTerrainShader);
+        mShaderManager->setUniformValue("properties.ambient", mTile->properties().ambient);
+        mShaderManager->setUniformValue("properties.diffuse", mTile->properties().diffuse);
+        mShaderManager->setUniformValue("properties.specular", mTile->properties().specular);
+        mShaderManager->setUniformValue("properties.shininess", mTile->properties().shininess);
+        mShaderManager->setUniformValue("properties.cellCount", mTile->properties().cellCount);
+        mShaderManager->setUniformValue("properties.offset", mTile->properties().offset);
+        mShaderManager->setUniformValue("properties.amplitude", mTile->properties().amplitude);
+        mShaderManager->setUniformValue("properties.octaves", mTile->properties().octaves);
+        mShaderManager->setUniformValue("properties.roughness", mTile->properties().roughness);
+        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
+        mTile->render();
+        mShaderManager->release();
+    }
+
+    if (mRenderWireframe)
+    {
+        mShaderManager->bind(ShaderManager::Shader::WireframeShader);
+        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
+        mTile->render();
+        mShaderManager->release();
+    }
+
+    if (mRenderNormals)
+    {
+        mShaderManager->bind(ShaderManager::Shader::NormalsShader);
+        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
+        mTile->render();
+        mShaderManager->release();
+    }
 }
 
 bool RendererManager::renderObjects() const

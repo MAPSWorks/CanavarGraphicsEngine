@@ -1,5 +1,17 @@
 #version 330 core
 
+struct TileProperties {
+    int cellCount;
+    float offset;
+    float amplitude;
+    int octaves;
+    float roughness;
+    float ambient;
+    float diffuse;
+    float shininess;
+    float specular;
+};
+
 struct DirectionalLight {
     vec4 color;
     vec3 direction;
@@ -33,9 +45,10 @@ struct SpotLight {
     float outer_cut_off_angle;
 };
 
+uniform TileProperties properties;
 uniform vec3 camera_position;
-
 uniform DirectionalLight directional_light;
+
 //uniform PointLight point_lights[8];
 //uniform SpotLight spot_lights[8];
 //uniform int number_of_point_lights;
@@ -63,16 +76,16 @@ void main()
     // Directional Light
     {
         // Ambient
-        float ambient = directional_light.ambient * 0.25f;
+        float ambient = directional_light.ambient * properties.ambient;
 
         // Diffuse
         float diffuse_coef = max(dot(normal, directional_light_dir), 0.0);
-        float diffuse = directional_light.diffuse * diffuse_coef * 0.5f;
+        float diffuse = directional_light.diffuse * diffuse_coef * properties.diffuse;
 
         // Specular
         vec3 reflect_dir = reflect(-directional_light_dir, normal);
-        float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), 4);
-        float specular = directional_light.specular * specular_coef * 0.1f;
+        float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), properties.shininess);
+        float specular = directional_light.specular * specular_coef * properties.specular;
 
         result = (specular + ambient + diffuse) * color * directional_light.color;
     }

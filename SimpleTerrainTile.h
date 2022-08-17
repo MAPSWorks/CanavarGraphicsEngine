@@ -31,18 +31,26 @@ public:
         QVector2D texture;
     };
 
+    struct TileProperties {
+        int cellCount;
+        float offset;
+        float amplitude;
+        int octaves;
+        float roughness;
+        float ambient;
+        float diffuse;
+        float shininess;
+        float specular;
+    };
+
     explicit SimpleTerrainTile(QObject *parent = nullptr);
 
     bool create();
     void render();
     QMatrix4x4 transformation();
 
-private:
-    float generateHeight(float x, float z);
-    float getSmoothNoise(float x, float z);
-    float getNoise(float x, float z);
-    float interpolate(float a, float b, float blend);
-    float getInterpolatedNoise(float x, float z);
+    const TileProperties &properties() const;
+    void setProperties(const TileProperties &newProperties);
 
 private:
     QOpenGLVertexArrayObject mVAO;
@@ -50,12 +58,9 @@ private:
     unsigned int mEBO;
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;
-    QRandomGenerator mRandomGenerator;
-    unsigned int mSeed;
-    float mOffset;
-    float mAmplitude;
-    int mOctaves;
-    float mRoughness;
+
+    QVector3D mDummyNormal;
+    TileProperties mProperties;
 };
 
 #endif // SIMPLETERRAINTILE_H

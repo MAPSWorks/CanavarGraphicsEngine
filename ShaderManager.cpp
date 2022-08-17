@@ -386,6 +386,16 @@ bool ShaderManager::init()
 
         QMap<QString, GLuint> locations;
 
+        locations.insert("properties.cellCount", shader->uniformLocation("properties.cellCount"));
+        locations.insert("properties.offset", shader->uniformLocation("properties.offset"));
+        locations.insert("properties.amplitude", shader->uniformLocation("properties.amplitude"));
+        locations.insert("properties.octaves", shader->uniformLocation("properties.octaves"));
+        locations.insert("properties.roughness", shader->uniformLocation("properties.roughness"));
+        locations.insert("properties.ambient", shader->uniformLocation("properties.ambient"));
+        locations.insert("properties.diffuse", shader->uniformLocation("properties.diffuse"));
+        locations.insert("properties.specular", shader->uniformLocation("properties.specular"));
+        locations.insert("properties.shininess", shader->uniformLocation("properties.shininess"));
+
         locations.insert("directional_light.color", shader->uniformLocation("directional_light.color"));
         locations.insert("directional_light.direction", shader->uniformLocation("directional_light.direction"));
         locations.insert("directional_light.ambient", shader->uniformLocation("directional_light.ambient"));
