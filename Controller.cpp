@@ -128,16 +128,16 @@ void Controller::init()
     mRock->setPosition(QVector3D(15, 15, -5));
     mNodeManager->addNode(mRock);
 
-    mF16 = new TexturedModel("f16");
-    mF16->setName("f16");
-    mF16->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
-    mF16->setPosition(QVector3D(0, -3.5, 0));
-    mF16->addChild(mDummyCamera);
+    mJet = new TexturedModel("f16");
+    mJet->setName("f16");
+    //mJet->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
+    //mJet->setPosition(QVector3D(0, -3.5, 0));
+    mJet->addChild(mDummyCamera);
 
-    mRootF16Node = new Node;
-    mRootF16Node->setName("f16_root_node");
-    mRootF16Node->addChild(mF16);
-    mNodeManager->addNode(mRootF16Node);
+    mRootJetNode = new Node;
+    mRootJetNode->setName("jet_root_node");
+    mRootJetNode->addChild(mJet);
+    mNodeManager->addNode(mRootJetNode);
 }
 
 void Controller::run()
@@ -221,8 +221,8 @@ void Controller::onMouseDoubleClicked(QMouseEvent *) {}
 
 void Controller::render(float ifps)
 {
-    mRootF16Node->setRotation(mPfd.rotation);
-    mRootF16Node->setPosition(mPfd.position);
+    mRootJetNode->setRotation(mPfd.rotation);
+    mRootJetNode->setPosition(mPfd.position);
 
     mCameraManager->update(ifps);
     mRendererManager->render(ifps);

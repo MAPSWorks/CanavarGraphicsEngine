@@ -283,8 +283,8 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
     sand_t.rg *= 1.3;
     vec4 rock_t = texture(rock, fsTextureCoord * vec2(1.0, 1.256).yx);
     rock_t.rgb *= vec3(2.5, 2.0, 2.0);
-    vec4 grass_t = texture(grass, fsTextureCoord);
-    vec4 grass_t1 = texture(terrainTexture, fsTextureCoord);
+    vec4 grass_t = texture(grass, fsTextureCoord * 10.0);
+    vec4 grass_t1 = texture(terrainTexture, fsTextureCoord * 10.0);
     float perlinBlendingCoeff = clamp(perlin(fsWorldPosition.x, fsWorldPosition.z, 2) * 2.0 - 0.2, 0.0, 1.0);
     grass_t = mix(grass_t * 1.3, grass_t1 * 0.75, perlinBlendingCoeff);
     grass_t.rgb *= 0.5;

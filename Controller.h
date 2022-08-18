@@ -53,8 +53,8 @@ private:
     TexturedModel *mNanoSuit;
     TexturedModel *mPlanet;
     TexturedModel *mRock;
-    TexturedModel *mF16;
-    Node *mRootF16Node;
+    TexturedModel *mJet;
+    Node *mRootJetNode;
 
     QApplication *mApp;
 

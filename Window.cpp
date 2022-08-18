@@ -71,7 +71,7 @@ void Window::paintGL()
 
     QtImGui::newFrame();
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Controls");
+    ImGui::Begin("Graphics");
 
     // Render Settings
     if (!ImGui::CollapsingHeader("Render Settings"))

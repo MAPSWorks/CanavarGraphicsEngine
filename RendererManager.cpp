@@ -70,7 +70,10 @@ bool RendererManager::init()
     QStringList extensions;
     extensions << "*.obj"
                << "*.blend"
-               << "*.dae";
+               << "*.dae"
+               << "*.glb"
+               << "*.gltf"
+               << "*.bin";
 
     for (const auto &dirName : qAsConst(dirs))
     {
