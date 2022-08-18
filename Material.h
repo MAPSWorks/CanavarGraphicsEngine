@@ -3,32 +3,14 @@
 
 #include <QVector4D>
 
-class Material
-{
-public:
+struct Material {
     Material();
 
-    float ambient() const;
-    void setAmbient(float newAmbient);
-
-    float diffuse() const;
-    void setDiffuse(float newDiffuse);
-
-    float specular() const;
-    void setSpecular(float newSpecular);
-
-    float shininess() const;
-    void setShininess(float newShininess);
-
-    const QVector4D &color() const;
-    void setColor(const QVector4D &newColor);
-
-private:
-    float mAmbient;
-    float mDiffuse;
-    float mSpecular;
-    float mShininess;
-    QVector4D mColor;
+    float ambient;
+    float diffuse;
+    float specular;
+    float shininess;
+    QVector4D color;
 };
 
 #endif // MATERIAL_H

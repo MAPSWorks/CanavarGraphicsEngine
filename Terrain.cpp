@@ -8,19 +8,20 @@ Terrain::Terrain(QObject *parent)
     mShaderManager = ShaderManager::instance();
 
     mProperties.resolution = 3;
-    mProperties.grids = 121;
-    mProperties.width = 1024;
+    mProperties.grids = 101;
+    mProperties.width = 1000;
     mProperties.octaves = 13;
-    mProperties.freq = 0.01f;
+    mProperties.frequency = 0.01f;
     mProperties.tessellationMultiplier = 1.0f;
     mProperties.amplitude = 20.0f;
     mProperties.power = 3.0f;
-    mProperties.fogColor = QVector3D(0.5, 0.6, 0.7);
-    mProperties.rockColor = QVector3D(120, 105, 75) * 1.5f / 255.f;
-    mProperties.drawFog = true;
-    mProperties.normals = true;
-    mProperties.fogFallOff = 1.5f;
-    mProperties.grassCoverage = 0.65f;
+    mProperties.grassCoverage = 0.15f;
+    mProperties.seed = QVector3D(1, 1, 1);
+
+    mMaterial.ambient = 0.25f;
+    mMaterial.diffuse = 0.75f;
+    mMaterial.shininess = 4.0f;
+    mMaterial.specular = 0.0f;
 }
 
 void Terrain::create()
@@ -99,7 +100,7 @@ void Terrain::create()
         for (int j = 0; j < mProperties.grids; j++)
         {
             QVector2D pos = (float) (j - mProperties.grids / 2) * I + (float) (i - mProperties.grids / 2) * J;
-            mPositions[i + j * mProperties.grids] = pos;
+            mPositions[j + i * mProperties.grids] = pos;
         }
     }
 
@@ -108,7 +109,6 @@ void Terrain::create()
     mVAO.bind();
     glGenBuffers(1, &mEBO);
     glGenBuffers(1, &mVBO);
-    glGenBuffers(1, &mPBO);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, nTris * 3 * sizeof(unsigned int), trisIndices, GL_STATIC_DRAW);
@@ -122,14 +122,17 @@ void Terrain::create()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
     glEnableVertexAttribArray(2);
+    mVAO.release();
 
     // PBO
+    glGenBuffers(1, &mPBO);
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
     glBufferData(GL_ARRAY_BUFFER, mPositions.size() * sizeof(QVector2D), mPositions.constData(), GL_STATIC_DRAW);
+
+    mVAO.bind();
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(QVector2D), (void *) 0);
     glVertexAttribDivisor(3, 1);
-
     mVAO.release();
 
     mTextureSand = new Texture(Texture::Type::None, "Resources/Terrain/sand.jpg");
@@ -137,7 +140,7 @@ void Terrain::create()
     mTextureSnow = new Texture(Texture::Type::None, "Resources/Terrain/snow0.jpg");
     mTextureRockDiffuse = new Texture(Texture::Type::None, "Resources/Terrain/rock0.jpg");
     mTextureRockNormal = new Texture(Texture::Type::None, "Resources/Terrain/rnormal.jpg");
-    mTextureTerrain = new Texture(Texture::Type::None, "Resources/Terrain/grass2.jpg");
+    mTextureTerrain = new Texture(Texture::Type::None, "Resources/Terrain/terrain.jpg");
 
     mTextureSand->create();
     mTextureGrass->create();
@@ -162,7 +165,7 @@ void Terrain::render()
     glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_2D, mTextureGrass->id());
 
-    mShaderManager->setUniformValue("terrain", 3);
+    mShaderManager->setUniformValue("terrainTexture", 3);
     glActiveTexture(GL_TEXTURE0 + 3);
     glBindTexture(GL_TEXTURE_2D, mTextureTerrain->id());
 
@@ -179,7 +182,9 @@ void Terrain::render()
     glBindTexture(GL_TEXTURE_2D, mTextureRockNormal->id());
 
     glDrawElementsInstanced(GL_PATCHES, (mProperties.resolution - 1) * (mProperties.resolution - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mPositions.size());
+
     mVAO.release();
+
     glActiveTexture(GL_TEXTURE0);
 }
 
@@ -198,4 +203,14 @@ const Terrain::Properties &Terrain::properties() const
 void Terrain::setProperties(const Properties &newProperties)
 {
     mProperties = newProperties;
+}
+
+const Material &Terrain::material() const
+{
+    return mMaterial;
+}
+
+void Terrain::setMaterial(const Material &newMaterial)
+{
+    mMaterial = newMaterial;
 }

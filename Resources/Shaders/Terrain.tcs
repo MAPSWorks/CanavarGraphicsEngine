@@ -25,13 +25,23 @@
 // Define the number of CPs in the output patch
 layout (vertices = 3) out;
 
+struct Terrain {
+    vec4 clipPlane;
+    vec3 seed;
+    int octaves;
+    float tessellationMultiplier;
+    float amplitude;
+    float frequency;
+    float power;
+    float grassCoverage;
+    float ambient;
+    float diffuse;
+    float shininess;
+    float specular;
+};
+
 uniform vec3 cameraPosition;
-uniform float tessellationMultiplier;
-uniform vec3 seed;
-uniform int octaves;
-uniform float amplitude;
-uniform float freq;
-uniform float power;
+uniform Terrain terrain;
 
 in vec3 tcsPosition[];
 in vec3 tcsNormal[];
@@ -46,7 +56,7 @@ const mat2 m = mat2(0.8,-0.6,0.6,0.8);
 // Dummy random
 float random2d(vec2 st)
 {
-     return fract(sin(dot(st.xy, vec2(12.9898, 78.233) + seed.xy)) * 43758.5453123);
+     return fract(sin(dot(st.xy, vec2(12.9898, 78.233) + terrain.seed.xy)) * 43758.5453123);
 }
 
 // Cosine interpolation
@@ -85,35 +95,35 @@ float interpolatedNoise(float x, float y)
 float perlin(float x, float y)
 {
     float persistence = 0.5;
-    float total = 0;
-    float frequency = 0.005 * freq;
-    float ampl = amplitude;
+    float total = 0.0;
+    float frequency = 0.005 * terrain.frequency;
+    float amplitude = terrain.amplitude;
 
-    for (int i = 0; i < octaves; i++)
+    for (int i = 0; i < terrain.octaves; i++)
     {
         frequency *= 2.;
-        ampl *= persistence;
-        total += interpolatedNoise(x * frequency, y * frequency) * ampl;
+        amplitude *= persistence;
+        total += interpolatedNoise(x * frequency, y * frequency) * amplitude;
     }
 
-    return pow(total, power);
+    return pow(total, terrain.power);
 }
 
 float perlin(vec2 st)
 {
     float persistence = 0.5;
     float total = 0.0;
-    float frequency = 0.005 * freq;
-    float ampl = amplitude;
-    for (int i = 0; i < octaves; ++i)
+    float frequency = 0.005 * terrain.frequency;
+    float amplitude = terrain.amplitude;
+    for (int i = 0; i < terrain.octaves; ++i)
     {
         frequency *= 2.0;
-        ampl *= persistence;
+        amplitude *= persistence;
         vec2 v = frequency*m*st;
-        total += interpolatedNoise(v.x,v.y) * ampl;
+        total += interpolatedNoise(v.x,v.y) * amplitude;
     }
 
-    return pow(total, power);
+    return pow(total, terrain.power);
 }
 
 float getTessellationLevel(float distance0, float distance1)
@@ -163,8 +173,8 @@ void main()
     float d2 = distance(cameraPosition, worldPos3);
 
     // Calculate the tessellation levels
-    gl_TessLevelOuter[0] = tessellationMultiplier * getTessellationLevel(d1, d2);
-    gl_TessLevelOuter[1] = tessellationMultiplier * getTessellationLevel(d2, d0);
-    gl_TessLevelOuter[2] = tessellationMultiplier * getTessellationLevel(d0, d1);
+    gl_TessLevelOuter[0] = terrain.tessellationMultiplier * getTessellationLevel(d1, d2);
+    gl_TessLevelOuter[1] = terrain.tessellationMultiplier * getTessellationLevel(d2, d0);
+    gl_TessLevelOuter[2] = terrain.tessellationMultiplier * getTessellationLevel(d0, d1);
     gl_TessLevelInner[0] = gl_TessLevelOuter[2];
 }

@@ -1,6 +1,7 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
+#include "Material.h"
 #include "ShaderManager.h"
 #include "Texture.h"
 
@@ -22,18 +23,13 @@ public:
         int grids;
         float width;
         float amplitude;
-        float freq;
+        float frequency;
         int octaves;
         float power;
         QVector3D seed;
         QVector4D clipPlane;
         float tessellationMultiplier;
-        bool drawFog;
-        QVector3D fogColor;
-        float fogFallOff;
-        bool normals;
         float grassCoverage;
-        QVector3D rockColor;
     };
 
     struct Vertex {
@@ -52,6 +48,9 @@ public:
     const Properties &properties() const;
     void setProperties(const Properties &newProperties);
 
+    const Material &material() const;
+    void setMaterial(const Material &newMaterial);
+
 private:
     Properties mProperties;
     QVector<QVector2D> mPositions;
@@ -66,6 +65,7 @@ private:
     Texture *mTextureRockNormal;
     Texture *mTextureTerrain;
     ShaderManager *mShaderManager;
+    Material mMaterial;
 };
 
 #endif // TERRAIN_H

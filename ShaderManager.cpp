@@ -399,25 +399,31 @@ bool ShaderManager::init()
 
         QMap<QString, GLuint> locations;
 
-        locations.insert("amplitude", shader->uniformLocation("amplitude"));
-        locations.insert("freq", shader->uniformLocation("freq"));
-        locations.insert("octaves", shader->uniformLocation("octaves"));
-        locations.insert("power", shader->uniformLocation("power"));
-        locations.insert("seed", shader->uniformLocation("seed"));
-        locations.insert("clipPlane", shader->uniformLocation("clipPlane"));
-        locations.insert("tessellationMultiplier", shader->uniformLocation("tessellationMultiplier"));
-        locations.insert("fogColor", shader->uniformLocation("fogColor"));
-        locations.insert("fogFallOff", shader->uniformLocation("fogFallOff"));
-        locations.insert("normals", shader->uniformLocation("normals"));
-        locations.insert("grassCoverage", shader->uniformLocation("grassCoverage"));
-        locations.insert("waterHeight", shader->uniformLocation("waterHeight"));
-        locations.insert("rockColor", shader->uniformLocation("rockColor"));
+        locations.insert("terrain.amplitude", shader->uniformLocation("terrain.amplitude"));
+        locations.insert("terrain.frequency", shader->uniformLocation("terrain.frequency"));
+        locations.insert("terrain.octaves", shader->uniformLocation("terrain.octaves"));
+        locations.insert("terrain.power", shader->uniformLocation("terrain.power"));
+        locations.insert("terrain.seed", shader->uniformLocation("terrain.seed"));
+        locations.insert("terrain.clipPlane", shader->uniformLocation("terrain.clipPlane"));
+        locations.insert("terrain.tessellationMultiplier", shader->uniformLocation("terrain.tessellationMultiplier"));
+        locations.insert("terrain.grassCoverage", shader->uniformLocation("terrain.grassCoverage"));
+        locations.insert("terrain.ambient", shader->uniformLocation("terrain.ambient"));
+        locations.insert("terrain.diffuse", shader->uniformLocation("terrain.diffuse"));
+        locations.insert("terrain.shininess", shader->uniformLocation("terrain.shininess"));
+        locations.insert("terrain.specular", shader->uniformLocation("terrain.specular"));
+
+        locations.insert("fog.enabled", shader->uniformLocation("fog.enabled"));
+        locations.insert("fog.color", shader->uniformLocation("fog.color"));
+        locations.insert("fog.density", shader->uniformLocation("fog.density"));
+        locations.insert("fog.gradient", shader->uniformLocation("fog.gradient"));
 
         locations.insert("directionalLight.color", shader->uniformLocation("directionalLight.color"));
         locations.insert("directionalLight.direction", shader->uniformLocation("directionalLight.direction"));
         locations.insert("directionalLight.ambient", shader->uniformLocation("directionalLight.ambient"));
         locations.insert("directionalLight.diffuse", shader->uniformLocation("directionalLight.diffuse"));
         locations.insert("directionalLight.specular", shader->uniformLocation("directionalLight.specular"));
+
+        locations.insert("waterHeight", shader->uniformLocation("waterHeight"));
 
         locations.insert("nodeMatrix", shader->uniformLocation("nodeMatrix"));
         locations.insert("cameraPosition", shader->uniformLocation("cameraPosition"));
@@ -426,7 +432,7 @@ bool ShaderManager::init()
 
         locations.insert("sand", shader->uniformLocation("sand"));
         locations.insert("grass", shader->uniformLocation("grass"));
-        locations.insert("terrain", shader->uniformLocation("terrain"));
+        locations.insert("terrainTexture", shader->uniformLocation("terrainTexture"));
         locations.insert("snow", shader->uniformLocation("snow"));
         locations.insert("rock", shader->uniformLocation("rock"));
         locations.insert("rockNormal", shader->uniformLocation("rockNormal"));

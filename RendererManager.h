@@ -23,6 +23,13 @@ private:
     explicit RendererManager(QObject *parent = nullptr);
 
 public:
+    struct Fog {
+        bool enabled;
+        QVector3D color;
+        float density;
+        float gradient;
+    };
+
     static RendererManager *instance();
 
     bool init();
@@ -36,6 +43,9 @@ public:
 
     bool renderObjects() const;
     void setRenderObjects(bool newRenderObjects);
+
+    const Fog &fog() const;
+    void setFog(const Fog &newFog);
 
 private slots:
     void renderNode(Node *node);
@@ -60,6 +70,7 @@ private:
 
     SkyBox *mSkyBox;
     Terrain *mTerrain;
+    Fog mFog;
 };
 
 #endif // RENDERERMANAGER_H

@@ -17,6 +17,11 @@ RendererManager::RendererManager(QObject *parent)
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
+
+    mFog.enabled = true;
+    mFog.color = QVector3D(0.33f, 0.38f, 0.47f);
+    mFog.density = 1.0f;
+    mFog.gradient = 1.5f;
 }
 
 RendererManager *RendererManager::instance()
@@ -30,10 +35,6 @@ bool RendererManager::init()
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LINE_SMOOTH);
-
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glLineWidth(2.5f);
 
     qInfo() << "Initializing ShaderManager...";
 
@@ -140,6 +141,7 @@ void RendererManager::render(float ifps)
     Q_UNUSED(ifps);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(mFog.color.x(), mFog.color.y(), mFog.color.z(), 1.0f);
 
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
@@ -237,11 +239,11 @@ void RendererManager::renderNode(Node *node)
             {
                 mShaderManager->bind(ShaderManager::Shader::BasicShader);
                 mShaderManager->setUniformValue("node.transformation", model->worldTransformation());
-                mShaderManager->setUniformValue("node.color", model->material().color());
-                mShaderManager->setUniformValue("node.ambient", model->material().ambient());
-                mShaderManager->setUniformValue("node.diffuse", model->material().diffuse());
-                mShaderManager->setUniformValue("node.specular", model->material().specular());
-                mShaderManager->setUniformValue("node.shininess", model->material().shininess());
+                mShaderManager->setUniformValue("node.color", model->material().color);
+                mShaderManager->setUniformValue("node.ambient", model->material().ambient);
+                mShaderManager->setUniformValue("node.diffuse", model->material().diffuse);
+                mShaderManager->setUniformValue("node.specular", model->material().specular);
+                mShaderManager->setUniformValue("node.shininess", model->material().shininess);
 
                 QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), node);
 
@@ -380,37 +382,54 @@ void RendererManager::renderNode(Node *node)
 
 void RendererManager::renderSkyBox()
 {
-    mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
-    mShaderManager->setUniformValue("skybox", 0);
-    mSkyBox->render();
-    mShaderManager->release();
+    //    mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
+    //    mShaderManager->setUniformValue("skybox", 0);
+    //    mSkyBox->render();
+    //    mShaderManager->release();
 }
 
 void RendererManager::renderTerrain()
 {
-    glEnable(GL_CLIP_DISTANCE0);
+    //glEnable(GL_CLIP_DISTANCE0);
 
     mShaderManager->bind(ShaderManager::Shader::TerrainShader);
     mShaderManager->setUniformValue("nodeMatrix", mTerrain->transformation());
-    mShaderManager->setUniformValue("amplitude", mTerrain->properties().amplitude);
-    mShaderManager->setUniformValue("clipPlane", QVector4D(0, 0, 0, 0));
-    mShaderManager->setUniformValue("seed", QVector3D(1, 2, 3));
 
-    mShaderManager->setUniformValue("octaves", mTerrain->properties().octaves);
-    mShaderManager->setUniformValue("freq", mTerrain->properties().freq);
-    mShaderManager->setUniformValue("tessellationMultiplier", mTerrain->properties().tessellationMultiplier);
-    mShaderManager->setUniformValue("power", mTerrain->properties().power);
-    mShaderManager->setUniformValue("drawFog", mTerrain->properties().drawFog);
-    mShaderManager->setUniformValue("fogColor", mTerrain->properties().fogColor);
-    mShaderManager->setUniformValue("fogFallOff", mTerrain->properties().fogFallOff);
-    mShaderManager->setUniformValue("normals", mTerrain->properties().normals);
-    mShaderManager->setUniformValue("grassCoverage", mTerrain->properties().grassCoverage);
-    mShaderManager->setUniformValue("waterHeight", 1);
-    mShaderManager->setUniformValue("rockColor", mTerrain->properties().rockColor);
+    mShaderManager->setUniformValue("terrain.amplitude", mTerrain->properties().amplitude);
+    mShaderManager->setUniformValue("terrain.clipPlane", mTerrain->properties().clipPlane);
+    mShaderManager->setUniformValue("terrain.seed", mTerrain->properties().seed);
+    mShaderManager->setUniformValue("terrain.octaves", mTerrain->properties().octaves);
+    mShaderManager->setUniformValue("terrain.frequency", mTerrain->properties().frequency);
+    mShaderManager->setUniformValue("terrain.tessellationMultiplier", mTerrain->properties().tessellationMultiplier);
+    mShaderManager->setUniformValue("terrain.power", mTerrain->properties().power);
+    mShaderManager->setUniformValue("terrain.grassCoverage", mTerrain->properties().grassCoverage);
+    mShaderManager->setUniformValue("terrain.ambient", mTerrain->material().ambient);
+    mShaderManager->setUniformValue("terrain.diffuse", mTerrain->material().diffuse);
+    mShaderManager->setUniformValue("terrain.shininess", mTerrain->material().shininess);
+    mShaderManager->setUniformValue("terrain.specular", mTerrain->material().specular);
+
+    mShaderManager->setUniformValue("fog.enabled", mFog.enabled);
+    mShaderManager->setUniformValue("fog.color", mFog.color);
+    mShaderManager->setUniformValue("fog.density", mFog.density);
+    mShaderManager->setUniformValue("fog.gradient", mFog.gradient);
+
+    mShaderManager->setUniformValue("waterHeight", 1.0f);
 
     mTerrain->render();
 
-    glDisable(GL_CLIP_DISTANCE0);
+    mShaderManager->release();
+
+    //glDisable(GL_CLIP_DISTANCE0);
+}
+
+const RendererManager::Fog &RendererManager::fog() const
+{
+    return mFog;
+}
+
+void RendererManager::setFog(const Fog &newFog)
+{
+    mFog = newFog;
 }
 
 bool RendererManager::renderObjects() const

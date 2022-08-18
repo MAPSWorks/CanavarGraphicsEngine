@@ -23,8 +23,8 @@
 // SOFTWARE.
 
 in vec3 fsWorldPosition;
-in vec2 fsTextureCoord;
 in vec3 fsNormal;
+in vec2 fsTextureCoord;
 in float fsDistanceFromPosition;
 in float fsHeight;
 
@@ -36,24 +36,34 @@ struct DirectionalLight {
     float specular;
 };
 
+struct Terrain {
+    vec4 clipPlane;
+    vec3 seed;
+    int octaves;
+    float tessellationMultiplier;
+    float amplitude;
+    float frequency;
+    float power;
+    float grassCoverage;
+    float ambient;
+    float diffuse;
+    float shininess;
+    float specular;
+};
+
+struct Fog {
+    bool enabled;
+    vec3 color;
+    float density;
+    float gradient;
+};
+
 uniform DirectionalLight directionalLight;
-
+uniform Terrain terrain;
+uniform Fog fog;
 uniform vec3 cameraPosition;
-uniform bool drawFog;
-uniform vec3 fogColor;
-uniform float fogFallOff;
-uniform vec3 seed;
-uniform vec2 offset;
-uniform int octaves;
-uniform float amplitude;
-uniform float freq;
-uniform bool normals;
-uniform float grassCoverage;
 uniform float waterHeight;
-uniform vec3 rockColor;
-uniform float power;
-
-uniform sampler2D sand, grass, terrain, snow, rock, rockNormal;
+uniform sampler2D sand, grass, terrainTexture, snow, rock, rockNormal;
 
 out vec4 outColor;
 
@@ -111,7 +121,7 @@ float noise(int ind, int x, int y)
 // Dummy random
 float random2d(vec2 st)
 {
-    return fract(sin(dot(st.xy, vec2(12.9898, 78.233) + seed.xy)) * 43758.5453123);
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233) + terrain.seed.xy)) * 43758.5453123);
 }
 
 // Cosine interpolation
@@ -186,16 +196,16 @@ float perlin(float x, float y)
     vec2 st = vec2(x, y);
     float persistence = 0.5;
     float total = 0;
-    float frequency = 0.005 * freq;
-    float ampl = amplitude;
-    for (int i = 0; i < octaves; ++i)
+    float frequency = 0.005 * terrain.frequency;
+    float amplitude = terrain.amplitude;
+    for (int i = 0; i < terrain.octaves; ++i)
     {
         frequency *= 2.0;
-        ampl *= persistence;
+        amplitude *= persistence;
         vec2 v = frequency * m * st;
-        total += interpolatedNoise(v) * ampl;
+        total += interpolatedNoise(v) * amplitude;
     }
-    return pow(total, power);
+    return pow(total, terrain.power);
 }
 
 vec3 computeNormals(vec3 worldPos, out mat3 tbn)
@@ -225,26 +235,24 @@ vec3 computeNormals(vec2 gradient)
 
 vec4 ambient()
 {
-    vec4 ambientRGBA = directionalLight.ambient * directionalLight.color;
-    return ambientRGBA;
+    return terrain.ambient * directionalLight.ambient * directionalLight.color;
 }
 
 vec4 diffuse(vec3 normal)
 {
     vec3 directionalLightDir = normalize(-directionalLight.direction);
-    float diffuseFactor = max(0.0, dot(directionalLightDir, normal));
-    vec4 diffuse = diffuseFactor * directionalLight.color * directionalLight.diffuse;
+    float diffuseFactor = max(dot(normal, directionalLightDir), 0.0);
+    vec4 diffuse = diffuseFactor * directionalLight.diffuse * terrain.diffuse * directionalLight.color;
     return diffuse;
 }
 
 vec4 specular(vec3 normal)
 {
     vec3 directionalLightDir = normalize(-directionalLight.direction);
-    float specularFactor = 0.01f;
     vec3 viewDir = normalize(cameraPosition - fsWorldPosition);
     vec3 reflectDir = reflect(-directionalLightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-    vec4 specular = spec * directionalLight.color * directionalLight.specular;
+    float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), terrain.shininess);
+    vec4 specular = specularFactor * directionalLight.color * directionalLight.specular * terrain.specular;
     return specular;
 }
 
@@ -255,12 +263,13 @@ float perlin(float x, float y, int oct)
     distanceFactor = 3 - distanceFactor;
 
     float persistence = 0.5;
-    float total = 0, frequency = 0.05 * freq, ampl = 1.0;
-    for (int i = 0; i < octaves; ++i)
+    float total = 0;
+    float frequency = 0.05 * terrain.frequency;
+    float ampl = 1.0;
+    for (int i = 0; i < terrain.octaves; ++i)
     {
         frequency *= 2;
         ampl *= persistence;
-
         total += interpolatedNoise(vec2(x, y) * frequency) * ampl;
     }
     return total;
@@ -270,24 +279,20 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
 {
     float trans = 20.;
 
-    vec4 sand_t = vec4(244, 231, 127, 255) / 255;
-    vec4 rock_t = vec4(rockColor, 1.0);
-    vec4 grass_t = vec4(92, 196, 66, 255) / 255;
-
-    sand_t = texture(sand, fsTextureCoord * 10.0);
+    vec4 sand_t = texture(sand, fsTextureCoord * 10.0);
     sand_t.rg *= 1.3;
-    rock_t = texture(rock, fsTextureCoord * vec2(1.0, 1.256).yx);
+    vec4 rock_t = texture(rock, fsTextureCoord * vec2(1.0, 1.256).yx);
     rock_t.rgb *= vec3(2.5, 2.0, 2.0);
-    grass_t = texture(grass, fsTextureCoord * 12.0);
-    vec4 grass_t1 = texture(terrain, fsTextureCoord * 12.0);
+    vec4 grass_t = texture(grass, fsTextureCoord);
+    vec4 grass_t1 = texture(terrainTexture, fsTextureCoord);
     float perlinBlendingCoeff = clamp(perlin(fsWorldPosition.x, fsWorldPosition.z, 2) * 2.0 - 0.2, 0.0, 1.0);
     grass_t = mix(grass_t * 1.3, grass_t1 * 0.75, perlinBlendingCoeff);
     grass_t.rgb *= 0.5;
 
     vec4 heightColor;
     float cosV = abs(dot(normal, vec3(0.0, 1.0, 0.0)));
-    float tenPercentGrass = grassCoverage - grassCoverage * 0.1;
-    float blendingCoeff = pow((cosV - tenPercentGrass) / (grassCoverage * 0.1), 1.0);
+    float tenPercentGrass = terrain.grassCoverage - terrain.grassCoverage * 0.1;
+    float blendingCoeff = pow((cosV - tenPercentGrass) / (terrain.grassCoverage * 0.1), 1.0);
 
     if (fsHeight <= waterHeight + trans)
     {
@@ -295,7 +300,7 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
     } else if (fsHeight <= waterHeight + 2 * trans)
     {
         heightColor = mix(sand_t, grass_t, pow((fsHeight - waterHeight - trans) / trans, 1.0));
-    } else if (cosV > grassCoverage)
+    } else if (cosV > terrain.grassCoverage)
     {
         heightColor = grass_t;
         mix(normal, vec3(0.0, 1.0, 0.0), 0.25);
@@ -312,56 +317,32 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
     return heightColor;
 }
 
-const float c = 18.;
-const float b = 3.e-6;
-
-float applyFog(in vec3 rgb,       // original color of the pixel
-               in float dist,     // camera to point distance
-               in vec3 cameraPos, // camera position
-               in vec3 rayDir)    // camera to point vector
-{
-    float fogAmount = c * exp(-cameraPos.y * fogFallOff) * (1.0 - exp(-dist * rayDir.y * fogFallOff)) / rayDir.y;
-    vec3 fogColor = vec3(0.5, 0.6, 0.7);
-    return clamp(fogAmount, 0.0, 1.0);
+float getFogFactor() {
+    float distance = length(cameraPosition - fsWorldPosition);
+    float fogFactor = exp(-pow(distance * 0.00005f * fog.density, fog.gradient));
+    return clamp(fogFactor, 0.0f, 1.0f);
 }
 
 void main()
 {
-
-    // calculate fog color
-    vec2 u_FogDist = vec2(2500.0, 10000.0);
-
-    bool normals_fog = true;
-    float fogFactor = applyFog(vec3(0.0), distance(cameraPosition, fsWorldPosition), cameraPosition, normalize(fsWorldPosition - cameraPosition));
-    float eps = 0.1;
-
-    if (fogFactor >= 0.0 && fogFactor > 1. - eps)
-    {
-        //normals_fog = false;
-    }
-
     vec3 n;
     mat3 TBN;
-    if (normals && normals_fog)
-    {
-        n = computeNormals(fsWorldPosition, TBN);
-        n = normalize(n);
-    } else
-    {
-        n = vec3(0, 1, 0);
-    }
+    n = computeNormals(fsWorldPosition, TBN);
+    n = normalize(n);
 
     vec4 heightColor = getTexture(n, TBN);
     vec4 ambient = ambient();
     vec4 diffuse = diffuse(n);
     vec4 specular = specular(n);
 
-    // putting all together
-    vec4 color = heightColor * ambient + specular + diffuse;
-    if (drawFog)
+    vec4 color = heightColor * (ambient + specular + diffuse);
+
+    if (fog.enabled)
     {
-        outColor = mix(color, vec4(mix(fogColor * 1.1, fogColor * 0.85, clamp(fsWorldPosition.y / (1500. * 16.) * amplitude, 0.0, 1.0)), 1.0f), fogFactor);
-        outColor.a = fsWorldPosition.y / waterHeight;
+        float fogFactor = getFogFactor();
+        outColor = mix(vec4(fog.color, 1), color, fogFactor);
+        //outColor.a = fsWorldPosition.y / waterHeight;
+
     } else
     {
         outColor = color;
