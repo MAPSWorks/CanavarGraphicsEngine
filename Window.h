@@ -8,6 +8,7 @@
 
 #include <QOpenGLFunctionsPrivate>
 #include <QOpenGLWindow>
+#include <QRandomGenerator>
 
 class Window : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -49,6 +50,7 @@ private:
     void mouseDoubleClickEvent(QMouseEvent *) override;
 
     void populateComboBox(Node *node);
+    QVector3D getRandomSeed();
 
 private:
     long long mPreviousTime;
@@ -76,5 +78,13 @@ private:
     bool mRenderObjects;
     bool mRenderWireframe;
     bool mRenderNormals;
+
+    RendererManager::Fog mFog;
+
+    Terrain *mTerrain;
+    Terrain::Properties mTerrainProperties;
+    Material mTerrainMaterial;
+
+    QRandomGenerator mRandomGenerator;
 };
 #endif // WINDOW_H

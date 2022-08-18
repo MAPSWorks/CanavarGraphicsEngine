@@ -17,6 +17,10 @@
 class Terrain : public QObject, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
+
+private:
+    explicit Terrain(QObject *parent = nullptr);
+
 public:
     struct Properties {
         int numberOfVerticesOnEdge;
@@ -38,8 +42,6 @@ public:
         QVector2D texture;
     };
 
-    explicit Terrain(QObject *parent = nullptr);
-
     void create();
     void render();
 
@@ -51,10 +53,14 @@ public:
     const Material &material() const;
     void setMaterial(const Material &newMaterial);
 
+    void reset();
+
+    static Terrain *instance();
+
 private:
     Properties mProperties;
     QVector<QVector2D> mPositions;
-    QOpenGLVertexArrayObject mVAO;
+    QOpenGLVertexArrayObject *mVAO;
     unsigned int mVBO;
     unsigned int mEBO;
     unsigned int mPBO;

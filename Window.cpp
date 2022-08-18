@@ -13,6 +13,8 @@ Window::Window(QWindow *parent)
     mRendererManager = RendererManager::instance();
     mLightManager = LightManager::instance();
     mNodeManager = NodeManager::instance();
+    mTerrain = Terrain::instance();
+    mRandomGenerator = QRandomGenerator::securelySeeded();
 
     QSurfaceFormat format;
     format.setMajorVersion(4);
@@ -55,6 +57,10 @@ void Window::paintGL()
     mRenderWireframe = mRendererManager->renderWireframe();
     mRenderNormals = mRendererManager->renderNormals();
 
+    mFog = mRendererManager->fog();
+    mTerrainProperties = mTerrain->properties();
+    mTerrainMaterial = mTerrain->material();
+
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
     mPreviousTime = mCurrentTime;
@@ -65,7 +71,7 @@ void Window::paintGL()
 
     QtImGui::newFrame();
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Controls", NULL, ImGuiWindowFlags_MenuBar);
+    ImGui::Begin("Controls");
 
     // Render Settings
     if (!ImGui::CollapsingHeader("Render Settings"))
@@ -94,8 +100,8 @@ void Window::paintGL()
             float phi = qRadiansToDegrees(atan2(y, sqrt(z * z + x * x)));
             if (qFuzzyCompare(abs(phi), 90.0f))
                 theta = 0.0f;
-            ImGui::SliderFloat("theta", &theta, -180.0f, 180.0f, "%.1f");
-            ImGui::SliderFloat("phi", &phi, -90.0f, 90.0f, "%.1f");
+            ImGui::SliderFloat("Theta", &theta, -180.0f, 180.0f, "%.1f");
+            ImGui::SliderFloat("Phi", &phi, -90.0f, 90.0f, "%.1f");
 
             x = r * cos(qDegreesToRadians(phi)) * cos(qDegreesToRadians(theta));
             y = r * sin(qDegreesToRadians(phi));
@@ -124,6 +130,74 @@ void Window::paintGL()
             if (ImGui::ColorEdit4("Color##Light", (float *) &color))
                 mSun->setColor(QVector4D(color[0], color[1], color[2], color[3]));
         }
+    }
+
+    ImGui::Spacing();
+
+    // Fog
+    if (!ImGui::CollapsingHeader("Fog"))
+    {
+        if (ImGui::SliderFloat("Density##Fog", &mFog.density, 0.0f, 4.0f, "%.3f"))
+            mRendererManager->setFog(mFog);
+
+        if (ImGui::SliderFloat("Gradient##Fog", &mFog.gradient, 0.0f, 4.0f, "%.3f"))
+            mRendererManager->setFog(mFog);
+
+        float color[3] = {mFog.color.x(), mFog.color.y(), mFog.color.z()};
+
+        if (ImGui::ColorEdit3("Color##Fog", (float *) &color))
+        {
+            mFog.color = QVector3D(color[0], color[1], color[2]);
+            mRendererManager->setFog(mFog);
+        }
+
+        if (ImGui::Checkbox("Enabled##Fog", &mFog.enabled))
+            mRendererManager->setFog(mFog);
+
+        if (ImGui::Button("Reset##Fog"))
+            mRendererManager->resetFog();
+    }
+
+    ImGui::Spacing();
+
+    // Fog
+    if (!ImGui::CollapsingHeader("Terrain"))
+    {
+        if (ImGui::SliderFloat("Amplitude##Terrain", &mTerrainProperties.amplitude, 0.0f, 50.0f, "%.3f"))
+            mTerrain->setProperties(mTerrainProperties);
+
+        if (ImGui::SliderInt("Octaves##Terrain", &mTerrainProperties.octaves, 1, 20))
+            mTerrain->setProperties(mTerrainProperties);
+
+        if (ImGui::SliderFloat("Power##Terrain", &mTerrainProperties.power, 0.1f, 10.0f, "%.3f"))
+            mTerrain->setProperties(mTerrainProperties);
+
+        if (ImGui::SliderFloat("Tessellation Multiplier##Terrain", &mTerrainProperties.tessellationMultiplier, 0.1f, 10.0f, "%.3f"))
+            mTerrain->setProperties(mTerrainProperties);
+
+        if (ImGui::SliderFloat("Grass Coverage##Terrain", &mTerrainProperties.grassCoverage, 0.0f, 1.0f, "%.3f"))
+            mTerrain->setProperties(mTerrainProperties);
+
+        if (ImGui::SliderFloat("Ambient##Terrain", &mTerrainMaterial.ambient, 0.0f, 1.0f, "%.3f"))
+            mTerrain->setMaterial(mTerrainMaterial);
+
+        if (ImGui::SliderFloat("Diffuse##Terrain", &mTerrainMaterial.diffuse, 0.0f, 1.0f, "%.3f"))
+            mTerrain->setMaterial(mTerrainMaterial);
+
+        if (ImGui::SliderFloat("Specular##Terrain", &mTerrainMaterial.specular, 0.0f, 1.0f, "%.3f"))
+            mTerrain->setMaterial(mTerrainMaterial);
+
+        if (ImGui::SliderFloat("Shininess##Terrain", &mTerrainMaterial.shininess, 0.1f, 128.0f, "%.3f"))
+            mTerrain->setMaterial(mTerrainMaterial);
+
+        if (ImGui::Button("Generate Seed##Terrain"))
+        {
+            mTerrainProperties.seed = getRandomSeed();
+            mTerrain->setProperties(mTerrainProperties);
+        }
+
+        if (ImGui::Button("Reset##Terrain"))
+            mTerrain->reset();
     }
 
     ImGui::Spacing();
@@ -337,6 +411,15 @@ void Window::populateComboBox(Node *node)
 
     for (auto child : node->children())
         populateComboBox(child);
+}
+
+QVector3D Window::getRandomSeed()
+{
+    float x = mRandomGenerator.generateDouble();
+    float y = mRandomGenerator.generateDouble();
+    float z = mRandomGenerator.generateDouble();
+
+    return QVector3D(x, y, z);
 }
 
 void Window::setAircraftController(AircraftController *newAircraftController)

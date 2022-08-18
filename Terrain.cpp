@@ -8,20 +8,10 @@ Terrain::Terrain(QObject *parent)
     mShaderManager = ShaderManager::instance();
 
     mProperties.numberOfVerticesOnEdge = 4;
-    mProperties.grids = 101;
-    mProperties.width = 1000;
-    mProperties.octaves = 13;
-    mProperties.frequency = 0.01f;
-    mProperties.tessellationMultiplier = 1.0f;
-    mProperties.amplitude = 20.0f;
-    mProperties.power = 3.0f;
-    mProperties.grassCoverage = 0.15f;
-    mProperties.seed = QVector3D(1, 1, 1);
+    mProperties.grids = 128;
+    mProperties.width = 2048;
 
-    mMaterial.ambient = 0.25f;
-    mMaterial.diffuse = 0.75f;
-    mMaterial.shininess = 4.0f;
-    mMaterial.specular = 0.0f;
+    reset();
 }
 
 void Terrain::create()
@@ -77,8 +67,9 @@ void Terrain::create()
     }
 
     initializeOpenGLFunctions();
-    mVAO.create();
-    mVAO.bind();
+    mVAO = new QOpenGLVertexArrayObject;
+    mVAO->create();
+    mVAO->bind();
 
     glGenBuffers(1, &mEBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
@@ -102,7 +93,7 @@ void Terrain::create()
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(QVector2D), (void *) 0);
     glVertexAttribDivisor(3, 1);
-    mVAO.release();
+    mVAO->release();
 
     mTextureSand = new Texture(Texture::Type::None, "Resources/Terrain/sand.jpg");
     mTextureGrass = new Texture(Texture::Type::None, "Resources/Terrain/grass0.jpg");
@@ -121,7 +112,7 @@ void Terrain::create()
 
 void Terrain::render()
 {
-    mVAO.bind();
+    mVAO->bind();
 
     mShaderManager->setUniformValue("sand", 1);
     glActiveTexture(GL_TEXTURE0 + 1);
@@ -149,7 +140,7 @@ void Terrain::render()
 
     glDrawElementsInstanced(GL_PATCHES, (mProperties.numberOfVerticesOnEdge - 1) * (mProperties.numberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mPositions.size());
 
-    mVAO.release();
+    mVAO->release();
 
     glActiveTexture(GL_TEXTURE0);
 }
@@ -179,4 +170,26 @@ const Material &Terrain::material() const
 void Terrain::setMaterial(const Material &newMaterial)
 {
     mMaterial = newMaterial;
+}
+
+void Terrain::reset()
+{
+    mProperties.octaves = 13;
+    mProperties.frequency = 0.01f;
+    mProperties.tessellationMultiplier = 1.0f;
+    mProperties.amplitude = 20.0f;
+    mProperties.power = 3.0f;
+    mProperties.grassCoverage = 0.15f;
+    mProperties.seed = QVector3D(1, 1, 1);
+
+    mMaterial.ambient = 0.25f;
+    mMaterial.diffuse = 0.75f;
+    mMaterial.shininess = 4.0f;
+    mMaterial.specular = 0.0f;
+}
+
+Terrain *Terrain::instance()
+{
+    static Terrain instance;
+    return &instance;
 }

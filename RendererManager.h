@@ -46,6 +46,7 @@ public:
 
     const Fog &fog() const;
     void setFog(const Fog &newFog);
+    void resetFog();
 
 private slots:
     void renderNode(Node *node);

@@ -18,10 +18,7 @@ RendererManager::RendererManager(QObject *parent)
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
 
-    mFog.enabled = true;
-    mFog.color = QVector3D(0.33f, 0.38f, 0.47f);
-    mFog.density = 1.0f;
-    mFog.gradient = 1.5f;
+    resetFog();
 }
 
 RendererManager *RendererManager::instance()
@@ -130,7 +127,7 @@ bool RendererManager::init()
     mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/2/back.bmp");
     mSkyBox->create();
 
-    mTerrain = new Terrain;
+    mTerrain = Terrain::instance();
     mTerrain->create();
 
     return true;
@@ -430,6 +427,14 @@ const RendererManager::Fog &RendererManager::fog() const
 void RendererManager::setFog(const Fog &newFog)
 {
     mFog = newFog;
+}
+
+void RendererManager::resetFog()
+{
+    mFog.enabled = true;
+    mFog.color = QVector3D(0.33f, 0.38f, 0.47f);
+    mFog.density = 1.0f;
+    mFog.gradient = 1.5f;
 }
 
 bool RendererManager::renderObjects() const
