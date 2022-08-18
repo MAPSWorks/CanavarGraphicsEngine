@@ -1,4 +1,4 @@
-#include "RendererManager.h"
+﻿#include "RendererManager.h"
 #include "Camera.h"
 #include "Helper.h"
 #include "Light.h"
@@ -31,6 +31,7 @@ bool RendererManager::init()
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LINE_SMOOTH);
+
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glLineWidth(2.5f);
 
@@ -201,11 +202,11 @@ void RendererManager::render(float ifps)
         mShaderManager->release();
 
         mShaderManager->bind(ShaderManager::Shader::TerrainShader);
-        mShaderManager->setUniformValue("directional_light.direction", mSun->direction());
-        mShaderManager->setUniformValue("directional_light.color", mSun->color());
-        mShaderManager->setUniformValue("directional_light.ambient", mSun->ambient());
-        mShaderManager->setUniformValue("directional_light.diffuse", mSun->diffuse());
-        mShaderManager->setUniformValue("directional_light.specular", mSun->specular());
+        mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
+        mShaderManager->setUniformValue("directionalLight.color", mSun->color());
+        mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
+        mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
+        mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
         mShaderManager->release();
     }
 
@@ -387,22 +388,29 @@ void RendererManager::renderSkyBox()
 
 void RendererManager::renderTerrain()
 {
-    //glEnable(GL_CLIP_DISTANCE0);
+    glEnable(GL_CLIP_DISTANCE0);
 
     mShaderManager->bind(ShaderManager::Shader::TerrainShader);
-    mShaderManager->setUniformValue("node_matrix", mTerrain->transformation());
+    mShaderManager->setUniformValue("nodeMatrix", mTerrain->transformation());
     mShaderManager->setUniformValue("amplitude", mTerrain->properties().amplitude);
-    //mShaderManager->setUniformValue("clip_plane", QVector4D(0, 1, 0, -10000));
-    mShaderManager->setUniformValue("seed", QVector3D(53, 335, 35));
+    mShaderManager->setUniformValue("clipPlane", QVector4D(0, 0, 0, 0));
+    mShaderManager->setUniformValue("seed", QVector3D(1, 2, 3));
 
     mShaderManager->setUniformValue("octaves", mTerrain->properties().octaves);
     mShaderManager->setUniformValue("freq", mTerrain->properties().freq);
-    mShaderManager->setUniformValue("tessellation_multiplier", mTerrain->properties().tessellationMultiplier);
+    mShaderManager->setUniformValue("tessellationMultiplier", mTerrain->properties().tessellationMultiplier);
     mShaderManager->setUniformValue("power", mTerrain->properties().power);
+    mShaderManager->setUniformValue("drawFog", mTerrain->properties().drawFog);
+    mShaderManager->setUniformValue("fogColor", mTerrain->properties().fogColor);
+    mShaderManager->setUniformValue("fogFallOff", mTerrain->properties().fogFallOff);
+    mShaderManager->setUniformValue("normals", mTerrain->properties().normals);
+    mShaderManager->setUniformValue("grassCoverage", mTerrain->properties().grassCoverage);
+    mShaderManager->setUniformValue("waterHeight", 1);
+    mShaderManager->setUniformValue("rockColor", mTerrain->properties().rockColor);
 
     mTerrain->render();
 
-    //glDisable(GL_CLIP_DISTANCE0);
+    glDisable(GL_CLIP_DISTANCE0);
 }
 
 bool RendererManager::renderObjects() const

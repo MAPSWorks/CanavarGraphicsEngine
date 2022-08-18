@@ -404,24 +404,37 @@ bool ShaderManager::init()
         locations.insert("octaves", shader->uniformLocation("octaves"));
         locations.insert("power", shader->uniformLocation("power"));
         locations.insert("seed", shader->uniformLocation("seed"));
-        locations.insert("clip_plane", shader->uniformLocation("clip_plane"));
-        locations.insert("tessellation_multiplier", shader->uniformLocation("tessellation_multiplier"));
+        locations.insert("clipPlane", shader->uniformLocation("clipPlane"));
+        locations.insert("tessellationMultiplier", shader->uniformLocation("tessellationMultiplier"));
+        locations.insert("fogColor", shader->uniformLocation("fogColor"));
+        locations.insert("fogFallOff", shader->uniformLocation("fogFallOff"));
+        locations.insert("normals", shader->uniformLocation("normals"));
+        locations.insert("grassCoverage", shader->uniformLocation("grassCoverage"));
+        locations.insert("waterHeight", shader->uniformLocation("waterHeight"));
+        locations.insert("rockColor", shader->uniformLocation("rockColor"));
 
-        locations.insert("directional_light.color", shader->uniformLocation("directional_light.color"));
-        locations.insert("directional_light.direction", shader->uniformLocation("directional_light.direction"));
-        locations.insert("directional_light.ambient", shader->uniformLocation("directional_light.ambient"));
-        locations.insert("directional_light.diffuse", shader->uniformLocation("directional_light.diffuse"));
-        locations.insert("directional_light.specular", shader->uniformLocation("directional_light.specular"));
+        locations.insert("directionalLight.color", shader->uniformLocation("directionalLight.color"));
+        locations.insert("directionalLight.direction", shader->uniformLocation("directionalLight.direction"));
+        locations.insert("directionalLight.ambient", shader->uniformLocation("directionalLight.ambient"));
+        locations.insert("directionalLight.diffuse", shader->uniformLocation("directionalLight.diffuse"));
+        locations.insert("directionalLight.specular", shader->uniformLocation("directionalLight.specular"));
 
-        locations.insert("node_matrix", shader->uniformLocation("node_matrix"));
-        locations.insert("camera_position", shader->uniformLocation("camera_position"));
-        locations.insert("view_matrix", shader->uniformLocation("view_matrix"));
-        locations.insert("projection_matrix", shader->uniformLocation("projection_matrix"));
+        locations.insert("nodeMatrix", shader->uniformLocation("nodeMatrix"));
+        locations.insert("cameraPosition", shader->uniformLocation("cameraPosition"));
+        locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
+        locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
+
+        locations.insert("sand", shader->uniformLocation("sand"));
+        locations.insert("grass", shader->uniformLocation("grass"));
+        locations.insert("terrain", shader->uniformLocation("terrain"));
+        locations.insert("snow", shader->uniformLocation("snow"));
+        locations.insert("rock", shader->uniformLocation("rock"));
+        locations.insert("rockNormal", shader->uniformLocation("rockNormal"));
 
         shader->bindAttributeLocation("position", 0);
         shader->bindAttributeLocation("normal", 1);
-        shader->bindAttributeLocation("texture_coord", 2);
-        shader->bindAttributeLocation("offset_position", 3);
+        shader->bindAttributeLocation("textureCoord", 2);
+        shader->bindAttributeLocation("offsetPosition", 3);
 
         shader->release();
 

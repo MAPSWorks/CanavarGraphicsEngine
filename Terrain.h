@@ -1,6 +1,9 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
+#include "ShaderManager.h"
+#include "Texture.h"
+
 #include <QObject>
 #include <QOpenGLBuffer>
 #include <QOpenGLExtraFunctionsPrivate>
@@ -25,6 +28,12 @@ public:
         QVector3D seed;
         QVector4D clipPlane;
         float tessellationMultiplier;
+        bool drawFog;
+        QVector3D fogColor;
+        float fogFallOff;
+        bool normals;
+        float grassCoverage;
+        QVector3D rockColor;
     };
 
     struct Vertex {
@@ -50,6 +59,13 @@ private:
     unsigned int mVBO;
     unsigned int mEBO;
     unsigned int mPBO;
+    Texture *mTextureSand;
+    Texture *mTextureGrass;
+    Texture *mTextureSnow;
+    Texture *mTextureRockDiffuse;
+    Texture *mTextureRockNormal;
+    Texture *mTextureTerrain;
+    ShaderManager *mShaderManager;
 };
 
 #endif // TERRAIN_H

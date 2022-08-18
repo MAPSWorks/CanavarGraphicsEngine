@@ -5,14 +5,22 @@
 Terrain::Terrain(QObject *parent)
     : QObject{parent}
 {
-    mProperties.resolution = 4;
-    mProperties.grids = 101;
+    mShaderManager = ShaderManager::instance();
+
+    mProperties.resolution = 3;
+    mProperties.grids = 121;
     mProperties.width = 1024;
     mProperties.octaves = 13;
     mProperties.freq = 0.01f;
     mProperties.tessellationMultiplier = 1.0f;
-    mProperties.amplitude = 40.0f;
+    mProperties.amplitude = 20.0f;
     mProperties.power = 3.0f;
+    mProperties.fogColor = QVector3D(0.5, 0.6, 0.7);
+    mProperties.rockColor = QVector3D(120, 105, 75) * 1.5f / 255.f;
+    mProperties.drawFog = true;
+    mProperties.normals = true;
+    mProperties.fogFallOff = 1.5f;
+    mProperties.grassCoverage = 0.65f;
 }
 
 void Terrain::create()
@@ -28,16 +36,14 @@ void Terrain::create()
     {
         for (int j = 0; j < resolution; j++)
         {
-            //add position
             float x = j * (float) width / (resolution - 1) - width / 2.0;
             float y = 0.0;
             float z = -i * (float) width / (resolution - 1) + width / 2.0;
 
-            vertices[(i + j * resolution) * 8] = x; //8 = 3 + 3 + 2, float per point
+            vertices[(i + j * resolution) * 8] = x;
             vertices[(i + j * resolution) * 8 + 1] = y;
             vertices[(i + j * resolution) * 8 + 2] = z;
 
-            //add normal
             float x_n = 0.0;
             float y_n = 1.0;
             float z_n = 0.0;
@@ -46,7 +52,6 @@ void Terrain::create()
             vertices[(i + j * resolution) * 8 + 4] = y_n;
             vertices[(i + j * resolution) * 8 + 5] = z_n;
 
-            //add texcoords
             vertices[(i + j * resolution) * 8 + 6] = (float) j / (resolution - 1);
             vertices[(i + j * resolution) * 8 + 7] = (float) (resolution - i - 1) / (resolution - 1);
         }
@@ -61,7 +66,7 @@ void Terrain::create()
         for (int j = 0; j < trisPerRow; j++)
         {
             if (!(i % 2))
-            { //upper triangle
+            {
                 int k = i * 3;
                 int triIndex = i % trisPerRow;
 
@@ -127,6 +132,20 @@ void Terrain::create()
 
     mVAO.release();
 
+    mTextureSand = new Texture(Texture::Type::None, "Resources/Terrain/sand.jpg");
+    mTextureGrass = new Texture(Texture::Type::None, "Resources/Terrain/grass0.jpg");
+    mTextureSnow = new Texture(Texture::Type::None, "Resources/Terrain/snow0.jpg");
+    mTextureRockDiffuse = new Texture(Texture::Type::None, "Resources/Terrain/rock0.jpg");
+    mTextureRockNormal = new Texture(Texture::Type::None, "Resources/Terrain/rnormal.jpg");
+    mTextureTerrain = new Texture(Texture::Type::None, "Resources/Terrain/grass2.jpg");
+
+    mTextureSand->create();
+    mTextureGrass->create();
+    mTextureSnow->create();
+    mTextureRockDiffuse->create();
+    mTextureRockNormal->create();
+    mTextureTerrain->create();
+
     delete[] vertices;
     delete[] trisIndices;
 }
@@ -134,13 +153,41 @@ void Terrain::create()
 void Terrain::render()
 {
     mVAO.bind();
+
+    mShaderManager->setUniformValue("sand", 1);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, mTextureSand->id());
+
+    mShaderManager->setUniformValue("grass", 2);
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, mTextureGrass->id());
+
+    mShaderManager->setUniformValue("terrain", 3);
+    glActiveTexture(GL_TEXTURE0 + 3);
+    glBindTexture(GL_TEXTURE_2D, mTextureTerrain->id());
+
+    mShaderManager->setUniformValue("snow", 4);
+    glActiveTexture(GL_TEXTURE0 + 4);
+    glBindTexture(GL_TEXTURE_2D, mTextureSnow->id());
+
+    mShaderManager->setUniformValue("rock", 5);
+    glActiveTexture(GL_TEXTURE0 + 5);
+    glBindTexture(GL_TEXTURE_2D, mTextureRockDiffuse->id());
+
+    mShaderManager->setUniformValue("rockNormal", 6);
+    glActiveTexture(GL_TEXTURE0 + 6);
+    glBindTexture(GL_TEXTURE_2D, mTextureRockNormal->id());
+
     glDrawElementsInstanced(GL_PATCHES, (mProperties.resolution - 1) * (mProperties.resolution - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mPositions.size());
     mVAO.release();
+    glActiveTexture(GL_TEXTURE0);
 }
 
 QMatrix4x4 Terrain::transformation() const
 {
-    return QMatrix4x4();
+    QMatrix4x4 transformation = QMatrix4x4();
+    transformation.scale(QVector3D(1, 0, 1));
+    return transformation;
 }
 
 const Terrain::Properties &Terrain::properties() const

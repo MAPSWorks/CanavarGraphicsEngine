@@ -44,7 +44,7 @@ Controller::Controller(QApplication *app, QObject *parent)
     mFreeCamera->setPosition(QVector3D(0, 10, 10));
     mFreeCamera->setVerticalFov(60.0f);
     mFreeCamera->setZNear(0.1f);
-    mFreeCamera->setZFar(10000.0f);
+    mFreeCamera->setZFar(100000.0f);
     mCameraManager->addCamera(mFreeCamera);
     mCameraManager->setActiveCamera(mFreeCamera);
 
@@ -81,7 +81,7 @@ void Controller::init()
     mCameraManager->addCamera(mDummyCamera);
 
     mSun = new DirectionalLight;
-    mSun->setDirection(QVector3D(0, -1, 0));
+    mSun->setDirection(QVector3D(1, -1, 1));
     mLightManager->setDirectionalLight(mSun);
 
     for (int i = 0; i < 4; i++)

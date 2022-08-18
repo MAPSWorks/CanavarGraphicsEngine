@@ -10,6 +10,7 @@ class Texture : public QObject, protected QOpenGLFunctions
     Q_OBJECT
 public:
     enum class Type { //
+        None,
         Diffuse,
         Specular,
         Ambient,

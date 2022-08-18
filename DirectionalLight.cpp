@@ -2,7 +2,7 @@
 
 DirectionalLight::DirectionalLight(QObject *parent)
     : Light(parent)
-    , mDirection(1, -1, 1)
+    , mDirection(0, -1, 0)
 
 {
     mAmbient = 0.8f;
