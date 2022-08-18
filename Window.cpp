@@ -15,7 +15,7 @@ Window::Window(QWindow *parent)
     mNodeManager = NodeManager::instance();
 
     QSurfaceFormat format;
-    format.setMajorVersion(3);
+    format.setMajorVersion(4);
     format.setMinorVersion(3);
     format.setSamples(16);
     format.setSwapInterval(1);

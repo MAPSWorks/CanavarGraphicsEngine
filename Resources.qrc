@@ -24,8 +24,10 @@
         <file>Resources/Shaders/Normals.vert</file>
         <file>Resources/Shaders/SkyBox.frag</file>
         <file>Resources/Shaders/SkyBox.vert</file>
-        <file>Resources/Shaders/SimpleTerrain.frag</file>
-        <file>Resources/Shaders/SimpleTerrain.vert</file>
+        <file>Resources/Shaders/Terrain.frag</file>
+        <file>Resources/Shaders/Terrain.vert</file>
         <file>Resources/Shaders/Wireframe.geom</file>
+        <file>Resources/Shaders/Terrain.tcs</file>
+        <file>Resources/Shaders/Terrain.tes</file>
     </qresource>
 </RCC>

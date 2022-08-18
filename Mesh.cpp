@@ -97,13 +97,13 @@ void Mesh::render()
     for (int i = 0; i < textures.size(); i++)
     {
         if (textures[i]->type() == Texture::Type::Diffuse)
-            mShaderManager->setUniformValue("texture_diffuse", i);
+            mShaderManager->setUniformValue("textureDiffuse", i);
         else if (textures[i]->type() == Texture::Type::Specular)
-            mShaderManager->setUniformValue("texture_specular", i);
+            mShaderManager->setUniformValue("textureSpecular", i);
         else if (textures[i]->type() == Texture::Type::Ambient)
-            mShaderManager->setUniformValue("texture_ambient", i);
+            mShaderManager->setUniformValue("textureAmbient", i);
         else if (textures[i]->type() == Texture::Type::Height)
-            mShaderManager->setUniformValue("texture_height", i);
+            mShaderManager->setUniformValue("textureHeight", i);
 
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, textures[i]->id());

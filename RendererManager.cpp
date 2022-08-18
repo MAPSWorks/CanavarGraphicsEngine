@@ -128,8 +128,8 @@ bool RendererManager::init()
     mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/2/back.bmp");
     mSkyBox->create();
 
-    mTile = new SimpleTerrainTile;
-    mTile->create();
+    mTerrain = new Terrain;
+    mTerrain->create();
 
     return true;
 }
@@ -146,61 +146,61 @@ void RendererManager::render(float ifps)
     if (mCamera)
     {
         mShaderManager->bind(ShaderManager::Shader::BasicShader);
-        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
-        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
-        mShaderManager->setUniformValue("camera_position", mCamera->position());
+        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+        mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
         mShaderManager->release();
 
         mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
-        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
-        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
-        mShaderManager->setUniformValue("camera_position", mCamera->position());
+        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+        mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
         mShaderManager->release();
 
         mShaderManager->bind(ShaderManager::Shader::WireframeShader);
-        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
-        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
+        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
         mShaderManager->release();
 
         mShaderManager->bind(ShaderManager::Shader::NormalsShader);
-        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
-        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
+        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
         mShaderManager->release();
 
         mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
-        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
+        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
 
         QMatrix4x4 transformation = mCamera->worldTransformation();
         transformation.setColumn(3, QVector4D(0, 0, 0, 1));
-        mShaderManager->setUniformValue("view_matrix", transformation);
+        mShaderManager->setUniformValue("viewMatrix", transformation);
         mShaderManager->release();
 
-        mShaderManager->bind(ShaderManager::Shader::SimpleTerrainShader);
-        mShaderManager->setUniformValue("projection_matrix", mCamera->projection());
-        mShaderManager->setUniformValue("view_matrix", mCamera->worldTransformation());
-        mShaderManager->setUniformValue("camera_position", mCamera->position());
+        mShaderManager->bind(ShaderManager::Shader::TerrainShader);
+        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+        mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
         mShaderManager->release();
     }
 
     if (mSun)
     {
         mShaderManager->bind(ShaderManager::Shader::BasicShader);
-        mShaderManager->setUniformValue("directional_light.direction", mSun->direction());
-        mShaderManager->setUniformValue("directional_light.color", mSun->color());
-        mShaderManager->setUniformValue("directional_light.ambient", mSun->ambient());
-        mShaderManager->setUniformValue("directional_light.diffuse", mSun->diffuse());
-        mShaderManager->setUniformValue("directional_light.specular", mSun->specular());
+        mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
+        mShaderManager->setUniformValue("directionalLight.color", mSun->color());
+        mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
+        mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
+        mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
         mShaderManager->release();
 
         mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
-        mShaderManager->setUniformValue("directional_light.direction", mSun->direction());
-        mShaderManager->setUniformValue("directional_light.color", mSun->color());
-        mShaderManager->setUniformValue("directional_light.ambient", mSun->ambient());
-        mShaderManager->setUniformValue("directional_light.diffuse", mSun->diffuse());
-        mShaderManager->setUniformValue("directional_light.specular", mSun->specular());
+        mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
+        mShaderManager->setUniformValue("directionalLight.color", mSun->color());
+        mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
+        mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
+        mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
         mShaderManager->release();
 
-        mShaderManager->bind(ShaderManager::Shader::SimpleTerrainShader);
+        mShaderManager->bind(ShaderManager::Shader::TerrainShader);
         mShaderManager->setUniformValue("directional_light.direction", mSun->direction());
         mShaderManager->setUniformValue("directional_light.color", mSun->color());
         mShaderManager->setUniformValue("directional_light.ambient", mSun->ambient());
@@ -209,7 +209,7 @@ void RendererManager::render(float ifps)
         mShaderManager->release();
     }
 
-    renderSimpleTerrain();
+    renderTerrain();
 
     auto nodes = mNodeManager->nodes();
 
@@ -244,37 +244,37 @@ void RendererManager::renderNode(Node *node)
 
                 QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), node);
 
-                mShaderManager->setUniformValue("number_of_point_lights", pointLights.size());
+                mShaderManager->setUniformValue("numberOfPointLights", pointLights.size());
 
                 for (int i = 0; i < pointLights.size(); i++)
                 {
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].color", pointLights[i]->color());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].position", pointLights[i]->position());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].specular", pointLights[i]->specular());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].constant", pointLights[i]->constant());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].linear", pointLights[i]->linear());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].color", pointLights[i]->color());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].position", pointLights[i]->position());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].specular", pointLights[i]->specular());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].constant", pointLights[i]->constant());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].linear", pointLights[i]->linear());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
                 }
 
                 QVector<SpotLight *> spotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), node);
 
-                mShaderManager->setUniformValue("number_of_spot_lights", spotLights.size());
+                mShaderManager->setUniformValue("numberOfSpotLights", spotLights.size());
 
                 for (int i = 0; i < spotLights.size(); i++)
                 {
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].color", spotLights[i]->color());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].position", spotLights[i]->position());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].specular", spotLights[i]->specular());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].constant", spotLights[i]->constant());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].linear", spotLights[i]->linear());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].direction", spotLights[i]->direction());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].cut_off_angle", spotLights[i]->cutOffAngle());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].outer_cut_off_angle", spotLights[i]->outerCutOffAngle());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].color", spotLights[i]->color());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].position", spotLights[i]->position());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].specular", spotLights[i]->specular());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].constant", spotLights[i]->constant());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].linear", spotLights[i]->linear());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].direction", spotLights[i]->direction());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].cutOffAngle", spotLights[i]->cutOffAngle());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].outerCutOffAngle", spotLights[i]->outerCutOffAngle());
                 }
 
                 data->render();
@@ -284,7 +284,7 @@ void RendererManager::renderNode(Node *node)
             if (mRenderWireframe)
             {
                 mShaderManager->bind(ShaderManager::Shader::WireframeShader);
-                mShaderManager->setUniformValue("node_matrix", model->worldTransformation());
+                mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
                 data->render();
                 mShaderManager->release();
             }
@@ -292,7 +292,7 @@ void RendererManager::renderNode(Node *node)
             if (mRenderNormals)
             {
                 mShaderManager->bind(ShaderManager::Shader::NormalsShader);
-                mShaderManager->setUniformValue("node_matrix", model->worldTransformation());
+                mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
                 data->render();
                 mShaderManager->release();
             }
@@ -308,42 +308,42 @@ void RendererManager::renderNode(Node *node)
             if (mRenderObjects)
             {
                 mShaderManager->bind(ShaderManager::Shader::TexturedModelShader);
-                mShaderManager->setUniformValue("node_transformation", texturedModel->worldTransformation());
-                mShaderManager->setUniformValue("node_shininess", texturedModel->shininess());
+                mShaderManager->setUniformValue("nodeMatrix", texturedModel->worldTransformation());
+                mShaderManager->setUniformValue("nodeShininess", texturedModel->shininess());
 
                 QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), node);
 
-                mShaderManager->setUniformValue("number_of_point_lights", pointLights.size());
+                mShaderManager->setUniformValue("numberOfPointLights", pointLights.size());
 
                 for (int i = 0; i < pointLights.size(); i++)
                 {
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].color", pointLights[i]->color());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].position", pointLights[i]->position());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].specular", pointLights[i]->specular());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].constant", pointLights[i]->constant());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].linear", pointLights[i]->linear());
-                    mShaderManager->setUniformValue("point_lights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].color", pointLights[i]->color());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].position", pointLights[i]->position());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].specular", pointLights[i]->specular());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].constant", pointLights[i]->constant());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].linear", pointLights[i]->linear());
+                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
                 }
 
                 QVector<SpotLight *> spotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), node);
 
-                mShaderManager->setUniformValue("number_of_spot_lights", spotLights.size());
+                mShaderManager->setUniformValue("numberOfSpotLights", spotLights.size());
 
                 for (int i = 0; i < spotLights.size(); i++)
                 {
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].color", spotLights[i]->color());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].position", spotLights[i]->position());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].specular", spotLights[i]->specular());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].constant", spotLights[i]->constant());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].linear", spotLights[i]->linear());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].direction", spotLights[i]->direction());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].cut_off_angle", spotLights[i]->cutOffAngle());
-                    mShaderManager->setUniformValue("spot_lights[" + QString::number(i) + "].outer_cut_off_angle", spotLights[i]->outerCutOffAngle());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].color", spotLights[i]->color());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].position", spotLights[i]->position());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].specular", spotLights[i]->specular());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].constant", spotLights[i]->constant());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].linear", spotLights[i]->linear());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].direction", spotLights[i]->direction());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].cutOffAngle", spotLights[i]->cutOffAngle());
+                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].outerCutOffAngle", spotLights[i]->outerCutOffAngle());
                 }
 
                 data->render();
@@ -353,7 +353,7 @@ void RendererManager::renderNode(Node *node)
             if (mRenderWireframe)
             {
                 mShaderManager->bind(ShaderManager::Shader::WireframeShader);
-                mShaderManager->setUniformValue("node_matrix", texturedModel->worldTransformation());
+                mShaderManager->setUniformValue("nodeMatrix", texturedModel->worldTransformation());
                 data->render();
                 mShaderManager->release();
             }
@@ -361,7 +361,7 @@ void RendererManager::renderNode(Node *node)
             if (mRenderNormals)
             {
                 mShaderManager->bind(ShaderManager::Shader::NormalsShader);
-                mShaderManager->setUniformValue("node_matrix", texturedModel->worldTransformation());
+                mShaderManager->setUniformValue("nodeMatrix", texturedModel->worldTransformation());
                 data->render();
                 mShaderManager->release();
             }
@@ -385,41 +385,24 @@ void RendererManager::renderSkyBox()
     mShaderManager->release();
 }
 
-void RendererManager::renderSimpleTerrain()
+void RendererManager::renderTerrain()
 {
-    // Render Terrain
-    if (mRenderObjects)
-    {
-        mShaderManager->bind(ShaderManager::Shader::SimpleTerrainShader);
-        mShaderManager->setUniformValue("properties.ambient", mTile->properties().ambient);
-        mShaderManager->setUniformValue("properties.diffuse", mTile->properties().diffuse);
-        mShaderManager->setUniformValue("properties.specular", mTile->properties().specular);
-        mShaderManager->setUniformValue("properties.shininess", mTile->properties().shininess);
-        mShaderManager->setUniformValue("properties.cellCount", mTile->properties().cellCount);
-        mShaderManager->setUniformValue("properties.offset", mTile->properties().offset);
-        mShaderManager->setUniformValue("properties.amplitude", mTile->properties().amplitude);
-        mShaderManager->setUniformValue("properties.octaves", mTile->properties().octaves);
-        mShaderManager->setUniformValue("properties.roughness", mTile->properties().roughness);
-        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
-        mTile->render();
-        mShaderManager->release();
-    }
+    //glEnable(GL_CLIP_DISTANCE0);
 
-    if (mRenderWireframe)
-    {
-        mShaderManager->bind(ShaderManager::Shader::WireframeShader);
-        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
-        mTile->render();
-        mShaderManager->release();
-    }
+    mShaderManager->bind(ShaderManager::Shader::TerrainShader);
+    mShaderManager->setUniformValue("node_matrix", mTerrain->transformation());
+    mShaderManager->setUniformValue("amplitude", mTerrain->properties().amplitude);
+    //mShaderManager->setUniformValue("clip_plane", QVector4D(0, 1, 0, -10000));
+    mShaderManager->setUniformValue("seed", QVector3D(53, 335, 35));
 
-    if (mRenderNormals)
-    {
-        mShaderManager->bind(ShaderManager::Shader::NormalsShader);
-        mShaderManager->setUniformValue("node_matrix", mTile->transformation());
-        mTile->render();
-        mShaderManager->release();
-    }
+    mShaderManager->setUniformValue("octaves", mTerrain->properties().octaves);
+    mShaderManager->setUniformValue("freq", mTerrain->properties().freq);
+    mShaderManager->setUniformValue("tessellation_multiplier", mTerrain->properties().tessellationMultiplier);
+    mShaderManager->setUniformValue("power", mTerrain->properties().power);
+
+    mTerrain->render();
+
+    //glDisable(GL_CLIP_DISTANCE0);
 }
 
 bool RendererManager::renderObjects() const

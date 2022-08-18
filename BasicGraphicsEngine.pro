@@ -38,13 +38,12 @@ HEADERS += \
     PointLight.h \
     RendererManager.h \
     ShaderManager.h \
-    SimpleTerrain.h \
-    SimpleTerrainTile.h \
     Simulator/Aircraft.h \
     Simulator/AircraftController.h \
     Simulator/Converter.h \
     SkyBox.h \
     SpotLight.h \
+    Terrain.h \
     Texture.h \
     TexturedMaterial.h \
     TexturedModel.h \
@@ -72,13 +71,12 @@ SOURCES += \
     PointLight.cpp \
     RendererManager.cpp \
     ShaderManager.cpp \
-    SimpleTerrain.cpp \
-    SimpleTerrainTile.cpp \
     Simulator/Aircraft.cpp \
     Simulator/AircraftController.cpp \
     Simulator/Converter.cpp \
     SkyBox.cpp \
     SpotLight.cpp \
+    Terrain.cpp \
     Texture.cpp \
     TexturedMaterial.cpp \
     TexturedModel.cpp \

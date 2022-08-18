@@ -1,11 +1,11 @@
 #version 330 core
-in vec3 fs_texture_coords;
+in vec3 fsTextureCoords;
 
 uniform samplerCube skybox;
 
-out vec4 out_color;
+out vec4 outColor;
 
 void main()
 {    
-    out_color = texture(skybox, fs_texture_coords);
+    outColor = texture(skybox, fsTextureCoords);
 }

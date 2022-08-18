@@ -1,12 +1,12 @@
 #version 330 core
 layout (location = 0) in vec3 position;
 
-uniform mat4 node_matrix;
-uniform mat4 view_matrix;
+uniform mat4 nodeMatrix;
+uniform mat4 viewMatrix;
 
-out vec3 gs_position;
+out vec3 gsPosition;
 
 void main()
 {
-    gs_position = vec3(view_matrix * node_matrix * vec4(position, 1.0));
+    gsPosition = vec3(viewMatrix * nodeMatrix * vec4(position, 1.0));
 }

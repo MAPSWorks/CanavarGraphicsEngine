@@ -2,14 +2,15 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 
-uniform mat4 node_matrix;
-uniform mat4 view_matrix;
-uniform mat4 projection_matrix;
+uniform mat4 nodeMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
-out vec3 gs_normal;
+out vec3 gsNormal;
 
 void main()
 {
-    gl_Position = view_matrix * node_matrix * vec4(position, 1.0);
-    gs_normal = mat3(transpose(inverse(view_matrix * node_matrix))) * normal;
+    gl_Position = viewMatrix * nodeMatrix * vec4(position, 1.0);
+    mat3 normalMatrix = mat3(transpose(inverse(viewMatrix * nodeMatrix)));
+    gsNormal = normalMatrix * normal;
 }

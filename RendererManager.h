@@ -2,20 +2,20 @@
 #define RENDERERMANAGER_H
 
 #include "CameraManager.h"
-#include "Light.h"
 #include "LightManager.h"
 #include "ModelData.h"
 #include "NodeManager.h"
 #include "ShaderManager.h"
-#include "SimpleTerrainTile.h"
 #include "SkyBox.h"
+#include "Terrain.h"
 #include "TexturedModelData.h"
 
 #include <QMap>
 #include <QMatrix4x4>
 #include <QObject>
+#include <QOpenGLExtraFunctions>
 
-class RendererManager : public QObject, protected QOpenGLFunctions
+class RendererManager : public QObject, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 
@@ -40,7 +40,7 @@ public:
 private slots:
     void renderNode(Node *node);
     void renderSkyBox();
-    void renderSimpleTerrain();
+    void renderTerrain();
 
 private:
     QMap<Model::Type, ModelData *> mTypeToModelData;
@@ -59,7 +59,7 @@ private:
     bool mRenderNormals;
 
     SkyBox *mSkyBox;
-    SimpleTerrainTile *mTile;
+    Terrain *mTerrain;
 };
 
 #endif // RENDERERMANAGER_H

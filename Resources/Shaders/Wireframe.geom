@@ -2,19 +2,19 @@
 layout (triangles) in;
 layout (line_strip, max_vertices = 6) out;
 
-in vec3 gs_position[];
+in vec3 gsPosition[];
 
-uniform mat4 projection_matrix;
+uniform mat4 projectionMatrix;
 
 void main()
 {
-    gl_Position = projection_matrix * vec4(gs_position[0], 1.0);
+    gl_Position = projectionMatrix * vec4(gsPosition[0], 1.0);
     EmitVertex();
-    gl_Position = projection_matrix * vec4(gs_position[1], 1.0);
+    gl_Position = projectionMatrix * vec4(gsPosition[1], 1.0);
     EmitVertex();
-    gl_Position = projection_matrix * vec4(gs_position[2], 1.0);
+    gl_Position = projectionMatrix * vec4(gsPosition[2], 1.0);
     EmitVertex();
-    gl_Position = projection_matrix * vec4(gs_position[0], 1.0);
+    gl_Position = projectionMatrix * vec4(gsPosition[0], 1.0);
     EmitVertex();
     EndPrimitive();
 }

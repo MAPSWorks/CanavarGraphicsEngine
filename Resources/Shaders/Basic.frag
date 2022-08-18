@@ -37,114 +37,114 @@ struct SpotLight {
     float constant;
     float linear;
     float quadratic;
-    float cut_off_angle;
-    float outer_cut_off_angle;
+    float cutOffAngle;
+    float outerCutOffAngle;
 };
 
-uniform vec3 camera_position;
+uniform vec3 cameraPosition;
 uniform Node node;
-uniform DirectionalLight directional_light;
-uniform PointLight point_lights[8];
-uniform SpotLight spot_lights[8];
-uniform int number_of_point_lights;
-uniform int number_of_spot_lights;
+uniform DirectionalLight directionalLight;
+uniform PointLight pointLights[8];
+uniform SpotLight spotLights[8];
+uniform int numberOfPointLights;
+uniform int numberOfSpotLights;
 
-in vec3 fs_position;
-in vec3 fs_normal;
+in vec3 fsPosition;
+in vec3 fsNormal;
 
-out vec4 out_color;
+out vec4 outColor;
 
 void main()
 {
     // Common Variables
-    vec3 normal = normalize(fs_normal);
-    vec3 directional_light_dir = normalize(-directional_light.direction);
-    vec3 view_dir = normalize(camera_position - fs_position);
+    vec3 normal = normalize(fsNormal);
+    vec3 directionalLightDir = normalize(-directionalLight.direction);
+    vec3 viewDir = normalize(cameraPosition - fsPosition);
 
     vec4 result = vec4(0,0,0,0);
 
     // Directional Light
     {
         // Ambient
-        float ambient = directional_light.ambient * node.ambient;
+        float ambient = directionalLight.ambient * node.ambient;
 
         // Diffuse
-        float diffuse_coef = max(dot(normal, directional_light_dir), 0.0);
-        float diffuse = directional_light.diffuse * diffuse_coef * node.diffuse;
+        float diffuseFactor = max(dot(normal, directionalLightDir), 0.0);
+        float diffuse = diffuseFactor * directionalLight.diffuse * node.diffuse;
 
         // Specular
-        vec3 reflect_dir = reflect(-directional_light_dir, normal);
-        float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node.shininess);
-        float specular = directional_light.specular * specular_coef * node.specular;
+        vec3 reflectDir = reflect(-directionalLightDir, normal);
+        float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
+        float specular = specularFactor * directionalLight.specular * node.specular;
 
-        result = (specular + ambient + diffuse) * node.color * directional_light.color;
+        result = (specular + ambient + diffuse) * node.color * directionalLight.color;
     }
 
     // Point Lights
     {
-        for(int i = 0; i < number_of_point_lights; i++) {
+        for(int i = 0; i < numberOfPointLights; i++) {
             // Ambient
-            float ambient  = point_lights[i].ambient  * node.ambient;
+            float ambient  = pointLights[i].ambient  * node.ambient;
 
             // Diffuse
-            vec3 light_dir = normalize(point_lights[i].position - fs_position);
-            float diffuse_coef = max(dot(normal, light_dir), 0.0);
-            float diffuse  = point_lights[i].diffuse  * diffuse_coef * node.diffuse;
+            vec3 lightDir = normalize(pointLights[i].position - fsPosition);
+            float diffuse_coef = max(dot(normal, lightDir), 0.0);
+            float diffuse  = pointLights[i].diffuse  * diffuse_coef * node.diffuse;
 
             // Specular
-            vec3 reflect_dir = reflect(-light_dir, normal);
-            float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node.shininess);
-            float specular = point_lights[i].specular * specular_coef * node.specular;
+            vec3 reflectDir = reflect(-lightDir, normal);
+            float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
+            float specular = specularFactor * pointLights[i].specular * node.specular;
 
             // Attenuation
-            float distance = length(point_lights[i].position - fs_position);
-            float attenuation = 1.0f / (point_lights[i].constant +
-                                        point_lights[i].linear * distance +
-                                        point_lights[i].quadratic * (distance * distance));
+            float distance = length(pointLights[i].position - fsPosition);
+            float attenuation = 1.0f / (pointLights[i].constant +
+                                        pointLights[i].linear * distance +
+                                        pointLights[i].quadratic * (distance * distance));
 
             ambient  *= attenuation;
             diffuse  *= attenuation;
             specular *= attenuation;
-            result += (ambient + diffuse + specular) * node.color * point_lights[i].color;
+            result += (ambient + diffuse + specular) * node.color * pointLights[i].color;
         }
     }
 
 
     // Spot Lights
     {
-        for(int i = 0; i < number_of_spot_lights; i++) {
+        for(int i = 0; i < numberOfSpotLights; i++) {
             // Ambient
-            float ambient = spot_lights[i].ambient * node.ambient;
+            float ambient = spotLights[i].ambient * node.ambient;
 
             // Diffuse
-            vec3 light_dir = normalize(spot_lights[i].position - fs_position);
-            float diffuse_coef = max(dot(normal, light_dir), 0.0);
-            float diffuse = spot_lights[i].diffuse * diffuse_coef * node.diffuse;
+            vec3 lightDir = normalize(spotLights[i].position - fsPosition);
+            float diffuseFactor = max(dot(normal, lightDir), 0.0);
+            float diffuse = diffuseFactor * spotLights[i].diffuse * node.diffuse;
 
             // Specular
-            vec3 reflect_dir = reflect(-light_dir, normal);
-            float specular_coef = pow(max(dot(view_dir, reflect_dir), 0.0), node.shininess);
-            float specular = spot_lights[i].specular * specular_coef * node.specular;
+            vec3 reflectDir = reflect(-lightDir, normal);
+            float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
+            float specular = specularFactor * spotLights[i].specular * node.specular;
 
             // Spotlight (soft edges)
-            float theta = dot(light_dir, normalize(-spot_lights[i].direction));
-            float epsilon = (spot_lights[i].cut_off_angle - spot_lights[i].outer_cut_off_angle);
-            float intensity = clamp((theta - spot_lights[i].outer_cut_off_angle) / epsilon, 0.0, 1.0);
+            float theta = dot(lightDir, normalize(-spotLights[i].direction));
+            float epsilon = (spotLights[i].cutOffAngle - spotLights[i].outerCutOffAngle);
+            float intensity = clamp((theta - spotLights[i].outerCutOffAngle) / epsilon, 0.0, 1.0);
             diffuse  *= intensity;
             specular *= intensity;
 
             // Attenuation
-            float distance = length(spot_lights[i].position - fs_position);
-            float attenuation = 1.0f / (spot_lights[i].constant +
-                                        spot_lights[i].linear * distance +
-                                        spot_lights[i].quadratic * (distance * distance));
+            float distance = length(spotLights[i].position - fsPosition);
+            float attenuation = 1.0f / (spotLights[i].constant +
+                                        spotLights[i].linear * distance +
+                                        spotLights[i].quadratic * (distance * distance));
             ambient  *= attenuation;
             diffuse  *= attenuation;
             specular *= attenuation;
 
-            result += (ambient + diffuse + specular) * node.color * spot_lights[i].color;
+            result += (ambient + diffuse + specular) * node.color * spotLights[i].color;
         }
     }
 
-    out_color = result;
+    outColor = result;
 }
