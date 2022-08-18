@@ -7,7 +7,7 @@ Terrain::Terrain(QObject *parent)
 {
     mShaderManager = ShaderManager::instance();
 
-    mProperties.resolution = 3;
+    mProperties.numberOfVerticesOnEdge = 4;
     mProperties.grids = 101;
     mProperties.width = 1000;
     mProperties.octaves = 13;
@@ -26,72 +26,44 @@ Terrain::Terrain(QObject *parent)
 
 void Terrain::create()
 {
-    const int resolution = mProperties.resolution;
-    const int width = mProperties.width;
+    const int n = mProperties.numberOfVerticesOnEdge;
+    const float width = mProperties.width;
 
-    const int nPoints = resolution * resolution;
-    const int size = nPoints * 3 + nPoints * 3 + nPoints * 2;
-    float *vertices = new float[size];
-
-    for (int i = 0; i < resolution; i++)
+    for (int i = 0; i < n; i++)
     {
-        for (int j = 0; j < resolution; j++)
+        for (int j = 0; j < n; j++)
         {
-            float x = j * (float) width / (resolution - 1) - width / 2.0;
-            float y = 0.0;
-            float z = -i * (float) width / (resolution - 1) + width / 2.0;
+            float x = j * width / (n - 1) - width / 2.0f;
+            float y = 0;
+            float z = i * width / (n - 1) - width / 2.0f;
+            float u = float(j) / (n - 1);
+            float v = float(n - i - 1) / (n - 1);
 
-            vertices[(i + j * resolution) * 8] = x;
-            vertices[(i + j * resolution) * 8 + 1] = y;
-            vertices[(i + j * resolution) * 8 + 2] = z;
+            Vertex vertex;
+            vertex.position = QVector3D(x, y, z);
+            vertex.normal = QVector3D(0, 1, 0);
+            vertex.texture = QVector2D(u, v);
 
-            float x_n = 0.0;
-            float y_n = 1.0;
-            float z_n = 0.0;
-
-            vertices[(i + j * resolution) * 8 + 3] = x_n;
-            vertices[(i + j * resolution) * 8 + 4] = y_n;
-            vertices[(i + j * resolution) * 8 + 5] = z_n;
-
-            vertices[(i + j * resolution) * 8 + 6] = (float) j / (resolution - 1);
-            vertices[(i + j * resolution) * 8 + 7] = (float) (resolution - i - 1) / (resolution - 1);
+            mVertices << vertex;
         }
     }
 
-    const int nTris = (resolution - 1) * (resolution - 1) * 2;
-    int *trisIndices = new int[nTris * 3];
-
-    for (int i = 0; i < nTris; i++)
+    for (int i = 0; i < n - 1; i++)
     {
-        int trisPerRow = 2 * (resolution - 1);
-        for (int j = 0; j < trisPerRow; j++)
+        for (int j = 0; j < n - 1; j++)
         {
-            if (!(i % 2))
-            {
-                int k = i * 3;
-                int triIndex = i % trisPerRow;
+            mIndices << n * i + j;
+            mIndices << n * (i + 1) + j;
+            mIndices << n * i + j + 1;
 
-                int row = i / trisPerRow;
-                int col = triIndex / 2;
-                trisIndices[k] = row * resolution + col;
-                trisIndices[k + 1] = ++row * resolution + col;
-                trisIndices[k + 2] = --row * resolution + ++col;
-            } else
-            {
-                int k = i * 3;
-                int triIndex = i % trisPerRow;
-
-                int row = i / trisPerRow;
-                int col = triIndex / 2;
-                trisIndices[k] = row * resolution + ++col;
-                trisIndices[k + 1] = ++row * resolution + --col;
-                trisIndices[k + 2] = row * resolution + ++col;
-            }
+            mIndices << n * (i + 1) + j;
+            mIndices << n * (i + 1) + j + 1;
+            mIndices << n * i + j + 1;
         }
     }
 
-    QVector2D I = QVector2D(1, 0) * mProperties.width;
-    QVector2D J = QVector2D(0, 1) * mProperties.width;
+    const QVector2D I = QVector2D(1, 0) * mProperties.width;
+    const QVector2D J = QVector2D(0, 1) * mProperties.width;
 
     mPositions.resize(mProperties.grids * mProperties.grids);
 
@@ -107,29 +79,26 @@ void Terrain::create()
     initializeOpenGLFunctions();
     mVAO.create();
     mVAO.bind();
+
     glGenBuffers(1, &mEBO);
-    glGenBuffers(1, &mVBO);
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, nTris * 3 * sizeof(unsigned int), trisIndices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(unsigned int), mIndices.constData(), GL_STATIC_DRAW);
 
+    glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, size * sizeof(float), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.constData(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
     glEnableVertexAttribArray(2);
-    mVAO.release();
 
-    // PBO
     glGenBuffers(1, &mPBO);
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
     glBufferData(GL_ARRAY_BUFFER, mPositions.size() * sizeof(QVector2D), mPositions.constData(), GL_STATIC_DRAW);
 
-    mVAO.bind();
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(QVector2D), (void *) 0);
     glVertexAttribDivisor(3, 1);
@@ -148,9 +117,6 @@ void Terrain::create()
     mTextureRockDiffuse->create();
     mTextureRockNormal->create();
     mTextureTerrain->create();
-
-    delete[] vertices;
-    delete[] trisIndices;
 }
 
 void Terrain::render()
@@ -181,7 +147,7 @@ void Terrain::render()
     glActiveTexture(GL_TEXTURE0 + 6);
     glBindTexture(GL_TEXTURE_2D, mTextureRockNormal->id());
 
-    glDrawElementsInstanced(GL_PATCHES, (mProperties.resolution - 1) * (mProperties.resolution - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mPositions.size());
+    glDrawElementsInstanced(GL_PATCHES, (mProperties.numberOfVerticesOnEdge - 1) * (mProperties.numberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mPositions.size());
 
     mVAO.release();
 

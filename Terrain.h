@@ -19,7 +19,7 @@ class Terrain : public QObject, protected QOpenGLExtraFunctions
     Q_OBJECT
 public:
     struct Properties {
-        int resolution;
+        int numberOfVerticesOnEdge;
         int grids;
         float width;
         float amplitude;
@@ -66,6 +66,9 @@ private:
     Texture *mTextureTerrain;
     ShaderManager *mShaderManager;
     Material mMaterial;
+
+    QVector<Vertex> mVertices;
+    QVector<unsigned int> mIndices;
 };
 
 #endif // TERRAIN_H
