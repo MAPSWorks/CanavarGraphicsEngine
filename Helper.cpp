@@ -199,7 +199,7 @@ TextureMaterial *Helper::processMaterial(aiMaterial *aiMaterial, const QString &
     processTexture(material, aiMaterial, aiTextureType_AMBIENT, Texture::Type::Ambient, directory);
     processTexture(material, aiMaterial, aiTextureType_DIFFUSE, Texture::Type::Diffuse, directory);
     processTexture(material, aiMaterial, aiTextureType_SPECULAR, Texture::Type::Specular, directory);
-    processTexture(material, aiMaterial, aiTextureType_HEIGHT, Texture::Type::Height, directory);
+    processTexture(material, aiMaterial, aiTextureType_HEIGHT, Texture::Type::Normal, directory);
     processTexture(material, aiMaterial, aiTextureType_BASE_COLOR, Texture::Type::BaseColor, directory);
 
     return material;
@@ -216,7 +216,7 @@ void Helper::processTexture(TextureMaterial *material, aiMaterial *aiMaterial, a
         texture->create();
         material->addTexture(texture);
 
-        //qInfo() << "Texture" << texture->path() << "is loaded and created. ID is" << texture->id();
+        qInfo() << "Texture" << texture->path() << "is loaded and created. ID is" << texture->id();
     }
 }
 

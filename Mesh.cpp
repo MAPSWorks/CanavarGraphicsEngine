@@ -96,19 +96,19 @@ void Mesh::render()
     auto ambientTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Ambient);
     auto diffuseTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Diffuse);
     auto specularTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Specular);
-    auto heightTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Height);
+    auto normalTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Normal);
     auto baseColorTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::BaseColor);
 
     mShaderManager->setUniformValue("useTexture", false);
     mShaderManager->setUniformValue("useTextureAmbient", false);
     mShaderManager->setUniformValue("useTextureDiffuse", false);
     mShaderManager->setUniformValue("useTextureSpecular", false);
-    mShaderManager->setUniformValue("useTextureHeight", false);
+    mShaderManager->setUniformValue("useTextureNormal", false);
     mShaderManager->setUniformValue("useTextureBaseColor", false);
     mShaderManager->setUniformValue("textureAmbient", -1);
     mShaderManager->setUniformValue("textureDiffuse", -1);
     mShaderManager->setUniformValue("textureSpecular", -1);
-    mShaderManager->setUniformValue("textureHeight", -1);
+    mShaderManager->setUniformValue("textureNormal", -1);
     mShaderManager->setUniformValue("textureBaseColor", -1);
     mShaderManager->setUniformValue("useTexture", materials[mMaterialIndex]->textures().size() != 0);
 
@@ -145,11 +145,11 @@ void Mesh::render()
         glActiveTexture(GL_TEXTURE0 + 4);
     }
 
-    if (heightTexture)
+    if (normalTexture)
     {
-        mShaderManager->setUniformValue("textureHeight", 5);
-        mShaderManager->setUniformValue("useTextureHeight", true);
-        glBindTexture(GL_TEXTURE_2D, heightTexture->id());
+        mShaderManager->setUniformValue("textureNormal", 5);
+        mShaderManager->setUniformValue("useTextureNormal", true);
+        glBindTexture(GL_TEXTURE_2D, normalTexture->id());
         glActiveTexture(GL_TEXTURE0 + 5);
     }
 

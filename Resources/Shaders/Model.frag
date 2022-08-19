@@ -61,19 +61,20 @@ uniform Fog fog;
 uniform sampler2D textureAmbient;
 uniform sampler2D textureDiffuse;
 uniform sampler2D textureSpecular;
-uniform sampler2D textureHeight;
+uniform sampler2D textureNormal;
 uniform sampler2D textureBaseColor;
 
 uniform bool useTexture;
 uniform bool useTextureAmbient;
 uniform bool useTextureDiffuse;
 uniform bool useTextureSpecular;
-uniform bool useTextureHeight;
+uniform bool useTextureNormal;
 uniform bool useTextureBaseColor;
 
 in vec3 fsPosition;
 in vec3 fsNormal;
 in vec2 fsTextureCoord;
+in mat3 fsTBN;
 
 out vec4 outColor;
 
@@ -81,7 +82,7 @@ out vec4 outColor;
 vec4 getAmbientColor() {
     if(useTexture) {
         if(useTextureAmbient)
-            return node.ambient * texture(textureAmbient, fsTextureCoord);
+            return texture(textureAmbient, fsTextureCoord);
         else
             return vec4(0,0,0,0);
     }
@@ -123,6 +124,23 @@ vec4 getBaseColor() {
     }
 }
 
+
+vec3 getNormal() {
+    if(useTexture) {
+        if(useTextureNormal) {
+            vec3 normal = texture(textureNormal, fsTextureCoord).rgb;
+            normal = 2.0 * normal  - 1.0;
+            normal = normalize(fsTBN * normal);
+            return normal;
+        }
+        else
+            return normalize(fsNormal);
+    }
+    else {
+        return normalize(fsNormal);
+    }
+}
+
 float getFogFactor() {
     float distance = length(cameraPosition - fsPosition);
     float fogFactor = exp(-pow(distance * 0.00005f * fog.density, fog.gradient));
@@ -132,7 +150,7 @@ float getFogFactor() {
 void main()
 {
     // Common Variables
-    vec3 normal = normalize(fsNormal);
+    vec3 normal = getNormal();
     vec3 directionalLightDir = normalize(-directionalLight.direction);
     vec4 ambientColor =  getAmbientColor();
     vec4 diffuseColor = getDiffuseColor();

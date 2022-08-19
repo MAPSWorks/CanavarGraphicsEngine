@@ -14,7 +14,7 @@ public:
         Ambient,
         Diffuse,
         Specular,
-        Height,
+        Normal,
         BaseColor
     };
 
