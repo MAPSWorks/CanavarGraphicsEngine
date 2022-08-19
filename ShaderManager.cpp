@@ -69,7 +69,11 @@ bool ShaderManager::init()
                  << "cameraPosition"
                  << "viewMatrix"
                  << "projectionMatrix"
-                 << "useTexture";
+                 << "useTexture"
+                 << "fog.enabled"
+                 << "fog.color"
+                 << "fog.density"
+                 << "fog.gradient";
 
         for (const auto &uniform : qAsConst(uniforms))
             locations.insert(uniform, shader->uniformLocation(uniform));

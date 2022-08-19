@@ -44,7 +44,7 @@ Controller::Controller(QApplication *app, QObject *parent)
     mFreeCamera->setPosition(QVector3D(0, 10, 10));
     mFreeCamera->setVerticalFov(60.0f);
     mFreeCamera->setZNear(0.1f);
-    mFreeCamera->setZFar(100000.0f);
+    mFreeCamera->setZFar(1000000.0f);
     mCameraManager->addCamera(mFreeCamera);
     mCameraManager->setActiveCamera(mFreeCamera);
 
@@ -76,7 +76,7 @@ void Controller::init()
     mDummyCamera->setPosition(QVector3D(0, 6, -14));
     mDummyCamera->setVerticalFov(80.0f);
     mDummyCamera->setZNear(0.1f);
-    mDummyCamera->setZFar(100000.0f);
+    mDummyCamera->setZFar(1000000.0f);
     mDummyCamera->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
     mCameraManager->addCamera(mDummyCamera);
 
@@ -84,26 +84,11 @@ void Controller::init()
     mSun->setDirection(QVector3D(1, -1, 1));
     mLightManager->setDirectionalLight(mSun);
 
-    for (int i = 0; i < 4; i++)
-    {
-        PointLight *light = new PointLight;
-        light->setPosition(QVector3D(10 * i + 10, 3, 0));
-        mLightManager->addLight(light);
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        SpotLight *light = new SpotLight;
-        light->setDirection(QVector3D(0, -1, 0));
-        light->setPosition(QVector3D(-100 * i - 10, 3, 0));
-        mLightManager->addLight(light);
-    }
-
     // Plane
     mPlane = new Model("Plane");
     mPlane->setPosition(QVector3D(0, 100, 0));
     mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
-    mNodeManager->addNode(mPlane);
+    //mNodeManager->addNode(mPlane);
 
     mCube = new Model("Cube");
     mCube->setPosition(QVector3D(10, 10, 10));

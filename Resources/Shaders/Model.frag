@@ -42,6 +42,13 @@ struct SpotLight {
     float outerCutOffAngle;
 };
 
+struct Fog {
+    bool enabled;
+    vec3 color;
+    float density;
+    float gradient;
+};
+
 uniform Node node;
 uniform vec3 cameraPosition;
 uniform DirectionalLight directionalLight;
@@ -50,6 +57,7 @@ uniform SpotLight spotLights[8];
 uniform int numberOfPointLights;
 uniform int numberOfSpotLights;
 uniform bool useTexture;
+uniform Fog fog;
 
 uniform sampler2D textureAmbient;
 uniform sampler2D textureDiffuse;
@@ -87,6 +95,12 @@ vec4 getSpecularColor() {
     else {
         return node.specular * node.color;
     }
+}
+
+float getFogFactor() {
+    float distance = length(cameraPosition - fsPosition);
+    float fogFactor = exp(-pow(distance * 0.00005f * fog.density, fog.gradient));
+    return clamp(fogFactor, 0.0f, 1.0f);
 }
 
 void main()
@@ -184,5 +198,12 @@ void main()
         }
     }
 
-    outColor = result;
+    if(fog.enabled) {
+        float fogFactor = getFogFactor();
+        outColor = mix(vec4(fog.color, 1), result, fogFactor);
+    }
+    else {
+        outColor = result;
+    }
+
 }

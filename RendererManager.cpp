@@ -177,6 +177,13 @@ void RendererManager::render(float ifps)
         mShaderManager->release();
     }
 
+    mShaderManager->bind(ShaderManager::Shader::ModelShader);
+    mShaderManager->setUniformValue("fog.enabled", mFog.enabled);
+    mShaderManager->setUniformValue("fog.color", mFog.color);
+    mShaderManager->setUniformValue("fog.density", mFog.density);
+    mShaderManager->setUniformValue("fog.gradient", mFog.gradient);
+    mShaderManager->release();
+
     renderTerrain();
 
     auto nodes = mNodeManager->nodes();
