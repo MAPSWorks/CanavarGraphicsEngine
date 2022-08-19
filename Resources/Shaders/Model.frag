@@ -71,6 +71,8 @@ uniform bool useTextureSpecular;
 uniform bool useTextureNormal;
 uniform bool useTextureBaseColor;
 
+uniform bool useBlinnShading;
+
 in vec3 fsPosition;
 in vec3 fsNormal;
 in vec2 fsTextureCoord;
@@ -120,7 +122,7 @@ vec4 getBaseColor() {
             return vec4(0,0,0,0);
     }
     else {
-        return node.ambient * node.color;
+        return vec4(0,0,0,0);
     }
 }
 
@@ -174,8 +176,20 @@ void main()
 
         // Specular
         vec3 reflectDir = reflect(-directionalLightDir, normal);
+        vec4 specular = vec4(0,0,0,0);
+
+        if(useBlinnShading) {
+            vec3 halfwayDir = normalize(directionalLightDir + viewDir);
+            float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), node.shininess);
+            specular = specularFactor * directionalLight.specular * specularColor;
+        }
+        else {
+            float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
+            specular = specularFactor * directionalLight.specular * specularColor;
+        }
+
         float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
-        vec4 specular = specularFactor * directionalLight.specular * specularColor;
+
 
         result = (ambient + diffuse + specular + base) * directionalLight.color;
     }
@@ -196,8 +210,17 @@ void main()
 
             // Specular
             vec3 reflectDir = reflect(-lightDir, normal);
-            float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
-            vec4 specular = specularFactor * pointLights[i].specular * specularColor;
+            vec4 specular = vec4(0,0,0,0);
+
+            if(useBlinnShading) {
+                vec3 halfwayDir = normalize(lightDir + viewDir);
+                float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), node.shininess);
+                specular = specularFactor * pointLights[i].specular * specularColor;
+            }
+            else {
+                float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
+                specular = specularFactor * pointLights[i].specular * specularColor;
+            }
 
             // Attenuation
             float distance = length(pointLights[i].position - fsPosition);
@@ -229,8 +252,17 @@ void main()
 
             // Specular
             vec3 reflectDir = reflect(-lightDir, normal);
-            float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
-            vec4 specular = specularFactor * spotLights[i].specular * specularColor;
+            vec4 specular = vec4(0,0,0,0);
+
+            if(useBlinnShading) {
+                vec3 halfwayDir = normalize(lightDir + viewDir);
+                float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), node.shininess);
+                specular = specularFactor * spotLights[i].specular * specularColor;
+            }
+            else {
+                float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
+                specular = specularFactor * spotLights[i].specular * specularColor;
+            }
 
             // Spotlight (soft edges)
             float theta = dot(lightDir, normalize(-spotLights[i].direction));

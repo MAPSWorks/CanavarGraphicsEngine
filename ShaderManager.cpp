@@ -79,7 +79,8 @@ bool ShaderManager::init()
                  << "useTextureDiffuse"
                  << "useTextureSpecular"
                  << "useTextureNormal"
-                 << "useTextureBaseColor";
+                 << "useTextureBaseColor"
+                 << "useBlinnShading";
 
         for (const auto &uniform : qAsConst(uniforms))
             locations.insert(uniform, shader->uniformLocation(uniform));

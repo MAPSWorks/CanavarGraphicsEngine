@@ -6,6 +6,7 @@ Terrain::Terrain(QObject *parent)
     : QObject{parent}
 {
     mShaderManager = ShaderManager::instance();
+    mCameraManager = CameraManager::instance();
 
     mProperties.numberOfVerticesOnEdge = 4;
     mProperties.grids = 128;
@@ -55,14 +56,14 @@ void Terrain::create()
     const QVector2D I = QVector2D(1, 0) * mProperties.width;
     const QVector2D J = QVector2D(0, 1) * mProperties.width;
 
-    mPositions.resize(mProperties.grids * mProperties.grids);
+    mGridPositions.resize(mProperties.grids * mProperties.grids);
 
     for (int i = 0; i < mProperties.grids; i++)
     {
         for (int j = 0; j < mProperties.grids; j++)
         {
             QVector2D pos = (float) (j - mProperties.grids / 2) * I + (float) (i - mProperties.grids / 2) * J;
-            mPositions[j + i * mProperties.grids] = pos;
+            mGridPositions[j + i * mProperties.grids] = pos;
         }
     }
 
@@ -88,7 +89,7 @@ void Terrain::create()
 
     glGenBuffers(1, &mPBO);
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
-    glBufferData(GL_ARRAY_BUFFER, mPositions.size() * sizeof(QVector2D), mPositions.constData(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mGridPositions.size() * sizeof(QVector2D), mGridPositions.constData(), GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(QVector2D), (void *) 0);
@@ -112,6 +113,14 @@ void Terrain::create()
 
 void Terrain::render()
 {
+    QVector2D currentTilePosition = getCurrentTilePosition();
+
+    if (currentTilePosition != mPreviousTilePosition)
+    {
+        updatePositionVectors(currentTilePosition - mPreviousTilePosition);
+        mPreviousTilePosition = currentTilePosition;
+    }
+
     mVAO->bind();
 
     mShaderManager->setUniformValue("sand", 1);
@@ -138,7 +147,7 @@ void Terrain::render()
     glActiveTexture(GL_TEXTURE0 + 6);
     glBindTexture(GL_TEXTURE_2D, mTextureRockNormal->id());
 
-    glDrawElementsInstanced(GL_PATCHES, (mProperties.numberOfVerticesOnEdge - 1) * (mProperties.numberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mPositions.size());
+    glDrawElementsInstanced(GL_PATCHES, (mProperties.numberOfVerticesOnEdge - 1) * (mProperties.numberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mGridPositions.size());
 
     mVAO->release();
 
@@ -179,17 +188,43 @@ void Terrain::reset()
     mProperties.tessellationMultiplier = 1.0f;
     mProperties.amplitude = 20.0f;
     mProperties.power = 3.0f;
-    mProperties.grassCoverage = 0.15f;
+    mProperties.grassCoverage = 0.45f;
     mProperties.seed = QVector3D(1, 1, 1);
 
     mMaterial.ambient = 0.25f;
     mMaterial.diffuse = 0.75f;
     mMaterial.shininess = 4.0f;
-    mMaterial.specular = 0.0f;
+    mMaterial.specular = 0.05f;
 }
 
 Terrain *Terrain::instance()
 {
     static Terrain instance;
     return &instance;
+}
+
+QVector2D Terrain::getCurrentTilePosition()
+{
+    const QVector3D cameraPosition = mCameraManager->activeCamera()->position();
+
+    for (const auto &position : qAsConst(mGridPositions))
+    {
+        if (cameraPosition.x() > position.x() - mProperties.width / 2 && //
+            cameraPosition.x() < position.x() + mProperties.width / 2 && //
+            cameraPosition.z() > position.y() - mProperties.width / 2 && //
+            cameraPosition.z() < position.y() + mProperties.width / 2)
+
+            return position;
+    }
+
+    return QVector2D(0, 0);
+}
+
+void Terrain::updatePositionVectors(const QVector2D &translation)
+{
+    for (int i = 0; i < mGridPositions.size(); ++i)
+        mGridPositions[i] += translation;
+
+    glBindBuffer(GL_ARRAY_BUFFER, mPBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, mGridPositions.size() * sizeof(QVector2D), mGridPositions.constData());
 }

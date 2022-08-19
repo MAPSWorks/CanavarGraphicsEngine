@@ -12,6 +12,7 @@ RendererManager::RendererManager(QObject *parent)
     , mRenderObjects(true)
     , mRenderWireframe(false)
     , mRenderNormals(false)
+    , mUseBlinnShading(true)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
@@ -32,6 +33,7 @@ bool RendererManager::init()
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_CULL_FACE);
 
     qInfo() << "Initializing ShaderManager...";
 
@@ -182,6 +184,7 @@ void RendererManager::render(float ifps)
     mShaderManager->setUniformValue("fog.color", mFog.color);
     mShaderManager->setUniformValue("fog.density", mFog.density);
     mShaderManager->setUniformValue("fog.gradient", mFog.gradient);
+    mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
     mShaderManager->release();
 
     renderTerrain();
@@ -191,7 +194,7 @@ void RendererManager::render(float ifps)
     for (auto node : nodes)
         renderNode(node);
 
-    renderSkyBox();
+    // renderSkyBox();
 }
 
 void RendererManager::renderNode(Node *node)
@@ -320,6 +323,16 @@ void RendererManager::renderTerrain()
     mShaderManager->release();
 
     //glDisable(GL_CLIP_DISTANCE0);
+}
+
+bool RendererManager::useBlinnShading() const
+{
+    return mUseBlinnShading;
+}
+
+void RendererManager::setUseBlinnShading(bool newUseBlinnShading)
+{
+    mUseBlinnShading = newUseBlinnShading;
 }
 
 const RendererManager::Fog &RendererManager::fog() const

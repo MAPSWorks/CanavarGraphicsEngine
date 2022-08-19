@@ -47,6 +47,9 @@ public:
     void setFog(const Fog &newFog);
     void resetFog();
 
+    bool useBlinnShading() const;
+    void setUseBlinnShading(bool newUseBlinnShading);
+
 private slots:
     void renderNode(Node *node);
     void renderSkyBox();
@@ -70,6 +73,8 @@ private:
     SkyBox *mSkyBox;
     Terrain *mTerrain;
     Fog mFog;
+
+    bool mUseBlinnShading;
 };
 
 #endif // RENDERERMANAGER_H

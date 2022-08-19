@@ -1,6 +1,7 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
+#include "CameraManager.h"
 #include "Model.h"
 #include "ShaderManager.h"
 #include "Texture.h"
@@ -57,9 +58,13 @@ public:
 
     static Terrain *instance();
 
+private slots:
+    QVector2D getCurrentTilePosition();
+    void updatePositionVectors(const QVector2D &translation);
+
 private:
     Properties mProperties;
-    QVector<QVector2D> mPositions;
+    QVector<QVector2D> mGridPositions;
     QOpenGLVertexArrayObject *mVAO;
     unsigned int mVBO;
     unsigned int mEBO;
@@ -75,6 +80,9 @@ private:
 
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;
+
+    CameraManager *mCameraManager;
+    QVector2D mPreviousTilePosition;
 };
 
 #endif // TERRAIN_H

@@ -88,7 +88,7 @@ void Controller::init()
     mPlane = new Model("Plane");
     mPlane->setPosition(QVector3D(0, 100, 0));
     mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
-    //mNodeManager->addNode(mPlane);
+    mNodeManager->addNode(mPlane);
 
     mCube = new Model("Cube");
     mCube->setPosition(QVector3D(10, 10, 10));
@@ -131,7 +131,7 @@ void Controller::run()
 {
     // mWindow->showMaximized();
     // mWindow->showFullScreen();
-    mWindow->resize(1280, 800);
+    mWindow->resize(1600, 900);
     mWindow->show();
 }
 

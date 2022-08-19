@@ -56,6 +56,7 @@ void Window::paintGL()
     mRenderObjects = mRendererManager->renderObjects();
     mRenderWireframe = mRendererManager->renderWireframe();
     mRenderNormals = mRendererManager->renderNormals();
+    mUseBlinnShading = mRendererManager->useBlinnShading();
 
     mFog = mRendererManager->fog();
     mTerrainProperties = mTerrain->properties();
@@ -84,6 +85,9 @@ void Window::paintGL()
 
         if (ImGui::Checkbox("Render Normals", &mRenderNormals))
             mRendererManager->setRenderNormals(mRenderNormals);
+
+        if (ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading))
+            mRendererManager->setUseBlinnShading(mUseBlinnShading);
     }
 
     // Light
@@ -199,6 +203,9 @@ void Window::paintGL()
         if (ImGui::Button("Reset##Terrain"))
             mTerrain->reset();
     }
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
     // Nodes
     {
         ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
@@ -308,6 +315,9 @@ void Window::paintGL()
                 if (ImGui::SliderFloat("Specular##Model", &material.specular, 0.0f, 1.0f, "%.3f"))
                     model->setMaterial(material);
 
+                if (ImGui::SliderFloat("Shininess##Model", &material.shininess, 1.0f, 128.0f, "%.3f"))
+                    model->setMaterial(material);
+
                 float color[4] = {material.color.x(), material.color.y(), material.color.z(), material.color.w()};
 
                 if (ImGui::ColorEdit4("Color##Model", (float *) &color))
@@ -321,8 +331,6 @@ void Window::paintGL()
     }
 
     ImGui::Spacing();
-
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
     // Simulator
     {

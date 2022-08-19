@@ -77,6 +77,7 @@ private:
     bool mRenderObjects;
     bool mRenderWireframe;
     bool mRenderNormals;
+    bool mUseBlinnShading;
 
     RendererManager::Fog mFog;
 
