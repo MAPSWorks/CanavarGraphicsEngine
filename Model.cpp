@@ -8,7 +8,7 @@ Model::Model(const QString &modelName, QObject *parent)
     mNodeType = Node::NodeType::Model;
 
     mMaterial.color = QVector4D(1, 1, 1, 1);
-    mMaterial.ambient = 0.5f;
+    mMaterial.ambient = 1.0f;
     mMaterial.diffuse = 0.75f;
     mMaterial.specular = 0.25f;
     mMaterial.shininess = 32.0f;

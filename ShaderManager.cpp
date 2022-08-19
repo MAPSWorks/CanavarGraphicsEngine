@@ -62,18 +62,24 @@ bool ShaderManager::init()
                  << "node.specular"
                  << "node.shininess"
                  << "node.color"
-                 << "textureDiffuse"
-                 << "tetureSpecular"
-                 << "textureAmbient"
-                 << "textureHeight"
                  << "cameraPosition"
                  << "viewMatrix"
                  << "projectionMatrix"
-                 << "useTexture"
                  << "fog.enabled"
                  << "fog.color"
                  << "fog.density"
-                 << "fog.gradient";
+                 << "fog.gradient"
+                 << "textureAmbient"
+                 << "textureDiffuse"
+                 << "textureSpecular"
+                 << "textureHeight"
+                 << "textureBaseColor"
+                 << "useTexture"
+                 << "useTextureAmbient"
+                 << "useTextureDiffuse"
+                 << "useTextureSpecular"
+                 << "useTextureHeight"
+                 << "useTextureBaseColor";
 
         for (const auto &uniform : qAsConst(uniforms))
             locations.insert(uniform, shader->uniformLocation(uniform));

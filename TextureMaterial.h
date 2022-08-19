@@ -14,6 +14,8 @@ public:
     void addTexture(Texture *texture);
     const QVector<Texture *> &textures() const;
 
+    Texture *getFirstTexture(Texture::Type type);
+
 private:
     QVector<Texture *> mTextures;
 };

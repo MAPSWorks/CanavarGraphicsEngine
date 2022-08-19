@@ -196,10 +196,11 @@ ModelDataNode *Helper::processNode(ModelData *data, aiNode *aiParentNode)
 TextureMaterial *Helper::processMaterial(aiMaterial *aiMaterial, const QString &directory)
 {
     TextureMaterial *material = new TextureMaterial;
+    processTexture(material, aiMaterial, aiTextureType_AMBIENT, Texture::Type::Ambient, directory);
     processTexture(material, aiMaterial, aiTextureType_DIFFUSE, Texture::Type::Diffuse, directory);
     processTexture(material, aiMaterial, aiTextureType_SPECULAR, Texture::Type::Specular, directory);
-    processTexture(material, aiMaterial, aiTextureType_AMBIENT, Texture::Type::Ambient, directory);
     processTexture(material, aiMaterial, aiTextureType_HEIGHT, Texture::Type::Height, directory);
+    processTexture(material, aiMaterial, aiTextureType_BASE_COLOR, Texture::Type::BaseColor, directory);
 
     return material;
 }

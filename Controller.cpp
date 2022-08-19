@@ -122,7 +122,7 @@ void Controller::init()
     mJet->addChild(mDummyCamera);
 
     mRootJetNode = new Node;
-    mRootJetNode->setName("F16_ROOT_NODE");
+    mRootJetNode->setName("JET_ROOT_NODE");
     mRootJetNode->addChild(mJet);
     mNodeManager->addNode(mRootJetNode);
 }

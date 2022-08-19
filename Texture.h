@@ -11,10 +11,11 @@ class Texture : public QObject, protected QOpenGLFunctions
 public:
     enum class Type { //
         None,
+        Ambient,
         Diffuse,
         Specular,
-        Ambient,
-        Height
+        Height,
+        BaseColor
     };
 
     explicit Texture(Type type, const QString &path, QObject *parent = nullptr);

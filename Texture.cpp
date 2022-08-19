@@ -1,5 +1,7 @@
 #include "Texture.h"
 
+#include <QDebug>
+
 Texture::Texture(Type type, const QString &path, QObject *parent)
     : QObject(parent)
     , mType(type)
@@ -14,12 +16,10 @@ void Texture::create()
 
     glGenTextures(1, &mId);
     QImage image(mPath);
-
-    // FIXME
-    QImage formattedImage = image.convertToFormat(QImage::Format_RGB888);
+    image = image.convertToFormat(QImage::Format_RGB888);
 
     glBindTexture(GL_TEXTURE_2D, mId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, formattedImage.width(), formattedImage.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, formattedImage.constBits());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width(), image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.constBits());
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

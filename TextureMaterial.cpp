@@ -14,3 +14,12 @@ const QVector<Texture *> &TextureMaterial::textures() const
 {
     return mTextures;
 }
+
+Texture *TextureMaterial::getFirstTexture(Texture::Type type)
+{
+    for (const auto &texture : qAsConst(mTextures))
+        if (texture->type() == type)
+            return texture;
+
+    return nullptr;
+}

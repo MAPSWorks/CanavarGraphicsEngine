@@ -92,30 +92,80 @@ bool Mesh::create()
 void Mesh::render()
 {
     auto materials = mData->materials();
-    auto textures = materials[mMaterialIndex]->textures();
 
-    mShaderManager->setUniformValue("useTexture", textures.size() != 0);
+    auto ambientTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Ambient);
+    auto diffuseTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Diffuse);
+    auto specularTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Specular);
+    auto heightTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Height);
+    auto baseColorTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::BaseColor);
 
-    for (int i = 0; i < textures.size(); i++)
+    mShaderManager->setUniformValue("useTexture", false);
+    mShaderManager->setUniformValue("useTextureAmbient", false);
+    mShaderManager->setUniformValue("useTextureDiffuse", false);
+    mShaderManager->setUniformValue("useTextureSpecular", false);
+    mShaderManager->setUniformValue("useTextureHeight", false);
+    mShaderManager->setUniformValue("useTextureBaseColor", false);
+    mShaderManager->setUniformValue("textureAmbient", -1);
+    mShaderManager->setUniformValue("textureDiffuse", -1);
+    mShaderManager->setUniformValue("textureSpecular", -1);
+    mShaderManager->setUniformValue("textureHeight", -1);
+    mShaderManager->setUniformValue("textureBaseColor", -1);
+    mShaderManager->setUniformValue("useTexture", materials[mMaterialIndex]->textures().size() != 0);
+
+    if (ambientTexture)
     {
-        if (textures[i]->type() == Texture::Type::Diffuse)
-            mShaderManager->setUniformValue("textureDiffuse", i);
-        else if (textures[i]->type() == Texture::Type::Specular)
-            mShaderManager->setUniformValue("textureSpecular", i);
-        else if (textures[i]->type() == Texture::Type::Ambient)
-            mShaderManager->setUniformValue("textureAmbient", i);
-        else if (textures[i]->type() == Texture::Type::Height)
-            mShaderManager->setUniformValue("textureHeight", i);
+        mShaderManager->setUniformValue("textureAmbient", 1);
+        mShaderManager->setUniformValue("useTextureAmbient", true);
+        glBindTexture(GL_TEXTURE_2D, ambientTexture->id());
+        glActiveTexture(GL_TEXTURE0 + 1);
+    } else
+    {
+        if (diffuseTexture)
+        {
+            mShaderManager->setUniformValue("textureAmbient", 2);
+            mShaderManager->setUniformValue("useTextureAmbient", true);
+            glBindTexture(GL_TEXTURE_2D, diffuseTexture->id());
+            glActiveTexture(GL_TEXTURE0 + 2);
+        }
+    }
 
-        glActiveTexture(GL_TEXTURE0 + i);
-        glBindTexture(GL_TEXTURE_2D, textures[i]->id());
+    if (diffuseTexture)
+    {
+        mShaderManager->setUniformValue("textureDiffuse", 3);
+        mShaderManager->setUniformValue("useTextureDiffuse", true);
+        glBindTexture(GL_TEXTURE_2D, diffuseTexture->id());
+        glActiveTexture(GL_TEXTURE0 + 3);
+    }
+
+    if (specularTexture)
+    {
+        mShaderManager->setUniformValue("textureSpecular", 4);
+        mShaderManager->setUniformValue("useTextureSepcular", true);
+        glBindTexture(GL_TEXTURE_2D, specularTexture->id());
+        glActiveTexture(GL_TEXTURE0 + 4);
+    }
+
+    if (heightTexture)
+    {
+        mShaderManager->setUniformValue("textureHeight", 5);
+        mShaderManager->setUniformValue("useTextureHeight", true);
+        glBindTexture(GL_TEXTURE_2D, heightTexture->id());
+        glActiveTexture(GL_TEXTURE0 + 5);
+    }
+
+    if (baseColorTexture)
+    {
+        mShaderManager->setUniformValue("textureBaseColor", 6);
+        mShaderManager->setUniformValue("useTextureBaseColor", true);
+        glBindTexture(GL_TEXTURE_2D, baseColorTexture->id());
+        glActiveTexture(GL_TEXTURE0 + 6);
     }
 
     mVertexArray.bind();
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
     mVertexArray.release();
 
-    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Mesh::renderWireframe()

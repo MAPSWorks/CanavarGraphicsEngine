@@ -9,7 +9,7 @@ Terrain::Terrain(QObject *parent)
 
     mProperties.numberOfVerticesOnEdge = 4;
     mProperties.grids = 128;
-    mProperties.width = 2048;
+    mProperties.width = 1024;
 
     reset();
 }

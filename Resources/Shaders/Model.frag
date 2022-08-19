@@ -56,12 +56,20 @@ uniform PointLight pointLights[8];
 uniform SpotLight spotLights[8];
 uniform int numberOfPointLights;
 uniform int numberOfSpotLights;
-uniform bool useTexture;
 uniform Fog fog;
 
 uniform sampler2D textureAmbient;
 uniform sampler2D textureDiffuse;
 uniform sampler2D textureSpecular;
+uniform sampler2D textureHeight;
+uniform sampler2D textureBaseColor;
+
+uniform bool useTexture;
+uniform bool useTextureAmbient;
+uniform bool useTextureDiffuse;
+uniform bool useTextureSpecular;
+uniform bool useTextureHeight;
+uniform bool useTextureBaseColor;
 
 in vec3 fsPosition;
 in vec3 fsNormal;
@@ -72,7 +80,10 @@ out vec4 outColor;
 
 vec4 getAmbientColor() {
     if(useTexture) {
-        return texture(textureDiffuse, fsTextureCoord);
+        if(useTextureAmbient)
+            return node.ambient * texture(textureAmbient, fsTextureCoord);
+        else
+            return vec4(0,0,0,0);
     }
     else {
         return node.ambient * node.color;
@@ -81,7 +92,7 @@ vec4 getAmbientColor() {
 
 vec4 getDiffuseColor() {
     if(useTexture) {
-        return texture(textureDiffuse, fsTextureCoord);
+            return  node.diffuse * texture(textureDiffuse, fsTextureCoord);
     }
     else {
         return node.diffuse * node.color;
@@ -90,10 +101,25 @@ vec4 getDiffuseColor() {
 
 vec4 getSpecularColor() {
     if(useTexture) {
-        return texture(textureSpecular, fsTextureCoord);
+        if(useTextureSpecular)
+            return node.specular * texture(textureSpecular, fsTextureCoord);
+        else
+            return vec4(0,0,0,0);
     }
     else {
         return node.specular * node.color;
+    }
+}
+
+vec4 getBaseColor() {
+    if(useTexture) {
+        if(useTextureBaseColor)
+            return node.ambient * texture(textureBaseColor, fsTextureCoord);
+        else
+            return vec4(0,0,0,0);
+    }
+    else {
+        return node.ambient * node.color;
     }
 }
 
@@ -108,8 +134,9 @@ void main()
     // Common Variables
     vec3 normal = normalize(fsNormal);
     vec3 directionalLightDir = normalize(-directionalLight.direction);
-    vec4 ambientColor = getAmbientColor();
+    vec4 ambientColor =  getAmbientColor();
     vec4 diffuseColor = getDiffuseColor();
+    vec4 baseColor = getBaseColor();
     vec4 specularColor = getSpecularColor();
     vec3 viewDir = normalize(cameraPosition - fsPosition);
 
@@ -120,6 +147,9 @@ void main()
         // Ambient
         vec4 ambient = directionalLight.ambient * ambientColor;
 
+        // Base
+        vec4 base = directionalLight.ambient * baseColor;
+
         // Diffuse
         float diffuseFactor = max(dot(normal, directionalLightDir), 0.0);
         vec4 diffuse = diffuseFactor * directionalLight.diffuse * diffuseColor;
@@ -129,7 +159,7 @@ void main()
         float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
         vec4 specular = specularFactor * directionalLight.specular * specularColor;
 
-        result = (ambient + diffuse + specular) * directionalLight.color;
+        result = (ambient + diffuse + specular + base) * directionalLight.color;
     }
 
     // Point Lights
@@ -137,6 +167,9 @@ void main()
         for(int i = 0; i < numberOfPointLights; i++) {
             // Ambient
             vec4 ambient  = pointLights[i].ambient  * ambientColor;
+
+            // Base
+            vec4 base = pointLights[i].ambient * baseColor;
 
             // Diffuse
             vec3 lightDir = normalize(pointLights[i].position - fsPosition);
@@ -157,7 +190,7 @@ void main()
             ambient  *= attenuation;
             diffuse  *= attenuation;
             specular *= attenuation;
-            result += (ambient + diffuse + specular) * pointLights[i].color;
+            result += (ambient + diffuse + specular + base) * pointLights[i].color;
         }
     }
 
@@ -167,6 +200,9 @@ void main()
         for(int i = 0; i < numberOfSpotLights; i++) {
             // Ambient
             vec4 ambient = spotLights[i].ambient * ambientColor;
+
+            // Base
+            vec4 base = spotLights[i].ambient * baseColor;
 
             // Diffuse
             vec3 lightDir = normalize(spotLights[i].position - fsPosition);
@@ -194,7 +230,7 @@ void main()
             diffuse  *= attenuation;
             specular *= attenuation;
 
-            result += (ambient + diffuse + specular) * spotLights[i].color;
+            result += (ambient + diffuse + specular + base) * spotLights[i].color;
         }
     }
 
