@@ -100,42 +100,44 @@ void Controller::init()
     }
 
     // Plane
-    mPlane = new Model;
-    mPlane->setType(Model::Plane);
-    mPlane->setName("Plane");
-    mPlane->setPosition(QVector3D(0, 0, 0));
-    mPlane->setScale(QVector3D(10.0f, 10.0f, 10.0f));
-    //mNodeManager->addNode(mPlane);
+    mPlane = new Model("Plane");
+    mPlane->setPosition(QVector3D(0, 100, 0));
+    mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
+    mNodeManager->addNode(mPlane);
 
-    mBackpack = new TexturedModel("backpack");
+    mCube = new Model("Cube");
+    mCube->setPosition(QVector3D(10, 10, 10));
+    mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
+    mNodeManager->addNode(mCube);
+
+    mBackpack = new Model("Backpack");
     mBackpack->setPosition(QVector3D(-5, 5, -5));
-    mBackpack->setShininess(1.0f);
     mNodeManager->addNode(mBackpack);
 
-    mCyborg = new TexturedModel("cyborg");
+    mCyborg = new Model("Cyborg");
     mCyborg->setPosition(QVector3D(-5, 10, -5));
     mNodeManager->addNode(mCyborg);
 
-    mNanoSuit = new TexturedModel("nanosuit");
+    mNanoSuit = new Model("Nanosuit");
     mNanoSuit->setPosition(QVector3D(-5, 15, -5));
     mNodeManager->addNode(mNanoSuit);
 
-    mPlanet = new TexturedModel("planet");
+    mPlanet = new Model("Planet");
     mPlanet->setPosition(QVector3D(15, 5, -5));
     mNodeManager->addNode(mPlanet);
 
-    mRock = new TexturedModel("rock");
+    mRock = new Model("Rock");
     mRock->setPosition(QVector3D(15, 15, -5));
     mNodeManager->addNode(mRock);
 
-    mJet = new TexturedModel("f16");
-    mJet->setName("f16");
-    //mJet->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
-    //mJet->setPosition(QVector3D(0, -3.5, 0));
+    mJet = new Model("F16");
+    mJet->setName("F16");
+    mJet->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
+    mJet->setPosition(QVector3D(0, -3.5, 0));
     mJet->addChild(mDummyCamera);
 
     mRootJetNode = new Node;
-    mRootJetNode->setName("jet_root_node");
+    mRootJetNode->setName("F16_ROOT_NODE");
     mRootJetNode->addChild(mJet);
     mNodeManager->addNode(mRootJetNode);
 }

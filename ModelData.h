@@ -1,40 +1,35 @@
 #ifndef MODELDATA_H
 #define MODELDATA_H
 
-#include "Model.h"
+#include "Mesh.h"
+#include "ModelDataNode.h"
+#include "TextureMaterial.h"
 
 #include <QObject>
-#include <QOpenGLBuffer>
-#include <QOpenGLFunctions>
-#include <QOpenGLVertexArrayObject>
 
-class ModelData : public QObject, protected QOpenGLFunctions
+class ModelData : public QObject
 {
     Q_OBJECT
 public:
-    explicit ModelData(Model::Type type, QObject *parent = nullptr);
-    virtual ~ModelData();
+    explicit ModelData(const QString &modelName, QObject *parent = nullptr);
 
-    bool create();
+    void addMesh(Mesh *mesh);
+    void addMaterial(TextureMaterial *material);
+
+    ModelDataNode *rootNode() const;
+    void setRootNode(ModelDataNode *newRootNode);
+
+    const QVector<Mesh *> &meshes() const;
+    const QString &modelName() const;
+    const QVector<TextureMaterial *> &materials() const;
+
     void render();
 
-    void setVertices(const QVector<QVector3D> &newVertices);
-    void setNormals(const QVector<QVector3D> &newNormals);
-    void setTextureCoords(const QVector<QVector2D> &newTextureCoords);
-
-    static const QMap<Model::Type, QString> MODEL_TO_PATH;
-
 private:
-    Model::Type mType;
-    QOpenGLVertexArrayObject mVertexArray;
-    QOpenGLBuffer mVertexBuffer;
-    QOpenGLBuffer mNormalBuffer;
-    QOpenGLBuffer mTextureCoordsBuffer;
-    QVector<QVector3D> mVertices;
-    QVector<QVector3D> mNormals;
-    QVector<QVector2D> mTextureCoords;
-
-    static const QString ROOT_PATH;
+    QString mModelName;
+    ModelDataNode *mRootNode;
+    QVector<Mesh *> mMeshes;
+    QVector<TextureMaterial *> mMaterials;
 };
 
 #endif // MODELDATA_H

@@ -1,24 +1,25 @@
 #include "Model.h"
 
-Model::Model(QObject *parent)
+Model::Model(const QString &modelName, QObject *parent)
     : Node(parent)
+    , mModelName(modelName)
 {
+    mName = mModelName;
     mNodeType = Node::NodeType::Model;
+
+    mMaterial.color = QVector4D(1, 1, 1, 1);
+    mMaterial.ambient = 0.5f;
+    mMaterial.diffuse = 0.75f;
+    mMaterial.specular = 0.25f;
+    mMaterial.shininess = 32.0f;
 }
 
-Model::~Model() {}
-
-Model::Type Model::type() const
+const QString &Model::modelName() const
 {
-    return mType;
+    return mModelName;
 }
 
-void Model::setType(Type newType)
-{
-    mType = newType;
-}
-
-Material &Model::material()
+const Model::Material &Model::material() const
 {
     return mMaterial;
 }
@@ -27,18 +28,3 @@ void Model::setMaterial(const Material &newMaterial)
 {
     mMaterial = newMaterial;
 }
-
-const QVector<Model::Type> Model::ALL_MODEL_TYPES = {
-    Capsule,
-    Cone,
-    Cube,
-    Cylinder,
-    Dome,
-    Plane,
-    Pyramid,
-    Sphere,
-    Suzanne,
-    Tetrahedron,
-    Torus,
-    TorusKnot,
-};

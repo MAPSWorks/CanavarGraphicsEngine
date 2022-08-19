@@ -1,116 +1,48 @@
 #include "ModelData.h"
 
-#include <QFile>
-#include <QVector2D>
-
-ModelData::ModelData(Model::Type type, QObject *parent)
+ModelData::ModelData(const QString &modelName, QObject *parent)
     : QObject(parent)
-    , mType(type)
+    , mModelName(modelName)
 {}
 
-ModelData::~ModelData()
+void ModelData::addMesh(Mesh *mesh)
 {
-    mVertexArray.destroy();
-    mVertexBuffer.destroy();
-    mNormalBuffer.destroy();
-    mTextureCoordsBuffer.destroy();
+    mesh->setParent(this);
+    mMeshes << mesh;
 }
 
-bool ModelData::create()
+void ModelData::addMaterial(TextureMaterial *material)
 {
-    //qInfo() << "Creating VAO for model" << (int) mType;
+    material->setParent(this);
+    mMaterials << material;
+}
 
-    initializeOpenGLFunctions();
+const QVector<Mesh *> &ModelData::meshes() const
+{
+    return mMeshes;
+}
 
-    mVertexArray.create();
-    mVertexArray.bind();
-
-    // Vertices (Position)
-    mVertexBuffer.create();
-    mVertexBuffer.bind();
-    mVertexBuffer.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
-    mVertexBuffer.allocate(mVertices.constData(), sizeof(QVector3D) * mVertices.size());
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,
-                          3,                 // Size
-                          GL_FLOAT,          // Type
-                          GL_FALSE,          // Normalized
-                          sizeof(QVector3D), // Stride
-                          nullptr            // Offset
-    );
-    mVertexBuffer.release();
-
-    // Normals
-    mNormalBuffer.create();
-    mNormalBuffer.bind();
-    mNormalBuffer.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
-    mNormalBuffer.allocate(mNormals.constData(), sizeof(QVector3D) * mNormals.size());
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1,
-                          3,                 // Size
-                          GL_FLOAT,          // Type
-                          GL_FALSE,          // Normalized
-                          sizeof(QVector3D), // Stride
-                          nullptr            // Offset
-    );
-    mNormalBuffer.release();
-
-    // TextureCoords
-    mTextureCoordsBuffer.create();
-    mTextureCoordsBuffer.bind();
-    mTextureCoordsBuffer.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
-    mTextureCoordsBuffer.allocate(mTextureCoords.constData(), sizeof(QVector2D) * mTextureCoords.size());
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2,
-                          2,                 // Size
-                          GL_FLOAT,          // Type
-                          GL_FALSE,          // Normalized
-                          sizeof(QVector2D), // Stride
-                          nullptr            // Offset
-    );
-    mTextureCoordsBuffer.release();
-
-    mVertexArray.release();
-
-    //qInfo() << "VAO for model" << (int) mType << "is created.";
-
-    return true;
+const QString &ModelData::modelName() const
+{
+    return mModelName;
 }
 
 void ModelData::render()
 {
-    mVertexArray.bind();
-    glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
-    mVertexArray.release();
+    mRootNode->render();
 }
 
-void ModelData::setVertices(const QVector<QVector3D> &newVertices)
+const QVector<TextureMaterial *> &ModelData::materials() const
 {
-    mVertices = newVertices;
+    return mMaterials;
 }
 
-void ModelData::setNormals(const QVector<QVector3D> &newNormals)
+ModelDataNode *ModelData::rootNode() const
 {
-    mNormals = newNormals;
+    return mRootNode;
 }
 
-void ModelData::setTextureCoords(const QVector<QVector2D> &newTextureCoords)
+void ModelData::setRootNode(ModelDataNode *newRootNode)
 {
-    mTextureCoords = newTextureCoords;
+    mRootNode = newRootNode;
 }
-
-const QString ModelData::ROOT_PATH = ":/Resources/Models/";
-
-const QMap<Model::Type, QString> ModelData::MODEL_TO_PATH = { //
-    {Model::Capsule, ROOT_PATH + "Capsule.obj"},
-    {Model::Cone, ROOT_PATH + "Cone.obj"},
-    {Model::Cube, ROOT_PATH + "Cube.obj"},
-    {Model::Cylinder, ROOT_PATH + "Cylinder.obj"},
-    {Model::Dome, ROOT_PATH + "Dome.obj"},
-    {Model::Plane, ROOT_PATH + "Plane.obj"},
-    {Model::Pyramid, ROOT_PATH + "Pyramid.obj"},
-    {Model::Sphere, ROOT_PATH + "Sphere.obj"},
-    {Model::Suzanne, ROOT_PATH + "Suzanne.obj"},
-    {Model::Tetrahedron, ROOT_PATH + "Tetrahedron.obj"},
-    {Model::Torus, ROOT_PATH + "Torus.obj"},
-    {Model::TorusKnot, ROOT_PATH + "TorusKnot.obj"}};

@@ -159,8 +159,6 @@ QString Node::nodeTypeString()
         return "DummyNode";
     case NodeType::Model:
         return "Model";
-    case NodeType::TexturedModel:
-        return "Textured Model";
     case NodeType::FreeCamera:
         return "Free Camera";
     case NodeType::DummyCamera:

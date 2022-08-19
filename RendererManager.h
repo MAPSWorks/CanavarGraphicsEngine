@@ -8,7 +8,6 @@
 #include "ShaderManager.h"
 #include "SkyBox.h"
 #include "Terrain.h"
-#include "TexturedModelData.h"
 
 #include <QMap>
 #include <QMatrix4x4>
@@ -54,8 +53,7 @@ private slots:
     void renderTerrain();
 
 private:
-    QMap<Model::Type, ModelData *> mTypeToModelData;
-    QMap<QString, TexturedModelData *> mNameToTexturedModelData;
+    QMap<QString, ModelData *> mModelsData;
 
     NodeManager *mNodeManager;
     CameraManager *mCameraManager;

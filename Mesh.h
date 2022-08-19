@@ -11,7 +11,7 @@
 #include <QVector2D>
 #include <QVector3D>
 
-class TexturedModelData;
+class ModelData;
 
 class Mesh : public QObject, protected QOpenGLFunctions
 {
@@ -44,8 +44,8 @@ public:
     const QString &name() const;
     void setName(const QString &newName);
 
-    TexturedModelData *data() const;
-    void setData(TexturedModelData *newData);
+    ModelData *data() const;
+    void setData(ModelData *newData);
 
 private:
     QVector<Vertex> mVertices;
@@ -58,7 +58,7 @@ private:
     unsigned int mEBO;
     unsigned int mVBO;
 
-    TexturedModelData *mData;
+    ModelData *mData;
     ShaderManager *mShaderManager;
 };
 

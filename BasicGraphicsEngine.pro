@@ -29,10 +29,10 @@ HEADERS += \
     Helper.h \
     Light.h \
     LightManager.h \
-    Material.h \
     Mesh.h \
     Model.h \
     ModelData.h \
+    ModelDataNode.h \
     Node.h \
     NodeManager.h \
     PointLight.h \
@@ -45,10 +45,7 @@ HEADERS += \
     SpotLight.h \
     Terrain.h \
     Texture.h \
-    TexturedMaterial.h \
-    TexturedModel.h \
-    TexturedModelData.h \
-    TexturedModelDataNode.h \
+    TextureMaterial.h \
     Window.h
 
 SOURCES += \
@@ -62,10 +59,10 @@ SOURCES += \
     Light.cpp \
     LightManager.cpp \
     Main.cpp \
-    Material.cpp \
     Mesh.cpp \
     Model.cpp \
     ModelData.cpp \
+    ModelDataNode.cpp \
     Node.cpp \
     NodeManager.cpp \
     PointLight.cpp \
@@ -78,10 +75,7 @@ SOURCES += \
     SpotLight.cpp \
     Terrain.cpp \
     Texture.cpp \
-    TexturedMaterial.cpp \
-    TexturedModel.cpp \
-    TexturedModelData.cpp \
-    TexturedModelDataNode.cpp \
+    TextureMaterial.cpp \
     Window.cpp
 
 INCLUDEPATH += $$PWD/Dependencies/Eigen/

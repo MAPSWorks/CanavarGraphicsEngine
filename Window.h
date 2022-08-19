@@ -1,7 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "Light.h"
 #include "LightManager.h"
 #include "RendererManager.h"
 #include "Simulator/AircraftController.h"
@@ -83,7 +82,7 @@ private:
 
     Terrain *mTerrain;
     Terrain::Properties mTerrainProperties;
-    Material mTerrainMaterial;
+    Model::Material mTerrainMaterial;
 
     QRandomGenerator mRandomGenerator;
 };

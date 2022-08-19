@@ -1,43 +1,29 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "Material.h"
 #include "Node.h"
-
-#include <QOpenGLTexture>
 
 class Model : public Node
 {
 public:
-    explicit Model(QObject *parent = nullptr);
-    virtual ~Model();
-
-    enum Type { //
-        Capsule,
-        Cone,
-        Cube,
-        Cylinder,
-        Dome,
-        Plane,
-        Pyramid,
-        Sphere,
-        Suzanne,
-        Tetrahedron,
-        Torus,
-        TorusKnot,
+    struct Material {
+        QVector4D color;
+        float ambient;
+        float diffuse;
+        float specular;
+        float shininess;
     };
 
-    Type type() const;
-    void setType(Type newType);
+    explicit Model(const QString &modelName, QObject *parent = nullptr);
 
-    Material &material();
+    const QString &modelName() const;
+
+    const Material &material() const;
     void setMaterial(const Material &newMaterial);
 
-    static const QVector<Model::Type> ALL_MODEL_TYPES;
-
 private:
-    Type mType;
     Material mMaterial;
+    QString mModelName;
 };
 
 #endif // MODEL_H

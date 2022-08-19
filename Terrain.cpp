@@ -162,12 +162,12 @@ void Terrain::setProperties(const Properties &newProperties)
     mProperties = newProperties;
 }
 
-const Material &Terrain::material() const
+const Model::Material &Terrain::material() const
 {
     return mMaterial;
 }
 
-void Terrain::setMaterial(const Material &newMaterial)
+void Terrain::setMaterial(const Model::Material &newMaterial)
 {
     mMaterial = newMaterial;
 }

@@ -1,22 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>Resources/Models/Camera.obj</file>
-        <file>Resources/Models/Capsule.obj</file>
-        <file>Resources/Models/Cone.obj</file>
-        <file>Resources/Models/Cube.obj</file>
-        <file>Resources/Models/Cylinder.obj</file>
-        <file>Resources/Models/Dome.obj</file>
-        <file>Resources/Models/Plane.obj</file>
-        <file>Resources/Models/Pyramid.obj</file>
-        <file>Resources/Models/Sphere.obj</file>
-        <file>Resources/Models/Suzanne.obj</file>
-        <file>Resources/Models/Tetrahedron.obj</file>
-        <file>Resources/Models/Torus.obj</file>
-        <file>Resources/Models/TorusKnot.obj</file>
-        <file>Resources/Shaders/Basic.frag</file>
-        <file>Resources/Shaders/Basic.vert</file>
-        <file>Resources/Shaders/TexturedModel.frag</file>
-        <file>Resources/Shaders/TexturedModel.vert</file>
+        <file>Resources/Shaders/Model.frag</file>
+        <file>Resources/Shaders/Model.vert</file>
         <file>Resources/Shaders/Wireframe.frag</file>
         <file>Resources/Shaders/Wireframe.vert</file>
         <file>Resources/Shaders/Normals.frag</file>

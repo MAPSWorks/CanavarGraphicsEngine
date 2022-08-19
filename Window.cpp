@@ -292,30 +292,30 @@ void Window::paintGL()
         }
 
         // Shading Parameters
-        //        {
+        Model *model = dynamic_cast<Model *>(mSelectedNode);
+        if (model)
+        {
+            ImGui::Text("Shading Parameters:");
+            Model::Material material = model->material();
 
-        //            ImGui::Text("Shading Parameters:");
-        //            float ambient = mSelectedNode->material().ambient();
-        //            float diffuse = mSelectedNode->material().diffuse();
-        //            float specular = mSelectedNode->material().specular();
+            if (ImGui::SliderFloat("Ambient##Model", &material.ambient, 0.0f, 1.0f, "%.3f"))
+                model->setMaterial(material);
 
-        //            if (ImGui::SliderFloat("Ambient##Model", &ambient, 0.0f, 1.0f, "%.3f"))
-        //                mSelectedModel->material().setAmbient(ambient);
+            if (ImGui::SliderFloat("Diffuse##Model", &material.diffuse, 0.0f, 1.0f, "%.3f"))
+                model->setMaterial(material);
 
-        //            if (ImGui::SliderFloat("Diffuse##Model", &diffuse, 0.0f, 1.0f, "%.3f"))
-        //                mSelectedModel->material().setDiffuse(diffuse);
+            if (ImGui::SliderFloat("Specular##Model", &material.specular, 0.0f, 1.0f, "%.3f"))
+                model->setMaterial(material);
 
-        //            if (ImGui::SliderFloat("Specular##Model", &specular, 0.0f, 1.0f, "%.3f"))
-        //                mSelectedModel->material().setSpecular(specular);
+            float color[4] = {material.color.x(), material.color.y(), material.color.z(), material.color.w()};
 
-        //            float color[4] = {mSelectedModel->material().color().x(), //
-        //                              mSelectedModel->material().color().y(),
-        //                              mSelectedModel->material().color().z(),
-        //                              mSelectedModel->material().color().w()};
-
-        //            if (ImGui::ColorEdit4("Color##Model", (float *) &color))
-        //                mSelectedModel->material().setColor(QVector4D(color[0], color[1], color[2], color[3]));
-        //        }
+            if (ImGui::ColorEdit4("Color##Model", (float *) &color))
+            {
+                QVector4D newColor = QVector4D(color[0], color[1], color[2], color[3]);
+                material.color = newColor;
+                model->setMaterial(material);
+            }
+        }
     }
 
     ImGui::Spacing();

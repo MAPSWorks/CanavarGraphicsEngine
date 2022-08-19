@@ -1,7 +1,7 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "Material.h"
+#include "Model.h"
 #include "ShaderManager.h"
 #include "Texture.h"
 
@@ -50,8 +50,8 @@ public:
     const Properties &properties() const;
     void setProperties(const Properties &newProperties);
 
-    const Material &material() const;
-    void setMaterial(const Material &newMaterial);
+    const Model::Material &material() const;
+    void setMaterial(const Model::Material &newMaterial);
 
     void reset();
 
@@ -71,7 +71,7 @@ private:
     Texture *mTextureRockNormal;
     Texture *mTextureTerrain;
     ShaderManager *mShaderManager;
-    Material mMaterial;
+    Model::Material mMaterial;
 
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;

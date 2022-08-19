@@ -15,111 +15,20 @@ bool ShaderManager::init()
 {
     initializeOpenGLFunctions();
 
-    // Basic
-    {
-        qInfo() << "BasicShader is initializing...";
-
-        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
-        mPrograms.insert(Shader::BasicShader, shader);
-
-        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/Basic.vert")))
-        {
-            qWarning() << Q_FUNC_INFO << "Could not load vertex shader.";
-            return false;
-        }
-
-        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/Basic.frag")))
-        {
-            qWarning() << Q_FUNC_INFO << "Could not load fragment shader.";
-            return false;
-        }
-
-        if (!shader->link())
-        {
-            qWarning() << Q_FUNC_INFO << "Could not link shader program.";
-            return false;
-        }
-
-        if (!shader->bind())
-        {
-            qWarning() << Q_FUNC_INFO << "Could not bind shader program.";
-            return false;
-        }
-
-        QMap<QString, GLuint> locations;
-
-        locations.insert("directionalLight.color", shader->uniformLocation("directionalLight.color"));
-        locations.insert("directionalLight.direction", shader->uniformLocation("directionalLight.direction"));
-        locations.insert("directionalLight.ambient", shader->uniformLocation("directionalLight.ambient"));
-        locations.insert("directionalLight.diffuse", shader->uniformLocation("directionalLight.diffuse"));
-        locations.insert("directionalLight.specular", shader->uniformLocation("directionalLight.specular"));
-
-        locations.insert("numberOfPointLights", shader->uniformLocation("numberOfPointLights"));
-        locations.insert("numberOfSpotLights", shader->uniformLocation("numberOfSpotLights"));
-
-        for (int i = 0; i < 8; i++)
-        {
-            locations.insert("pointLights[" + QString::number(i) + "].color", shader->uniformLocation("pointLights[" + QString::number(i) + "].color"));
-            locations.insert("pointLights[" + QString::number(i) + "].position", shader->uniformLocation("pointLights[" + QString::number(i) + "].position"));
-            locations.insert("pointLights[" + QString::number(i) + "].ambient", shader->uniformLocation("pointLights[" + QString::number(i) + "].ambient"));
-            locations.insert("pointLights[" + QString::number(i) + "].diffuse", shader->uniformLocation("pointLights[" + QString::number(i) + "].diffuse"));
-            locations.insert("pointLights[" + QString::number(i) + "].specular", shader->uniformLocation("pointLights[" + QString::number(i) + "].specular"));
-            locations.insert("pointLights[" + QString::number(i) + "].constant", shader->uniformLocation("pointLights[" + QString::number(i) + "].constant"));
-            locations.insert("pointLights[" + QString::number(i) + "].linear", shader->uniformLocation("pointLights[" + QString::number(i) + "].linear"));
-            locations.insert("pointLights[" + QString::number(i) + "].quadratic", shader->uniformLocation("pointLights[" + QString::number(i) + "].quadratic"));
-        }
-
-        for (int i = 0; i < 8; i++)
-        {
-            locations.insert("spotLights[" + QString::number(i) + "].color", shader->uniformLocation("spotLights[" + QString::number(i) + "].color"));
-            locations.insert("spotLights[" + QString::number(i) + "].position", shader->uniformLocation("spotLights[" + QString::number(i) + "].position"));
-            locations.insert("spotLights[" + QString::number(i) + "].direction", shader->uniformLocation("spotLights[" + QString::number(i) + "].direction"));
-            locations.insert("spotLights[" + QString::number(i) + "].ambient", shader->uniformLocation("spotLights[" + QString::number(i) + "].ambient"));
-            locations.insert("spotLights[" + QString::number(i) + "].diffuse", shader->uniformLocation("spotLights[" + QString::number(i) + "].diffuse"));
-            locations.insert("spotLights[" + QString::number(i) + "].specular", shader->uniformLocation("spotLights[" + QString::number(i) + "].specular"));
-            locations.insert("spotLights[" + QString::number(i) + "].constant", shader->uniformLocation("spotLights[" + QString::number(i) + "].constant"));
-            locations.insert("spotLights[" + QString::number(i) + "].linear", shader->uniformLocation("spotLights[" + QString::number(i) + "].linear"));
-            locations.insert("spotLights[" + QString::number(i) + "].quadratic", shader->uniformLocation("spotLights[" + QString::number(i) + "].quadratic"));
-            locations.insert("spotLights[" + QString::number(i) + "].cutOffAngle", shader->uniformLocation("spotLights[" + QString::number(i) + "].cutOffAngle"));
-            locations.insert("spotLights[" + QString::number(i) + "].outerCutOffAngle", shader->uniformLocation("spotLights[" + QString::number(i) + "].outerCutOffAngle"));
-        }
-
-        locations.insert("node.transformation", shader->uniformLocation("node.transformation"));
-        locations.insert("node.color", shader->uniformLocation("node.color"));
-        locations.insert("node.ambient", shader->uniformLocation("node.ambient"));
-        locations.insert("node.diffuse", shader->uniformLocation("node.diffuse"));
-        locations.insert("node.specular", shader->uniformLocation("node.specular"));
-        locations.insert("node.shininess", shader->uniformLocation("node.shininess"));
-
-        locations.insert("cameraPosition", shader->uniformLocation("cameraPosition"));
-        locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
-        locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
-
-        shader->bindAttributeLocation("position", 0);
-        shader->bindAttributeLocation("normal", 1);
-
-        shader->release();
-
-        mLocations.insert(Shader::BasicShader, locations);
-
-        qInfo() << "BasicShader is initialized.";
-        qInfo() << "Uniform locations are:" << locations;
-    }
-
     // Textured Model
     {
-        qInfo() << "TexturedModelShader is initializing...";
+        qInfo() << "ModelShader is initializing...";
 
         QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
-        mPrograms.insert(Shader::TexturedModelShader, shader);
+        mPrograms.insert(Shader::ModelShader, shader);
 
-        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/TexturedModel.vert")))
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/Model.vert")))
         {
             qWarning() << "Could not load vertex shader.";
             return false;
         }
 
-        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/TexturedModel.frag")))
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/Model.frag")))
         {
             qWarning() << "Could not load fragment shader.";
             return false;
@@ -139,49 +48,61 @@ bool ShaderManager::init()
 
         QMap<QString, GLuint> locations;
 
-        locations.insert("directionalLight.color", shader->uniformLocation("directionalLight.color"));
-        locations.insert("directionalLight.direction", shader->uniformLocation("directionalLight.direction"));
-        locations.insert("directionalLight.ambient", shader->uniformLocation("directionalLight.ambient"));
-        locations.insert("directionalLight.diffuse", shader->uniformLocation("directionalLight.diffuse"));
-        locations.insert("directionalLight.specular", shader->uniformLocation("directionalLight.specular"));
+        QStringList uniforms;
+        uniforms << "directionalLight.color"
+                 << "directionalLight.direction"
+                 << "directionalLight.ambient"
+                 << "directionalLight.diffuse"
+                 << "directionalLight.specular"
+                 << "numberOfPointLights"
+                 << "numberOfSpotLights"
+                 << "node.transformation"
+                 << "node.ambient"
+                 << "node.diffuse"
+                 << "node.specular"
+                 << "node.shininess"
+                 << "node.color"
+                 << "textureDiffuse"
+                 << "tetureSpecular"
+                 << "textureAmbient"
+                 << "textureHeight"
+                 << "cameraPosition"
+                 << "viewMatrix"
+                 << "projectionMatrix"
+                 << "useTexture";
 
-        locations.insert("numberOfPointLights", shader->uniformLocation("numberOfPointLights"));
-        locations.insert("numberOfSpotLights", shader->uniformLocation("numberOfSpotLights"));
+        for (const auto &uniform : qAsConst(uniforms))
+            locations.insert(uniform, shader->uniformLocation(uniform));
 
-        for (int i = 0; i < 8; i++)
-        {
-            locations.insert("pointLights[" + QString::number(i) + "].color", shader->uniformLocation("pointLights[" + QString::number(i) + "].color"));
-            locations.insert("pointLights[" + QString::number(i) + "].position", shader->uniformLocation("pointLights[" + QString::number(i) + "].position"));
-            locations.insert("pointLights[" + QString::number(i) + "].ambient", shader->uniformLocation("pointLights[" + QString::number(i) + "].ambient"));
-            locations.insert("pointLights[" + QString::number(i) + "].diffuse", shader->uniformLocation("pointLights[" + QString::number(i) + "].diffuse"));
-            locations.insert("pointLights[" + QString::number(i) + "].specular", shader->uniformLocation("pointLights[" + QString::number(i) + "].specular"));
-            locations.insert("pointLights[" + QString::number(i) + "].constant", shader->uniformLocation("pointLights[" + QString::number(i) + "].constant"));
-            locations.insert("pointLights[" + QString::number(i) + "].linear", shader->uniformLocation("pointLights[" + QString::number(i) + "].linear"));
-            locations.insert("pointLights[" + QString::number(i) + "].quadratic", shader->uniformLocation("pointLights[" + QString::number(i) + "].quadratic"));
-        }
+        uniforms.clear();
+        uniforms << "pointLights[%1].color"
+                 << "pointLights[%1].position"
+                 << "pointLights[%1].ambient"
+                 << "pointLights[%1].diffuse"
+                 << "pointLights[%1].specular"
+                 << "pointLights[%1].constant"
+                 << "pointLights[%1].linear"
+                 << "pointLights[%1].quadratic";
 
-        for (int i = 0; i < 8; i++)
-        {
-            locations.insert("spotLights[" + QString::number(i) + "].color", shader->uniformLocation("spotLights[" + QString::number(i) + "].color"));
-            locations.insert("spotLights[" + QString::number(i) + "].position", shader->uniformLocation("spotLights[" + QString::number(i) + "].position"));
-            locations.insert("spotLights[" + QString::number(i) + "].direction", shader->uniformLocation("spotLights[" + QString::number(i) + "].direction"));
-            locations.insert("spotLights[" + QString::number(i) + "].ambient", shader->uniformLocation("spotLights[" + QString::number(i) + "].ambient"));
-            locations.insert("spotLights[" + QString::number(i) + "].diffuse", shader->uniformLocation("spotLights[" + QString::number(i) + "].diffuse"));
-            locations.insert("spotLights[" + QString::number(i) + "].specular", shader->uniformLocation("spotLights[" + QString::number(i) + "].specular"));
-            locations.insert("spotLights[" + QString::number(i) + "].constant", shader->uniformLocation("spotLights[" + QString::number(i) + "].constant"));
-            locations.insert("spotLights[" + QString::number(i) + "].linear", shader->uniformLocation("spotLights[" + QString::number(i) + "].linear"));
-            locations.insert("spotLights[" + QString::number(i) + "].quadratic", shader->uniformLocation("spotLights[" + QString::number(i) + "].quadratic"));
-            locations.insert("spotLights[" + QString::number(i) + "].cutOffAngle", shader->uniformLocation("spotLights[" + QString::number(i) + "].cutOffAngle"));
-            locations.insert("spotLights[" + QString::number(i) + "].outerCutOffAngle", shader->uniformLocation("spotLights[" + QString::number(i) + "].outerCutOffAngle"));
-        }
+        for (const auto &uniform : qAsConst(uniforms))
+            for (int i = 0; i < 8; i++)
+                locations.insert(uniform.arg(QString::number(i)), shader->uniformLocation(uniform.arg(QString::number(i))));
 
-        locations.insert("nodeMatrix", shader->uniformLocation("nodeMatrix"));
-        locations.insert("nodeShininess", shader->uniformLocation("nodeShininess"));
-        locations.insert("cameraPosition", shader->uniformLocation("cameraPosition"));
-        locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
-        locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
-        locations.insert("textureDiffuse", shader->uniformLocation("textureDiffuse"));
-        locations.insert("textureSpecular", shader->uniformLocation("textureSpecular"));
+        uniforms.clear();
+        uniforms << "spotLights[%1].color"
+                 << "spotLights[%1].position"
+                 << "spotLights[%1].ambient"
+                 << "spotLights[%1].diffuse"
+                 << "spotLights[%1].specular"
+                 << "spotLights[%1].constant"
+                 << "spotLights[%1].linear"
+                 << "spotLights[%1].quadratic"
+                 << "spotLights[%1].cutOffAngle"
+                 << "spotLights[%1].outerCutOffAngle";
+
+        for (const auto &uniform : qAsConst(uniforms))
+            for (int i = 0; i < 8; i++)
+                locations.insert(uniform.arg(QString::number(i)), shader->uniformLocation(uniform.arg(QString::number(i))));
 
         shader->bindAttributeLocation("position", 0);
         shader->bindAttributeLocation("normal", 1);
@@ -193,9 +114,9 @@ bool ShaderManager::init()
 
         shader->release();
 
-        mLocations.insert(Shader::TexturedModelShader, locations);
+        mLocations.insert(Shader::ModelShader, locations);
 
-        qInfo() << "TexturedModelShader is initialized.";
+        qInfo() << "ModelShader is initialized.";
         qInfo() << "Uniform locations are:" << locations;
     }
 
@@ -399,43 +320,42 @@ bool ShaderManager::init()
 
         QMap<QString, GLuint> locations;
 
-        locations.insert("terrain.amplitude", shader->uniformLocation("terrain.amplitude"));
-        locations.insert("terrain.frequency", shader->uniformLocation("terrain.frequency"));
-        locations.insert("terrain.octaves", shader->uniformLocation("terrain.octaves"));
-        locations.insert("terrain.power", shader->uniformLocation("terrain.power"));
-        locations.insert("terrain.seed", shader->uniformLocation("terrain.seed"));
-        locations.insert("terrain.clipPlane", shader->uniformLocation("terrain.clipPlane"));
-        locations.insert("terrain.tessellationMultiplier", shader->uniformLocation("terrain.tessellationMultiplier"));
-        locations.insert("terrain.grassCoverage", shader->uniformLocation("terrain.grassCoverage"));
-        locations.insert("terrain.ambient", shader->uniformLocation("terrain.ambient"));
-        locations.insert("terrain.diffuse", shader->uniformLocation("terrain.diffuse"));
-        locations.insert("terrain.shininess", shader->uniformLocation("terrain.shininess"));
-        locations.insert("terrain.specular", shader->uniformLocation("terrain.specular"));
+        QStringList uniforms;
+        uniforms << "terrain.amplitude"
+                 << "terrain.frequency"
+                 << "terrain.octaves"
+                 << "terrain.power"
+                 << "terrain.seed"
+                 << "terrain.clipPlane"
+                 << "terrain.tessellationMultiplier"
+                 << "terrain.grassCoverage"
+                 << "terrain.ambient"
+                 << "terrain.diffuse"
+                 << "terrain.shininess"
+                 << "terrain.specular"
+                 << "fog.enabled"
+                 << "fog.color"
+                 << "fog.density"
+                 << "fog.gradient"
+                 << "directionalLight.color"
+                 << "directionalLight.direction"
+                 << "directionalLight.ambient"
+                 << "directionalLight.diffuse"
+                 << "directionalLight.specular"
+                 << "waterHeight"
+                 << "cameraPosition"
+                 << "nodeMatrix"
+                 << "viewMatrix"
+                 << "projectionMatrix"
+                 << "sand"
+                 << "grass"
+                 << "terrainTexture"
+                 << "snow"
+                 << "rock"
+                 << "rockNormal";
 
-        locations.insert("fog.enabled", shader->uniformLocation("fog.enabled"));
-        locations.insert("fog.color", shader->uniformLocation("fog.color"));
-        locations.insert("fog.density", shader->uniformLocation("fog.density"));
-        locations.insert("fog.gradient", shader->uniformLocation("fog.gradient"));
-
-        locations.insert("directionalLight.color", shader->uniformLocation("directionalLight.color"));
-        locations.insert("directionalLight.direction", shader->uniformLocation("directionalLight.direction"));
-        locations.insert("directionalLight.ambient", shader->uniformLocation("directionalLight.ambient"));
-        locations.insert("directionalLight.diffuse", shader->uniformLocation("directionalLight.diffuse"));
-        locations.insert("directionalLight.specular", shader->uniformLocation("directionalLight.specular"));
-
-        locations.insert("waterHeight", shader->uniformLocation("waterHeight"));
-
-        locations.insert("nodeMatrix", shader->uniformLocation("nodeMatrix"));
-        locations.insert("cameraPosition", shader->uniformLocation("cameraPosition"));
-        locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
-        locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
-
-        locations.insert("sand", shader->uniformLocation("sand"));
-        locations.insert("grass", shader->uniformLocation("grass"));
-        locations.insert("terrainTexture", shader->uniformLocation("terrainTexture"));
-        locations.insert("snow", shader->uniformLocation("snow"));
-        locations.insert("rock", shader->uniformLocation("rock"));
-        locations.insert("rockNormal", shader->uniformLocation("rockNormal"));
+        for (const auto &uniform : qAsConst(uniforms))
+            locations.insert(uniform, shader->uniformLocation(uniform));
 
         shader->bindAttributeLocation("position", 0);
         shader->bindAttributeLocation("normal", 1);

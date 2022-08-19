@@ -1,5 +1,5 @@
 #include "Mesh.h"
-#include "TexturedModelData.h"
+#include "ModelData.h"
 
 Mesh::Mesh(QObject *parent)
     : QObject(parent)
@@ -94,6 +94,8 @@ void Mesh::render()
     auto materials = mData->materials();
     auto textures = materials[mMaterialIndex]->textures();
 
+    mShaderManager->setUniformValue("useTexture", textures.size() != 0);
+
     for (int i = 0; i < textures.size(); i++)
     {
         if (textures[i]->type() == Texture::Type::Diffuse)
@@ -141,12 +143,12 @@ void Mesh::setName(const QString &newName)
     mName = newName;
 }
 
-TexturedModelData *Mesh::data() const
+ModelData *Mesh::data() const
 {
     return mData;
 }
 
-void Mesh::setData(TexturedModelData *newData)
+void Mesh::setData(ModelData *newData)
 {
     mData = newData;
 }

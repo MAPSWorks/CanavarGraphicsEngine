@@ -3,9 +3,9 @@
 
 #include "DummyCamera.h"
 #include "FreeCamera.h"
+#include "Model.h"
 #include "RendererManager.h"
 #include "Simulator/AircraftController.h"
-#include "TexturedModel.h"
 #include "Window.h"
 
 #include <QObject>
@@ -43,17 +43,16 @@ private:
     DummyCamera *mDummyCamera;
 
     DirectionalLight *mSun;
-
-    Model *mPlane;
-
     Qt::MouseButton mPressedButton;
 
-    TexturedModel *mBackpack;
-    TexturedModel *mCyborg;
-    TexturedModel *mNanoSuit;
-    TexturedModel *mPlanet;
-    TexturedModel *mRock;
-    TexturedModel *mJet;
+    Model *mPlane;
+    Model *mCube;
+    Model *mBackpack;
+    Model *mCyborg;
+    Model *mNanoSuit;
+    Model *mPlanet;
+    Model *mRock;
+    Model *mJet;
     Node *mRootJetNode;
 
     QApplication *mApp;

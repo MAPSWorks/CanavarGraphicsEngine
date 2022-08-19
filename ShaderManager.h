@@ -14,8 +14,7 @@ public:
 
     enum class Shader { //
         None,
-        BasicShader,
-        TexturedModelShader,
+        ModelShader,
         WireframeShader,
         NormalsShader,
         SkyBoxShader,

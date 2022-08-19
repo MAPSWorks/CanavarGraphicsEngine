@@ -16,7 +16,6 @@ public:
     enum class NodeType { //
         DummyNode,
         Model,
-        TexturedModel,
         FreeCamera,
         DummyCamera,
         DirectionalLight,

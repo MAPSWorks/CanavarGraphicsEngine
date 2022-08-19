@@ -53,82 +53,7 @@ QVector3D Helper::projectOntoPlane(const QVector3D &normal, const QVector3D &poi
     return QVector3D(projection.x(), projection.y(), projection.z());
 }
 
-ModelData *Helper::loadModel(Model::Type type, const QString &path)
-{
-    //qInfo() << "Loading model" << (int) type;
-
-    QVector<QVector3D> tempVertices;
-    QVector<QVector3D> tempNormals;
-    QVector<QVector2D> tempTextureCoords;
-
-    QVector<QVector3D> vertices;
-    QVector<QVector3D> normals;
-    QVector<QVector2D> textureCoords;
-
-    QFile file(path);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QTextStream fileText(&file);
-        while (!fileText.atEnd())
-        {
-            QString fileLine = fileText.readLine();
-            if (fileLine.startsWith("vn "))
-            {
-                QStringList lineList = fileLine.split(" ");
-                tempNormals << QVector3D(lineList[1].toFloat(), lineList[2].toFloat(), lineList[3].toFloat());
-            } else if (fileLine.startsWith("vt "))
-            {
-                QStringList lineList = fileLine.split(" ");
-                tempTextureCoords << QVector2D(lineList[1].toFloat(), lineList[2].toFloat());
-            } else if (fileLine.startsWith("v "))
-            {
-                QStringList lineList = fileLine.split(" ");
-                tempVertices << QVector3D(lineList[1].toFloat(), lineList[2].toFloat(), lineList[3].toFloat());
-            } else if (fileLine.startsWith("f "))
-            {
-                QStringList lineList = fileLine.split(" ");
-                for (int i = 1; i <= 3; i++)
-                {
-                    QStringList arg = lineList[i].split("/");
-                    if (arg.size() == 2)
-                    {
-                        if (arg[0].toInt() - 1 < tempVertices.size())
-                            vertices << tempVertices[arg[0].toInt() - 1];
-
-                        if (arg[1].toInt() - 1 < tempNormals.size())
-                            normals << tempNormals[arg[1].toInt() - 1];
-                    } else if (arg.size() == 3)
-                    {
-                        if (arg[0].toInt() - 1 < tempVertices.size())
-                            vertices << tempVertices[arg[0].toInt() - 1];
-
-                        if (arg[1].toInt() - 1 < tempTextureCoords.size())
-                            textureCoords << tempTextureCoords[arg[1].toInt() - 1];
-
-                        if (arg[2].toInt() - 1 < tempNormals.size())
-                            normals << tempNormals[arg[2].toInt() - 1];
-                    }
-                }
-            }
-        }
-        file.close();
-        //qInfo() << "Model" << (int) type << "is loaded.";
-
-        ModelData *data = new ModelData(type);
-        data->setVertices(vertices);
-        data->setNormals(normals);
-        data->setTextureCoords(textureCoords);
-
-        return data;
-    } else
-    {
-        qWarning() << QString("Could not open file '%1'.").arg(file.fileName());
-        qWarning() << "Could not load model" << (int) type;
-        return nullptr;
-    }
-}
-
-TexturedModelData *Helper::loadTexturedModel(const QString &name, const QString &path)
+ModelData *Helper::loadModel(const QString &name, const QString &path)
 {
     Assimp::Importer importer;
     const aiScene *aiScene = importer.ReadFile(path.toStdString(),              //
@@ -143,7 +68,7 @@ TexturedModelData *Helper::loadTexturedModel(const QString &name, const QString 
         return nullptr;
     }
 
-    TexturedModelData *data = new TexturedModelData(name);
+    ModelData *data = new ModelData(name);
 
     // Meshes
     for (unsigned int i = 0; i < aiScene->mNumMeshes; i++)
@@ -155,14 +80,14 @@ TexturedModelData *Helper::loadTexturedModel(const QString &name, const QString 
     }
 
     // Node
-    TexturedModelDataNode *rootNode = processNode(data, aiScene->mRootNode);
+    ModelDataNode *rootNode = processNode(data, aiScene->mRootNode);
     data->setRootNode(rootNode);
 
     QString directory = path.left(path.lastIndexOf("/"));
 
     for (unsigned int i = 0; i < aiScene->mNumMaterials; ++i)
     {
-        TexturedMaterial *material = processMaterial(aiScene->mMaterials[i], directory);
+        TextureMaterial *material = processMaterial(aiScene->mMaterials[i], directory);
         data->addMaterial(material);
     }
 
@@ -252,9 +177,9 @@ Mesh *Helper::processMesh(aiMesh *aiMesh)
     return mesh;
 }
 
-TexturedModelDataNode *Helper::processNode(TexturedModelData *data, aiNode *aiParentNode)
+ModelDataNode *Helper::processNode(ModelData *data, aiNode *aiParentNode)
 {
-    TexturedModelDataNode *parentNode = new TexturedModelDataNode(data);
+    ModelDataNode *parentNode = new ModelDataNode(data);
 
     for (unsigned int i = 0; i < aiParentNode->mNumMeshes; ++i)
         parentNode->addMeshIndex(aiParentNode->mMeshes[i]);
@@ -268,9 +193,9 @@ TexturedModelDataNode *Helper::processNode(TexturedModelData *data, aiNode *aiPa
     return parentNode;
 }
 
-TexturedMaterial *Helper::processMaterial(aiMaterial *aiMaterial, const QString &directory)
+TextureMaterial *Helper::processMaterial(aiMaterial *aiMaterial, const QString &directory)
 {
-    TexturedMaterial *material = new TexturedMaterial;
+    TextureMaterial *material = new TextureMaterial;
     processTexture(material, aiMaterial, aiTextureType_DIFFUSE, Texture::Type::Diffuse, directory);
     processTexture(material, aiMaterial, aiTextureType_SPECULAR, Texture::Type::Specular, directory);
     processTexture(material, aiMaterial, aiTextureType_AMBIENT, Texture::Type::Ambient, directory);
@@ -279,7 +204,7 @@ TexturedMaterial *Helper::processMaterial(aiMaterial *aiMaterial, const QString 
     return material;
 }
 
-void Helper::processTexture(TexturedMaterial *material, aiMaterial *aiMaterial, aiTextureType aiType, Texture::Type type, const QString &directory)
+void Helper::processTexture(TextureMaterial *material, aiMaterial *aiMaterial, aiTextureType aiType, Texture::Type type, const QString &directory)
 {
     for (unsigned int i = 0; i < aiMaterial->GetTextureCount(aiType); i++)
     {
