@@ -25,6 +25,10 @@ FreeCamera::FreeCamera(QObject *parent)
         {
             mMouseGrabbed = false;
             emit mouseGrabbed(false);
+
+            auto keys = mPressedKeys.keys();
+            for (auto key : qAsConst(keys))
+                mPressedKeys.insert(key, false);
         }
     });
 }
