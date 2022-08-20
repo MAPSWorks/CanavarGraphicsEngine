@@ -22,6 +22,7 @@ public:
     const Material &material() const;
     void setMaterial(const Material &newMaterial);
 
+    QMatrix4x4 getMeshTransformation(const QString &meshName);
     void setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation);
 
 private:

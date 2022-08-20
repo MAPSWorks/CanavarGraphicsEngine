@@ -50,6 +50,8 @@ public:
     bool useBlinnShading() const;
     void setUseBlinnShading(bool newUseBlinnShading);
 
+    ModelData *getModelData(const QString &modelName);
+
 private slots:
     void renderNode(Node *node);
     void renderSkyBox();

@@ -23,16 +23,21 @@ public:
     const QString &name() const;
     void setName(const QString &newName);
 
-    const QMatrix4x4 &initialTransformation() const;
-    void setInitialTransformation(const QMatrix4x4 &newInitialTransformation);
+    const QMatrix4x4 &transformation() const;
+    void setTransformation(const QMatrix4x4 &newTransformation);
 
     void render(Model *model);
+    QMatrix4x4 getWorldTransformation() const;
+    ModelDataNode *getChildNode(const QString &meshName);
+
+private slots:
+    ModelDataNode *getChildNode(const QString &nodeName, ModelDataNode *node);
 
 private:
     QVector<ModelDataNode *> mChildren;
     QVector<int> mMeshIndices;
     QString mName;
-    QMatrix4x4 mInitialTransformation;
+    QMatrix4x4 mTransformation;
     ModelData *mData;
 };
 

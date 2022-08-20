@@ -59,6 +59,8 @@ public:
         double altitude;
         QVector3D position;
         QQuaternion rotation;
+        double rudderPos;
+        double elevatorPos;
     };
 
     explicit Aircraft(QObject *parent = nullptr);

@@ -327,6 +327,11 @@ void RendererManager::setUseBlinnShading(bool newUseBlinnShading)
     mUseBlinnShading = newUseBlinnShading;
 }
 
+ModelData *RendererManager::getModelData(const QString &modelName)
+{
+    return mModelsData.value(modelName, nullptr);
+}
+
 const RendererManager::Fog &RendererManager::fog() const
 {
     return mFog;

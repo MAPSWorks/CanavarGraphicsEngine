@@ -145,6 +145,9 @@ void Aircraft::tick()
     pfd.longitude = mPropagate->GetLongitudeDeg();
     pfd.altitude = 0.3048 * mPropagate->GetGeodeticAltitude();
 
+    pfd.rudderPos = qRadiansToDegrees(mCommander->GetDrPos());
+    pfd.elevatorPos = qRadiansToDegrees(mCommander->GetDePos());
+
     JSBSim::FGQuaternion rotation = mPropagate->GetQuaternion();
     QQuaternion localToBody = QQuaternion(rotation(1), rotation(2), rotation(3), rotation(4));
 

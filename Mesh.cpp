@@ -91,7 +91,7 @@ bool Mesh::create()
 
 void Mesh::render(Model *model)
 {
-    mShaderManager->setUniformValue("node.transformation", model->worldTransformation());
+    mShaderManager->setUniformValue("node.transformation", model->worldTransformation() * model->getMeshTransformation(mName));
     mShaderManager->setUniformValue("node.color", model->material().color);
     mShaderManager->setUniformValue("node.ambient", model->material().ambient);
     mShaderManager->setUniformValue("node.diffuse", model->material().diffuse);
@@ -202,7 +202,7 @@ void Mesh::setData(ModelData *newData)
     mData = newData;
 }
 
-const Mesh::AABB &Mesh::aABB() const
+const Mesh::AABB &Mesh::getAABB() const
 {
     return mAABB;
 }

@@ -60,7 +60,8 @@ ModelData *Helper::loadModel(const QString &name, const QString &path)
                                                aiProcess_Triangulate |          //
                                                    aiProcess_GenSmoothNormals | //
                                                    aiProcess_FlipUVs |          //
-                                                   aiProcess_CalcTangentSpace);
+                                                   aiProcess_CalcTangentSpace | //
+                                                   aiProcess_GenBoundingBoxes);
 
     if (!aiScene || aiScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiScene->mRootNode)
     {
@@ -168,7 +169,7 @@ Mesh *Helper::processMesh(aiMesh *aiMesh)
 
     Mesh::AABB aabb;
     auto min = aiMesh->mAABB.mMin;
-    auto max = aiMesh->mAABB.mMin;
+    auto max = aiMesh->mAABB.mMax;
     aabb.min = QVector3D(min.x, min.y, min.z);
     aabb.max = QVector3D(max.x, max.y, max.z);
     mesh->setAABB(aabb);
@@ -184,7 +185,7 @@ ModelDataNode *Helper::processNode(ModelData *data, aiNode *aiParentNode)
         parentNode->addMeshIndex(aiParentNode->mMeshes[i]);
 
     parentNode->setName(aiParentNode->mName.C_Str());
-    parentNode->setInitialTransformation(toQMatrix(aiParentNode->mTransformation));
+    parentNode->setTransformation(toQMatrix(aiParentNode->mTransformation));
 
     for (unsigned int i = 0; i < aiParentNode->mNumChildren; ++i)
         parentNode->addChild(processNode(data, aiParentNode->mChildren[i]));

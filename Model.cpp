@@ -29,6 +29,11 @@ void Model::setMaterial(const Material &newMaterial)
     mMaterial = newMaterial;
 }
 
+QMatrix4x4 Model::getMeshTransformation(const QString &meshName)
+{
+    return mMeshTransformations.value(meshName, QMatrix4x4());
+}
+
 void Model::setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation)
 {
     mMeshTransformations.insert(meshName, transformation);

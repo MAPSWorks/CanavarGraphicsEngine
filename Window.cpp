@@ -233,35 +233,18 @@ void Window::paintGL()
             // Position
             if (mSelectedNode)
             {
-                {
-                    ImGui::Text("Position:");
-                    QVector3D position = mSelectedNode->position();
-                    float x = position.x();
-                    float y = position.y();
-                    float z = position.z();
+                ImGui::Text("Position:");
+                QVector3D position = mSelectedNode->position();
+                float x = position.x();
+                float y = position.y();
+                float z = position.z();
 
-                    if (ImGui::SliderFloat("x##NodePosition", &x, -100.0f, 100.0f, "%.3f"))
-                        mSelectedNode->setPosition(QVector3D(x, y, z));
-                    if (ImGui::SliderFloat("y##NodePosition", &y, -100.0f, 100.0f, "%.3f"))
-                        mSelectedNode->setPosition(QVector3D(x, y, z));
-                    if (ImGui::SliderFloat("z##NodePosition", &z, -100.0f, 100.0f, "%.3f"))
-                        mSelectedNode->setPosition(QVector3D(x, y, z));
-                }
-
-                {
-                    ImGui::Text("World Position:");
-                    QVector3D worldPosition = mSelectedNode->worldPosition();
-                    float x = worldPosition.x();
-                    float y = worldPosition.y();
-                    float z = worldPosition.z();
-
-                    if (ImGui::SliderFloat("x##NodeWorldPosition", &x, -100.0f, 100.0f, "%.3f"))
-                        mSelectedNode->setWorldPosition(QVector3D(x, y, z));
-                    if (ImGui::SliderFloat("y##NodeWorldPosition", &y, -100.0f, 100.0f, "%.3f"))
-                        mSelectedNode->setWorldPosition(QVector3D(x, y, z));
-                    if (ImGui::SliderFloat("z##NodeWorldPosition", &z, -100.0f, 100.0f, "%.3f"))
-                        mSelectedNode->setWorldPosition(QVector3D(x, y, z));
-                }
+                if (ImGui::SliderFloat("x##NodePosition", &x, -20.0f, 20.0f, "%.3f"))
+                    mSelectedNode->setPosition(QVector3D(x, y, z));
+                if (ImGui::SliderFloat("y##NodePosition", &y, -20.0f, 20.0f, "%.3f"))
+                    mSelectedNode->setPosition(QVector3D(x, y, z));
+                if (ImGui::SliderFloat("z##NodePosition", &z, -20.0f, 20.0f, "%.3f"))
+                    mSelectedNode->setPosition(QVector3D(x, y, z));
             }
 
             // Rotation

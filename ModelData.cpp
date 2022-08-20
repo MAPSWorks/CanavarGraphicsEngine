@@ -32,6 +32,15 @@ void ModelData::render(Model *model)
     mRootNode->render(model);
 }
 
+Mesh *ModelData::getMesh(const QString &meshName)
+{
+    for (auto const &mesh : qAsConst(mMeshes))
+        if (mesh->name() == meshName)
+            return mesh;
+
+    return nullptr;
+}
+
 const QVector<TextureMaterial *> &ModelData::materials() const
 {
     return mMaterials;

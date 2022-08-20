@@ -73,11 +73,9 @@ void Controller::init()
     mRendererManager->init();
 
     mDummyCamera = new DummyCamera;
-    mDummyCamera->setPosition(QVector3D(0, 11, -32));
     mDummyCamera->setVerticalFov(80.0f);
     mDummyCamera->setZNear(0.1f);
     mDummyCamera->setZFar(1000000.0f);
-    mDummyCamera->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
     mCameraManager->addCamera(mDummyCamera);
 
     mSun = new DirectionalLight;
@@ -115,15 +113,16 @@ void Controller::init()
     mRock->setPosition(QVector3D(15, 15, -5));
     mNodeManager->addNode(mRock);
 
-    mJet = new Model("f35e");
-    //mJet->setScale(QVector3D(0.05, 0.05, 0.05));
-    mJet->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
-    mJet->addChild(mDummyCamera);
+    mJet = new Model("f16c");
+    mJet->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 270));
 
     mRootJetNode = new Node;
     mRootJetNode->setName("JET_ROOT_NODE");
     mRootJetNode->addChild(mJet);
     mNodeManager->addNode(mRootJetNode);
+
+    mDummyCamera->setPosition(QVector3D(0, 2, 12));
+    mRootJetNode->addChild(mDummyCamera);
 }
 
 void Controller::run()
