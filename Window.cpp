@@ -311,6 +311,46 @@ void Window::paintGL()
                     model->setMaterial(material);
                 }
             }
+
+            PointLight *pointLight = dynamic_cast<PointLight *>(mSelectedNode);
+            if (pointLight)
+            {
+                float constant = pointLight->constant();
+                float linear = pointLight->linear();
+                float quadratic = pointLight->quadratic();
+                float ambient = pointLight->ambient();
+                float diffuse = pointLight->diffuse();
+                float specular = pointLight->specular();
+                QVector4D color = pointLight->color();
+
+                ImGui::Text("Light Parameters:");
+
+                if (ImGui::SliderFloat("Constant##PointLight", &constant, 0.0f, 1.0f, "%.3f"))
+                    pointLight->setConstant(constant);
+
+                if (ImGui::SliderFloat("Linear##PointLight", &linear, 0.0f, 1.0f, "%.3f"))
+                    pointLight->setLinear(linear);
+
+                if (ImGui::SliderFloat("Quadratic##PointLight", &quadratic, 0.0f, 1.0f, "%.3f"))
+                    pointLight->setQuadratic(quadratic);
+
+                if (ImGui::SliderFloat("Ambient##PointLight", &ambient, 0.0f, 1.0f, "%.3f"))
+                    pointLight->setAmbient(ambient);
+
+                if (ImGui::SliderFloat("Diffuse##PointLight", &diffuse, 0.0f, 1.0f, "%.3f"))
+                    pointLight->setDiffuse(diffuse);
+
+                if (ImGui::SliderFloat("Specular##PointLight", &specular, 0.0f, 1.0f, "%.3f"))
+                    pointLight->setSpecular(specular);
+
+                float colorf[4] = {color.x(), color.y(), color.z(), color.w()};
+
+                if (ImGui::ColorEdit4("Color##PointLight", (float *) &colorf))
+                {
+                    QVector4D newColor = QVector4D(colorf[0], colorf[1], colorf[2], colorf[3]);
+                    pointLight->setColor(newColor);
+                }
+            }
         }
     }
 

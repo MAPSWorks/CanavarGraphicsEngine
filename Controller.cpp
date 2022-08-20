@@ -89,9 +89,7 @@ void Controller::init()
     //mNodeManager->addNode(mPlane);
 
     mCube = new Model("Cube");
-    mCube->setPosition(QVector3D(10, 10, 10));
-    mCube->setScale(QVector3D(0.01f, 0.01f, 0.01f));
-    mNodeManager->addNode(mCube);
+    //mNodeManager->addNode(mCube);
 
     mBackpack = new Model("Backpack");
     mBackpack->setPosition(QVector3D(-5, 5, -5));
@@ -114,14 +112,13 @@ void Controller::init()
     mNodeManager->addNode(mRock);
 
     mJet = new Model("f16c");
-    mJet->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 270));
 
     mRootJetNode = new Node;
     mRootJetNode->setName("JET_ROOT_NODE");
     mRootJetNode->addChild(mJet);
     mNodeManager->addNode(mRootJetNode);
 
-    mDummyCamera->setPosition(QVector3D(0, 2, 12));
+    mDummyCamera->setPosition(QVector3D(0, 5, 30));
     mRootJetNode->addChild(mDummyCamera);
 }
 
@@ -208,6 +205,71 @@ void Controller::render(float ifps)
 {
     mRootJetNode->setRotation(mPfd.rotation);
     mRootJetNode->setPosition(mPfd.position);
+
+    // Rudder
+    {
+        QVector3D p0 = QVector3D(0, 3.0193, 10.3473);
+        QVector3D p1 = QVector3D(0, 7.742, 13.4306);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.rudderPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_40", t2 * t1 * t0);
+    }
+
+    // Left elevator
+    {
+        QVector3D p0 = QVector3D(-2.6, 0.4204, 8.4395);
+        QVector3D p1 = QVector3D(-6.8575, -0.4848, 11.7923);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, -mPfd.elevatorPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_36", t2 * t1 * t0);
+    }
+
+    // Right elevator
+    {
+        QVector3D p0 = QVector3D(2.6, 0.4204, 8.4395);
+        QVector3D p1 = QVector3D(6.8575, -0.4848, 11.7923);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.elevatorPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_18", t2 * t1 * t0);
+    }
+
+    // Left aileron
+    {
+        QVector3D p0 = QVector3D(-2.6074, 0.3266, 3.4115);
+        QVector3D p1 = QVector3D(-8.7629, -0.2083, 4.333);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, -mPfd.leftAileronPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_22", t2 * t1 * t0);
+    }
+
+    // Right aileron
+    {
+        QVector3D p0 = QVector3D(2.6072, 0.3266, 3.4115);
+        QVector3D p1 = QVector3D(8.7623, 0.1772, 4.3218);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.rightAileronPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_20", t2 * t1 * t0);
+    }
 
     mCameraManager->update(ifps);
     mRendererManager->render(ifps);

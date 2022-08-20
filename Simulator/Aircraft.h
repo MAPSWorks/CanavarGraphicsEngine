@@ -61,6 +61,8 @@ public:
         QQuaternion rotation;
         double rudderPos;
         double elevatorPos;
+        double leftAileronPos;
+        double rightAileronPos;
     };
 
     explicit Aircraft(QObject *parent = nullptr);
