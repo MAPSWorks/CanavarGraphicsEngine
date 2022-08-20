@@ -232,56 +232,72 @@ void Window::paintGL()
                 ImGui::Text("Parent: 0x%p", static_cast<void *>(mSelectedNode->parent()));
             }
 
-            // Position
-            if (mSelectedNode)
-            {
-                ImGui::Text("Position:");
-                QVector3D position = mSelectedNode->position();
-                float x = position.x();
-                float y = position.y();
-                float z = position.z();
-
-                if (ImGui::SliderFloat("x##NodePosition", &x, -20.0f, 20.0f, "%.3f"))
-                    mSelectedNode->setPosition(QVector3D(x, y, z));
-                if (ImGui::SliderFloat("y##NodePosition", &y, -20.0f, 20.0f, "%.3f"))
-                    mSelectedNode->setPosition(QVector3D(x, y, z));
-                if (ImGui::SliderFloat("z##NodePosition", &z, -20.0f, 20.0f, "%.3f"))
-                    mSelectedNode->setPosition(QVector3D(x, y, z));
-            }
-
-            // Rotation
             if (mSelectedNode)
             {
                 {
+                    ImGui::Text("Position:");
+                    QVector3D position = mSelectedNode->position();
+                    float x = position.x();
+                    float y = position.y();
+                    float z = position.z();
+
+                    if (ImGui::DragFloat("x##NodePosition", &x, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+                        mSelectedNode->setPosition(QVector3D(x, y, z));
+                    if (ImGui::DragFloat("y##NodePosition", &y, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+                        mSelectedNode->setPosition(QVector3D(x, y, z));
+                    if (ImGui::DragFloat("z##NodePosition", &z, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+                        mSelectedNode->setPosition(QVector3D(x, y, z));
+                }
+
+                {
                     ImGui::Text("Rotation:");
                     QQuaternion rotation = mSelectedNode->rotation();
-                    QVector3D eulerAngles = rotation.toEulerAngles();
-                    float pitch = eulerAngles.x();
-                    float yaw = eulerAngles.y();
-                    float roll = eulerAngles.z();
+                    float w = rotation.scalar();
+                    float x = rotation.x();
+                    float y = rotation.y();
+                    float z = rotation.z();
 
-                    if (ImGui::SliderFloat("Pitch##NodeRotation", &pitch, -90.0f, 90.0f, "%.3f"))
-                        mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
-                    if (ImGui::SliderFloat("Yaw##NodeRotation", &yaw, -180.0f, 180.0f, "%.3f"))
-                        mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
-                    if (ImGui::SliderFloat("Roll##NodeRotation", &roll, -180.0f, 180.0f, "%.3f"))
-                        mSelectedNode->setRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+                    if (ImGui::DragFloat("w##NodeRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
+                        mSelectedNode->setRotation(QQuaternion(w, x, y, z).normalized());
+                    if (ImGui::DragFloat("x##NodeRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+                        mSelectedNode->setRotation(QQuaternion(w, x, y, z).normalized());
+                    if (ImGui::DragFloat("y##NodeRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
+                        mSelectedNode->setRotation(QQuaternion(w, x, y, z).normalized());
+                    if (ImGui::DragFloat("z##NodeRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+                        mSelectedNode->setRotation(QQuaternion(w, x, y, z).normalized());
                 }
 
                 {
                     ImGui::Text("World Rotation:");
                     QQuaternion rotation = mSelectedNode->worldRotation();
-                    QVector3D eulerAngles = rotation.toEulerAngles();
-                    float pitch = eulerAngles.x();
-                    float yaw = eulerAngles.y();
-                    float roll = eulerAngles.z();
+                    float w = rotation.scalar();
+                    float x = rotation.x();
+                    float y = rotation.y();
+                    float z = rotation.z();
 
-                    if (ImGui::SliderFloat("Pitch##NodeWorldRotation", &pitch, -90.0f, 90.0f, "%.3f"))
-                        mSelectedNode->setWorldRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
-                    if (ImGui::SliderFloat("Yaw##NodeWorldRotation", &yaw, -180.0f, 180.0f, "%.3f"))
-                        mSelectedNode->setWorldRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
-                    if (ImGui::SliderFloat("Roll##NodeWorldRotation", &roll, -180.0f, 180.0f, "%.3f"))
-                        mSelectedNode->setWorldRotation(QQuaternion::fromEulerAngles(QVector3D(pitch, yaw, roll)));
+                    if (ImGui::DragFloat("w##NodeWorldRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
+                        mSelectedNode->setWorldRotation(QQuaternion(w, x, y, z).normalized());
+                    if (ImGui::DragFloat("x##NodeWorldRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+                        mSelectedNode->setWorldRotation(QQuaternion(w, x, y, z).normalized());
+                    if (ImGui::DragFloat("y##NodeWorldRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
+                        mSelectedNode->setWorldRotation(QQuaternion(w, x, y, z).normalized());
+                    if (ImGui::DragFloat("z##NodeWorldRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+                        mSelectedNode->setWorldRotation(QQuaternion(w, x, y, z).normalized());
+                }
+
+                {
+                    ImGui::Text("Scale:");
+                    QVector3D scale = mSelectedNode->scale();
+                    float x = scale.x();
+                    float y = scale.y();
+                    float z = scale.z();
+
+                    if (ImGui::DragFloat("x##NodeScale", &x, 0.01f, 0.0001f, 100.0f, "%.3f"))
+                        mSelectedNode->setScale(QVector3D(x, y, z));
+                    if (ImGui::DragFloat("y##NodeScale", &y, 0.01f, 0.0001f, 100.0f, "%.3f"))
+                        mSelectedNode->setScale(QVector3D(x, y, z));
+                    if (ImGui::DragFloat("z##NodeScale", &z, 0.01f, 0.0001f, 100.0f, "%.3f"))
+                        mSelectedNode->setScale(QVector3D(x, y, z));
                 }
             }
 

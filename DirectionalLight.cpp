@@ -5,8 +5,8 @@ DirectionalLight::DirectionalLight(QObject *parent)
     , mDirection(0, -1, 0)
 
 {
-    mAmbient = 0.8f;
-    mDiffuse = 0.5f;
+    mAmbient = 1.0f;
+    mDiffuse = 0.75f;
     mNodeType = Node::NodeType::DirectionalLight;
 
     float inf = std::numeric_limits<float>::infinity();

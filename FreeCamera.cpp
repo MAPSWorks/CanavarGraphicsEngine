@@ -125,9 +125,9 @@ void FreeCamera::update(float ifps)
     {
         const QList<Qt::Key> keys = mPressedKeys.keys();
 
-        if (mPressedKeys[Qt::Key_Shift])
-            mMovementSpeed = 5000.0f;
-        else if (mPressedKeys[Qt::Key_Control])
+        if (mPressedKeys[Qt::Key_Control])
+            mMovementSpeed = 1000.0f;
+        else if (mPressedKeys[Qt::Key_Shift])
             mMovementSpeed = 100.0f;
         else
             mMovementSpeed = 5.0f;

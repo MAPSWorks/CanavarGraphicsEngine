@@ -3,7 +3,7 @@
 NozzleEffect::NozzleEffect(const QString &modelName, QObject *parent)
     : Model(modelName)
     , mStrength(1.0f)
-    , mBlurFactor(1)
+    , mBlurFactor(2)
 {
     mNodeType = Node::NodeType::NozzleEffect;
     mMaterial.color = QVector4D(1, 1, 1, 1);

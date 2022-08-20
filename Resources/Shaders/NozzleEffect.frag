@@ -9,19 +9,19 @@ uniform vec4 color;
 out vec4 outColor;
 
 vec4 applyBlur(ivec2 windowCoords, int sampleNum) {
-    vec4 c0 = 3 *texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(1,1), sampleNum);
-    vec4 c1 = 3 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(-1,-1), sampleNum);
-    vec4 c2 = 3 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(-1,1), sampleNum);
-    vec4 c3 = 3 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(1,-1), sampleNum);
+    vec4 c0 = texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(1,1), sampleNum);
+    vec4 c1 = texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(-1,-1), sampleNum);
+    vec4 c2 = texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(-1,1), sampleNum);
+    vec4 c3 = texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(1,-1), sampleNum);
 
-    vec4 n0 = 3 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(0,1), sampleNum);
-    vec4 n1 = 3 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(0,-1), sampleNum);
-    vec4 n2 = 3 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(-1,0), sampleNum);
-    vec4 n3 = 3 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(1,0), sampleNum);
+    vec4 n0 = 2 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(0,1), sampleNum);
+    vec4 n1 = 2 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(0,-1), sampleNum);
+    vec4 n2 = 2 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(-1,0), sampleNum);
+    vec4 n3 = 2 * texelFetch(firstPassTexture, windowCoords + blurFactor * ivec2(1,0), sampleNum);
 
-    vec4 p = 0 * texelFetch(firstPassTexture, windowCoords, sampleNum);
+    vec4 p = 4 * texelFetch(firstPassTexture, windowCoords, sampleNum);
 
-    return (c0 + c1 + c2 + c3 + n0 + n1 + n2 + n3 + p) / 24.0f;
+    return (c0 + c1 + c2 + c3 + n0 + n1 + n2 + n3 + p) / 16.0f;
 }
 
 void main()
