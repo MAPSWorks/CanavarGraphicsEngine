@@ -415,7 +415,6 @@ bool ShaderManager::init()
         locations.insert("screenTexture", shader->uniformLocation("screenTexture"));
         locations.insert("windowWidth", shader->uniformLocation("windowWidth"));
         locations.insert("windowHeight", shader->uniformLocation("windowHeight"));
-        locations.insert("samples", shader->uniformLocation("samples"));
 
         shader->bindAttributeLocation("position", 0);
         shader->bindAttributeLocation("textureCoord", 0);

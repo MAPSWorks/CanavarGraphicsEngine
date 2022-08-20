@@ -35,7 +35,7 @@ bool RendererManager::init()
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
     qInfo() << "Initializing ShaderManager...";
 
@@ -222,16 +222,12 @@ void RendererManager::render(float ifps)
 
     // renderSkyBox();
 
-    // Bind default framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture);
-
     mShaderManager->bind(ShaderManager::Shader::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
-    mShaderManager->setUniformValue("samples", 4);
     mShaderManager->setUniformValue("windowWidth", mWindowWidth);
     mShaderManager->setUniformValue("windowHeight", mWindowHeight);
     mScreenRenderer->render();
