@@ -5,9 +5,12 @@
 
 class SpotLight : public PointLight
 {
-public:
+private:
+    friend class NodeManager;
     explicit SpotLight(QObject *parent = nullptr);
+    virtual ~SpotLight();
 
+public:
     const QVector3D &direction() const;
     void setDirection(const QVector3D &newDirection);
 

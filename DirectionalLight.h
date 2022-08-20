@@ -5,9 +5,11 @@
 
 class DirectionalLight : public Light
 {
-public:
+private:
+    friend class NodeManager;
     explicit DirectionalLight(QObject *parent = nullptr);
 
+public:
     const QVector3D &direction() const;
     void setDirection(const QVector3D &newDirection);
 

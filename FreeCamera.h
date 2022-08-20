@@ -9,9 +9,12 @@ class FreeCamera : public Camera
 {
     Q_OBJECT
 
-public:
+private:
+    friend class NodeManager;
     explicit FreeCamera(QObject *parent = nullptr);
+    virtual ~FreeCamera();
 
+public:
     void onKeyPressed(QKeyEvent *event) override;
     void onKeyReleased(QKeyEvent *event) override;
     void onMousePressed(QMouseEvent *event) override;

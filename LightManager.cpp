@@ -4,7 +4,7 @@ LightManager::LightManager(QObject *parent)
     : QObject(parent)
     , mDirectionalLight(nullptr)
 {
-    mNodeManager = NodeManager::instance();
+    ;
 }
 
 void LightManager::addLight(Light *light)
@@ -31,8 +31,6 @@ void LightManager::addLight(Light *light)
         qWarning() << "Light is nullptr.";
         return;
     }
-
-    mNodeManager->addNode(light);
 }
 
 void LightManager::removeLight(Light *light)
@@ -42,18 +40,10 @@ void LightManager::removeLight(Light *light)
     DirectionalLight *directionalLight = dynamic_cast<DirectionalLight *>(light);
 
     if (pointLight)
-    {
-        mNodeManager->removeNode(pointLight);
         mPointLights.removeAll(pointLight);
-        pointLight->deleteLater();
-
-    } else if (spotLight)
-    {
-        mNodeManager->removeNode(spotLight);
+    else if (spotLight)
         mPointLights.removeAll(spotLight);
-        spotLight->deleteLater();
-
-    } else if (directionalLight)
+    else if (directionalLight)
     {
         qWarning() << "Directional light cannot be removed.";
         return;

@@ -14,6 +14,11 @@ Model::Model(const QString &modelName, QObject *parent)
     mMaterial.shininess = 32.0f;
 }
 
+Model::~Model()
+{
+
+}
+
 const QString &Model::modelName() const
 {
     return mModelName;

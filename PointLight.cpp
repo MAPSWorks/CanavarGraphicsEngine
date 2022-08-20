@@ -9,6 +9,8 @@ PointLight::PointLight(QObject *parent)
     mNodeType = Node::NodeType::PointLight;
 }
 
+PointLight::~PointLight() {}
+
 float PointLight::constant() const
 {
     return mConstant;

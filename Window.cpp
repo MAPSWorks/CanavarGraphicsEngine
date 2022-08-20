@@ -441,9 +441,6 @@ void Window::populateComboBox(Node *node)
 
     if (ImGui::Selectable(node->name().toStdString().c_str()))
         mSelectedNode = node;
-
-    for (auto child : node->children())
-        populateComboBox(child);
 }
 
 QVector3D Window::getRandomSeed()

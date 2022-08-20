@@ -5,6 +5,7 @@ Node::Node(QObject *parent)
     , mPosition(0, 0, 0)
     , mScale(1, 1, 1)
     , mNodeType(NodeType::DummyNode)
+    , mVisible(true)
 
 {}
 
@@ -138,7 +139,6 @@ void Node::removeChild(Node *child)
 {
     mChildren.removeAll(child);
     child->setParent(nullptr);
-    child->deleteLater();
 }
 
 const QList<Node *> &Node::children() const
@@ -170,4 +170,14 @@ QString Node::nodeTypeString()
     case NodeType::SpotLight:
         return "Spot Light";
     }
+}
+
+bool Node::visible() const
+{
+    return mVisible;
+}
+
+void Node::setVisible(bool newVisible)
+{
+    mVisible = newVisible;
 }

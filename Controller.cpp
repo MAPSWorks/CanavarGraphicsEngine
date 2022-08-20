@@ -40,12 +40,11 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
     connect(mWindow, &Window::command, mAircraft, &Aircraft::onCommand);
 
-    mFreeCamera = new FreeCamera;
+    mFreeCamera = dynamic_cast<FreeCamera *>(mNodeManager->create(Node::NodeType::FreeCamera));
     mFreeCamera->setPosition(QVector3D(0, 10, 10));
     mFreeCamera->setVerticalFov(60.0f);
     mFreeCamera->setZNear(0.1f);
     mFreeCamera->setZFar(1000000.0f);
-    mCameraManager->addCamera(mFreeCamera);
     mCameraManager->setActiveCamera(mFreeCamera);
 
     connect(mFreeCamera, &FreeCamera::mouseGrabbed, this, [=](bool grabbed) {
@@ -72,51 +71,40 @@ void Controller::init()
 {
     mRendererManager->init();
 
-    mDummyCamera = new DummyCamera;
+    mDummyCamera = dynamic_cast<DummyCamera *>(mNodeManager->create(Node::NodeType::DummyCamera));
     mDummyCamera->setVerticalFov(80.0f);
     mDummyCamera->setZNear(0.1f);
     mDummyCamera->setZFar(1000000.0f);
-    mCameraManager->addCamera(mDummyCamera);
 
-    mSun = new DirectionalLight;
+    mSun = dynamic_cast<DirectionalLight *>(mNodeManager->create(Node::NodeType::DirectionalLight));
     mSun->setDirection(QVector3D(1, -1, 1));
     mLightManager->setDirectionalLight(mSun);
 
     // Plane
-    mPlane = new Model("Plane");
+    mPlane = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Plane"));
     mPlane->setPosition(QVector3D(0, 100, 0));
     mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
-    //mNodeManager->addNode(mPlane);
+    mPlane->setVisible(false);
 
-    mCube = new Model("Cube");
-    //mNodeManager->addNode(mCube);
+    mCube = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Cube"));
+    mCube->setVisible(false);
 
-    mBackpack = new Model("Backpack");
+    mBackpack = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Backpack"));
     mBackpack->setPosition(QVector3D(-5, 5, -5));
-    mNodeManager->addNode(mBackpack);
 
-    mCyborg = new Model("Cyborg");
+    mCyborg = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Cyborg"));
     mCyborg->setPosition(QVector3D(-5, 10, -5));
-    mNodeManager->addNode(mCyborg);
 
-    mNanoSuit = new Model("Nanosuit");
+    mNanoSuit = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Nanosuit"));
     mNanoSuit->setPosition(QVector3D(-5, 15, -5));
-    mNodeManager->addNode(mNanoSuit);
 
-    mPlanet = new Model("Planet");
+    mPlanet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Planet"));
     mPlanet->setPosition(QVector3D(15, 5, -5));
-    mNodeManager->addNode(mPlanet);
 
-    mRock = new Model("Rock");
-    mRock->setPosition(QVector3D(15, 15, -5));
-    mNodeManager->addNode(mRock);
+    mJet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "f16c"));
 
-    mJet = new Model("f16c");
-
-    mRootJetNode = new Node;
-    mRootJetNode->setName("JET_ROOT_NODE");
+    mRootJetNode = mNodeManager->create(Model::NodeType::DummyNode, "JET_ROOT_NODE");
     mRootJetNode->addChild(mJet);
-    mNodeManager->addNode(mRootJetNode);
 
     mDummyCamera->setPosition(QVector3D(0, 5, 30));
     mRootJetNode->addChild(mDummyCamera);
@@ -208,8 +196,8 @@ void Controller::render(float ifps)
 
     // Rudder
     {
-        QVector3D p0 = QVector3D(0, 3.0193, 10.3473);
-        QVector3D p1 = QVector3D(0, 7.742, 13.4306);
+        QVector3D p0 = QVector3D(0.0f, 3.0193f, 10.3473f);
+        QVector3D p1 = QVector3D(0.0f, 7.742f, 13.4306f);
         QVector3D axis = (p0 - p1).normalized();
         QMatrix4x4 t0, t1, t2;
 
@@ -221,8 +209,8 @@ void Controller::render(float ifps)
 
     // Left elevator
     {
-        QVector3D p0 = QVector3D(-2.6, 0.4204, 8.4395);
-        QVector3D p1 = QVector3D(-6.8575, -0.4848, 11.7923);
+        QVector3D p0 = QVector3D(-2.6f, 0.4204f, 8.4395f);
+        QVector3D p1 = QVector3D(-6.8575f, -0.4848f, 11.7923f);
         QVector3D axis = (p0 - p1).normalized();
         QMatrix4x4 t0, t1, t2;
 
@@ -234,8 +222,8 @@ void Controller::render(float ifps)
 
     // Right elevator
     {
-        QVector3D p0 = QVector3D(2.6, 0.4204, 8.4395);
-        QVector3D p1 = QVector3D(6.8575, -0.4848, 11.7923);
+        QVector3D p0 = QVector3D(2.6f, 0.4204f, 8.4395f);
+        QVector3D p1 = QVector3D(6.8575f, -0.4848f, 11.7923f);
         QVector3D axis = (p0 - p1).normalized();
         QMatrix4x4 t0, t1, t2;
 
@@ -247,8 +235,8 @@ void Controller::render(float ifps)
 
     // Left aileron
     {
-        QVector3D p0 = QVector3D(-2.6074, 0.3266, 3.4115);
-        QVector3D p1 = QVector3D(-8.7629, -0.2083, 4.333);
+        QVector3D p0 = QVector3D(-2.6074f, 0.3266f, 3.4115f);
+        QVector3D p1 = QVector3D(-8.7629f, -0.2083f, 4.333f);
         QVector3D axis = (p0 - p1).normalized();
         QMatrix4x4 t0, t1, t2;
 
@@ -260,8 +248,8 @@ void Controller::render(float ifps)
 
     // Right aileron
     {
-        QVector3D p0 = QVector3D(2.6072, 0.3266, 3.4115);
-        QVector3D p1 = QVector3D(8.7623, 0.1772, 4.3218);
+        QVector3D p0 = QVector3D(2.6072f, 0.3266f, 3.4115f);
+        QVector3D p1 = QVector3D(8.7623f, 0.1772f, 4.3218f);
         QVector3D axis = (p0 - p1).normalized();
         QMatrix4x4 t0, t1, t2;
 

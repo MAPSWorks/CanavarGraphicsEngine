@@ -11,12 +11,12 @@ class CameraManager : public QObject
     Q_OBJECT
 
 private:
+    friend class NodeManager;
     explicit CameraManager(QObject *parent = nullptr);
-
-public:
     void addCamera(Camera *camera);
     void removeCamera(Camera *camera);
 
+public:
     void onKeyPressed(QKeyEvent *event);
     void onKeyReleased(QKeyEvent *event);
     void onMousePressed(QMouseEvent *event);
@@ -35,7 +35,6 @@ public:
     static CameraManager *instance();
 
 private:
-    NodeManager *mNodeManager;
     Camera *mActiveCamera;
     QList<Camera *> mCameras;
 

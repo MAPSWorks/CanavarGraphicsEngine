@@ -33,6 +33,8 @@ FreeCamera::FreeCamera(QObject *parent)
     });
 }
 
+FreeCamera::~FreeCamera() {}
+
 void FreeCamera::onKeyPressed(QKeyEvent *event)
 {
     mPressedKeys.insert((Qt::Key) event->key(), true);

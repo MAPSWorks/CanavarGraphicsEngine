@@ -9,6 +9,8 @@ SpotLight::SpotLight(QObject *parent)
     mNodeType = Node::NodeType::SpotLight;
 }
 
+SpotLight::~SpotLight() {}
+
 const QVector3D &SpotLight::direction() const
 {
     return mDirection;

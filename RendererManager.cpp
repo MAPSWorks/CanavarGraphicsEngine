@@ -199,6 +199,9 @@ void RendererManager::render(float ifps)
 
 void RendererManager::renderNode(Node *node)
 {
+    if (!node->visible())
+        return;
+
     Model *model = dynamic_cast<Model *>(node);
 
     if (model)

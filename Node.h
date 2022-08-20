@@ -9,10 +9,12 @@
 class Node : public QObject
 {
     Q_OBJECT
-public:
+protected:
+    friend class NodeManager;
     explicit Node(QObject *parent = nullptr);
     virtual ~Node();
 
+public:
     enum class NodeType { //
         DummyNode,
         Model,
@@ -52,6 +54,9 @@ public:
     NodeType nodeType() const;
     QString nodeTypeString();
 
+    bool visible() const;
+    void setVisible(bool newVisible);
+
 protected:
     QVector3D mPosition;
     QQuaternion mRotation;
@@ -59,6 +64,7 @@ protected:
     QString mName;
     NodeType mNodeType;
     QList<Node *> mChildren;
+    bool mVisible;
 };
 
 #endif // NODE_H

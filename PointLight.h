@@ -5,9 +5,12 @@
 
 class PointLight : public Light
 {
-public:
+protected:
+    friend class NodeManager;
     explicit PointLight(QObject *parent = nullptr);
+    virtual ~PointLight();
 
+public:
     float constant() const;
     void setConstant(float newConstant);
 

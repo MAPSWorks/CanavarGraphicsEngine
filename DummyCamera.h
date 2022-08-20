@@ -8,7 +8,9 @@
 class DummyCamera : public Camera
 {
     Q_OBJECT
-public:
+private:
+    friend class NodeManager;
+
     explicit DummyCamera(QObject *parent = nullptr);
     virtual ~DummyCamera();
 

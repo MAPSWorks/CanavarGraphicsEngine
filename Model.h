@@ -5,6 +5,11 @@
 
 class Model : public Node
 {
+private:
+    friend class NodeManager;
+    explicit Model(const QString &modelName, QObject *parent = nullptr);
+    virtual ~Model();
+
 public:
     struct Material {
         QVector4D color;
@@ -13,8 +18,6 @@ public:
         float specular;
         float shininess;
     };
-
-    explicit Model(const QString &modelName, QObject *parent = nullptr);
 
     const QString &modelName() const;
     const QMap<QString, QMatrix4x4> &meshTransformations() const;

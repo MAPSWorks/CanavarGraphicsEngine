@@ -12,6 +12,8 @@ Camera::Camera(QObject *parent)
     setVerticalFov(60.0f);
 }
 
+Camera::~Camera() {}
+
 float Camera::horizontalFov() const
 {
     return mHorizontalFov;

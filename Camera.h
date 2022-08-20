@@ -12,6 +12,7 @@ class Camera : public Node
     Q_OBJECT
 protected:
     explicit Camera(QObject *parent = nullptr);
+    virtual ~Camera();
 
 signals:
     void activeChanged(bool active);

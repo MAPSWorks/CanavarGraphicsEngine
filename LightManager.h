@@ -13,12 +13,12 @@ class LightManager : public QObject
     Q_OBJECT
 
 private:
+    friend class NodeManager;
     explicit LightManager(QObject *parent = nullptr);
-
-public:
     void addLight(Light *light);
     void removeLight(Light *light);
 
+public:
     DirectionalLight *directionalLight() const;
     void setDirectionalLight(DirectionalLight *newDirectionalLight);
 
@@ -28,7 +28,6 @@ public:
     static LightManager *instance();
 
 private:
-    NodeManager *mNodeManager;
     QList<PointLight *> mPointLights;
     QList<SpotLight *> mSpotLights;
     DirectionalLight *mDirectionalLight;
