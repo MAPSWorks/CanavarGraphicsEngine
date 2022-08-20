@@ -5,6 +5,7 @@
 #include "LightManager.h"
 #include "ModelData.h"
 #include "NodeManager.h"
+#include "ScreenRenderer.h"
 #include "ShaderManager.h"
 #include "SkyBox.h"
 #include "Terrain.h"
@@ -13,6 +14,7 @@
 #include <QMatrix4x4>
 #include <QObject>
 #include <QOpenGLExtraFunctions>
+#include <QOpenGLFramebufferObject>
 
 class RendererManager : public QObject, protected QOpenGLExtraFunctions
 {
@@ -33,6 +35,7 @@ public:
 
     bool init();
     void render(float ifps);
+    void resize(int w, int h);
 
     bool renderWireframe() const;
     void setRenderWireframe(bool newRenderWireframe);
@@ -77,6 +80,19 @@ private:
     Fog mFog;
 
     bool mUseBlinnShading;
+
+    ScreenRenderer *mScreenRenderer;
+
+    unsigned int mOffscreenFramebuffer;
+    unsigned int mOffscreenTexture;
+    unsigned int mRenderBufferObject;
+
+    //    QOpenGLFramebufferObject *mOffscreenFramebuffer;
+
+    //    QOpenGLFramebufferObjectFormat mFramebufferFormat;
+
+    int mWindowWidth;
+    int mWindowHeight;
 };
 
 #endif // RENDERERMANAGER_H

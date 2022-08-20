@@ -379,6 +379,55 @@ bool ShaderManager::init()
         qInfo() << "Uniform locations are:" << locations;
     }
 
+    // ScreenShader
+    {
+        qInfo() << "ScreenShader is initializing...";
+
+        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
+        mPrograms.insert(Shader::ScreenShader, shader);
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/Screen.vert")))
+        {
+            qWarning() << "Could not load vertex shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/Screen.frag")))
+        {
+            qWarning() << "Could not load fragment shader.";
+            return false;
+        }
+
+        if (!shader->link())
+        {
+            qWarning() << "Could not link shader program.";
+            return false;
+        }
+
+        if (!shader->bind())
+        {
+            qWarning() << "Could not bind shader program.";
+            return false;
+        }
+
+        QMap<QString, GLuint> locations;
+
+        locations.insert("screenTexture", shader->uniformLocation("screenTexture"));
+        locations.insert("windowWidth", shader->uniformLocation("windowWidth"));
+        locations.insert("windowHeight", shader->uniformLocation("windowHeight"));
+        locations.insert("samples", shader->uniformLocation("samples"));
+
+        shader->bindAttributeLocation("position", 0);
+        shader->bindAttributeLocation("textureCoord", 0);
+
+        shader->release();
+
+        mLocations.insert(Shader::ScreenShader, locations);
+
+        qInfo() << "ScreenShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
+    }
+
     return true;
 }
 

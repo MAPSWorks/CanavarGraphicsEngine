@@ -20,7 +20,7 @@ Window::Window(QWindow *parent)
     format.setMajorVersion(4);
     format.setMinorVersion(3);
     format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setSamples(16);
+    format.setSamples(4);
     format.setSwapInterval(1);
     setFormat(format);
 
@@ -41,6 +41,8 @@ void Window::initializeGL()
 
 void Window::resizeGL(int w, int h)
 {
+    glViewport(0, 0, width(), height());
+
     emit resized(w, h);
 }
 

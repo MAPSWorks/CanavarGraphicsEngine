@@ -45,13 +45,13 @@ private:
     DirectionalLight *mSun;
     Qt::MouseButton mPressedButton;
 
-    Model *mPlane;
-    Model *mCube;
-    Model *mBackpack;
-    Model *mCyborg;
-    Model *mNanoSuit;
-    Model *mPlanet;
-    Model *mRock;
+    Node *mPlane;
+    Node *mCube;
+    Node *mBackpack;
+    Node *mCyborg;
+    Node *mNanoSuit;
+    Node *mPlanet;
+    Node *mRock;
     Model *mJet;
     Node *mRootJetNode;
 

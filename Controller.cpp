@@ -78,27 +78,26 @@ void Controller::init()
 
     mSun = dynamic_cast<DirectionalLight *>(mNodeManager->create(Node::NodeType::DirectionalLight));
     mSun->setDirection(QVector3D(1, -1, 1));
-    mLightManager->setDirectionalLight(mSun);
 
     // Plane
-    mPlane = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Plane"));
+    mPlane = mNodeManager->create(Model::NodeType::Model, "Plane");
     mPlane->setPosition(QVector3D(0, 100, 0));
     mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
     mPlane->setVisible(false);
 
-    mCube = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Cube"));
+    mCube = mNodeManager->create(Model::NodeType::Model, "Cube");
     mCube->setVisible(false);
 
-    mBackpack = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Backpack"));
+    mBackpack = mNodeManager->create(Model::NodeType::Model, "Backpack");
     mBackpack->setPosition(QVector3D(-5, 5, -5));
 
-    mCyborg = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Cyborg"));
+    mCyborg = mNodeManager->create(Model::NodeType::Model, "Cyborg");
     mCyborg->setPosition(QVector3D(-5, 10, -5));
 
-    mNanoSuit = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Nanosuit"));
+    mNanoSuit = mNodeManager->create(Model::NodeType::Model, "Nanosuit");
     mNanoSuit->setPosition(QVector3D(-5, 15, -5));
 
-    mPlanet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Planet"));
+    mPlanet = mNodeManager->create(Model::NodeType::Model, "Planet");
     mPlanet->setPosition(QVector3D(15, 5, -5));
 
     mJet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "f16c"));
@@ -185,6 +184,7 @@ void Controller::onKeyReleased(QKeyEvent *event)
 void Controller::onResized(int w, int h)
 {
     mCameraManager->setAspectRatio((float) (w) / h);
+    mRendererManager->resize(w, h);
 }
 
 void Controller::onMouseDoubleClicked(QMouseEvent *) {}

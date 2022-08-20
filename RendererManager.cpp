@@ -13,6 +13,8 @@ RendererManager::RendererManager(QObject *parent)
     , mRenderWireframe(false)
     , mRenderNormals(false)
     , mUseBlinnShading(true)
+    , mWindowWidth(1600)
+    , mWindowHeight(900)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
@@ -33,7 +35,7 @@ bool RendererManager::init()
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
 
     qInfo() << "Initializing ShaderManager...";
 
@@ -114,13 +116,37 @@ bool RendererManager::init()
     mTerrain = Terrain::instance();
     mTerrain->create();
 
+    mScreenRenderer = new ScreenRenderer;
+    mScreenRenderer->create();
+
+    // Create offscreen framebuffer
+    glGenFramebuffers(1, &mOffscreenFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, mOffscreenFramebuffer);
+
+    // Create multisampled texture
+    glGenTextures(1, &mOffscreenTexture);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture);
+    glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture, 0);
+
+    // Create depth buffer for the custom framebuffer
+    glGenRenderbuffers(1, &mRenderBufferObject);
+    glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferObject);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBufferObject);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     return true;
 }
 
 void RendererManager::render(float ifps)
 {
     Q_UNUSED(ifps);
+    // Bind offscreen framebuffer
 
+    //    mOffscreenFramebuffer->bind();
+    glBindFramebuffer(GL_FRAMEBUFFER, mOffscreenFramebuffer);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(mFog.color.x(), mFog.color.y(), mFog.color.z(), 1.0f);
 
@@ -195,6 +221,50 @@ void RendererManager::render(float ifps)
         renderNode(node);
 
     // renderSkyBox();
+
+    // Bind default framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture);
+
+    mShaderManager->bind(ShaderManager::Shader::ScreenShader);
+    mShaderManager->setUniformValue("screenTexture", 0);
+    mShaderManager->setUniformValue("samples", 4);
+    mShaderManager->setUniformValue("windowWidth", mWindowWidth);
+    mShaderManager->setUniformValue("windowHeight", mWindowHeight);
+    mScreenRenderer->render();
+    mShaderManager->release();
+}
+
+void RendererManager::resize(int w, int h)
+{
+    mWindowWidth = w;
+    mWindowHeight = h;
+
+    glDeleteFramebuffers(1, &mOffscreenFramebuffer);
+    glDeleteTextures(1, &mOffscreenTexture);
+    glDeleteBuffers(1, &mRenderBufferObject);
+
+    // Create offscreen framebuffer
+    glGenFramebuffers(1, &mOffscreenFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, mOffscreenFramebuffer);
+
+    // Create multisampled texture
+    glGenTextures(1, &mOffscreenTexture);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture);
+    glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture, 0);
+
+    // Create depth buffer for the custom framebuffer
+    glGenRenderbuffers(1, &mRenderBufferObject);
+    glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferObject);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBufferObject);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        qCritical() << "Framebuffer is could not be created.";
 }
 
 void RendererManager::renderNode(Node *node)

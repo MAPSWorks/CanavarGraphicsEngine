@@ -17,10 +17,10 @@ private:
     explicit LightManager(QObject *parent = nullptr);
     void addLight(Light *light);
     void removeLight(Light *light);
+    void setDirectionalLight(DirectionalLight *newDirectionalLight);
 
 public:
     DirectionalLight *directionalLight() const;
-    void setDirectionalLight(DirectionalLight *newDirectionalLight);
 
     const QList<PointLight *> &pointLights() const;
     const QList<SpotLight *> &spotLights() const;

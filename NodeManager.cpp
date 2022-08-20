@@ -67,7 +67,8 @@ Node *NodeManager::create(Node::NodeType type, const QString &name)
             node->setName(name);
         mNodes << node;
         mNumberOfNodes++;
-        mLightManager->addLight(node);
+        mLightManager->setDirectionalLight(node);
+
         return node;
     }
     case Node::NodeType::PointLight: {

@@ -14,5 +14,7 @@
         <file>Resources/Shaders/Wireframe.geom</file>
         <file>Resources/Shaders/Terrain.tcs</file>
         <file>Resources/Shaders/Terrain.tes</file>
+        <file>Resources/Shaders/Screen.frag</file>
+        <file>Resources/Shaders/Screen.vert</file>
     </qresource>
 </RCC>

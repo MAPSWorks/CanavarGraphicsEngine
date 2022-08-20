@@ -19,6 +19,7 @@ public:
         NormalsShader,
         SkyBoxShader,
         TerrainShader,
+        ScreenShader,
     };
 
     QOpenGLShaderProgram *getShader(Shader shader);
