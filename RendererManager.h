@@ -104,7 +104,6 @@ private:
     int mWindowHeight;
 
     NozzleEffect *mNozzleEffect;
-    ModelData *mNozzleModel;
 };
 
 #endif // RENDERERMANAGER_H

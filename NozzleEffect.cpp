@@ -1,33 +1,26 @@
 #include "NozzleEffect.h"
 
-NozzleEffect::NozzleEffect(const QString &modelName, QObject *parent)
-    : Model(modelName)
-    , mStrength(1.0f)
-    , mBlurFactor(2)
+NozzleEffect::NozzleEffect(QObject *parent)
+    : Node(parent)
 {
+    mName = "Nozzle Effect";
     mNodeType = Node::NodeType::NozzleEffect;
-    mMaterial.color = QVector4D(1, 1, 1, 1);
     mRenderable = false;
 }
 
 NozzleEffect::~NozzleEffect() {}
 
-float NozzleEffect::strength() const
+void NozzleEffect::render()
 {
-    return mStrength;
+    mModelData->render(GL_TRIANGLES);
 }
 
-void NozzleEffect::setStrength(float newStrength)
+ModelData *NozzleEffect::modelData() const
 {
-    mStrength = newStrength;
+    return mModelData;
 }
 
-int NozzleEffect::blurFactor() const
+void NozzleEffect::setModelData(ModelData *newModelData)
 {
-    return mBlurFactor;
-}
-
-void NozzleEffect::setBlurFactor(int newBlurFactor)
-{
-    mBlurFactor = newBlurFactor;
+    mModelData = newModelData;
 }

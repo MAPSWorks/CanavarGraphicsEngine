@@ -155,8 +155,6 @@ bool RendererManager::init()
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
     }
 
-    mNozzleModel = mModelsData.value(mNozzleEffect->modelName());
-
     return true;
 }
 
@@ -223,6 +221,7 @@ void RendererManager::render(float ifps)
     glClearColor(mFog.color.x(), mFog.color.y(), mFog.color.z(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     renderModels(ifps);
+    renderTerrain();
     // ---- First pass is done ----
 
     // Second pass
@@ -230,12 +229,13 @@ void RendererManager::render(float ifps)
     glStencilMask(0x00);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     renderModels(ifps);
+    renderTerrain();
 
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
-    mNozzleModel->render(GL_TRIANGLES);
+    mNozzleEffect->render();
 
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
@@ -243,14 +243,11 @@ void RendererManager::render(float ifps)
     mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
     mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
     mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
-    mShaderManager->setUniformValue("strength", mNozzleEffect->strength());
-    mShaderManager->setUniformValue("blurFactor", mNozzleEffect->blurFactor());
-    mShaderManager->setUniformValue("color", mNozzleEffect->material().color);
     mShaderManager->setUniformValue("firstPassTexture", 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
 
-    mNozzleModel->render(GL_TRIANGLES);
+    mNozzleEffect->render();
     mShaderManager->release();
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -326,15 +323,16 @@ void RendererManager::renderModels(float ifps)
         mShaderManager->release();
     }
 
-    mShaderManager->bind(ShaderManager::Shader::ModelShader);
-    mShaderManager->setUniformValue("fog.enabled", mFog.enabled);
-    mShaderManager->setUniformValue("fog.color", mFog.color);
-    mShaderManager->setUniformValue("fog.density", mFog.density);
-    mShaderManager->setUniformValue("fog.gradient", mFog.gradient);
-    mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
-    mShaderManager->release();
-
-    renderTerrain();
+    // Fog
+    {
+        mShaderManager->bind(ShaderManager::Shader::ModelShader);
+        mShaderManager->setUniformValue("fog.enabled", mFog.enabled);
+        mShaderManager->setUniformValue("fog.color", mFog.color);
+        mShaderManager->setUniformValue("fog.density", mFog.density);
+        mShaderManager->setUniformValue("fog.gradient", mFog.gradient);
+        mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
+        mShaderManager->release();
+    }
 
     auto nodes = mNodeManager->nodes();
 
@@ -441,7 +439,7 @@ void RendererManager::renderModel(Model *model)
         {
             mShaderManager->bind(ShaderManager::Shader::WireframeShader);
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-            data->render(GL_LINE_STRIP);
+            data->render(GL_TRIANGLES);
             mShaderManager->release();
         }
 

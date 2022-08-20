@@ -1,23 +1,22 @@
 #ifndef NOZZLEEFFECT_H
 #define NOZZLEEFFECT_H
 
-#include "Model.h"
+#include "ModelData.h"
+#include "Node.h"
 
-class NozzleEffect : public Model
+class NozzleEffect : public Node
 {
 public:
-    explicit NozzleEffect(const QString &modelName, QObject *parent = nullptr);
+    explicit NozzleEffect(QObject *parent = nullptr);
     virtual ~NozzleEffect();
 
-    float strength() const;
-    void setStrength(float newStrength);
+    void render();
 
-    int blurFactor() const;
-    void setBlurFactor(int newBlurFactor);
+    ModelData *modelData() const;
+    void setModelData(ModelData *newModelData);
 
 private:
-    float mStrength;
-    int mBlurFactor;
+    ModelData *mModelData;
 };
 
 #endif // NOZZLEEFFECT_H

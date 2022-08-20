@@ -463,9 +463,6 @@ bool ShaderManager::init()
         locations.insert("modelMatrix", shader->uniformLocation("modelMatrix"));
         locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
         locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
-        locations.insert("strength", shader->uniformLocation("strength"));
-        locations.insert("blorFactor", shader->uniformLocation("blorFactor"));
-        locations.insert("color", shader->uniformLocation("color"));
         locations.insert("firstPassTexture", shader->uniformLocation("firstPassTexture"));
 
         shader->bindAttributeLocation("position", 0);
@@ -474,7 +471,7 @@ bool ShaderManager::init()
 
         mLocations.insert(Shader::NozzleEffectShader, locations);
 
-        qInfo() << "ScreenShader is initialized.";
+        qInfo() << "NozzleEffectShader is initialized.";
         qInfo() << "Uniform locations are:" << locations;
     }
 

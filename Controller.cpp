@@ -69,6 +69,8 @@ Controller::~Controller()
 
 void Controller::init()
 {
+    mRendererManager->init();
+
     mDummyCamera = dynamic_cast<DummyCamera *>(mNodeManager->create(Node::NodeType::DummyCamera));
     mDummyCamera->setPosition(QVector3D(0, 5, 30));
     mDummyCamera->setVerticalFov(80.0f);
@@ -109,14 +111,13 @@ void Controller::init()
     //    mCone->setVisible(false);
     //    mRootJetNode->addChild(mCone);
 
-    mNozzleEffect = new NozzleEffect("Capsule");
+    mNozzleEffect = new NozzleEffect;
+    mNozzleEffect->setModelData(mRendererManager->getModelData("Capsule"));
     mNozzleEffect->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 90));
     mNozzleEffect->setPosition(QVector3D(0, 0, 15));
     mNozzleEffect->setScale(QVector3D(0.0155, 0.015, 0.05));
     mRootJetNode->addChild(mNozzleEffect);
     mRendererManager->setNozzleEffect(mNozzleEffect);
-
-    mRendererManager->init();
 }
 
 void Controller::run()
