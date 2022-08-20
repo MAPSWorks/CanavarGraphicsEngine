@@ -99,18 +99,14 @@ QVector<PointLight *> Helper::getClosePointLights(const QList<PointLight *> &poi
     QMap<float, PointLight *> distanceToLight;
 
     for (const auto &light : pointLights)
-    {
         distanceToLight.insert((light->position() - node->position()).length(), light);
-    }
 
     QList<PointLight *> lights = distanceToLight.values();
 
     QVector<PointLight *> lightsVector;
 
     for (int i = 0; i < qMin(8, lights.size()); ++i)
-    {
         lightsVector << lights[i];
-    }
 
     return lightsVector;
 }
@@ -120,18 +116,14 @@ QVector<SpotLight *> Helper::getCloseSpotLights(const QList<SpotLight *> &spotLi
     QMap<float, SpotLight *> distanceToLight;
 
     for (const auto &light : spotLights)
-    {
         distanceToLight.insert((light->position() - node->position()).length(), light);
-    }
 
     QList<SpotLight *> lights = distanceToLight.values();
 
     QVector<SpotLight *> lightsVector;
 
     for (int i = 0; i < qMin(8, lights.size()); ++i)
-    {
         lightsVector << lights[i];
-    }
 
     return lightsVector;
 }
@@ -174,6 +166,13 @@ Mesh *Helper::processMesh(aiMesh *aiMesh)
     mesh->setName(aiMesh->mName.C_Str());
     mesh->setMaterialIndex(aiMesh->mMaterialIndex);
 
+    Mesh::AABB aabb;
+    auto min = aiMesh->mAABB.mMin;
+    auto max = aiMesh->mAABB.mMin;
+    aabb.min = QVector3D(min.x, min.y, min.z);
+    aabb.max = QVector3D(max.x, max.y, max.z);
+    mesh->setAABB(aabb);
+
     return mesh;
 }
 
@@ -200,7 +199,6 @@ TextureMaterial *Helper::processMaterial(aiMaterial *aiMaterial, const QString &
     processTexture(material, aiMaterial, aiTextureType_DIFFUSE, Texture::Type::Diffuse, directory);
     processTexture(material, aiMaterial, aiTextureType_SPECULAR, Texture::Type::Specular, directory);
     processTexture(material, aiMaterial, aiTextureType_HEIGHT, Texture::Type::Normal, directory);
-    processTexture(material, aiMaterial, aiTextureType_BASE_COLOR, Texture::Type::BaseColor, directory);
 
     return material;
 }
@@ -215,13 +213,26 @@ void Helper::processTexture(TextureMaterial *material, aiMaterial *aiMaterial, a
         Texture *texture = new Texture(type, directory + "/" + filename);
         texture->create();
         material->addTexture(texture);
-
-        qInfo() << "Texture" << texture->path() << "is loaded and created. ID is" << texture->id();
     }
 }
 
 // TODO
 QMatrix4x4 Helper::toQMatrix(const aiMatrix4x4 &matrix)
 {
-    return QMatrix4x4();
+    aiVector3D scaling;
+    aiQuaternion rotation;
+    aiVector3D position;
+    matrix.Decompose(scaling, rotation, position);
+
+    QVector3D qScaling = QVector3D(scaling.x, scaling.y, scaling.z);
+    QQuaternion qRotation = QQuaternion(rotation.w, rotation.x, rotation.y, rotation.z);
+    QVector4D qPosition = QVector4D(position.x, position.y, position.z, 1.0);
+
+    QMatrix4x4 transformation;
+
+    transformation.scale(qScaling);
+    transformation.rotate(qRotation);
+    transformation.setColumn(3, qPosition);
+
+    return transformation;
 }

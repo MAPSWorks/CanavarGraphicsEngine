@@ -28,3 +28,13 @@ void Model::setMaterial(const Material &newMaterial)
 {
     mMaterial = newMaterial;
 }
+
+void Model::setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation)
+{
+    mMeshTransformations.insert(meshName, transformation);
+}
+
+const QMap<QString, QMatrix4x4> &Model::meshTransformations() const
+{
+    return mMeshTransformations;
+}

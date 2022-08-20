@@ -1,6 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include "Model.h"
 #include "ShaderManager.h"
 
 #include <QObject>
@@ -27,6 +28,11 @@ public:
         float weights[4];
     };
 
+    struct AABB {
+        QVector3D min;
+        QVector3D max;
+    };
+
     explicit Mesh(QObject *parent = nullptr);
     virtual ~Mesh();
 
@@ -37,7 +43,7 @@ public:
     void setMaterialIndex(int newMaterialIndex);
 
     bool create();
-    void render();
+    void render(Model *model);
     void renderWireframe();
     void renderNormals();
 
@@ -46,6 +52,9 @@ public:
 
     ModelData *data() const;
     void setData(ModelData *newData);
+
+    const AABB &aABB() const;
+    void setAABB(const AABB &newAABB);
 
 private:
     QVector<Vertex> mVertices;
@@ -60,6 +69,8 @@ private:
 
     ModelData *mData;
     ShaderManager *mShaderManager;
+
+    AABB mAABB;
 };
 
 #endif // MESH_H

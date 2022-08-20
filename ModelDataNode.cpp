@@ -43,13 +43,13 @@ void ModelDataNode::setInitialTransformation(const QMatrix4x4 &newInitialTransfo
     mInitialTransformation = newInitialTransformation;
 }
 
-void ModelDataNode::render()
+void ModelDataNode::render(Model *model)
 {
     auto meshes = mData->meshes();
 
     for (auto index : qAsConst(mMeshIndices))
-        meshes[index]->render();
+        meshes[index]->render(model);
 
     for (int i = 0; i < mChildren.size(); i++)
-        mChildren[i]->render();
+        mChildren[i]->render(model);
 }

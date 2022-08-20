@@ -102,14 +102,14 @@ bool RendererManager::init()
     //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/1/back.png");
     //    mSkyBox->create();
 
-    mSkyBox = new SkyBox;
-    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_X, "Resources/Sky/2/right.bmp");
-    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, "Resources/Sky/2/left.bmp");
-    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, "Resources/Sky/2/top.bmp");
-    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, "Resources/Sky/2/bottom.bmp");
-    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, "Resources/Sky/2/front.bmp");
-    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/2/back.bmp");
-    mSkyBox->create();
+    //    mSkyBox = new SkyBox;
+    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_X, "Resources/Sky/2/right.bmp");
+    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, "Resources/Sky/2/left.bmp");
+    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, "Resources/Sky/2/top.bmp");
+    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, "Resources/Sky/2/bottom.bmp");
+    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, "Resources/Sky/2/front.bmp");
+    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/2/back.bmp");
+    //    mSkyBox->create();
 
     mTerrain = Terrain::instance();
     mTerrain->create();
@@ -210,15 +210,8 @@ void RendererManager::renderNode(Node *node)
             if (mRenderObjects)
             {
                 mShaderManager->bind(ShaderManager::Shader::ModelShader);
-                mShaderManager->setUniformValue("node.transformation", model->worldTransformation());
-                mShaderManager->setUniformValue("node.color", model->material().color);
-                mShaderManager->setUniformValue("node.ambient", model->material().ambient);
-                mShaderManager->setUniformValue("node.diffuse", model->material().diffuse);
-                mShaderManager->setUniformValue("node.specular", model->material().specular);
-                mShaderManager->setUniformValue("node.shininess", model->material().shininess);
 
                 QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), node);
-
                 mShaderManager->setUniformValue("numberOfPointLights", pointLights.size());
 
                 for (int i = 0; i < pointLights.size(); i++)
@@ -234,7 +227,6 @@ void RendererManager::renderNode(Node *node)
                 }
 
                 QVector<SpotLight *> spotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), node);
-
                 mShaderManager->setUniformValue("numberOfSpotLights", spotLights.size());
 
                 for (int i = 0; i < spotLights.size(); i++)
@@ -252,7 +244,7 @@ void RendererManager::renderNode(Node *node)
                     mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].outerCutOffAngle", spotLights[i]->outerCutOffAngle());
                 }
 
-                data->render();
+                data->render(model);
                 mShaderManager->release();
             }
 
@@ -260,7 +252,7 @@ void RendererManager::renderNode(Node *node)
             {
                 mShaderManager->bind(ShaderManager::Shader::WireframeShader);
                 mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-                data->render();
+                data->render(model);
                 mShaderManager->release();
             }
 
@@ -268,7 +260,7 @@ void RendererManager::renderNode(Node *node)
             {
                 mShaderManager->bind(ShaderManager::Shader::NormalsShader);
                 mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-                data->render();
+                data->render(model);
                 mShaderManager->release();
             }
         }

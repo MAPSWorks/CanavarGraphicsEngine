@@ -89,83 +89,82 @@ bool Mesh::create()
     return true;
 }
 
-void Mesh::render()
+void Mesh::render(Model *model)
 {
-    auto materials = mData->materials();
+    mShaderManager->setUniformValue("node.transformation", model->worldTransformation());
+    mShaderManager->setUniformValue("node.color", model->material().color);
+    mShaderManager->setUniformValue("node.ambient", model->material().ambient);
+    mShaderManager->setUniformValue("node.diffuse", model->material().diffuse);
+    mShaderManager->setUniformValue("node.specular", model->material().specular);
+    mShaderManager->setUniformValue("node.shininess", model->material().shininess);
 
+    auto materials = mData->materials();
     auto ambientTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Ambient);
     auto diffuseTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Diffuse);
     auto specularTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Specular);
     auto normalTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Normal);
-    auto baseColorTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::BaseColor);
 
     mShaderManager->setUniformValue("useTexture", false);
     mShaderManager->setUniformValue("useTextureAmbient", false);
     mShaderManager->setUniformValue("useTextureDiffuse", false);
     mShaderManager->setUniformValue("useTextureSpecular", false);
     mShaderManager->setUniformValue("useTextureNormal", false);
-    mShaderManager->setUniformValue("useTextureBaseColor", false);
     mShaderManager->setUniformValue("textureAmbient", -1);
     mShaderManager->setUniformValue("textureDiffuse", -1);
     mShaderManager->setUniformValue("textureSpecular", -1);
     mShaderManager->setUniformValue("textureNormal", -1);
-    mShaderManager->setUniformValue("textureBaseColor", -1);
     mShaderManager->setUniformValue("useTexture", materials[mMaterialIndex]->textures().size() != 0);
 
     if (ambientTexture)
     {
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, ambientTexture->id());
+
         mShaderManager->setUniformValue("textureAmbient", 1);
         mShaderManager->setUniformValue("useTextureAmbient", true);
-        glBindTexture(GL_TEXTURE_2D, ambientTexture->id());
-        glActiveTexture(GL_TEXTURE0 + 1);
+
     } else
     {
         if (diffuseTexture)
         {
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, diffuseTexture->id());
+
             mShaderManager->setUniformValue("textureAmbient", 2);
             mShaderManager->setUniformValue("useTextureAmbient", true);
-            glBindTexture(GL_TEXTURE_2D, diffuseTexture->id());
-            glActiveTexture(GL_TEXTURE0 + 2);
         }
     }
 
     if (diffuseTexture)
     {
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, diffuseTexture->id());
+
         mShaderManager->setUniformValue("textureDiffuse", 3);
         mShaderManager->setUniformValue("useTextureDiffuse", true);
-        glBindTexture(GL_TEXTURE_2D, diffuseTexture->id());
-        glActiveTexture(GL_TEXTURE0 + 3);
     }
 
     if (specularTexture)
     {
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, specularTexture->id());
+
         mShaderManager->setUniformValue("textureSpecular", 4);
         mShaderManager->setUniformValue("useTextureSepcular", true);
-        glBindTexture(GL_TEXTURE_2D, specularTexture->id());
-        glActiveTexture(GL_TEXTURE0 + 4);
     }
 
     if (normalTexture)
     {
+        glActiveTexture(GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_2D, normalTexture->id());
+
         mShaderManager->setUniformValue("textureNormal", 5);
         mShaderManager->setUniformValue("useTextureNormal", true);
-        glBindTexture(GL_TEXTURE_2D, normalTexture->id());
-        glActiveTexture(GL_TEXTURE0 + 5);
-    }
-
-    if (baseColorTexture)
-    {
-        mShaderManager->setUniformValue("textureBaseColor", 6);
-        mShaderManager->setUniformValue("useTextureBaseColor", true);
-        glBindTexture(GL_TEXTURE_2D, baseColorTexture->id());
-        glActiveTexture(GL_TEXTURE0 + 6);
     }
 
     mVertexArray.bind();
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
     mVertexArray.release();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Mesh::renderWireframe()
@@ -201,4 +200,14 @@ ModelData *Mesh::data() const
 void Mesh::setData(ModelData *newData)
 {
     mData = newData;
+}
+
+const Mesh::AABB &Mesh::aABB() const
+{
+    return mAABB;
+}
+
+void Mesh::setAABB(const Mesh::AABB &newAABB)
+{
+    mAABB = newAABB;
 }

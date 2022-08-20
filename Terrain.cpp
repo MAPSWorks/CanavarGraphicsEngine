@@ -124,34 +124,33 @@ void Terrain::render()
     mVAO->bind();
 
     mShaderManager->setUniformValue("sand", 1);
-    glActiveTexture(GL_TEXTURE0 + 1);
+    mShaderManager->setUniformValue("grass", 2);
+    mShaderManager->setUniformValue("terrainTexture", 3);
+    mShaderManager->setUniformValue("snow", 4);
+    mShaderManager->setUniformValue("rock", 5);
+    mShaderManager->setUniformValue("rockNormal", 6);
+
+    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, mTextureSand->id());
 
-    mShaderManager->setUniformValue("grass", 2);
-    glActiveTexture(GL_TEXTURE0 + 2);
+    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, mTextureGrass->id());
 
-    mShaderManager->setUniformValue("terrainTexture", 3);
-    glActiveTexture(GL_TEXTURE0 + 3);
+    glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, mTextureTerrain->id());
 
-    mShaderManager->setUniformValue("snow", 4);
-    glActiveTexture(GL_TEXTURE0 + 4);
+    glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, mTextureSnow->id());
 
-    mShaderManager->setUniformValue("rock", 5);
-    glActiveTexture(GL_TEXTURE0 + 5);
+    glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_2D, mTextureRockDiffuse->id());
 
-    mShaderManager->setUniformValue("rockNormal", 6);
-    glActiveTexture(GL_TEXTURE0 + 6);
+    glActiveTexture(GL_TEXTURE6);
     glBindTexture(GL_TEXTURE_2D, mTextureRockNormal->id());
 
     glDrawElementsInstanced(GL_PATCHES, (mProperties.numberOfVerticesOnEdge - 1) * (mProperties.numberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mGridPositions.size());
 
     mVAO->release();
-
-    glActiveTexture(GL_TEXTURE0);
 }
 
 QMatrix4x4 Terrain::transformation() const

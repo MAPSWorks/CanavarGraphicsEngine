@@ -1,6 +1,8 @@
 #ifndef MODELDATANODE_H
 #define MODELDATANODE_H
 
+#include "Model.h"
+
 #include <QMatrix4x4>
 #include <QObject>
 #include <QOpenGLShaderProgram>
@@ -24,7 +26,7 @@ public:
     const QMatrix4x4 &initialTransformation() const;
     void setInitialTransformation(const QMatrix4x4 &newInitialTransformation);
 
-    void render();
+    void render(Model *model);
 
 private:
     QVector<ModelDataNode *> mChildren;

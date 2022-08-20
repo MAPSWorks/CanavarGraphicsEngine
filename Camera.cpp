@@ -100,10 +100,17 @@ QMatrix4x4 Camera::worldTransformation() const
     if (parent)
     {
         QMatrix4x4 transformation;
-        transformation.rotate(mRotation);
+        transformation.rotate(mRotation.conjugated());
         transformation.translate(-mPosition);
 
-        return transformation * parent->worldTransformation().inverted();
+        QMatrix4x4 parentWorldTransformation = parent->worldTransformation();
+        float x = parent->scale().x();
+        float y = parent->scale().y();
+        float z = parent->scale().z();
+
+        parentWorldTransformation.scale(1 / x, 1 / y, 1 / z);
+
+        return transformation * parentWorldTransformation.inverted();
     } else
     {
         return transformation();

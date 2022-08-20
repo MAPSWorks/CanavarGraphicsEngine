@@ -14,8 +14,7 @@ public:
         Ambient,
         Diffuse,
         Specular,
-        Normal,
-        BaseColor
+        Normal
     };
 
     explicit Texture(Type type, const QString &path, QObject *parent = nullptr);

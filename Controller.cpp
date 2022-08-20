@@ -73,7 +73,7 @@ void Controller::init()
     mRendererManager->init();
 
     mDummyCamera = new DummyCamera;
-    mDummyCamera->setPosition(QVector3D(0, 6, -14));
+    mDummyCamera->setPosition(QVector3D(0, 11, -32));
     mDummyCamera->setVerticalFov(80.0f);
     mDummyCamera->setZNear(0.1f);
     mDummyCamera->setZFar(1000000.0f);
@@ -88,7 +88,7 @@ void Controller::init()
     mPlane = new Model("Plane");
     mPlane->setPosition(QVector3D(0, 100, 0));
     mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
-    mNodeManager->addNode(mPlane);
+    //mNodeManager->addNode(mPlane);
 
     mCube = new Model("Cube");
     mCube->setPosition(QVector3D(10, 10, 10));
@@ -115,10 +115,9 @@ void Controller::init()
     mRock->setPosition(QVector3D(15, 15, -5));
     mNodeManager->addNode(mRock);
 
-    mJet = new Model("F16");
-    mJet->setName("F16");
+    mJet = new Model("f35e");
+    //mJet->setScale(QVector3D(0.05, 0.05, 0.05));
     mJet->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180));
-    mJet->setPosition(QVector3D(0, -3.5, 0));
     mJet->addChild(mDummyCamera);
 
     mRootJetNode = new Node;

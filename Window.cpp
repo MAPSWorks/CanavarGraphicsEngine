@@ -19,6 +19,7 @@ Window::Window(QWindow *parent)
     QSurfaceFormat format;
     format.setMajorVersion(4);
     format.setMinorVersion(3);
+    format.setProfile(QSurfaceFormat::CoreProfile);
     format.setSamples(16);
     format.setSwapInterval(1);
     setFormat(format);
@@ -120,18 +121,18 @@ void Window::paintGL()
             float diffuse = mSun->diffuse();
             float specular = mSun->specular();
 
-            if (ImGui::SliderFloat("Ambient", &ambient, 0.0f, 1.0f, "%.3f"))
+            if (ImGui::SliderFloat("Ambient##Sun", &ambient, 0.0f, 1.0f, "%.3f"))
                 mSun->setAmbient(ambient);
 
-            if (ImGui::SliderFloat("Diffuse", &diffuse, 0.0f, 1.0f, "%.3f"))
+            if (ImGui::SliderFloat("Diffuse##Sun", &diffuse, 0.0f, 1.0f, "%.3f"))
                 mSun->setDiffuse(diffuse);
 
-            if (ImGui::SliderFloat("Specular", &specular, 0.0f, 1.0f, "%.3f"))
+            if (ImGui::SliderFloat("Specular##Sun", &specular, 0.0f, 1.0f, "%.3f"))
                 mSun->setSpecular(specular);
 
             float color[4] = {mSun->color().x(), mSun->color().y(), mSun->color().z(), mSun->color().w()};
 
-            if (ImGui::ColorEdit4("Color##Light", (float *) &color))
+            if (ImGui::ColorEdit4("Color##Sun", (float *) &color))
                 mSun->setColor(QVector4D(color[0], color[1], color[2], color[3]));
         }
     }
@@ -409,7 +410,6 @@ void Window::populateComboBox(Node *node)
     switch (node->nodeType())
     {
     case Node::NodeType::FreeCamera:
-    case Node::NodeType::DummyCamera:
     case Node::NodeType::DirectionalLight:
         return;
     default:

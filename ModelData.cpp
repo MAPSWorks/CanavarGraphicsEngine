@@ -27,9 +27,9 @@ const QString &ModelData::modelName() const
     return mModelName;
 }
 
-void ModelData::render()
+void ModelData::render(Model *model)
 {
-    mRootNode->render();
+    mRootNode->render(model);
 }
 
 const QVector<TextureMaterial *> &ModelData::materials() const

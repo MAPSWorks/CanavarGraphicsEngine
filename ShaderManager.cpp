@@ -73,13 +73,11 @@ bool ShaderManager::init()
                  << "textureDiffuse"
                  << "textureSpecular"
                  << "textureNormal"
-                 << "textureBaseColor"
                  << "useTexture"
                  << "useTextureAmbient"
                  << "useTextureDiffuse"
                  << "useTextureSpecular"
                  << "useTextureNormal"
-                 << "useTextureBaseColor"
                  << "useBlinnShading";
 
         for (const auto &uniform : qAsConst(uniforms))

@@ -2,6 +2,7 @@
 #define MODELDATA_H
 
 #include "Mesh.h"
+#include "Model.h"
 #include "ModelDataNode.h"
 #include "TextureMaterial.h"
 
@@ -23,7 +24,7 @@ public:
     const QString &modelName() const;
     const QVector<TextureMaterial *> &materials() const;
 
-    void render();
+    void render(Model *model);
 
 private:
     QString mModelName;

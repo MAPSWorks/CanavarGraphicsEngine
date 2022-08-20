@@ -18,6 +18,8 @@ void Texture::create()
     QImage image(mPath);
     image = image.convertToFormat(QImage::Format_RGB888);
 
+    qInfo() << "Texture" << mPath << "is loaded and created. ID is" << mId << "Type is:" << int(mType);
+
     glBindTexture(GL_TEXTURE_2D, mId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width(), image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.constBits());
     glGenerateMipmap(GL_TEXTURE_2D);

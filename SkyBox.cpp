@@ -58,7 +58,8 @@ void SkyBox::create()
         image = image.convertToFormat(QImage::Format_RGBA8888);
 
         glTexImage2D(key, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
-        qInfo() << "Texture" << mPaths[key] << "for SkyBox is loaded.";
+        qInfo() << "Texture" << mPaths[key] << "for SkyBox is loaded."
+                << "ID is" << mTextureId;
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
