@@ -167,17 +167,10 @@ void Mesh::render(Model *model)
     mVertexArray.release();
 }
 
-void Mesh::renderWireframe()
+void Mesh::render(GLenum primitive)
 {
     mVertexArray.bind();
-    glDrawElements(GL_LINE_STRIP, mIndices.size(), GL_UNSIGNED_INT, 0);
-    mVertexArray.release();
-}
-
-void Mesh::renderNormals()
-{
-    mVertexArray.bind();
-    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(primitive, mIndices.size(), GL_UNSIGNED_INT, 0);
     mVertexArray.release();
 }
 

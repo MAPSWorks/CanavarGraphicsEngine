@@ -10,6 +10,7 @@ Camera::Camera(QObject *parent)
     , mZFar(10000.0f)
 {
     setVerticalFov(60.0f);
+    mRenderable = false;
 }
 
 Camera::~Camera() {}

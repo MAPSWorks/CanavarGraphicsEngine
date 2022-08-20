@@ -69,9 +69,8 @@ Controller::~Controller()
 
 void Controller::init()
 {
-    mRendererManager->init();
-
     mDummyCamera = dynamic_cast<DummyCamera *>(mNodeManager->create(Node::NodeType::DummyCamera));
+    mDummyCamera->setPosition(QVector3D(0, 5, 30));
     mDummyCamera->setVerticalFov(80.0f);
     mDummyCamera->setZNear(0.1f);
     mDummyCamera->setZFar(1000000.0f);
@@ -84,9 +83,6 @@ void Controller::init()
     mPlane->setPosition(QVector3D(0, 100, 0));
     mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
     mPlane->setVisible(false);
-
-    mCube = mNodeManager->create(Model::NodeType::Model, "Cube");
-    mCube->setVisible(false);
 
     mBackpack = mNodeManager->create(Model::NodeType::Model, "Backpack");
     mBackpack->setPosition(QVector3D(-5, 5, -5));
@@ -104,15 +100,29 @@ void Controller::init()
 
     mRootJetNode = mNodeManager->create(Model::NodeType::DummyNode, "JET_ROOT_NODE");
     mRootJetNode->addChild(mJet);
-
-    mDummyCamera->setPosition(QVector3D(0, 5, 30));
     mRootJetNode->addChild(mDummyCamera);
+
+    //    mCone = mNodeManager->create(Model::NodeType::Model, "Cone");
+    //    mCone->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 90));
+    //    mCone->setPosition(QVector3D(0, 0, 15));
+    //    mCone->setScale(QVector3D(0.0155, 0.015, 0.05));
+    //    mCone->setVisible(false);
+    //    mRootJetNode->addChild(mCone);
+
+    mNozzleEffect = new NozzleEffect("Capsule");
+    mNozzleEffect->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 90));
+    mNozzleEffect->setPosition(QVector3D(0, 0, 15));
+    mNozzleEffect->setScale(QVector3D(0.0155, 0.015, 0.05));
+    mRootJetNode->addChild(mNozzleEffect);
+    mRendererManager->setNozzleEffect(mNozzleEffect);
+
+    mRendererManager->init();
 }
 
 void Controller::run()
 {
-    // mWindow->showMaximized();
-    // mWindow->showFullScreen();
+    //    mWindow->showMaximized();
+    //    mWindow->showFullScreen();
     mWindow->resize(1600, 900);
     mWindow->show();
 }

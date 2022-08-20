@@ -20,6 +20,7 @@ public:
         SkyBoxShader,
         TerrainShader,
         ScreenShader,
+        NozzleEffectShader
     };
 
     QOpenGLShaderProgram *getShader(Shader shader);

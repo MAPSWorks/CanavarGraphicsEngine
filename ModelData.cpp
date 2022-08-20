@@ -32,6 +32,11 @@ void ModelData::render(Model *model)
     mRootNode->render(model);
 }
 
+void ModelData::render(GLenum primitive)
+{
+    mRootNode->render(primitive);
+}
+
 Mesh *ModelData::getMesh(const QString &meshName)
 {
     for (auto const &mesh : qAsConst(mMeshes))

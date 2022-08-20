@@ -119,36 +119,157 @@ bool RendererManager::init()
     mScreenRenderer = new ScreenRenderer;
     mScreenRenderer->create();
 
-    // Create offscreen framebuffer
-    glGenFramebuffers(1, &mOffscreenFramebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, mOffscreenFramebuffer);
+    // Create first pass framebuffer
+    {
+        glGenFramebuffers(1, &mFirstPassFramebuffer.framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, mFirstPassFramebuffer.framebuffer);
 
-    // Create multisampled texture
-    glGenTextures(1, &mOffscreenTexture);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture);
-    glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture, 0);
+        // Create multisampled texture
+        glGenTextures(1, &mFirstPassFramebuffer.texture);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
+        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture, 0);
 
-    // Create depth buffer for the custom framebuffer
-    glGenRenderbuffers(1, &mRenderBufferObject);
-    glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferObject);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBufferObject);
+        // Create depth buffer
+        glGenRenderbuffers(1, &mFirstPassFramebuffer.renderObject);
+        glBindRenderbuffer(GL_RENDERBUFFER, mFirstPassFramebuffer.renderObject);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFirstPassFramebuffer.renderObject);
+    }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // Create second pass framebuffer
+    {
+        glGenFramebuffers(1, &mFinalFramebuffer.framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, mFinalFramebuffer.framebuffer);
+
+        // Create multisampled texture
+        glGenTextures(1, &mFinalFramebuffer.texture);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture);
+        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture, 0);
+
+        // Create depth buffer
+        glGenRenderbuffers(1, &mFinalFramebuffer.renderObject);
+        glBindRenderbuffer(GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
+    }
+
+    mNozzleModel = mModelsData.value(mNozzleEffect->modelName());
 
     return true;
 }
 
+void RendererManager::resize(int w, int h)
+{
+    mWindowWidth = w;
+    mWindowHeight = h;
+
+    glDeleteFramebuffers(1, &mFirstPassFramebuffer.framebuffer);
+    glDeleteTextures(1, &mFirstPassFramebuffer.texture);
+    glDeleteBuffers(1, &mFirstPassFramebuffer.renderObject);
+
+    glDeleteFramebuffers(1, &mFinalFramebuffer.framebuffer);
+    glDeleteTextures(1, &mFinalFramebuffer.texture);
+    glDeleteBuffers(1, &mFinalFramebuffer.renderObject);
+
+    // Create first pass framebuffer
+    {
+        glGenFramebuffers(1, &mFirstPassFramebuffer.framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, mFirstPassFramebuffer.framebuffer);
+
+        // Create multisampled texture
+        glGenTextures(1, &mFirstPassFramebuffer.texture);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
+        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture, 0);
+
+        // Create depth buffer
+        glGenRenderbuffers(1, &mFirstPassFramebuffer.renderObject);
+        glBindRenderbuffer(GL_RENDERBUFFER, mFirstPassFramebuffer.renderObject);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFirstPassFramebuffer.renderObject);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            qCritical() << "Framebuffer is could not be created.";
+    }
+
+    // Create second pass framebuffer
+    {
+        glGenFramebuffers(1, &mFinalFramebuffer.framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, mFinalFramebuffer.framebuffer);
+
+        // Create multisampled texture
+        glGenTextures(1, &mFinalFramebuffer.texture);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture);
+        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture, 0);
+
+        // Create depth buffer
+        glGenRenderbuffers(1, &mFinalFramebuffer.renderObject);
+        glBindRenderbuffer(GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            qCritical() << "Framebuffer is could not be created.";
+    }
+}
+
 void RendererManager::render(float ifps)
 {
-    Q_UNUSED(ifps);
-    // Bind offscreen framebuffer
-
-    //    mOffscreenFramebuffer->bind();
-    glBindFramebuffer(GL_FRAMEBUFFER, mOffscreenFramebuffer);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // First pass
+    glBindFramebuffer(GL_FRAMEBUFFER, mFirstPassFramebuffer.framebuffer);
     glClearColor(mFog.color.x(), mFog.color.y(), mFog.color.z(), 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    renderModels(ifps);
+    // ---- First pass is done ----
+
+    // Second pass
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFinalFramebuffer.framebuffer);
+    glStencilMask(0x00);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    renderModels(ifps);
+
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
+    mNozzleModel->render(GL_TRIANGLES);
+
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+
+    mShaderManager->bind(ShaderManager::Shader::NozzleEffectShader);
+    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
+    mShaderManager->setUniformValue("strength", mNozzleEffect->strength());
+    mShaderManager->setUniformValue("blurFactor", mNozzleEffect->blurFactor());
+    mShaderManager->setUniformValue("color", mNozzleEffect->material().color);
+    mShaderManager->setUniformValue("firstPassTexture", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
+
+    mNozzleModel->render(GL_TRIANGLES);
+    mShaderManager->release();
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture);
+    mShaderManager->bind(ShaderManager::Shader::ScreenShader);
+    mShaderManager->setUniformValue("screenTexture", 0);
+    mShaderManager->setUniformValue("windowWidth", mWindowWidth);
+    mShaderManager->setUniformValue("windowHeight", mWindowHeight);
+    mScreenRenderer->render();
+    mShaderManager->release();
+
+    glDisable(GL_STENCIL_TEST);
+}
+
+void RendererManager::renderModels(float ifps)
+{
+    Q_UNUSED(ifps);
 
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
@@ -217,130 +338,12 @@ void RendererManager::render(float ifps)
 
     auto nodes = mNodeManager->nodes();
 
-    for (auto node : nodes)
-        renderNode(node);
-
-    // renderSkyBox();
-
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture);
-    mShaderManager->bind(ShaderManager::Shader::ScreenShader);
-    mShaderManager->setUniformValue("screenTexture", 0);
-    mShaderManager->setUniformValue("windowWidth", mWindowWidth);
-    mShaderManager->setUniformValue("windowHeight", mWindowHeight);
-    mScreenRenderer->render();
-    mShaderManager->release();
-}
-
-void RendererManager::resize(int w, int h)
-{
-    mWindowWidth = w;
-    mWindowHeight = h;
-
-    glDeleteFramebuffers(1, &mOffscreenFramebuffer);
-    glDeleteTextures(1, &mOffscreenTexture);
-    glDeleteBuffers(1, &mRenderBufferObject);
-
-    // Create offscreen framebuffer
-    glGenFramebuffers(1, &mOffscreenFramebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, mOffscreenFramebuffer);
-
-    // Create multisampled texture
-    glGenTextures(1, &mOffscreenTexture);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture);
-    glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mOffscreenTexture, 0);
-
-    // Create depth buffer for the custom framebuffer
-    glGenRenderbuffers(1, &mRenderBufferObject);
-    glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferObject);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBufferObject);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        qCritical() << "Framebuffer is could not be created.";
-}
-
-void RendererManager::renderNode(Node *node)
-{
-    if (!node->visible())
-        return;
-
-    Model *model = dynamic_cast<Model *>(node);
-
-    if (model)
+    for (const auto &node : nodes)
     {
-        ModelData *data = mModelsData.value(model->modelName(), nullptr);
+        Model *model = dynamic_cast<Model *>(node);
 
-        if (data)
-        {
-            if (mRenderObjects)
-            {
-                mShaderManager->bind(ShaderManager::Shader::ModelShader);
-
-                QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), node);
-                mShaderManager->setUniformValue("numberOfPointLights", pointLights.size());
-
-                for (int i = 0; i < pointLights.size(); i++)
-                {
-                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].color", pointLights[i]->color());
-                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].position", pointLights[i]->position());
-                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
-                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
-                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].specular", pointLights[i]->specular());
-                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].constant", pointLights[i]->constant());
-                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].linear", pointLights[i]->linear());
-                    mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
-                }
-
-                QVector<SpotLight *> spotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), node);
-                mShaderManager->setUniformValue("numberOfSpotLights", spotLights.size());
-
-                for (int i = 0; i < spotLights.size(); i++)
-                {
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].color", spotLights[i]->color());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].position", spotLights[i]->position());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].specular", spotLights[i]->specular());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].constant", spotLights[i]->constant());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].linear", spotLights[i]->linear());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].direction", spotLights[i]->direction());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].cutOffAngle", spotLights[i]->cutOffAngle());
-                    mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].outerCutOffAngle", spotLights[i]->outerCutOffAngle());
-                }
-
-                data->render(model);
-                mShaderManager->release();
-            }
-
-            if (mRenderWireframe)
-            {
-                mShaderManager->bind(ShaderManager::Shader::WireframeShader);
-                mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-                data->render(model);
-                mShaderManager->release();
-            }
-
-            if (mRenderNormals)
-            {
-                mShaderManager->bind(ShaderManager::Shader::NormalsShader);
-                mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-                data->render(model);
-                mShaderManager->release();
-            }
-        }
-    }
-
-    if (node)
-    {
-        auto children = node->children();
-
-        for (auto child : children)
-            renderNode(child);
+        if (model)
+            renderModel(model);
     }
 }
 
@@ -358,7 +361,6 @@ void RendererManager::renderTerrain()
 
     mShaderManager->bind(ShaderManager::Shader::TerrainShader);
     mShaderManager->setUniformValue("nodeMatrix", mTerrain->transformation());
-
     mShaderManager->setUniformValue("terrain.amplitude", mTerrain->properties().amplitude);
     mShaderManager->setUniformValue("terrain.clipPlane", mTerrain->properties().clipPlane);
     mShaderManager->setUniformValue("terrain.seed", mTerrain->properties().seed);
@@ -371,19 +373,105 @@ void RendererManager::renderTerrain()
     mShaderManager->setUniformValue("terrain.diffuse", mTerrain->material().diffuse);
     mShaderManager->setUniformValue("terrain.shininess", mTerrain->material().shininess);
     mShaderManager->setUniformValue("terrain.specular", mTerrain->material().specular);
-
     mShaderManager->setUniformValue("fog.enabled", mFog.enabled);
     mShaderManager->setUniformValue("fog.color", mFog.color);
     mShaderManager->setUniformValue("fog.density", mFog.density);
     mShaderManager->setUniformValue("fog.gradient", mFog.gradient);
-
     mShaderManager->setUniformValue("waterHeight", 1.0f);
-
     mTerrain->render();
-
     mShaderManager->release();
 
     //glDisable(GL_CLIP_DISTANCE0);
+}
+
+void RendererManager::renderModel(Model *model)
+{
+    if (!model->visible())
+        return;
+
+    if (!model->renderable())
+        return;
+
+    ModelData *data = mModelsData.value(model->modelName(), nullptr);
+
+    if (data)
+    {
+        if (mRenderObjects)
+        {
+            mShaderManager->bind(ShaderManager::Shader::ModelShader);
+
+            QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), model);
+            mShaderManager->setUniformValue("numberOfPointLights", pointLights.size());
+
+            for (int i = 0; i < pointLights.size(); i++)
+            {
+                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].color", pointLights[i]->color());
+                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].position", pointLights[i]->position());
+                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
+                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
+                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].specular", pointLights[i]->specular());
+                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].constant", pointLights[i]->constant());
+                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].linear", pointLights[i]->linear());
+                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
+            }
+
+            QVector<SpotLight *> spotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), model);
+            mShaderManager->setUniformValue("numberOfSpotLights", spotLights.size());
+
+            for (int i = 0; i < spotLights.size(); i++)
+            {
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].color", spotLights[i]->color());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].position", spotLights[i]->position());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].specular", spotLights[i]->specular());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].constant", spotLights[i]->constant());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].linear", spotLights[i]->linear());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].direction", spotLights[i]->direction());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].cutOffAngle", spotLights[i]->cutOffAngle());
+                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].outerCutOffAngle", spotLights[i]->outerCutOffAngle());
+            }
+
+            data->render(model);
+            mShaderManager->release();
+        }
+
+        if (mRenderWireframe)
+        {
+            mShaderManager->bind(ShaderManager::Shader::WireframeShader);
+            mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
+            data->render(GL_LINE_STRIP);
+            mShaderManager->release();
+        }
+
+        if (mRenderNormals)
+        {
+            mShaderManager->bind(ShaderManager::Shader::NormalsShader);
+            mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
+            data->render(GL_TRIANGLES);
+            mShaderManager->release();
+        }
+    }
+
+    auto children = model->children();
+
+    for (const auto &child : children)
+    {
+        Model *model = dynamic_cast<Model *>(child);
+        if (model)
+            renderModel(model);
+    }
+}
+
+NozzleEffect *RendererManager::nozzleEffect() const
+{
+    return mNozzleEffect;
+}
+
+void RendererManager::setNozzleEffect(NozzleEffect *newNozzleEffect)
+{
+    mNozzleEffect = newNozzleEffect;
 }
 
 bool RendererManager::useBlinnShading() const

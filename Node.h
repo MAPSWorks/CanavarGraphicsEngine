@@ -22,7 +22,8 @@ public:
         DummyCamera,
         DirectionalLight,
         PointLight,
-        SpotLight
+        SpotLight,
+        NozzleEffect
     };
 
     virtual QMatrix4x4 transformation() const;
@@ -57,6 +58,8 @@ public:
     bool visible() const;
     void setVisible(bool newVisible);
 
+    bool renderable() const;
+
 protected:
     QVector3D mPosition;
     QQuaternion mRotation;
@@ -65,6 +68,7 @@ protected:
     NodeType mNodeType;
     QList<Node *> mChildren;
     bool mVisible;
+    bool mRenderable;
 };
 
 #endif // NODE_H

@@ -417,11 +417,62 @@ bool ShaderManager::init()
         locations.insert("windowHeight", shader->uniformLocation("windowHeight"));
 
         shader->bindAttributeLocation("position", 0);
-        shader->bindAttributeLocation("textureCoord", 0);
+        shader->bindAttributeLocation("textureCoord", 1);
 
         shader->release();
 
         mLocations.insert(Shader::ScreenShader, locations);
+
+        qInfo() << "ScreenShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
+    }
+
+    // NozzleEffectShader
+    {
+        qInfo() << "NozzleEffectShader is initializing...";
+
+        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
+        mPrograms.insert(Shader::NozzleEffectShader, shader);
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/NozzleEffect.vert")))
+        {
+            qWarning() << "Could not load vertex shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/NozzleEffect.frag")))
+        {
+            qWarning() << "Could not load fragment shader.";
+            return false;
+        }
+
+        if (!shader->link())
+        {
+            qWarning() << "Could not link shader program.";
+            return false;
+        }
+
+        if (!shader->bind())
+        {
+            qWarning() << "Could not bind shader program.";
+            return false;
+        }
+
+        QMap<QString, GLuint> locations;
+
+        locations.insert("modelMatrix", shader->uniformLocation("modelMatrix"));
+        locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
+        locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
+        locations.insert("strength", shader->uniformLocation("strength"));
+        locations.insert("blorFactor", shader->uniformLocation("blorFactor"));
+        locations.insert("color", shader->uniformLocation("color"));
+        locations.insert("firstPassTexture", shader->uniformLocation("firstPassTexture"));
+
+        shader->bindAttributeLocation("position", 0);
+
+        shader->release();
+
+        mLocations.insert(Shader::NozzleEffectShader, locations);
 
         qInfo() << "ScreenShader is initialized.";
         qInfo() << "Uniform locations are:" << locations;

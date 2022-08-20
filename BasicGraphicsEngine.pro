@@ -35,6 +35,7 @@ HEADERS += \
     ModelDataNode.h \
     Node.h \
     NodeManager.h \
+    NozzleEffect.h \
     PointLight.h \
     RendererManager.h \
     ScreenRenderer.h \
@@ -66,6 +67,7 @@ SOURCES += \
     ModelDataNode.cpp \
     Node.cpp \
     NodeManager.cpp \
+    NozzleEffect.cpp \
     PointLight.cpp \
     RendererManager.cpp \
     ScreenRenderer.cpp \

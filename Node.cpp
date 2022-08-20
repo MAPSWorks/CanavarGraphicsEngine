@@ -6,6 +6,7 @@ Node::Node(QObject *parent)
     , mScale(1, 1, 1)
     , mNodeType(NodeType::DummyNode)
     , mVisible(true)
+    , mRenderable(true)
 
 {}
 
@@ -169,6 +170,10 @@ QString Node::nodeTypeString()
         return "Point Light";
     case NodeType::SpotLight:
         return "Spot Light";
+    case NodeType::NozzleEffect:
+        return "Nozzle Effect";
+    default:
+        return "Unknown Node";
     }
 }
 
@@ -180,4 +185,9 @@ bool Node::visible() const
 void Node::setVisible(bool newVisible)
 {
     mVisible = newVisible;
+}
+
+bool Node::renderable() const
+{
+    return mRenderable;
 }

@@ -44,6 +44,17 @@ void ModelDataNode::render(Model *model)
         mChildren[i]->render(model);
 }
 
+void ModelDataNode::render(GLenum primitive)
+{
+    auto meshes = mData->meshes();
+
+    for (auto index : qAsConst(mMeshIndices))
+        meshes[index]->render(primitive);
+
+    for (int i = 0; i < mChildren.size(); i++)
+        mChildren[i]->render(primitive);
+}
+
 QMatrix4x4 ModelDataNode::getWorldTransformation() const
 {
     Node *parent = dynamic_cast<Node *>(this->parent());

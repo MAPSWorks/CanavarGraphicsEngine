@@ -46,7 +46,7 @@ private:
     Qt::MouseButton mPressedButton;
 
     Node *mPlane;
-    Node *mCube;
+    Node *mCone;
     Node *mBackpack;
     Node *mCyborg;
     Node *mNanoSuit;
@@ -62,6 +62,8 @@ private:
     Aircraft *mAircraft;
     AircraftController *mAircraftController;
     Aircraft::PrimaryFlightData mPfd;
+
+    NozzleEffect *mNozzleEffect;
 };
 
 #endif // CONTROLLER_H

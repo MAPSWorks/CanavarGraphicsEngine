@@ -46,8 +46,7 @@ public:
 
     bool create();
     void render(Model *model);
-    void renderWireframe();
-    void renderNormals();
+    void render(GLenum primitive);
 
     const QString &name() const;
     void setName(const QString &newName);

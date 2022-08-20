@@ -5,6 +5,7 @@
 #include "LightManager.h"
 #include "ModelData.h"
 #include "NodeManager.h"
+#include "NozzleEffect.h"
 #include "ScreenRenderer.h"
 #include "ShaderManager.h"
 #include "SkyBox.h"
@@ -31,6 +32,12 @@ public:
         float gradient;
     };
 
+    struct Framebuffer {
+        unsigned int framebuffer;
+        unsigned int texture;
+        unsigned int renderObject;
+    };
+
     static RendererManager *instance();
 
     bool init();
@@ -55,10 +62,17 @@ public:
 
     ModelData *getModelData(const QString &modelName);
 
+    ModelData *nozzleModel() const;
+    void setNozzleModel(ModelData *newNozzleModel);
+
+    NozzleEffect *nozzleEffect() const;
+    void setNozzleEffect(NozzleEffect *newNozzleEffect);
+
 private slots:
-    void renderNode(Node *node);
+    void renderModels(float ifps);
     void renderSkyBox();
     void renderTerrain();
+    void renderModel(Model *model);
 
 private:
     QMap<QString, ModelData *> mModelsData;
@@ -83,16 +97,14 @@ private:
 
     ScreenRenderer *mScreenRenderer;
 
-    unsigned int mOffscreenFramebuffer;
-    unsigned int mOffscreenTexture;
-    unsigned int mRenderBufferObject;
-
-    //    QOpenGLFramebufferObject *mOffscreenFramebuffer;
-
-    //    QOpenGLFramebufferObjectFormat mFramebufferFormat;
+    Framebuffer mFirstPassFramebuffer;
+    Framebuffer mFinalFramebuffer;
 
     int mWindowWidth;
     int mWindowHeight;
+
+    NozzleEffect *mNozzleEffect;
+    ModelData *mNozzleModel;
 };
 
 #endif // RENDERERMANAGER_H

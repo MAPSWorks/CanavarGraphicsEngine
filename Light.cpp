@@ -6,7 +6,9 @@ Light::Light(QObject *parent)
     , mAmbient(1.0f)
     , mDiffuse(1.0f)
     , mSpecular(1.0f)
-{}
+{
+    mRenderable = false;
+}
 
 Light::~Light() {}
 

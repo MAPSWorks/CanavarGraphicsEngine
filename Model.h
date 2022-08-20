@@ -5,7 +5,7 @@
 
 class Model : public Node
 {
-private:
+protected:
     friend class NodeManager;
     explicit Model(const QString &modelName, QObject *parent = nullptr);
     virtual ~Model();
@@ -28,7 +28,7 @@ public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);
     void setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation);
 
-private:
+protected:
     Material mMaterial;
     QString mModelName;
     QMap<QString, QMatrix4x4> mMeshTransformations;
