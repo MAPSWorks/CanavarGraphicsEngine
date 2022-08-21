@@ -18,5 +18,7 @@
         <file>Resources/Shaders/Screen.vert</file>
         <file>Resources/Shaders/NozzleEffect.frag</file>
         <file>Resources/Shaders/NozzleEffect.vert</file>
+        <file>Resources/Shaders/NozzleParticles.frag</file>
+        <file>Resources/Shaders/NozzleParticles.vert</file>
     </qresource>
 </RCC>

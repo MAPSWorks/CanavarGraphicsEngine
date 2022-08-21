@@ -1,18 +1,100 @@
 #include "NozzleEffect.h"
 
+#include <QDateTime>
+#include <QtMath>
+
 NozzleEffect::NozzleEffect(QObject *parent)
     : Node(parent)
+    , mRadius(2.0f)
+    , mNumberOfParticles(100000)
+    , mMaxLife(0.20f)
 {
     mName = "Nozzle Effect";
     mNodeType = Node::NodeType::NozzleEffect;
     mRenderable = false;
+    mRandomGenerator = QRandomGenerator::securelySeeded();
 }
 
 NozzleEffect::~NozzleEffect() {}
 
-void NozzleEffect::render()
+void NozzleEffect::create()
+{
+    for (int i = 0; i < mNumberOfParticles; i++)
+        mParticles << generateParticle();
+
+    initializeOpenGLFunctions();
+    mVAO = new QOpenGLVertexArrayObject;
+    mVAO->create();
+    mVAO->bind();
+
+    glGenBuffers(1, &mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CUBE_VERTICES), CUBE_VERTICES, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    glGenBuffers(1, &mPBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mPBO);
+    glBufferData(GL_ARRAY_BUFFER, mParticles.size() * sizeof(Particle), mParticles.constData(), GL_DYNAMIC_DRAW);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) 0);
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, velocity));
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, life));
+
+    glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+
+    mVAO->release();
+
+    mCurrentTime = QDateTime::currentMSecsSinceEpoch();
+    mPreviousTime = mCurrentTime;
+}
+
+void NozzleEffect::renderParticles()
+{
+    mCurrentTime = QDateTime::currentMSecsSinceEpoch();
+    float elapsedTime = (mCurrentTime - mPreviousTime) / 1000.0f;
+    mPreviousTime = mCurrentTime;
+
+    for (int i = 0; i < mParticles.size(); i++)
+    {
+        mParticles[i].life += elapsedTime;
+        if (mParticles[i].life >= mMaxLife + getRandomDouble(2 * mMaxLife))
+            mParticles[i] = generateParticle();
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    mVAO->bind();
+    glBindBuffer(GL_ARRAY_BUFFER, mPBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, mParticles.size() * sizeof(Particle), mParticles.constData());
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mNumberOfParticles);
+    mVAO->release();
+
+    glDisable(GL_BLEND);
+}
+
+void NozzleEffect::renderBlurEffect()
 {
     mModelData->render(GL_TRIANGLES);
+}
+
+QMatrix4x4 NozzleEffect::getParticleTransformation()
+{
+    QMatrix4x4 transformation;
+    //    transformation.rotate(mRotation);
+    //    transformation.setColumn(3, QVector4D(mPosition, 1.0f));
+    // DO NOT SCALE
+
+    return transformation;
 }
 
 ModelData *NozzleEffect::modelData() const
@@ -24,3 +106,36 @@ void NozzleEffect::setModelData(ModelData *newModelData)
 {
     mModelData = newModelData;
 }
+
+float NozzleEffect::getRandomDouble(float bound)
+{
+    return mRandomGenerator.bounded(bound);
+}
+
+NozzleEffect::Particle NozzleEffect::generateParticle()
+{
+    float r = getRandomDouble(mRadius);
+    float theta = getRandomDouble(2 * M_PI);
+    Particle particle;
+    particle.initialPosition = QVector3D(r * cos(theta), r * sin(theta), 0);
+    particle.velocity = QVector3D(0, 0, -5 - getRandomDouble(25));
+    particle.life = 0.0f;
+    return particle;
+}
+
+float NozzleEffect::maxLife() const
+{
+    return mMaxLife;
+}
+
+void NozzleEffect::setMaxLife(float newMaxLife)
+{
+    mMaxLife = newMaxLife;
+}
+
+const float NozzleEffect::CUBE_VERTICES[108] = {-0.01f, -0.01f, -0.01f, -0.01f, -0.01f, 0.01f,  -0.01f, 0.01f,  0.01f,  0.01f, 0.01f,  -0.01f, -0.01f, -0.01f, -0.01f, -0.01f, 0.01f,  -0.01f,
+                                                0.01f,  -0.01f, 0.01f,  -0.01f, -0.01f, -0.01f, 0.01f,  -0.01f, -0.01f, 0.01f, 0.01f,  -0.01f, 0.01f,  -0.01f, -0.01f, -0.01f, -0.01f, -0.01f,
+                                                -0.01f, -0.01f, -0.01f, -0.01f, 0.01f,  0.01f,  -0.01f, 0.01f,  -0.01f, 0.01f, -0.01f, 0.01f,  -0.01f, -0.01f, 0.01f,  -0.01f, -0.01f, -0.01f,
+                                                -0.01f, 0.01f,  0.01f,  -0.01f, -0.01f, 0.01f,  0.01f,  -0.01f, 0.01f,  0.01f, 0.01f,  0.01f,  0.01f,  -0.01f, -0.01f, 0.01f,  0.01f,  -0.01f,
+                                                0.01f,  -0.01f, -0.01f, 0.01f,  0.01f,  0.01f,  0.01f,  -0.01f, 0.01f,  0.01f, 0.01f,  0.01f,  0.01f,  0.01f,  -0.01f, -0.01f, 0.01f,  -0.01f,
+                                                0.01f,  0.01f,  0.01f,  -0.01f, 0.01f,  -0.01f, -0.01f, 0.01f,  0.01f,  0.01f, 0.01f,  0.01f,  -0.01f, 0.01f,  0.01f,  0.01f,  -0.01f, 0.01f};

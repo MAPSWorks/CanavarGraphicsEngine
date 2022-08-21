@@ -475,6 +475,57 @@ bool ShaderManager::init()
         qInfo() << "Uniform locations are:" << locations;
     }
 
+    // NozzleParticlesShader
+    {
+        qInfo() << "NozzleParticlesShader is initializing...";
+
+        QOpenGLShaderProgram *shader = new QOpenGLShaderProgram;
+        mPrograms.insert(Shader::NozzleParticlesShader, shader);
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Vertex, Helper::getBytes(":/Resources/Shaders/NozzleParticles.vert")))
+        {
+            qWarning() << "Could not load vertex shader.";
+            return false;
+        }
+
+        if (!shader->addShaderFromSourceCode(QOpenGLShader::Fragment, Helper::getBytes(":/Resources/Shaders/NozzleParticles.frag")))
+        {
+            qWarning() << "Could not load fragment shader.";
+            return false;
+        }
+
+        if (!shader->link())
+        {
+            qWarning() << "Could not link shader program.";
+            return false;
+        }
+
+        if (!shader->bind())
+        {
+            qWarning() << "Could not bind shader program.";
+            return false;
+        }
+
+        QMap<QString, GLuint> locations;
+
+        locations.insert("nodeMatrix", shader->uniformLocation("nodeMatrix"));
+        locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
+        locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
+        locations.insert("maxLife", shader->uniformLocation("maxLife"));
+
+        shader->bindAttributeLocation("vertexPosition", 0);
+        shader->bindAttributeLocation("initialPosition", 1);
+        shader->bindAttributeLocation("velocity", 2);
+        shader->bindAttributeLocation("life", 3);
+
+        shader->release();
+
+        mLocations.insert(Shader::NozzleParticlesShader, locations);
+
+        qInfo() << "NozzleParticlesShader is initialized.";
+        qInfo() << "Uniform locations are:" << locations;
+    }
+
     return true;
 }
 
