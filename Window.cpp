@@ -423,6 +423,54 @@ void Window::paintGL()
             if (ImGui::DragFloat("z##NozzleEffectRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
                 mNozzleEffect->setParticlesRotation(QQuaternion(w, x, y, z).normalized());
         }
+
+        {
+            ImGui::Text("Blur Position:");
+            QVector3D position = mNozzleEffect->position();
+            float x = position.x();
+            float y = position.y();
+            float z = position.z();
+
+            if (ImGui::DragFloat("x##NozzleEffectBlurPosition", &x, 0.01f, -50.0f, 50.0f, "%.3f"))
+                mNozzleEffect->setPosition(QVector3D(x, y, z));
+            if (ImGui::DragFloat("y##NozzleEffectBlurPosition", &y, 0.01f, -50.0f, 50.0f, "%.3f"))
+                mNozzleEffect->setPosition(QVector3D(x, y, z));
+            if (ImGui::DragFloat("z##NozzleEffectBlurPosition", &z, 0.01f, -50.0f, 50.0f, "%.3f"))
+                mNozzleEffect->setPosition(QVector3D(x, y, z));
+        }
+
+        {
+            ImGui::Text("Blur Rotation:");
+            QQuaternion rotation = mNozzleEffect->rotation();
+            float w = rotation.scalar();
+            float x = rotation.x();
+            float y = rotation.y();
+            float z = rotation.z();
+
+            if (ImGui::DragFloat("w##NozzleEffectBlurRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
+                mNozzleEffect->setRotation(QQuaternion(w, x, y, z).normalized());
+            if (ImGui::DragFloat("x##NozzleEffectBlurRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+                mNozzleEffect->setRotation(QQuaternion(w, x, y, z).normalized());
+            if (ImGui::DragFloat("y##NozzleEffectBlurRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
+                mNozzleEffect->setRotation(QQuaternion(w, x, y, z).normalized());
+            if (ImGui::DragFloat("z##NozzleEffectBlurRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+                mNozzleEffect->setRotation(QQuaternion(w, x, y, z).normalized());
+        }
+
+        {
+            ImGui::Text("Blur Scale:");
+            QVector3D scale = mNozzleEffect->scale();
+            float x = scale.x();
+            float y = scale.y();
+            float z = scale.z();
+
+            if (ImGui::DragFloat("x##NozzleEffectBlurScale", &x, 0.00001f, 0.00001f, 1.0f, "%.6f"))
+                mNozzleEffect->setScale(QVector3D(x, y, z));
+            if (ImGui::DragFloat("y##NozzleEffectBlurScale", &y, 0.00001f, 0.00001f, 1.0f, "%.6f"))
+                mNozzleEffect->setScale(QVector3D(x, y, z));
+            if (ImGui::DragFloat("z##NozzleEffectBlurScale", &z, 0.00001f, 0.00001f, 1.0f, "%.6f"))
+                mNozzleEffect->setScale(QVector3D(x, y, z));
+        }
     }
 
     // Simulator

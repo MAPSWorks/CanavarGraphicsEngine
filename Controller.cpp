@@ -113,9 +113,9 @@ void Controller::init()
     mNozzleEffect = new NozzleEffect;
     mNozzleEffect->setModelData(mRendererManager->getModelData("Capsule"));
     mNozzleEffect->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 90));
-    mNozzleEffect->setPosition(QVector3D(0, 0, 15));
-    mNozzleEffect->setScale(QVector3D(0.0155, 0.015, 0.05));
-    mNozzleEffect->setParticlesPosition(QVector3D(0, 0.14, 12.35));
+    mNozzleEffect->setPosition(QVector3D(0, 0.35f, 15));
+    mNozzleEffect->setScale(QVector3D(0.0155f, 0.015f, 0.05f));
+    mNozzleEffect->setParticlesPosition(QVector3D(0, 0.14f, 11.5f));
     mNozzleEffect->create();
 
     mRootJetNode->addChild(mNozzleEffect);

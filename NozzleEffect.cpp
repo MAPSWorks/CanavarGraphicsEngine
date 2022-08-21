@@ -7,7 +7,7 @@ NozzleEffect::NozzleEffect(QObject *parent)
     : Node(parent)
     , mNumberOfParticles(50000)
     , mRadius(0.7f)
-    , mMaxLife(0.075f)
+    , mMaxLife(0.05f)
     , mMinVelocity(2.0f)
     , mMaxVelocity(20.0f)
 {

@@ -189,7 +189,7 @@ void RendererManager::render(float ifps)
     renderTerrain(ifps);
     renderParticles(ifps);
 
-    // Second pass
+    // Second pass for stencil test
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[1].framebuffer);
     glStencilMask(0x00);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -465,6 +465,8 @@ void RendererManager::applyBlur(Framebuffer stencil, Framebuffer read, bool hori
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read.texture);
     mNozzleEffect->renderBlurEffect();
     mShaderManager->release();
+
+    glDisable(GL_STENCIL_TEST);
 }
 
 NozzleEffect *RendererManager::nozzleEffect() const
