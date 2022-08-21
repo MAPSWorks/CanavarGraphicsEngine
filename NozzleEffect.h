@@ -22,7 +22,8 @@ public:
     void create();
     void renderParticles();
     void renderBlurEffect();
-    QMatrix4x4 getParticleTransformation();
+
+    QMatrix4x4 getParticlesWorldTransformation();
 
     ModelData *modelData() const;
     void setModelData(ModelData *newModelData);
@@ -30,9 +31,24 @@ public:
     float maxLife() const;
     void setMaxLife(float newMaxLife);
 
-private slots:
+    const QVector3D &particlesPosition() const;
+    void setParticlesPosition(const QVector3D &newParticlesPosition);
+
+    const QQuaternion &particlesRotation() const;
+    void setParticlesRotation(const QQuaternion &newParticlesRotation);
+
+    float minVelocity() const;
+    void setMinVelocity(float newMinVelocity);
+
+    float maxVelocity() const;
+    void setMaxVelocity(float newMaxVelocity);
+
+    float radius() const;
+    void setRadius(float newRadius);
+
+private:
     float getRandomDouble(float bound);
-    Particle generateParticle();
+    NozzleEffect::Particle generateParticle();
 
 private:
     // Blur Effect
@@ -41,11 +57,18 @@ private:
     // Particles
     QVector<Particle> mParticles;
     QRandomGenerator mRandomGenerator;
-    float mRadius;
     int mNumberOfParticles;
+
+    float mRadius;
     float mMaxLife;
+    float mMinVelocity;
+    float mMaxVelocity;
+
     quint64 mPreviousTime;
     quint64 mCurrentTime;
+
+    QVector3D mParticlesPosition;
+    QQuaternion mParticlesRotation;
 
     // OpenGL stuff
     QOpenGLVertexArrayObject *mVAO;

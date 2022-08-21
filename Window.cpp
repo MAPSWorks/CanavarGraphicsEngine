@@ -372,7 +372,58 @@ void Window::paintGL()
         }
     }
 
-    ImGui::Spacing();
+    // Nozzle Effect
+    {
+        ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+        ImGui::Begin("NozzleEffect");
+
+        float radius = mNozzleEffect->radius();
+        float maxLife = mNozzleEffect->maxLife();
+        float minVelocity = mNozzleEffect->minVelocity();
+        float maxVelocity = mNozzleEffect->maxVelocity();
+
+        if (ImGui::SliderFloat("Radius##NozzleEffect", &radius, 0.001f, 4.0f, "%.3f"))
+            mNozzleEffect->setRadius(radius);
+        if (ImGui::SliderFloat("Max Life##NozzleEffect", &maxLife, 0.001f, 2.0f, "%.3f"))
+            mNozzleEffect->setMaxLife(maxLife);
+        if (ImGui::SliderFloat("Min Velocity##NozzleEffect", &minVelocity, 0.0f, 20.0f, "%.3f"))
+            mNozzleEffect->setMinVelocity(minVelocity);
+        if (ImGui::SliderFloat("Max Velocity##NozzleEffect", &maxVelocity, 20.0f, 100.0f, "%.3f"))
+            mNozzleEffect->setMaxVelocity(maxVelocity);
+
+        {
+            ImGui::Text("Position:");
+            QVector3D position = mNozzleEffect->particlesPosition();
+            float x = position.x();
+            float y = position.y();
+            float z = position.z();
+
+            if (ImGui::DragFloat("x##NozzleEffectPosition", &x, 0.01f, -50.0f, 50.0f, "%.3f"))
+                mNozzleEffect->setParticlesPosition(QVector3D(x, y, z));
+            if (ImGui::DragFloat("y##NozzleEffectPosition", &y, 0.01f, -50.0f, 50.0f, "%.3f"))
+                mNozzleEffect->setParticlesPosition(QVector3D(x, y, z));
+            if (ImGui::DragFloat("z##NozzleEffectPosition", &z, 0.01f, -50.0f, 50.0f, "%.3f"))
+                mNozzleEffect->setParticlesPosition(QVector3D(x, y, z));
+        }
+
+        {
+            ImGui::Text("Rotation:");
+            QQuaternion rotation = mNozzleEffect->particlesRotation();
+            float w = rotation.scalar();
+            float x = rotation.x();
+            float y = rotation.y();
+            float z = rotation.z();
+
+            if (ImGui::DragFloat("w##NozzleEffectRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
+                mNozzleEffect->setParticlesRotation(QQuaternion(w, x, y, z).normalized());
+            if (ImGui::DragFloat("x##NozzleEffectRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+                mNozzleEffect->setParticlesRotation(QQuaternion(w, x, y, z).normalized());
+            if (ImGui::DragFloat("y##NozzleEffectRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
+                mNozzleEffect->setParticlesRotation(QQuaternion(w, x, y, z).normalized());
+            if (ImGui::DragFloat("z##NozzleEffectRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+                mNozzleEffect->setParticlesRotation(QQuaternion(w, x, y, z).normalized());
+        }
+    }
 
     // Simulator
     {
@@ -468,6 +519,16 @@ QVector3D Window::getRandomSeed()
     float z = mRandomGenerator.generateDouble();
 
     return QVector3D(x, y, z);
+}
+
+NozzleEffect *Window::nozzleEffect() const
+{
+    return mNozzleEffect;
+}
+
+void Window::setNozzleEffect(NozzleEffect *newNozzleEffect)
+{
+    mNozzleEffect = newNozzleEffect;
 }
 
 void Window::setAircraftController(AircraftController *newAircraftController)

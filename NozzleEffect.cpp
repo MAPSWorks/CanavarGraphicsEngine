@@ -5,9 +5,11 @@
 
 NozzleEffect::NozzleEffect(QObject *parent)
     : Node(parent)
-    , mRadius(2.0f)
-    , mNumberOfParticles(100000)
-    , mMaxLife(0.20f)
+    , mNumberOfParticles(30000)
+    , mRadius(0.8f)
+    , mMaxLife(0.075f)
+    , mMinVelocity(5.0f)
+    , mMaxVelocity(30.0f)
 {
     mName = "Nozzle Effect";
     mNodeType = Node::NodeType::NozzleEffect;
@@ -87,14 +89,18 @@ void NozzleEffect::renderBlurEffect()
     mModelData->render(GL_TRIANGLES);
 }
 
-QMatrix4x4 NozzleEffect::getParticleTransformation()
+QMatrix4x4 NozzleEffect::getParticlesWorldTransformation()
 {
     QMatrix4x4 transformation;
-    //    transformation.rotate(mRotation);
-    //    transformation.setColumn(3, QVector4D(mPosition, 1.0f));
-    // DO NOT SCALE
+    transformation.rotate(mParticlesRotation);
+    transformation.setColumn(3, QVector4D(mParticlesPosition, 1.0f));
 
-    return transformation;
+    Node *node = dynamic_cast<Node *>(parent());
+
+    if (node)
+        return node->worldTransformation() * transformation;
+    else
+        return transformation;
 }
 
 ModelData *NozzleEffect::modelData() const
@@ -118,9 +124,59 @@ NozzleEffect::Particle NozzleEffect::generateParticle()
     float theta = getRandomDouble(2 * M_PI);
     Particle particle;
     particle.initialPosition = QVector3D(r * cos(theta), r * sin(theta), 0);
-    particle.velocity = QVector3D(0, 0, -5 - getRandomDouble(25));
+    particle.velocity = QVector3D(0, 0, mMinVelocity + getRandomDouble(mMaxVelocity - mMinVelocity));
     particle.life = 0.0f;
     return particle;
+}
+
+float NozzleEffect::radius() const
+{
+    return mRadius;
+}
+
+void NozzleEffect::setRadius(float newRadius)
+{
+    mRadius = newRadius;
+}
+
+float NozzleEffect::maxVelocity() const
+{
+    return mMaxVelocity;
+}
+
+void NozzleEffect::setMaxVelocity(float newMaxVelocity)
+{
+    mMaxVelocity = newMaxVelocity;
+}
+
+float NozzleEffect::minVelocity() const
+{
+    return mMinVelocity;
+}
+
+void NozzleEffect::setMinVelocity(float newMinVelocity)
+{
+    mMinVelocity = newMinVelocity;
+}
+
+const QQuaternion &NozzleEffect::particlesRotation() const
+{
+    return mParticlesRotation;
+}
+
+void NozzleEffect::setParticlesRotation(const QQuaternion &newParticlesRotation)
+{
+    mParticlesRotation = newParticlesRotation;
+}
+
+const QVector3D &NozzleEffect::particlesPosition() const
+{
+    return mParticlesPosition;
+}
+
+void NozzleEffect::setParticlesPosition(const QVector3D &newParticlesPosition)
+{
+    mParticlesPosition = newParticlesPosition;
 }
 
 float NozzleEffect::maxLife() const

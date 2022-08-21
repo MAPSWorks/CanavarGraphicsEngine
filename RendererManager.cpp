@@ -226,48 +226,49 @@ void RendererManager::render(float ifps)
     mShaderManager->bind(ShaderManager::Shader::NozzleParticlesShader);
     mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
     mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    mShaderManager->setUniformValue("nodeMatrix", mNozzleEffect->getParticleTransformation());
+    mShaderManager->setUniformValue("nodeMatrix", mNozzleEffect->getParticlesWorldTransformation());
     mShaderManager->setUniformValue("maxLife", mNozzleEffect->maxLife());
     mNozzleEffect->renderParticles();
     mShaderManager->release();
 
     // ---- First pass is done ----
 
-    //    // Second pass
-    //    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFinalFramebuffer.framebuffer);
-    //    glStencilMask(0x00);
-    //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    //    renderModels(ifps);
-    //    renderTerrain();
-    //    mShaderManager->bind(ShaderManager::Shader::NozzleParticlesShader);
-    //    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-    //    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    //    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->getParticleTransformation());
-    //    mNozzleEffect->renderParticles();
-    //    mShaderManager->release();
+    // Second pass
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFinalFramebuffer.framebuffer);
+    glStencilMask(0x00);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    renderModels(ifps);
+    renderTerrain();
+    mShaderManager->bind(ShaderManager::Shader::NozzleParticlesShader);
+    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->getParticlesWorldTransformation());
+    mNozzleEffect->renderParticles();
+    mShaderManager->release();
 
-    //    glEnable(GL_STENCIL_TEST);
-    //    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    //    glStencilFunc(GL_ALWAYS, 1, 0xFF);
-    //    glStencilMask(0xFF);
-    //    mNozzleEffect->renderBlurEffect();
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
 
-    //    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    mNozzleEffect->renderBlurEffect();
 
-    //    mShaderManager->bind(ShaderManager::Shader::NozzleEffectShader);
-    //    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-    //    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    //    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
-    //    mShaderManager->setUniformValue("firstPassTexture", 0);
-    //    glActiveTexture(GL_TEXTURE0);
-    //    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
-    //    mNozzleEffect->renderBlurEffect();
-    //    mShaderManager->release();
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+
+    mShaderManager->bind(ShaderManager::Shader::NozzleEffectShader);
+    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
+    mShaderManager->setUniformValue("firstPassTexture", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
+    mNozzleEffect->renderBlurEffect();
+    mShaderManager->release();
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture);
     mShaderManager->bind(ShaderManager::Shader::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
     mShaderManager->setUniformValue("windowWidth", mWindowWidth);

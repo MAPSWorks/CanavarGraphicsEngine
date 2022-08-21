@@ -99,7 +99,6 @@ void Controller::init()
     mPlanet->setPosition(QVector3D(15, 5, -5));
 
     mJet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "f16c"));
-    mJet->setVisible(false);
     mRootJetNode = mNodeManager->create(Model::NodeType::DummyNode, "JET_ROOT_NODE");
     mRootJetNode->addChild(mJet);
     mRootJetNode->addChild(mDummyCamera);
@@ -116,10 +115,13 @@ void Controller::init()
     mNozzleEffect->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 90));
     mNozzleEffect->setPosition(QVector3D(0, 0, 15));
     mNozzleEffect->setScale(QVector3D(0.0155, 0.015, 0.05));
+    mNozzleEffect->setParticlesPosition(QVector3D(0, 0.14, 12.35));
     mNozzleEffect->create();
 
     mRootJetNode->addChild(mNozzleEffect);
+
     mRendererManager->setNozzleEffect(mNozzleEffect);
+    mWindow->setNozzleEffect(mNozzleEffect);
 }
 
 void Controller::run()

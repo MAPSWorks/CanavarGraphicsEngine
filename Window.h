@@ -20,6 +20,9 @@ public:
 
     void setAircraftController(AircraftController *newAircraftController);
 
+    NozzleEffect *nozzleEffect() const;
+    void setNozzleEffect(NozzleEffect *newNozzleEffect);
+
 public slots:
     void onPfdChanged(Aircraft::PrimaryFlightData pfd);
 
@@ -86,5 +89,7 @@ private:
     Model::Material mTerrainMaterial;
 
     QRandomGenerator mRandomGenerator;
+
+    NozzleEffect *mNozzleEffect;
 };
 #endif // WINDOW_H
