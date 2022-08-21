@@ -42,7 +42,7 @@ struct SpotLight {
     float outerCutOffAngle;
 };
 
-struct Fog {
+struct Haze {
     bool enabled;
     vec3 color;
     float density;
@@ -56,7 +56,7 @@ uniform PointLight pointLights[8];
 uniform SpotLight spotLights[8];
 uniform int numberOfPointLights;
 uniform int numberOfSpotLights;
-uniform Fog fog;
+uniform Haze haze;
 
 uniform sampler2D textureAmbient;
 uniform sampler2D textureDiffuse;
@@ -73,7 +73,7 @@ uniform bool useBlinnShading;
 
 in vec3 fsPosition;
 in vec3 fsNormal;
-in vec2 fsTextureCoord;
+in vec2 fsTextureCoords;
 in mat3 fsTBN;
 
 out vec4 outColor;
@@ -82,7 +82,7 @@ out vec4 outColor;
 vec4 getAmbientColor() {
     if(useTexture) {
         if(useTextureAmbient)
-            return texture(textureAmbient, fsTextureCoord);
+            return texture(textureAmbient, fsTextureCoords);
         else
             return vec4(0,0,0,0);
     }
@@ -94,7 +94,7 @@ vec4 getAmbientColor() {
 vec4 getDiffuseColor() {
     if(useTexture) {
           if(useTextureDiffuse)
-            return  node.diffuse * texture(textureDiffuse, fsTextureCoord);
+            return  node.diffuse * texture(textureDiffuse, fsTextureCoords);
           else
               return vec4(0,0,0,0);
     }
@@ -106,7 +106,7 @@ vec4 getDiffuseColor() {
 vec4 getSpecularColor() {
     if(useTexture) {
         if(useTextureSpecular)
-            return node.specular * texture(textureSpecular, fsTextureCoord);
+            return node.specular * texture(textureSpecular, fsTextureCoords);
         else
             return vec4(0,0,0,0);
     }
@@ -118,7 +118,7 @@ vec4 getSpecularColor() {
 vec3 getNormal() {
     if(useTexture) {
         if(useTextureNormal) {
-            vec3 normal = texture(textureNormal, fsTextureCoord).rgb;
+            vec3 normal = texture(textureNormal, fsTextureCoords).rgb;
             normal = 2.0 * normal  - 1.0;
             normal = normalize(fsTBN * normal);
             return normal;
@@ -131,10 +131,10 @@ vec3 getNormal() {
     }
 }
 
-float getFogFactor() {
+float getHazeFactor() {
     float distance = length(cameraPosition - fsPosition);
-    float fogFactor = exp(-pow(distance * 0.00005f * fog.density, fog.gradient));
-    return clamp(fogFactor, 0.0f, 1.0f);
+    float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
+    return clamp(factor, 0.0f, 1.0f);
 }
 
 void main()
@@ -262,9 +262,9 @@ void main()
         }
     }
 
-    if(fog.enabled) {
-        float fogFactor = getFogFactor();
-        outColor = mix(vec4(fog.color, 1), result, fogFactor);
+    if(haze.enabled) {
+        float hazeFactor = getHazeFactor();
+        outColor = mix(vec4(haze.color, 1), result, hazeFactor);
     }
     else {
         outColor = result;

@@ -21,9 +21,7 @@ public:
     void onKeyReleased(QKeyEvent *);
 
     void drawGui();
-
     void setJet(Model *newJet);
-
     void setRootJetNode(Node *newRootJetNode);
 
 signals:
@@ -32,7 +30,7 @@ signals:
 public slots:
     void init();
     void tick();
-    void render(float ifps);
+    void update(float ifps);
 
 private:
     Aircraft *mAircraft;

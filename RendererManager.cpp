@@ -21,8 +21,6 @@ RendererManager::RendererManager(QObject *parent)
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
-
-    resetFog();
 }
 
 RendererManager *RendererManager::instance()
@@ -66,6 +64,8 @@ bool RendererManager::init()
     //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/2/back.bmp");
     //    mSkyBox->create();
 
+    mHaze = new Haze;
+
     mTerrain = Terrain::instance();
     mTerrain->create();
 
@@ -98,7 +98,7 @@ void RendererManager::render(float ifps)
 {
     // First pass
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[0].framebuffer);
-    glClearColor(mFog.color.x(), mFog.color.y(), mFog.color.z(), 1.0f);
+    glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     renderModels(ifps);
     renderTerrain(ifps);
@@ -200,16 +200,17 @@ void RendererManager::renderModels(float)
         mShaderManager->release();
     }
 
-    // Fog
+    if (mHaze)
     {
-        mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
-        mShaderManager->setUniformValue("fog.enabled", mFog.enabled);
-        mShaderManager->setUniformValue("fog.color", mFog.color);
-        mShaderManager->setUniformValue("fog.density", mFog.density);
-        mShaderManager->setUniformValue("fog.gradient", mFog.gradient);
-        mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
-        mShaderManager->release();
+        mShaderManager->setUniformValue("haze.enabled", mHaze->enabled());
+        mShaderManager->setUniformValue("haze.color", mHaze->color());
+        mShaderManager->setUniformValue("haze.density", mHaze->density());
+        mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
     }
+
+    mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
+    mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
+    mShaderManager->release();
 
     auto nodes = mNodeManager->nodes();
 
@@ -248,10 +249,10 @@ void RendererManager::renderTerrain(float)
     mShaderManager->setUniformValue("terrain.diffuse", mTerrain->material().diffuse);
     mShaderManager->setUniformValue("terrain.shininess", mTerrain->material().shininess);
     mShaderManager->setUniformValue("terrain.specular", mTerrain->material().specular);
-    mShaderManager->setUniformValue("fog.enabled", mFog.enabled);
-    mShaderManager->setUniformValue("fog.color", mFog.color);
-    mShaderManager->setUniformValue("fog.density", mFog.density);
-    mShaderManager->setUniformValue("fog.gradient", mFog.gradient);
+    mShaderManager->setUniformValue("haze.enabled", mHaze->enabled());
+    mShaderManager->setUniformValue("haze.color", mHaze->color());
+    mShaderManager->setUniformValue("haze.density", mHaze->density());
+    mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
     mShaderManager->setUniformValue("waterHeight", 1.0f);
     mTerrain->render();
     mShaderManager->release();
@@ -477,11 +478,6 @@ void RendererManager::loadModels()
     qInfo() << "All textured models are loaded.";
 }
 
-NozzleEffect *RendererManager::nozzleEffect() const
-{
-    return mNozzleEffect;
-}
-
 void RendererManager::setNozzleEffect(NozzleEffect *newNozzleEffect)
 {
     mNozzleEffect = newNozzleEffect;
@@ -503,22 +499,7 @@ void RendererManager::drawGui()
 
     mSun->drawGui();
 
-    // Fog
-    if (!ImGui::CollapsingHeader("Fog"))
-    {
-        ImGui::SliderFloat("Density##Fog", &mFog.density, 0.0f, 4.0f, "%.3f");
-        ImGui::SliderFloat("Gradient##Fog", &mFog.gradient, 0.0f, 4.0f, "%.3f");
-
-        float color[3] = {mFog.color.x(), mFog.color.y(), mFog.color.z()};
-
-        if (ImGui::ColorEdit3("Color##Fog", (float *) &color))
-            mFog.color = QVector3D(color[0], color[1], color[2]);
-
-        ImGui::Checkbox("Enabled##Fog", &mFog.enabled);
-
-        if (ImGui::Button("Reset##Fog"))
-            resetFog();
-    }
+    mHaze->drawGui();
 
     mTerrain->drawGui();
 
@@ -531,11 +512,4 @@ void RendererManager::drawGui()
 ModelData *RendererManager::getModelData(const QString &modelName)
 {
     return mModelsData.value(modelName, nullptr);
-}
-void RendererManager::resetFog()
-{
-    mFog.enabled = true;
-    mFog.color = QVector3D(0.33f, 0.38f, 0.47f);
-    mFog.density = 1.0f;
-    mFog.gradient = 1.5f;
 }

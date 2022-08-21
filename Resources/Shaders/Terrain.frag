@@ -51,7 +51,7 @@ struct Terrain {
     float specular;
 };
 
-struct Fog {
+struct Haze {
     bool enabled;
     vec3 color;
     float density;
@@ -60,7 +60,7 @@ struct Fog {
 
 uniform DirectionalLight directionalLight;
 uniform Terrain terrain;
-uniform Fog fog;
+uniform Haze haze;
 uniform vec3 cameraPosition;
 uniform float waterHeight;
 uniform sampler2D sand, grass, terrainTexture, snow, rock, rockNormal;
@@ -317,10 +317,10 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
     return heightColor;
 }
 
-float getFogFactor() {
+float getHazeFactor() {
     float distance = length(cameraPosition - fsWorldPosition);
-    float fogFactor = exp(-pow(distance * 0.00005f * fog.density, fog.gradient));
-    return clamp(fogFactor, 0.0f, 1.0f);
+    float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
+    return clamp(factor, 0.0f, 1.0f);
 }
 
 void main()
@@ -337,10 +337,10 @@ void main()
 
     vec4 color = heightColor * (ambient + specular + diffuse);
 
-    if (fog.enabled)
+    if (haze.enabled)
     {
-        float fogFactor = getFogFactor();
-        outColor = mix(vec4(fog.color, 1), color, fogFactor);
+        float hazeFactor = getHazeFactor();
+        outColor = mix(vec4(haze.color, 1), color, hazeFactor);
         //outColor.a = fsWorldPosition.y / waterHeight;
 
     } else

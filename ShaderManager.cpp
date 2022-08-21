@@ -38,10 +38,10 @@ bool ShaderManager::init()
                  << "cameraPosition"
                  << "viewMatrix"
                  << "projectionMatrix"
-                 << "fog.enabled"
-                 << "fog.color"
-                 << "fog.density"
-                 << "fog.gradient"
+                 << "haze.enabled"
+                 << "haze.color"
+                 << "haze.density"
+                 << "haze.gradient"
                  << "textureAmbient"
                  << "textureDiffuse"
                  << "textureSpecular"
@@ -76,7 +76,7 @@ bool ShaderManager::init()
 
         shader->addAttribute("position");
         shader->addAttribute("normal");
-        shader->addAttribute("texture_coord");
+        shader->addAttribute("textureCoords");
         shader->addAttribute("tangent");
         shader->addAttribute("bitangent");
         shader->addAttribute("ids");
@@ -166,10 +166,10 @@ bool ShaderManager::init()
                  << "terrain.diffuse"
                  << "terrain.shininess"
                  << "terrain.specular"
-                 << "fog.enabled"
-                 << "fog.color"
-                 << "fog.density"
-                 << "fog.gradient"
+                 << "haze.enabled"
+                 << "haze.color"
+                 << "haze.density"
+                 << "haze.gradient"
                  << "directionalLight.color"
                  << "directionalLight.direction"
                  << "directionalLight.ambient"

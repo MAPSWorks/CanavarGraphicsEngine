@@ -83,7 +83,7 @@ void AircraftController::tick()
     emit command(Aircraft::Command::Throttle, mThrottle);
 }
 
-void AircraftController::render(float ifps)
+void AircraftController::update(float)
 {
     mRootJetNode->setRotation(mPfd.rotation);
     mRootJetNode->setPosition(mPfd.position);

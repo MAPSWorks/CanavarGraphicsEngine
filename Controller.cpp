@@ -204,7 +204,7 @@ void Controller::onMouseDoubleClicked(QMouseEvent *) {}
 
 void Controller::render(float ifps)
 {
-    mAircraftController->render(ifps);
+    mAircraftController->update(ifps);
     mCameraManager->update(ifps);
     mRendererManager->render(ifps);
 

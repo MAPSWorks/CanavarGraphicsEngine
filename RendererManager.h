@@ -2,6 +2,7 @@
 #define RENDERERMANAGER_H
 
 #include "CameraManager.h"
+#include "Haze.h"
 #include "LightManager.h"
 #include "ModelData.h"
 #include "NodeManager.h"
@@ -25,13 +26,6 @@ private:
     explicit RendererManager(QObject *parent = nullptr);
 
 public:
-    struct Fog {
-        bool enabled;
-        QVector3D color;
-        float density;
-        float gradient;
-    };
-
     struct Framebuffer {
         unsigned int framebuffer;
         unsigned int texture;
@@ -46,16 +40,9 @@ public:
     void render(float ifps);
     void resize(int w, int h);
 
-    void resetFog();
-
     ModelData *getModelData(const QString &modelName);
-
-    ModelData *nozzleModel() const;
     void setNozzleModel(ModelData *newNozzleModel);
-
-    NozzleEffect *nozzleEffect() const;
     void setNozzleEffect(NozzleEffect *newNozzleEffect);
-
     void drawGui();
 
 private:
@@ -87,7 +74,7 @@ private:
 
     SkyBox *mSkyBox;
     Terrain *mTerrain;
-    Fog mFog;
+    Haze *mHaze;
 
     bool mUseBlinnShading;
 
