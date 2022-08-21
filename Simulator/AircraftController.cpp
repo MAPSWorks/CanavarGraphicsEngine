@@ -83,6 +83,87 @@ void AircraftController::tick()
     emit command(Aircraft::Command::Throttle, mThrottle);
 }
 
+void AircraftController::render(float ifps)
+{
+    mRootJetNode->setRotation(mPfd.rotation);
+    mRootJetNode->setPosition(mPfd.position);
+
+    // Rudder
+    {
+        QVector3D p0 = QVector3D(0.0f, 3.0193f, 10.3473f);
+        QVector3D p1 = QVector3D(0.0f, 7.742f, 13.4306f);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.rudderPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_40", t2 * t1 * t0);
+    }
+
+    // Left elevator
+    {
+        QVector3D p0 = QVector3D(-2.6f, 0.4204f, 8.4395f);
+        QVector3D p1 = QVector3D(-6.8575f, -0.4848f, 11.7923f);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, -mPfd.elevatorPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_36", t2 * t1 * t0);
+    }
+
+    // Right elevator
+    {
+        QVector3D p0 = QVector3D(2.6f, 0.4204f, 8.4395f);
+        QVector3D p1 = QVector3D(6.8575f, -0.4848f, 11.7923f);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.elevatorPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_18", t2 * t1 * t0);
+    }
+
+    // Left aileron
+    {
+        QVector3D p0 = QVector3D(-2.6074f, 0.3266f, 3.4115f);
+        QVector3D p1 = QVector3D(-8.7629f, -0.2083f, 4.333f);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, -mPfd.leftAileronPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_22", t2 * t1 * t0);
+    }
+
+    // Right aileron
+    {
+        QVector3D p0 = QVector3D(2.6072f, 0.3266f, 3.4115f);
+        QVector3D p1 = QVector3D(8.7623f, 0.1772f, 4.3218f);
+        QVector3D axis = (p0 - p1).normalized();
+        QMatrix4x4 t0, t1, t2;
+
+        t0.translate(-p0);
+        t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.rightAileronPos));
+        t2.translate(p0);
+        mJet->setMeshTransformation("Object_20", t2 * t1 * t0);
+    }
+}
+
+void AircraftController::setRootJetNode(Node *newRootJetNode)
+{
+    mRootJetNode = newRootJetNode;
+}
+
+void AircraftController::setJet(Model *newJet)
+{
+    mJet = newJet;
+}
+
 void AircraftController::drawGui()
 {
     // Simulator

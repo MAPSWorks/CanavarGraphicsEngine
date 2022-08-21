@@ -171,7 +171,7 @@ void Terrain::reset()
     mProperties.grassCoverage = 0.45f;
     mProperties.seed = QVector3D(1, 1, 1);
 
-    mMaterial.ambient = 0.25f;
+    mMaterial.ambient = 0.45f;
     mMaterial.diffuse = 0.75f;
     mMaterial.shininess = 4.0f;
     mMaterial.specular = 0.05f;

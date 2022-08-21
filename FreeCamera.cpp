@@ -57,7 +57,7 @@ void FreeCamera::onMousePressed(QMouseEvent *event)
         break;
     }
     case Mode::RotateWhileMouseIsMoving: {
-        if (event->button() == Qt::LeftButton)
+        if (event->button() == Qt::RightButton)
         {
             mMouseGrabbed = !mMouseGrabbed;
             mMouseGrabPosition = QPoint(event->localPos().x(), event->localPos().y());

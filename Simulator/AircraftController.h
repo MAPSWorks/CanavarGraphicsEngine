@@ -2,6 +2,7 @@
 #define AIRCRAFTCONTROLLER_H
 
 #include "Aircraft.h"
+#include "Model.h"
 
 #include <QKeyEvent>
 #include <QObject>
@@ -21,12 +22,17 @@ public:
 
     void drawGui();
 
+    void setJet(Model *newJet);
+
+    void setRootJetNode(Node *newRootJetNode);
+
 signals:
     void command(Aircraft::Command command, QVariant variant = QVariant());
 
 public slots:
     void init();
     void tick();
+    void render(float ifps);
 
 private:
     Aircraft *mAircraft;
@@ -39,6 +45,9 @@ private:
     float mThrottle; // [0, 1]
 
     Aircraft::PrimaryFlightData mPfd;
+
+    Model *mJet;
+    Node *mRootJetNode;
 };
 
 #endif // AIRCRAFTCONTROLLER_H

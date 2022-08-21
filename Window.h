@@ -1,13 +1,12 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "LightManager.h"
-#include "RendererManager.h"
-#include "Simulator/AircraftController.h"
-
 #include <QOpenGLFunctionsPrivate>
 #include <QOpenGLWindow>
 #include <QRandomGenerator>
+
+#include <imgui.h>
+#include <QtImGui.h>
 
 class Window : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -15,10 +14,6 @@ class Window : public QOpenGLWindow, protected QOpenGLFunctions
 
 public:
     Window(QWindow *parent = nullptr);
-    bool imguiWantCapture() const;
-
-    AircraftController *aircraftController() const;
-    void setAircraftController(AircraftController *newAircraftController);
 
 signals:
     void init();
@@ -47,13 +42,5 @@ private:
 private:
     long long mPreviousTime;
     long long mCurrentTime;
-
-    bool mImguiWantCapture;
-
-    RendererManager *mRendererManager;
-    LightManager *mLightManager;
-    NodeManager *mNodeManager;
-
-    AircraftController *mAircraftController;
 };
 #endif // WINDOW_H

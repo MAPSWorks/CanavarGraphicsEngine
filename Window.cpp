@@ -1,18 +1,12 @@
 #include "Window.h"
 
-#include <imgui.h>
 #include <QDateTime>
 #include <QKeyEvent>
-#include <QtImGui.h>
 
 Window::Window(QWindow *parent)
     : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, parent)
 
 {
-    mRendererManager = RendererManager::instance();
-    mLightManager = LightManager::instance();
-    mNodeManager = NodeManager::instance();
-
     QSurfaceFormat format;
     format.setMajorVersion(4);
     format.setMinorVersion(3);
@@ -50,18 +44,6 @@ void Window::paintGL()
     mPreviousTime = mCurrentTime;
 
     emit render(ifps);
-
-    mImguiWantCapture = ImGui::GetIO().WantCaptureMouse;
-
-    QtImGui::newFrame();
-
-    mRendererManager->drawGui();
-    mNodeManager->drawGui();
-    mAircraftController->drawGui();
-
-    glViewport(0, 0, width(), height());
-    ImGui::Render();
-    QtImGui::render();
 }
 
 void Window::keyPressEvent(QKeyEvent *event)
@@ -97,19 +79,4 @@ void Window::wheelEvent(QWheelEvent *event)
 void Window::mouseDoubleClickEvent(QMouseEvent *event)
 {
     emit mouseDoubleClicked(event);
-}
-
-AircraftController *Window::aircraftController() const
-{
-    return mAircraftController;
-}
-
-void Window::setAircraftController(AircraftController *newAircraftController)
-{
-    mAircraftController = newAircraftController;
-}
-
-bool Window::imguiWantCapture() const
-{
-    return mImguiWantCapture;
 }

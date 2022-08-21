@@ -5,14 +5,16 @@
 #include "FreeCamera.h"
 #include "Model.h"
 #include "RendererManager.h"
+#include "Simulator/Aircraft.h"
 #include "Simulator/AircraftController.h"
 #include "Window.h"
 
 #include <QObject>
 
-#include <Simulator/Aircraft.h>
+#include <imgui.h>
+#include <QtImGui.h>
 
-class Controller : public QObject
+class Controller : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
@@ -64,6 +66,8 @@ private:
     Aircraft::PrimaryFlightData mPfd;
 
     NozzleEffect *mNozzleEffect;
+
+    bool mImGuiWantCapture;
 };
 
 #endif // CONTROLLER_H
