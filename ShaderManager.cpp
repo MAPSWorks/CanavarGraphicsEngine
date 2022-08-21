@@ -463,7 +463,8 @@ bool ShaderManager::init()
         locations.insert("modelMatrix", shader->uniformLocation("modelMatrix"));
         locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
         locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
-        locations.insert("firstPassTexture", shader->uniformLocation("firstPassTexture"));
+        locations.insert("screenTexture", shader->uniformLocation("screenTexture"));
+        locations.insert("applyHorizontalBlur", shader->uniformLocation("applyHorizontalBlur"));
 
         shader->bindAttributeLocation("position", 0);
 

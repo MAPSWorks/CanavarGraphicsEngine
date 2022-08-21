@@ -119,40 +119,26 @@ bool RendererManager::init()
     mScreenRenderer = new ScreenRenderer;
     mScreenRenderer->create();
 
-    // Create first pass framebuffer
+    for (int i = 0; i < 3; i++)
     {
-        glGenFramebuffers(1, &mFirstPassFramebuffer.framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, mFirstPassFramebuffer.framebuffer);
+        // Creat framebuffer
+        glGenFramebuffers(1, &mFramebuffers[i].framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[i].framebuffer);
 
         // Create multisampled texture
-        glGenTextures(1, &mFirstPassFramebuffer.texture);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
+        glGenTextures(1, &mFramebuffers[i].texture);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture);
         glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture, 0);
 
         // Create depth buffer
-        glGenRenderbuffers(1, &mFirstPassFramebuffer.renderObject);
-        glBindRenderbuffer(GL_RENDERBUFFER, mFirstPassFramebuffer.renderObject);
+        glGenRenderbuffers(1, &mFramebuffers[i].renderObject);
+        glBindRenderbuffer(GL_RENDERBUFFER, mFramebuffers[i].renderObject);
         glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFirstPassFramebuffer.renderObject);
-    }
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFramebuffers[i].renderObject);
 
-    // Create second pass framebuffer
-    {
-        glGenFramebuffers(1, &mFinalFramebuffer.framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, mFinalFramebuffer.framebuffer);
-
-        // Create multisampled texture
-        glGenTextures(1, &mFinalFramebuffer.texture);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture);
-        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture, 0);
-
-        // Create depth buffer
-        glGenRenderbuffers(1, &mFinalFramebuffer.renderObject);
-        glBindRenderbuffer(GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            qCritical() << "Framebuffer is could not be created.";
     }
 
     return true;
@@ -163,51 +149,30 @@ void RendererManager::resize(int w, int h)
     mWindowWidth = w;
     mWindowHeight = h;
 
-    glDeleteFramebuffers(1, &mFirstPassFramebuffer.framebuffer);
-    glDeleteTextures(1, &mFirstPassFramebuffer.texture);
-    glDeleteBuffers(1, &mFirstPassFramebuffer.renderObject);
-
-    glDeleteFramebuffers(1, &mFinalFramebuffer.framebuffer);
-    glDeleteTextures(1, &mFinalFramebuffer.texture);
-    glDeleteBuffers(1, &mFinalFramebuffer.renderObject);
-
-    // Create first pass framebuffer
+    for (int i = 0; i < 3; i++)
     {
-        glGenFramebuffers(1, &mFirstPassFramebuffer.framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, mFirstPassFramebuffer.framebuffer);
-
-        // Create multisampled texture
-        glGenTextures(1, &mFirstPassFramebuffer.texture);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
-        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture, 0);
-
-        // Create depth buffer
-        glGenRenderbuffers(1, &mFirstPassFramebuffer.renderObject);
-        glBindRenderbuffer(GL_RENDERBUFFER, mFirstPassFramebuffer.renderObject);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFirstPassFramebuffer.renderObject);
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            qCritical() << "Framebuffer is could not be created.";
+        glDeleteFramebuffers(1, &mFramebuffers[i].framebuffer);
+        glDeleteTextures(1, &mFramebuffers[i].texture);
+        glDeleteBuffers(1, &mFramebuffers[i].renderObject);
     }
 
-    // Create second pass framebuffer
+    for (int i = 0; i < 3; i++)
     {
-        glGenFramebuffers(1, &mFinalFramebuffer.framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, mFinalFramebuffer.framebuffer);
+        // Creat framebuffer
+        glGenFramebuffers(1, &mFramebuffers[i].framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[i].framebuffer);
 
         // Create multisampled texture
-        glGenTextures(1, &mFinalFramebuffer.texture);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture);
+        glGenTextures(1, &mFramebuffers[i].texture);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture);
         glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture, 0);
 
         // Create depth buffer
-        glGenRenderbuffers(1, &mFinalFramebuffer.renderObject);
-        glBindRenderbuffer(GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
+        glGenRenderbuffers(1, &mFramebuffers[i].renderObject);
+        glBindRenderbuffer(GL_RENDERBUFFER, mFramebuffers[i].renderObject);
         glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFinalFramebuffer.renderObject);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFramebuffers[i].renderObject);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             qCritical() << "Framebuffer is could not be created.";
@@ -217,72 +182,54 @@ void RendererManager::resize(int w, int h)
 void RendererManager::render(float ifps)
 {
     // First pass
-    glBindFramebuffer(GL_FRAMEBUFFER, mFirstPassFramebuffer.framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[0].framebuffer);
     glClearColor(mFog.color.x(), mFog.color.y(), mFog.color.z(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     renderModels(ifps);
-    renderTerrain();
-
-    mShaderManager->bind(ShaderManager::Shader::NozzleParticlesShader);
-    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    mShaderManager->setUniformValue("nodeMatrix", mNozzleEffect->getParticlesWorldTransformation());
-    mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
-    mNozzleEffect->renderParticles();
-    mShaderManager->release();
-
-    // ---- First pass is done ----
+    renderTerrain(ifps);
+    renderParticles(ifps);
 
     // Second pass
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFinalFramebuffer.framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[1].framebuffer);
     glStencilMask(0x00);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     renderModels(ifps);
-    renderTerrain();
-    mShaderManager->bind(ShaderManager::Shader::NozzleParticlesShader);
-    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->getParticlesWorldTransformation());
-    mNozzleEffect->renderParticles();
-    mShaderManager->release();
-
+    renderTerrain(ifps);
+    renderParticles(ifps);
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
-
     mNozzleEffect->renderBlurEffect();
 
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    // Apply blur
+    applyBlur(mFramebuffers[1], mFramebuffers[0], false);
 
-    mShaderManager->bind(ShaderManager::Shader::NozzleEffectShader);
-    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
-    mShaderManager->setUniformValue("firstPassTexture", 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFirstPassFramebuffer.texture);
-    mNozzleEffect->renderBlurEffect();
-    mShaderManager->release();
+    // Fill: 1 ----> 2
+    fillFramebuffer(mFramebuffers[1], mFramebuffers[2]);
 
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Apply blur
+    applyBlur(mFramebuffers[1], mFramebuffers[2], true);
+
+    // Fill: 1 ----> 2
+    fillFramebuffer(mFramebuffers[1], mFramebuffers[2]);
+
+    // Render to default framebuffer now
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_STENCIL_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFinalFramebuffer.texture);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[2].texture);
     mShaderManager->bind(ShaderManager::Shader::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
     mShaderManager->setUniformValue("windowWidth", mWindowWidth);
     mShaderManager->setUniformValue("windowHeight", mWindowHeight);
     mScreenRenderer->render();
     mShaderManager->release();
-
-    glDisable(GL_STENCIL_TEST);
 }
 
-void RendererManager::renderModels(float ifps)
+void RendererManager::renderModels(float)
 {
-    Q_UNUSED(ifps);
-
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
 
@@ -360,7 +307,7 @@ void RendererManager::renderModels(float ifps)
     }
 }
 
-void RendererManager::renderSkyBox()
+void RendererManager::renderSkyBox(float)
 {
     mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
     mShaderManager->setUniformValue("skybox", 0);
@@ -368,7 +315,7 @@ void RendererManager::renderSkyBox()
     mShaderManager->release();
 }
 
-void RendererManager::renderTerrain()
+void RendererManager::renderTerrain(float)
 {
     //glEnable(GL_CLIP_DISTANCE0);
 
@@ -395,6 +342,17 @@ void RendererManager::renderTerrain()
     mShaderManager->release();
 
     //glDisable(GL_CLIP_DISTANCE0);
+}
+
+void RendererManager::renderParticles(float ifps)
+{
+    mShaderManager->bind(ShaderManager::Shader::NozzleParticlesShader);
+    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->getParticlesWorldTransformation());
+    mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
+    mNozzleEffect->renderParticles(ifps);
+    mShaderManager->release();
 }
 
 void RendererManager::renderModel(Model *model)
@@ -475,6 +433,38 @@ void RendererManager::renderModel(Model *model)
         if (model)
             renderModel(model);
     }
+}
+
+void RendererManager::fillFramebuffer(Framebuffer read, Framebuffer draw)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, draw.framebuffer);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glDisable(GL_STENCIL_TEST);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read.texture);
+    mShaderManager->bind(ShaderManager::Shader::ScreenShader);
+    mShaderManager->setUniformValue("screenTexture", 0);
+    mShaderManager->setUniformValue("windowWidth", mWindowWidth);
+    mShaderManager->setUniformValue("windowHeight", mWindowHeight);
+    mScreenRenderer->render();
+    mShaderManager->release();
+}
+
+void RendererManager::applyBlur(Framebuffer stencil, Framebuffer read, bool horizontal)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, stencil.framebuffer);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    mShaderManager->bind(ShaderManager::Shader::NozzleEffectShader);
+    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
+    mShaderManager->setUniformValue("screenTexture", 0);
+    mShaderManager->setUniformValue("applyHorizontalBlur", horizontal);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read.texture);
+    mNozzleEffect->renderBlurEffect();
+    mShaderManager->release();
 }
 
 NozzleEffect *RendererManager::nozzleEffect() const

@@ -68,11 +68,14 @@ public:
     NozzleEffect *nozzleEffect() const;
     void setNozzleEffect(NozzleEffect *newNozzleEffect);
 
-private slots:
+private:
     void renderModels(float ifps);
-    void renderSkyBox();
-    void renderTerrain();
+    void renderSkyBox(float ifps);
+    void renderTerrain(float ifps);
+    void renderParticles(float ifps);
     void renderModel(Model *model);
+    void fillFramebuffer(Framebuffer read, Framebuffer draw);
+    void applyBlur(Framebuffer stencil, Framebuffer read, bool horizontal);
 
 private:
     QMap<QString, ModelData *> mModelsData;
@@ -97,8 +100,7 @@ private:
 
     ScreenRenderer *mScreenRenderer;
 
-    Framebuffer mFirstPassFramebuffer;
-    Framebuffer mFinalFramebuffer;
+    Framebuffer mFramebuffers[3];
 
     int mWindowWidth;
     int mWindowHeight;

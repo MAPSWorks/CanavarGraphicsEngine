@@ -20,7 +20,7 @@ public:
     virtual ~NozzleEffect();
 
     void create();
-    void renderParticles();
+    void renderParticles(float ifps);
     void renderBlurEffect();
 
     QMatrix4x4 getParticlesWorldTransformation();
@@ -63,9 +63,6 @@ private:
     float mMaxLife;
     float mMinVelocity;
     float mMaxVelocity;
-
-    quint64 mPreviousTime;
-    quint64 mCurrentTime;
 
     QVector3D mParticlesPosition;
     QQuaternion mParticlesRotation;

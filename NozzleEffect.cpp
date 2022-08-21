@@ -54,20 +54,13 @@ void NozzleEffect::create()
     glVertexAttribDivisor(3, 1);
 
     mVAO->release();
-
-    mCurrentTime = QDateTime::currentMSecsSinceEpoch();
-    mPreviousTime = mCurrentTime;
 }
 
-void NozzleEffect::renderParticles()
+void NozzleEffect::renderParticles(float ifps)
 {
-    mCurrentTime = QDateTime::currentMSecsSinceEpoch();
-    float elapsedTime = (mCurrentTime - mPreviousTime) / 1000.0f;
-    mPreviousTime = mCurrentTime;
-
     for (int i = 0; i < mParticles.size(); i++)
     {
-        mParticles[i].life += elapsedTime;
+        mParticles[i].life += ifps;
         if (mParticles[i].life >= mMaxLife + getRandomFloat(2 * mMaxLife))
             mParticles[i] = generateParticle();
     }
