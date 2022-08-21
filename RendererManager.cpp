@@ -227,7 +227,7 @@ void RendererManager::render(float ifps)
     mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
     mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
     mShaderManager->setUniformValue("nodeMatrix", mNozzleEffect->getParticlesWorldTransformation());
-    mShaderManager->setUniformValue("maxLife", mNozzleEffect->maxLife());
+    mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
     mNozzleEffect->renderParticles();
     mShaderManager->release();
 

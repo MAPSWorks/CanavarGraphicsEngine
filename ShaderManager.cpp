@@ -511,7 +511,7 @@ bool ShaderManager::init()
         locations.insert("nodeMatrix", shader->uniformLocation("nodeMatrix"));
         locations.insert("viewMatrix", shader->uniformLocation("viewMatrix"));
         locations.insert("projectionMatrix", shader->uniformLocation("projectionMatrix"));
-        locations.insert("maxLife", shader->uniformLocation("maxLife"));
+        locations.insert("radius", shader->uniformLocation("radius"));
 
         shader->bindAttributeLocation("vertexPosition", 0);
         shader->bindAttributeLocation("initialPosition", 1);

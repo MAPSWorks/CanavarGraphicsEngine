@@ -47,7 +47,7 @@ public:
     void setRadius(float newRadius);
 
 private:
-    float getRandomDouble(float bound);
+    float getRandomFloat(float bound);
     NozzleEffect::Particle generateParticle();
 
 private:
@@ -71,6 +71,7 @@ private:
     QQuaternion mParticlesRotation;
 
     // OpenGL stuff
+    QVector<QVector3D> mVertices;
     QOpenGLVertexArrayObject *mVAO;
     unsigned int mVBO;
     unsigned int mPBO;

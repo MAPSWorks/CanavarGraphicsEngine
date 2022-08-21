@@ -8,7 +8,10 @@ uniform mat4 nodeMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
+out float fsRadius;
+
 void main()
 {
     gl_Position = projectionMatrix * viewMatrix * nodeMatrix * vec4(life * velocity + initialPosition + vertexPosition, 1.0f);
+    fsRadius = length(initialPosition);
 }
