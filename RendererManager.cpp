@@ -220,7 +220,7 @@ void RendererManager::render(float ifps)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[2].texture);
-    mShaderManager->bind(ShaderManager::Shader::ScreenShader);
+    mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
     mShaderManager->setUniformValue("windowWidth", mWindowWidth);
     mShaderManager->setUniformValue("windowHeight", mWindowHeight);
@@ -235,23 +235,23 @@ void RendererManager::renderModels(float)
 
     if (mCamera)
     {
-        mShaderManager->bind(ShaderManager::Shader::ModelShader);
+        mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
         mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
         mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
         mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
         mShaderManager->release();
 
-        mShaderManager->bind(ShaderManager::Shader::WireframeShader);
+        mShaderManager->bind(ShaderManager::ShaderType::WireframeShader);
         mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
         mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
         mShaderManager->release();
 
-        mShaderManager->bind(ShaderManager::Shader::NormalsShader);
+        mShaderManager->bind(ShaderManager::ShaderType::NormalsShader);
         mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
         mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
         mShaderManager->release();
 
-        mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
+        mShaderManager->bind(ShaderManager::ShaderType::SkyBoxShader);
         mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
 
         QMatrix4x4 transformation = mCamera->worldTransformation();
@@ -259,7 +259,7 @@ void RendererManager::renderModels(float)
         mShaderManager->setUniformValue("viewMatrix", transformation);
         mShaderManager->release();
 
-        mShaderManager->bind(ShaderManager::Shader::TerrainShader);
+        mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
         mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
         mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
         mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
@@ -268,7 +268,7 @@ void RendererManager::renderModels(float)
 
     if (mSun)
     {
-        mShaderManager->bind(ShaderManager::Shader::ModelShader);
+        mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
         mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
         mShaderManager->setUniformValue("directionalLight.color", mSun->color());
         mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
@@ -276,7 +276,7 @@ void RendererManager::renderModels(float)
         mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
         mShaderManager->release();
 
-        mShaderManager->bind(ShaderManager::Shader::TerrainShader);
+        mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
         mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
         mShaderManager->setUniformValue("directionalLight.color", mSun->color());
         mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
@@ -287,7 +287,7 @@ void RendererManager::renderModels(float)
 
     // Fog
     {
-        mShaderManager->bind(ShaderManager::Shader::ModelShader);
+        mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
         mShaderManager->setUniformValue("fog.enabled", mFog.enabled);
         mShaderManager->setUniformValue("fog.color", mFog.color);
         mShaderManager->setUniformValue("fog.density", mFog.density);
@@ -309,7 +309,7 @@ void RendererManager::renderModels(float)
 
 void RendererManager::renderSkyBox(float)
 {
-    mShaderManager->bind(ShaderManager::Shader::SkyBoxShader);
+    mShaderManager->bind(ShaderManager::ShaderType::SkyBoxShader);
     mShaderManager->setUniformValue("skybox", 0);
     mSkyBox->render();
     mShaderManager->release();
@@ -319,7 +319,7 @@ void RendererManager::renderTerrain(float)
 {
     //glEnable(GL_CLIP_DISTANCE0);
 
-    mShaderManager->bind(ShaderManager::Shader::TerrainShader);
+    mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
     mShaderManager->setUniformValue("nodeMatrix", mTerrain->transformation());
     mShaderManager->setUniformValue("terrain.amplitude", mTerrain->properties().amplitude);
     mShaderManager->setUniformValue("terrain.clipPlane", mTerrain->properties().clipPlane);
@@ -346,7 +346,7 @@ void RendererManager::renderTerrain(float)
 
 void RendererManager::renderParticles(float ifps)
 {
-    mShaderManager->bind(ShaderManager::Shader::NozzleParticlesShader);
+    mShaderManager->bind(ShaderManager::ShaderType::NozzleParticlesShader);
     mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
     mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
     mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->getParticlesWorldTransformation());
@@ -369,7 +369,7 @@ void RendererManager::renderModel(Model *model)
     {
         if (mRenderObjects)
         {
-            mShaderManager->bind(ShaderManager::Shader::ModelShader);
+            mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
 
             QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), model);
             mShaderManager->setUniformValue("numberOfPointLights", pointLights.size());
@@ -410,7 +410,7 @@ void RendererManager::renderModel(Model *model)
 
         if (mRenderWireframe)
         {
-            mShaderManager->bind(ShaderManager::Shader::WireframeShader);
+            mShaderManager->bind(ShaderManager::ShaderType::WireframeShader);
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
             data->render(GL_TRIANGLES);
             mShaderManager->release();
@@ -418,7 +418,7 @@ void RendererManager::renderModel(Model *model)
 
         if (mRenderNormals)
         {
-            mShaderManager->bind(ShaderManager::Shader::NormalsShader);
+            mShaderManager->bind(ShaderManager::ShaderType::NormalsShader);
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
             data->render(GL_TRIANGLES);
             mShaderManager->release();
@@ -442,7 +442,7 @@ void RendererManager::fillFramebuffer(Framebuffer read, Framebuffer draw)
     glDisable(GL_STENCIL_TEST);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read.texture);
-    mShaderManager->bind(ShaderManager::Shader::ScreenShader);
+    mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
     mShaderManager->setUniformValue("windowWidth", mWindowWidth);
     mShaderManager->setUniformValue("windowHeight", mWindowHeight);
@@ -455,7 +455,7 @@ void RendererManager::applyBlur(Framebuffer stencil, Framebuffer read, bool hori
     glBindFramebuffer(GL_FRAMEBUFFER, stencil.framebuffer);
     glEnable(GL_STENCIL_TEST);
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    mShaderManager->bind(ShaderManager::Shader::NozzleEffectShader);
+    mShaderManager->bind(ShaderManager::ShaderType::NozzleEffectShader);
     mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
     mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
     mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());

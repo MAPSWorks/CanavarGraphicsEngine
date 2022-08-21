@@ -39,6 +39,7 @@ HEADERS += \
     PointLight.h \
     RendererManager.h \
     ScreenRenderer.h \
+    Shader.h \
     ShaderManager.h \
     Simulator/Aircraft.h \
     Simulator/AircraftController.h \
@@ -71,6 +72,7 @@ SOURCES += \
     PointLight.cpp \
     RendererManager.cpp \
     ScreenRenderer.cpp \
+    Shader.cpp \
     ShaderManager.cpp \
     Simulator/Aircraft.cpp \
     Simulator/AircraftController.cpp \

@@ -6,13 +6,15 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 
-class ShaderManager : public QObject, protected QOpenGLFunctions
+class Shader;
+
+class ShaderManager : public QObject
 {
     Q_OBJECT
 public:
     explicit ShaderManager(QObject *parent = nullptr);
 
-    enum class Shader { //
+    enum class ShaderType { //
         None,
         ModelShader,
         WireframeShader,
@@ -24,10 +26,10 @@ public:
         NozzleParticlesShader,
     };
 
-    QOpenGLShaderProgram *getShader(Shader shader);
+    Shader *getShader(ShaderType shader);
 
     bool init();
-    bool bind(Shader shader);
+    bool bind(ShaderType shader);
     void release();
 
     void setUniformValue(const QString &name, int value);
@@ -42,9 +44,8 @@ public:
     static ShaderManager *instance();
 
 private:
-    Shader mActiveShader;
-    QMap<Shader, QOpenGLShaderProgram *> mPrograms;
-    QMap<Shader, QMap<QString, GLuint>> mLocations;
+    ShaderType mActiveShader;
+    QMap<ShaderType, Shader *> mShaders;
 };
 
 #endif // SHADERMANAGER_H
