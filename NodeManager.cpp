@@ -161,7 +161,7 @@ void NodeManager::drawGui()
     ImGui::Begin("Nodes");
 
     QString preview = mSelectedNode ? mSelectedNode->name() : "-";
-    if (ImGui::BeginCombo("Nodes", preview.toStdString().c_str()))
+    if (ImGui::BeginCombo("Select a node", preview.toStdString().c_str()))
     {
         for (int i = 0; i < mNodes.size(); ++i)
             populateComboBox(mNodes[i]);

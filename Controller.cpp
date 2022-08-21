@@ -118,6 +118,13 @@ void Controller::init()
     mRootJetNode->addChild(mNozzleEffect);
 
     mRendererManager->setNozzleEffect(mNozzleEffect);
+
+    mNodeManager->create(Node::NodeType::PointLight);
+    mNodeManager->create(Node::NodeType::PointLight);
+
+    mNodeManager->create(Node::NodeType::SpotLight);
+    mNodeManager->create(Node::NodeType::SpotLight);
+    mNodeManager->create(Node::NodeType::SpotLight);
 }
 
 void Controller::run()

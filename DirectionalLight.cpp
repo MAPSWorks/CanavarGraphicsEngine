@@ -42,6 +42,7 @@ void DirectionalLight::drawGui()
             theta = 0.0f;
 
         bool updated = false;
+
         if (ImGui::SliderFloat("Theta##DirectionalLight", &theta, -180.0f, 180.0f, "%.1f"))
             updated = true;
 
@@ -57,6 +58,7 @@ void DirectionalLight::drawGui()
             mDirection = QVector3D(x, y, z);
         }
 
+        ImGui::Text("Shading Parameters:");
         ImGui::SliderFloat("Ambient##DirectionalLight", &mAmbient, 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Diffuse##DirectionalLight", &mDiffuse, 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Specular##DirectionalLight", &mSpecular, 0.0f, 1.0f, "%.3f");

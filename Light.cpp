@@ -56,12 +56,15 @@ void Light::drawGui()
 {
     Node::drawGui();
 
-    ImGui::SliderFloat("Ambient##Light", &mAmbient, 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Diffuse##Light", &mDiffuse, 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Specular##Light", &mSpecular, 0.0f, 1.0f, "%.3f");
+    if (!ImGui::CollapsingHeader("Shading Parameters##Light"))
+    {
+        ImGui::SliderFloat("Ambient##Light", &mAmbient, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Diffuse##Light", &mDiffuse, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Specular##Light", &mSpecular, 0.0f, 1.0f, "%.3f");
 
-    float colorf[4] = {mColor.x(), mColor.y(), mColor.z(), mColor.w()};
+        float colorf[4] = {mColor.x(), mColor.y(), mColor.z(), mColor.w()};
 
-    if (ImGui::ColorEdit4("Color##Light", (float *) &colorf))
-        mColor = QVector4D(colorf[0], colorf[1], colorf[2], colorf[3]);
+        if (ImGui::ColorEdit4("Color##Light", (float *) &colorf))
+            mColor = QVector4D(colorf[0], colorf[1], colorf[2], colorf[3]);
+    }
 }

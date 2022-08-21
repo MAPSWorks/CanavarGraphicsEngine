@@ -195,8 +195,8 @@ bool Node::renderable() const
 void Node::drawGui()
 {
     // Position
+    if (!ImGui::CollapsingHeader("Position##NodePosition"))
     {
-        ImGui::Text("Position:");
         float x = mPosition.x();
         float y = mPosition.y();
         float z = mPosition.z();
@@ -210,8 +210,8 @@ void Node::drawGui()
     }
 
     // Rotation
+    if (ImGui::CollapsingHeader("Rotation##NodeRotation"))
     {
-        ImGui::Text("Rotation:");
         float w = mRotation.scalar();
         float x = mRotation.x();
         float y = mRotation.y();
@@ -228,8 +228,8 @@ void Node::drawGui()
     }
 
     // World Position
+    if (ImGui::CollapsingHeader("World Position##NodeRotation"))
     {
-        ImGui::Text("World Position:");
         QVector3D position = worldPosition();
         float x = position.x();
         float y = position.y();
@@ -244,8 +244,8 @@ void Node::drawGui()
     }
 
     // World rotation
+    if (ImGui::CollapsingHeader("World Rotation##NodeRotation"))
     {
-        ImGui::Text("World Rotation:");
         QQuaternion rotation = worldRotation();
         float w = rotation.scalar();
         float x = rotation.x();
@@ -263,8 +263,8 @@ void Node::drawGui()
     }
 
     // Scale
+    if (ImGui::CollapsingHeader("Scale##NodeRotation"))
     {
-        ImGui::Text("Scale:");
         QVector3D scale = mScale;
         float x = scale.x();
         float y = scale.y();

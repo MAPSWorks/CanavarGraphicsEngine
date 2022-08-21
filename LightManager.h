@@ -21,7 +21,6 @@ private:
 
 public:
     DirectionalLight *directionalLight() const;
-
     const QList<PointLight *> &pointLights() const;
     const QList<SpotLight *> &spotLights() const;
 

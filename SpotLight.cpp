@@ -45,17 +45,23 @@ void SpotLight::drawGui()
 {
     PointLight::drawGui();
 
-    float x = mDirection.x();
-    float y = mDirection.y();
-    float z = mDirection.z();
+    if (!ImGui::CollapsingHeader("Direction##SpotLight"))
+    {
+        float x = mDirection.x();
+        float y = mDirection.y();
+        float z = mDirection.z();
 
-    if (ImGui::DragFloat("x##SpotLightDirection", &x, 0.01f, -1.0f, 1.0f, "%.3f"))
-        mDirection = QVector3D(x, y, z).normalized();
-    if (ImGui::DragFloat("y##SpotLightDirection", &y, 0.01f, -1.0f, 1.0f, "%.3f"))
-        mDirection = QVector3D(x, y, z).normalized();
-    if (ImGui::DragFloat("z##SpotLightDirection", &z, 0.01f, -1.0f, 1.0f, "%.3f"))
-        mDirection = QVector3D(x, y, z).normalized();
+        if (ImGui::DragFloat("x##SpotLightDirection", &x, 0.01f, -1.0f, 1.0f, "%.3f"))
+            mDirection = QVector3D(x, y, z).normalized();
+        if (ImGui::DragFloat("y##SpotLightDirection", &y, 0.01f, -1.0f, 1.0f, "%.3f"))
+            mDirection = QVector3D(x, y, z).normalized();
+        if (ImGui::DragFloat("z##SpotLightDirection", &z, 0.01f, -1.0f, 1.0f, "%.3f"))
+            mDirection = QVector3D(x, y, z).normalized();
+    }
 
-    ImGui::SliderFloat("Cutt Off Angle##SpotLightDirection", &mCutOffAngle, 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Outer Cutt Off Angle##SpotLightDirection", &mOuterCutOffAngle, 0.0f, 1.0f, "%.3f");
+    if (!ImGui::CollapsingHeader("Angles##SpotLight"))
+    {
+        ImGui::SliderFloat("Cutt Off Angle##SpotLightDirection", &mCutOffAngle, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Outer Cutt Off Angle##SpotLightDirection", &mOuterCutOffAngle, 0.0f, 1.0f, "%.3f");
+    }
 }
