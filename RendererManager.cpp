@@ -15,6 +15,7 @@ RendererManager::RendererManager(QObject *parent)
     , mUseBlinnShading(true)
     , mWindowWidth(1600)
     , mWindowHeight(900)
+    , mFlag(false)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
@@ -45,55 +46,7 @@ bool RendererManager::init()
         return false;
     }
 
-    // Models
-    qInfo() << "Loading and creating all models...";
-
-    QDir dir("Resources/Models");
-    auto dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
-    QStringList extensions;
-    extensions << "*.obj"
-               << "*.blend"
-               << "*.dae"
-               << "*.glb"
-               << "*.gltf"
-               << "*.bin";
-
-    for (const auto &dirName : qAsConst(dirs))
-    {
-        QDir childDir(dir.path() + "/" + dirName);
-        childDir.setNameFilters(extensions);
-        auto files = childDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
-
-        for (const auto &file : qAsConst(files))
-        {
-            ModelData *data = Helper::loadModel(dirName, childDir.path() + "/" + file);
-
-            if (data)
-            {
-                bool failure = false;
-                auto meshes = data->meshes();
-
-                for (auto mesh : meshes)
-                {
-                    if (!mesh->create())
-                    {
-                        failure = true;
-                        break;
-                    }
-                }
-
-                if (failure)
-                {
-                    data->deleteLater();
-                    continue;
-                }
-
-                mModelsData.insert(data->modelName(), data);
-            }
-        }
-    }
-
-    qInfo() << "All textured models are loaded.";
+    loadModels();
 
     //    mSkyBox = new SkyBox;
     //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_X, "Resources/Sky/1/right.png");
@@ -119,27 +72,7 @@ bool RendererManager::init()
     mScreenRenderer = new ScreenRenderer;
     mScreenRenderer->create();
 
-    for (int i = 0; i < 3; i++)
-    {
-        // Creat framebuffer
-        glGenFramebuffers(1, &mFramebuffers[i].framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[i].framebuffer);
-
-        // Create multisampled texture
-        glGenTextures(1, &mFramebuffers[i].texture);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture);
-        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture, 0);
-
-        // Create depth buffer
-        glGenRenderbuffers(1, &mFramebuffers[i].renderObject);
-        glBindRenderbuffer(GL_RENDERBUFFER, mFramebuffers[i].renderObject);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFramebuffers[i].renderObject);
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            qCritical() << "Framebuffer is could not be created.";
-    }
+    createFramebuffers();
 
     return true;
 }
@@ -149,33 +82,15 @@ void RendererManager::resize(int w, int h)
     mWindowWidth = w;
     mWindowHeight = h;
 
-    for (int i = 0; i < 3; i++)
+    if (!mFlag)
     {
-        glDeleteFramebuffers(1, &mFramebuffers[i].framebuffer);
-        glDeleteTextures(1, &mFramebuffers[i].texture);
-        glDeleteBuffers(1, &mFramebuffers[i].renderObject);
-    }
+        mFlag = true;
 
-    for (int i = 0; i < 3; i++)
-    {
-        // Creat framebuffer
-        glGenFramebuffers(1, &mFramebuffers[i].framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[i].framebuffer);
-
-        // Create multisampled texture
-        glGenTextures(1, &mFramebuffers[i].texture);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture);
-        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture, 0);
-
-        // Create depth buffer
-        glGenRenderbuffers(1, &mFramebuffers[i].renderObject);
-        glBindRenderbuffer(GL_RENDERBUFFER, mFramebuffers[i].renderObject);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFramebuffers[i].renderObject);
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            qCritical() << "Framebuffer is could not be created.";
+        QTimer::singleShot(2000, [=]() {
+            deleteFramebuffers();
+            createFramebuffers();
+            mFlag = false;
+        });
     }
 }
 
@@ -203,13 +118,13 @@ void RendererManager::render(float ifps)
     mNozzleEffect->renderBlurEffect();
 
     // Apply blur
-    applyBlur(mFramebuffers[1], mFramebuffers[0], false);
+    applyBlur(mFramebuffers[1], mFramebuffers[0], BlurDirection::Horizontal);
 
     // Fill: 1 ----> 2
     fillFramebuffer(mFramebuffers[1], mFramebuffers[2]);
 
     // Apply blur
-    applyBlur(mFramebuffers[1], mFramebuffers[2], true);
+    applyBlur(mFramebuffers[1], mFramebuffers[2], BlurDirection::Vertical);
 
     // Fill: 1 ----> 2
     fillFramebuffer(mFramebuffers[1], mFramebuffers[2]);
@@ -450,7 +365,7 @@ void RendererManager::fillFramebuffer(Framebuffer read, Framebuffer draw)
     mShaderManager->release();
 }
 
-void RendererManager::applyBlur(Framebuffer stencil, Framebuffer read, bool horizontal)
+void RendererManager::applyBlur(Framebuffer stencil, Framebuffer read, BlurDirection direction)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, stencil.framebuffer);
     glEnable(GL_STENCIL_TEST);
@@ -460,13 +375,106 @@ void RendererManager::applyBlur(Framebuffer stencil, Framebuffer read, bool hori
     mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
     mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
     mShaderManager->setUniformValue("screenTexture", 0);
-    mShaderManager->setUniformValue("applyHorizontalBlur", horizontal);
+    mShaderManager->setUniformValue("applyHorizontalBlur", direction == BlurDirection::Horizontal);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read.texture);
     mNozzleEffect->renderBlurEffect();
     mShaderManager->release();
 
     glDisable(GL_STENCIL_TEST);
+}
+
+bool RendererManager::createFramebuffers()
+{
+    for (int i = 0; i < 3; i++)
+    {
+        // Creat framebuffer
+        glGenFramebuffers(1, &mFramebuffers[i].framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[i].framebuffer);
+
+        // Create multisampled texture
+        glGenTextures(1, &mFramebuffers[i].texture);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture);
+        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture, 0);
+
+        // Create depth buffer
+        glGenRenderbuffers(1, &mFramebuffers[i].renderObject);
+        glBindRenderbuffer(GL_RENDERBUFFER, mFramebuffers[i].renderObject);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFramebuffers[i].renderObject);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            qCritical() << "Framebuffer is could not be created.";
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void RendererManager::deleteFramebuffers()
+{
+    for (int i = 0; i < 3; i++)
+    {
+        glDeleteFramebuffers(1, &mFramebuffers[i].framebuffer);
+        glDeleteTextures(1, &mFramebuffers[i].texture);
+        glDeleteBuffers(1, &mFramebuffers[i].renderObject);
+    }
+}
+
+void RendererManager::loadModels()
+{
+    // Models
+    qInfo() << "Loading and creating all models...";
+
+    QDir dir("Resources/Models");
+    auto dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QStringList extensions;
+    extensions << "*.obj"
+               << "*.blend"
+               << "*.dae"
+               << "*.glb"
+               << "*.gltf"
+               << "*.bin";
+
+    for (const auto &dirName : qAsConst(dirs))
+    {
+        QDir childDir(dir.path() + "/" + dirName);
+        childDir.setNameFilters(extensions);
+        auto files = childDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+        for (const auto &file : qAsConst(files))
+        {
+            ModelData *data = Helper::loadModel(dirName, childDir.path() + "/" + file);
+
+            if (data)
+            {
+                bool failure = false;
+                auto meshes = data->meshes();
+
+                for (auto mesh : meshes)
+                {
+                    if (!mesh->create())
+                    {
+                        failure = true;
+                        break;
+                    }
+                }
+
+                if (failure)
+                {
+                    data->deleteLater();
+                    continue;
+                }
+
+                mModelsData.insert(data->modelName(), data);
+            }
+        }
+    }
+
+    qInfo() << "All textured models are loaded.";
 }
 
 NozzleEffect *RendererManager::nozzleEffect() const

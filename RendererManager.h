@@ -38,6 +38,8 @@ public:
         unsigned int renderObject;
     };
 
+    enum class BlurDirection { Horizontal, Vertical };
+
     static RendererManager *instance();
 
     bool init();
@@ -63,7 +65,10 @@ private:
     void renderParticles(float ifps);
     void renderModel(Model *model);
     void fillFramebuffer(Framebuffer read, Framebuffer draw);
-    void applyBlur(Framebuffer stencil, Framebuffer read, bool horizontal);
+    void applyBlur(Framebuffer stencil, Framebuffer read, BlurDirection direction);
+    bool createFramebuffers();
+    void deleteFramebuffers();
+    void loadModels();
 
 private:
     QMap<QString, ModelData *> mModelsData;
@@ -94,6 +99,8 @@ private:
     int mWindowHeight;
 
     NozzleEffect *mNozzleEffect;
+
+    bool mFlag;
 };
 
 #endif // RENDERERMANAGER_H
