@@ -26,8 +26,6 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(
         mAircraft, &Aircraft::pfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
 
-    connect(mAircraft, &Aircraft::pfdChanged, mWindow, &Window::onPfdChanged, Qt::QueuedConnection);
-
     connect(mWindow, &Window::wheelMoved, this, &Controller::onWheelMoved);
     connect(mWindow, &Window::mousePressed, this, &Controller::onMousePressed);
     connect(mWindow, &Window::mouseReleased, this, &Controller::onMouseReleased);
@@ -38,7 +36,6 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mWindow, &Window::init, this, &Controller::init);
     connect(mWindow, &Window::render, this, &Controller::render);
     connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
-    connect(mWindow, &Window::command, mAircraft, &Aircraft::onCommand);
 
     mFreeCamera = dynamic_cast<FreeCamera *>(mNodeManager->create(Node::NodeType::FreeCamera));
     mFreeCamera->setPosition(QVector3D(0, 10, 10));
@@ -121,7 +118,6 @@ void Controller::init()
     mRootJetNode->addChild(mNozzleEffect);
 
     mRendererManager->setNozzleEffect(mNozzleEffect);
-    mWindow->setNozzleEffect(mNozzleEffect);
 }
 
 void Controller::run()

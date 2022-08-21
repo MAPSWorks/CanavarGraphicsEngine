@@ -15,16 +15,10 @@ class Window : public QOpenGLWindow, protected QOpenGLFunctions
 
 public:
     Window(QWindow *parent = nullptr);
-
     bool imguiWantCapture() const;
 
+    AircraftController *aircraftController() const;
     void setAircraftController(AircraftController *newAircraftController);
-
-    NozzleEffect *nozzleEffect() const;
-    void setNozzleEffect(NozzleEffect *newNozzleEffect);
-
-public slots:
-    void onPfdChanged(Aircraft::PrimaryFlightData pfd);
 
 signals:
     void init();
@@ -37,7 +31,6 @@ signals:
     void mouseMoved(QMouseEvent *);
     void wheelMoved(QWheelEvent *);
     void mouseDoubleClicked(QMouseEvent *);
-    void command(Aircraft::Command command, QVariant variant = QVariant());
 
 private:
     void initializeGL() override;
@@ -51,9 +44,6 @@ private:
     void wheelEvent(QWheelEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent *) override;
 
-    void populateComboBox(Node *node);
-    QVector3D getRandomSeed();
-
 private:
     long long mPreviousTime;
     long long mCurrentTime;
@@ -64,32 +54,6 @@ private:
     LightManager *mLightManager;
     NodeManager *mNodeManager;
 
-    DirectionalLight *mSun;
-
-    QList<Node *> mNodes;
-
-    Node *mSelectedNode;
-
     AircraftController *mAircraftController;
-    float mAileron;  // [-1, 1]
-    float mElevator; // [-1, 1]
-    float mRudder;   // [-1, 1]
-    float mThrottle; // [0, 1]
-    Aircraft::PrimaryFlightData mPfd;
-
-    bool mRenderObjects;
-    bool mRenderWireframe;
-    bool mRenderNormals;
-    bool mUseBlinnShading;
-
-    RendererManager::Fog mFog;
-
-    Terrain *mTerrain;
-    Terrain::Properties mTerrainProperties;
-    Model::Material mTerrainMaterial;
-
-    QRandomGenerator mRandomGenerator;
-
-    NozzleEffect *mNozzleEffect;
 };
 #endif // WINDOW_H

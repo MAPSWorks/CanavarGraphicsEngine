@@ -7,6 +7,7 @@ Terrain::Terrain(QObject *parent)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
+    mRandomGenerator = QRandomGenerator::securelySeeded();
 
     mProperties.numberOfVerticesOnEdge = 4;
     mProperties.grids = 128;
@@ -160,26 +161,6 @@ QMatrix4x4 Terrain::transformation() const
     return transformation;
 }
 
-const Terrain::Properties &Terrain::properties() const
-{
-    return mProperties;
-}
-
-void Terrain::setProperties(const Properties &newProperties)
-{
-    mProperties = newProperties;
-}
-
-const Model::Material &Terrain::material() const
-{
-    return mMaterial;
-}
-
-void Terrain::setMaterial(const Model::Material &newMaterial)
-{
-    mMaterial = newMaterial;
-}
-
 void Terrain::reset()
 {
     mProperties.octaves = 13;
@@ -196,13 +177,35 @@ void Terrain::reset()
     mMaterial.specular = 0.05f;
 }
 
+void Terrain::drawGui()
+{
+    if (!ImGui::CollapsingHeader("Terrain"))
+    {
+        ImGui::SliderFloat("Amplitude##Terrain", &mProperties.amplitude, 0.0f, 50.0f, "%.3f");
+        ImGui::SliderInt("Octaves##Terrain", &mProperties.octaves, 1, 20);
+        ImGui::SliderFloat("Power##Terrain", &mProperties.power, 0.1f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Tessellation Multiplier##Terrain", &mProperties.tessellationMultiplier, 0.1f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Grass Coverage##Terrain", &mProperties.grassCoverage, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Ambient##Terrain", &mMaterial.ambient, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Diffuse##Terrain", &mMaterial.diffuse, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Specular##Terrain", &mMaterial.specular, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Shininess##Terrain", &mMaterial.shininess, 0.1f, 128.0f, "%.3f");
+
+        if (ImGui::Button("Generate Seed##Terrain"))
+            mProperties.seed = getRandomSeed();
+
+        if (ImGui::Button("Reset##Terrain"))
+            reset();
+    }
+}
+
 Terrain *Terrain::instance()
 {
     static Terrain instance;
     return &instance;
 }
 
-QVector2D Terrain::getCurrentTilePosition()
+QVector2D Terrain::getCurrentTilePosition() const
 {
     const QVector3D cameraPosition = mCameraManager->activeCamera()->position();
 
@@ -226,4 +229,33 @@ void Terrain::updatePositionVectors(const QVector2D &translation)
 
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, mGridPositions.size() * sizeof(QVector2D), mGridPositions.constData());
+}
+
+QVector3D Terrain::getRandomSeed()
+{
+    float x = mRandomGenerator.generateDouble();
+    float y = mRandomGenerator.generateDouble();
+    float z = mRandomGenerator.generateDouble();
+
+    return QVector3D(x, y, z);
+}
+
+const Model::Material &Terrain::material() const
+{
+    return mMaterial;
+}
+
+void Terrain::setMaterial(const Model::Material &newMaterial)
+{
+    mMaterial = newMaterial;
+}
+
+const Terrain::Properties &Terrain::properties() const
+{
+    return mProperties;
+}
+
+void Terrain::setProperties(const Properties &newProperties)
+{
+    mProperties = newProperties;
 }

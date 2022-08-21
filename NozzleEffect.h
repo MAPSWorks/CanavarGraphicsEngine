@@ -46,6 +46,8 @@ public:
     float radius() const;
     void setRadius(float newRadius);
 
+    virtual void drawGui() override;
+
 private:
     float getRandomFloat(float bound);
     NozzleEffect::Particle generateParticle();

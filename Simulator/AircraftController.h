@@ -7,6 +7,9 @@
 #include <QObject>
 #include <QTimer>
 
+#include <imgui.h>
+#include <QtImGui.h>
+
 class AircraftController : public QObject
 {
     Q_OBJECT
@@ -16,11 +19,7 @@ public:
     void onKeyPressed(QKeyEvent *);
     void onKeyReleased(QKeyEvent *);
 
-    double aileron() const;
-    double elevator() const;
-    double rudder() const;
-    double throttle() const;
-    bool holding() const;
+    void drawGui();
 
 signals:
     void command(Aircraft::Command command, QVariant variant = QVariant());
@@ -34,10 +33,10 @@ private:
     QMap<Qt::Key, bool> mPressedKeys;
     QTimer mTimer;
 
-    double mAileron;  // [-1, 1]
-    double mElevator; // [-1, 1]
-    double mRudder;   // [-1, 1]
-    double mThrottle; // [0, 1]
+    float mAileron;  // [-1, 1]
+    float mElevator; // [-1, 1]
+    float mRudder;   // [-1, 1]
+    float mThrottle; // [0, 1]
 
     Aircraft::PrimaryFlightData mPfd;
 };

@@ -191,3 +191,90 @@ bool Node::renderable() const
 {
     return mRenderable;
 }
+
+void Node::drawGui()
+{
+    // Position
+    {
+        ImGui::Text("Position:");
+        float x = mPosition.x();
+        float y = mPosition.y();
+        float z = mPosition.z();
+
+        if (ImGui::DragFloat("x##NodePosition", &x, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+            mPosition = QVector3D(x, y, z);
+        if (ImGui::DragFloat("y##NodePosition", &y, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+            mPosition = QVector3D(x, y, z);
+        if (ImGui::DragFloat("z##NodePosition", &z, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+            mPosition = QVector3D(x, y, z);
+    }
+
+    // Rotation
+    {
+        ImGui::Text("Rotation:");
+        float w = mRotation.scalar();
+        float x = mRotation.x();
+        float y = mRotation.y();
+        float z = mRotation.z();
+
+        if (ImGui::DragFloat("w##NodeRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
+            mRotation = QQuaternion(w, x, y, z).normalized();
+        if (ImGui::DragFloat("x##NodeRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+            mRotation = QQuaternion(w, x, y, z).normalized();
+        if (ImGui::DragFloat("y##NodeRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
+            mRotation = QQuaternion(w, x, y, z).normalized();
+        if (ImGui::DragFloat("z##NodeRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+            mRotation = QQuaternion(w, x, y, z).normalized();
+    }
+
+    // World Position
+    {
+        ImGui::Text("World Position:");
+        QVector3D position = worldPosition();
+        float x = position.x();
+        float y = position.y();
+        float z = position.z();
+
+        if (ImGui::DragFloat("x##NodeWorldPosition", &x, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+            setWorldPosition(QVector3D(x, y, z));
+        if (ImGui::DragFloat("y##NodeWorldPosition", &y, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+            setWorldPosition(QVector3D(x, y, z));
+        if (ImGui::DragFloat("z##NodeWorldPosition", &z, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+            setWorldPosition(QVector3D(x, y, z));
+    }
+
+    // World rotation
+    {
+        ImGui::Text("World Rotation:");
+        QQuaternion rotation = worldRotation();
+        float w = rotation.scalar();
+        float x = rotation.x();
+        float y = rotation.y();
+        float z = rotation.z();
+
+        if (ImGui::DragFloat("w##NodeWorldRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
+            setWorldRotation(QQuaternion(w, x, y, z).normalized());
+        if (ImGui::DragFloat("x##NodeWorldRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+            setWorldRotation(QQuaternion(w, x, y, z).normalized());
+        if (ImGui::DragFloat("y##NodeWorldRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
+            setWorldRotation(QQuaternion(w, x, y, z).normalized());
+        if (ImGui::DragFloat("z##NodeWorldRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
+            setWorldRotation(QQuaternion(w, x, y, z).normalized());
+    }
+
+    // Scale
+    {
+        ImGui::Text("Scale:");
+        QVector3D scale = mScale;
+        float x = scale.x();
+        float y = scale.y();
+        float z = scale.z();
+
+        if (ImGui::DragFloat("x##NodeScale", &x, 0.01f, 0.0001f, 100.0f, "%.3f"))
+            mScale = QVector3D(x, y, z);
+        if (ImGui::DragFloat("y##NodeScale", &y, 0.01f, 0.0001f, 100.0f, "%.3f"))
+            mScale = QVector3D(x, y, z);
+        if (ImGui::DragFloat("z##NodeScale", &z, 0.01f, 0.0001f, 100.0f, "%.3f"))
+            mScale = QVector3D(x, y, z);
+    }
+}

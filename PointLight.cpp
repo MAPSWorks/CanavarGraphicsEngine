@@ -40,3 +40,12 @@ void PointLight::setQuadratic(float newQuadratic)
 {
     mQuadratic = newQuadratic;
 }
+
+void PointLight::drawGui()
+{
+    Light::drawGui();
+
+    ImGui::SliderFloat("Constant##PointLight", &mConstant, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Linear##PointLight", &mLinear, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Quadratic##PointLight", &mQuadratic, 0.0f, 1.0f, "%.3f");
+}

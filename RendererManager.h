@@ -44,21 +44,7 @@ public:
     void render(float ifps);
     void resize(int w, int h);
 
-    bool renderWireframe() const;
-    void setRenderWireframe(bool newRenderWireframe);
-
-    bool renderNormals() const;
-    void setRenderNormals(bool newRenderNormals);
-
-    bool renderObjects() const;
-    void setRenderObjects(bool newRenderObjects);
-
-    const Fog &fog() const;
-    void setFog(const Fog &newFog);
     void resetFog();
-
-    bool useBlinnShading() const;
-    void setUseBlinnShading(bool newUseBlinnShading);
 
     ModelData *getModelData(const QString &modelName);
 
@@ -67,6 +53,8 @@ public:
 
     NozzleEffect *nozzleEffect() const;
     void setNozzleEffect(NozzleEffect *newNozzleEffect);
+
+    void drawGui();
 
 private:
     void renderModels(float ifps);

@@ -8,6 +8,7 @@
 NodeManager::NodeManager(QObject *parent)
     : QObject(parent)
     , mNumberOfNodes(0)
+    , mSelectedNode(nullptr)
 {
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
@@ -152,4 +153,42 @@ NodeManager *NodeManager::instance()
 const QList<Node *> &NodeManager::nodes() const
 {
     return mNodes;
+}
+
+void NodeManager::drawGui()
+{
+    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Nodes");
+
+    QString preview = mSelectedNode ? mSelectedNode->name() : "-";
+    if (ImGui::BeginCombo("Nodes", preview.toStdString().c_str()))
+    {
+        for (int i = 0; i < mNodes.size(); ++i)
+            populateComboBox(mNodes[i]);
+
+        ImGui::EndCombo();
+    }
+
+    if (mSelectedNode)
+    {
+        ImGui::Text("Type: %s", mSelectedNode->nodeTypeString().toStdString().c_str());
+        ImGui::Text("Parent: 0x%p", static_cast<void *>(mSelectedNode->parent()));
+
+        mSelectedNode->drawGui();
+    }
+}
+
+void NodeManager::populateComboBox(Node *node)
+{
+    switch (node->nodeType())
+    {
+    case Node::NodeType::FreeCamera:
+    case Node::NodeType::DirectionalLight:
+        return;
+    default:
+        break;
+    }
+
+    if (ImGui::Selectable(node->name().toStdString().c_str()))
+        mSelectedNode = node;
 }

@@ -6,6 +6,9 @@
 #include <QQuaternion>
 #include <QVector3D>
 
+#include <imgui.h>
+#include <QtImGui.h>
+
 class Node : public QObject
 {
     Q_OBJECT
@@ -59,6 +62,8 @@ public:
     void setVisible(bool newVisible);
 
     bool renderable() const;
+
+    virtual void drawGui();
 
 protected:
     QVector3D mPosition;

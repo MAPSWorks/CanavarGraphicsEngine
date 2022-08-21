@@ -479,65 +479,55 @@ void RendererManager::setNozzleEffect(NozzleEffect *newNozzleEffect)
     mNozzleEffect = newNozzleEffect;
 }
 
-bool RendererManager::useBlinnShading() const
+void RendererManager::drawGui()
 {
-    return mUseBlinnShading;
-}
+    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Graphics");
 
-void RendererManager::setUseBlinnShading(bool newUseBlinnShading)
-{
-    mUseBlinnShading = newUseBlinnShading;
+    // Render Settings
+    if (!ImGui::CollapsingHeader("Render Settings"))
+    {
+        ImGui::Checkbox("Render Objects", &mRenderObjects);
+        ImGui::Checkbox("Wireframe", &mRenderWireframe);
+        ImGui::Checkbox("Render Normals", &mRenderNormals);
+        ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading);
+    }
+
+    mSun->drawGui();
+
+    // Fog
+    if (!ImGui::CollapsingHeader("Fog"))
+    {
+        ImGui::SliderFloat("Density##Fog", &mFog.density, 0.0f, 4.0f, "%.3f");
+        ImGui::SliderFloat("Gradient##Fog", &mFog.gradient, 0.0f, 4.0f, "%.3f");
+
+        float color[3] = {mFog.color.x(), mFog.color.y(), mFog.color.z()};
+
+        if (ImGui::ColorEdit3("Color##Fog", (float *) &color))
+            mFog.color = QVector3D(color[0], color[1], color[2]);
+
+        ImGui::Checkbox("Enabled##Fog", &mFog.enabled);
+
+        if (ImGui::Button("Reset##Fog"))
+            resetFog();
+    }
+
+    mTerrain->drawGui();
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+    // Seperate Window
+    mNozzleEffect->drawGui();
 }
 
 ModelData *RendererManager::getModelData(const QString &modelName)
 {
     return mModelsData.value(modelName, nullptr);
 }
-
-const RendererManager::Fog &RendererManager::fog() const
-{
-    return mFog;
-}
-
-void RendererManager::setFog(const Fog &newFog)
-{
-    mFog = newFog;
-}
-
 void RendererManager::resetFog()
 {
     mFog.enabled = true;
     mFog.color = QVector3D(0.33f, 0.38f, 0.47f);
     mFog.density = 1.0f;
     mFog.gradient = 1.5f;
-}
-
-bool RendererManager::renderObjects() const
-{
-    return mRenderObjects;
-}
-
-void RendererManager::setRenderObjects(bool newRenderObjects)
-{
-    mRenderObjects = newRenderObjects;
-}
-
-bool RendererManager::renderNormals() const
-{
-    return mRenderNormals;
-}
-
-void RendererManager::setRenderNormals(bool newRenderNormals)
-{
-    mRenderNormals = newRenderNormals;
-}
-
-bool RendererManager::renderWireframe() const
-{
-    return mRenderWireframe;
-}
-
-void RendererManager::setRenderWireframe(bool newRenderWireframe)
-{
-    mRenderWireframe = newRenderWireframe;
 }

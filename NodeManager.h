@@ -21,11 +21,19 @@ public:
     const QList<Node *> &nodes() const;
     static NodeManager *instance();
 
+    void drawGui();
+
+private:
+    void populateComboBox(Node *node);
+
 private:
     QList<Node *> mNodes;
     int mNumberOfNodes;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
+
+    // Gui
+    Node *mSelectedNode;
 };
 
 #endif // NODEMANAGER_H

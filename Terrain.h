@@ -11,6 +11,7 @@
 #include <QOpenGLExtraFunctionsPrivate>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
+#include <QRandomGenerator>
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
@@ -45,8 +46,12 @@ public:
 
     void create();
     void render();
+    void reset();
+    void drawGui();
 
     QMatrix4x4 transformation() const;
+
+    static Terrain *instance();
 
     const Properties &properties() const;
     void setProperties(const Properties &newProperties);
@@ -54,17 +59,19 @@ public:
     const Model::Material &material() const;
     void setMaterial(const Model::Material &newMaterial);
 
-    void reset();
-
-    static Terrain *instance();
-
 private slots:
-    QVector2D getCurrentTilePosition();
+    QVector2D getCurrentTilePosition() const;
     void updatePositionVectors(const QVector2D &translation);
+    QVector3D getRandomSeed();
 
 private:
     Properties mProperties;
+    Model::Material mMaterial;
     QVector<QVector2D> mGridPositions;
+
+    ShaderManager *mShaderManager;
+    CameraManager *mCameraManager;
+
     QOpenGLVertexArrayObject *mVAO;
     unsigned int mVBO;
     unsigned int mEBO;
@@ -75,14 +82,13 @@ private:
     Texture *mTextureRockDiffuse;
     Texture *mTextureRockNormal;
     Texture *mTextureTerrain;
-    ShaderManager *mShaderManager;
-    Model::Material mMaterial;
 
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;
 
-    CameraManager *mCameraManager;
     QVector2D mPreviousTilePosition;
+
+    QRandomGenerator mRandomGenerator;
 };
 
 #endif // TERRAIN_H

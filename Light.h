@@ -22,6 +22,8 @@ public:
     float specular() const;
     void setSpecular(float newSpecular);
 
+    virtual void drawGui() override;
+
 protected:
     QVector4D mColor;
     float mAmbient;

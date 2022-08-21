@@ -28,6 +28,8 @@ public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);
     void setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation);
 
+    virtual void drawGui();
+
 protected:
     Material mMaterial;
     QString mModelName;

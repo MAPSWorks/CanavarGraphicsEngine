@@ -14,10 +14,7 @@ Model::Model(const QString &modelName, QObject *parent)
     mMaterial.shininess = 32.0f;
 }
 
-Model::~Model()
-{
-
-}
+Model::~Model() {}
 
 const QString &Model::modelName() const
 {
@@ -47,4 +44,22 @@ void Model::setMeshTransformation(const QString &meshName, const QMatrix4x4 &tra
 const QMap<QString, QMatrix4x4> &Model::meshTransformations() const
 {
     return mMeshTransformations;
+}
+
+void Model::drawGui()
+{
+    Node::drawGui();
+
+    // Shading Parameters
+    ImGui::Text("Shading Parameters:");
+
+    ImGui::SliderFloat("Ambient##Model", &mMaterial.ambient, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Diffuse##Model", &mMaterial.diffuse, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Specular##Model", &mMaterial.specular, 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Shininess##Model", &mMaterial.shininess, 1.0f, 128.0f, "%.3f");
+
+    float color[4] = {mMaterial.color.x(), mMaterial.color.y(), mMaterial.color.z(), mMaterial.color.w()};
+
+    if (ImGui::ColorEdit4("Color##Model", (float *) &color))
+        mMaterial.color = QVector4D(color[0], color[1], color[2], color[3]);
 }
