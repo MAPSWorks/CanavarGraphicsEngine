@@ -59,7 +59,7 @@ public:
     const Model::Material &material() const;
     void setMaterial(const Model::Material &newMaterial);
 
-private slots:
+private:
     QVector2D getCurrentTilePosition() const;
     void updatePositionVectors(const QVector2D &translation);
     QVector3D getRandomSeed();

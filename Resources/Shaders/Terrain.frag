@@ -317,7 +317,8 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
     return heightColor;
 }
 
-float getHazeFactor() {
+float getHazeFactor()
+{
     float distance = length(cameraPosition - fsWorldPosition);
     float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
     return clamp(factor, 0.0f, 1.0f);
@@ -348,5 +349,4 @@ void main()
         outColor = color;
         outColor.a = fsWorldPosition.y / waterHeight;
     }
-
 };

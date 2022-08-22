@@ -252,6 +252,29 @@ bool ShaderManager::init()
             return false;
     }
 
+    // Sky Shader
+    {
+        Shader *shader = new Shader(ShaderType::SkyShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Sky.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
+
+        shader->addUniform("skyColorTop");
+        shader->addUniform("skyColorBottom");
+        shader->addUniform("lightDirection");
+        shader->addUniform("width");
+        shader->addUniform("height");
+        shader->addUniform("inverseProjectionMatrix");
+        shader->addUniform("inverseViewMatrix");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

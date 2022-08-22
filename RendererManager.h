@@ -9,6 +9,7 @@
 #include "NozzleEffect.h"
 #include "Quad.h"
 #include "ShaderManager.h"
+#include "Sky.h"
 #include "SkyBox.h"
 #include "Terrain.h"
 
@@ -50,6 +51,7 @@ private:
     void renderModels(float ifps);
     void renderSkyBox(float ifps);
     void renderTerrain(float ifps);
+    void renderSky(float ifps);
     void renderParticles(float ifps);
     void renderModel(Model *model);
     void fillFramebuffer(Framebuffer read, Framebuffer draw);
@@ -69,18 +71,16 @@ private:
 
     Camera *mCamera;
     DirectionalLight *mSun;
+    SkyBox *mSkyBox;
+    Terrain *mTerrain;
+    Haze *mHaze;
+    Sky *mSky;
+    Quad *mQuad;
 
     bool mRenderObjects;
     bool mRenderWireframe;
     bool mRenderNormals;
-
-    SkyBox *mSkyBox;
-    Terrain *mTerrain;
-    Haze *mHaze;
-
     bool mUseBlinnShading;
-
-    Quad *mQuad;
 
     Framebuffer mFramebuffers[2];
 

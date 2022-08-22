@@ -72,6 +72,8 @@ bool RendererManager::init()
     mQuad = new Quad;
     mQuad->create();
 
+    mSky = new Sky;
+
     createFramebuffers();
 
     return true;
@@ -103,6 +105,7 @@ void RendererManager::render(float ifps)
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[0].framebuffer);
     glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    renderSky(ifps);
     renderModels(ifps);
     renderTerrain(ifps);
     renderParticles(ifps);
@@ -227,6 +230,22 @@ void RendererManager::renderTerrain(float)
     mShaderManager->release();
 
     //glDisable(GL_CLIP_DISTANCE0);
+}
+
+void RendererManager::renderSky(float)
+{
+    glDisable(GL_DEPTH_TEST);
+    mShaderManager->bind(ShaderManager::ShaderType::SkyShader);
+    mShaderManager->setUniformValue("skyColorTop", mSky->skyColorTop());
+    mShaderManager->setUniformValue("skyColorBottom", mSky->skyColorBottom());
+    mShaderManager->setUniformValue("lightDirection", mSun->direction());
+    mShaderManager->setUniformValue("width", mWidth);
+    mShaderManager->setUniformValue("height", mHeight);
+    mShaderManager->setUniformValue("inverseProjectionMatrix", mCamera->projection().inverted());
+    mShaderManager->setUniformValue("inverseViewMatrix", mCamera->worldTransformation().inverted());
+    mQuad->render();
+    mShaderManager->release();
+    glEnable(GL_DEPTH_TEST);
 }
 
 void RendererManager::renderParticles(float ifps)

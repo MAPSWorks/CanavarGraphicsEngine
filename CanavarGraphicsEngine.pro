@@ -45,6 +45,7 @@ HEADERS += \
     Simulator/Aircraft.h \
     Simulator/AircraftController.h \
     Simulator/Converter.h \
+    Sky.h \
     SkyBox.h \
     SpotLight.h \
     Terrain.h \
@@ -79,6 +80,7 @@ SOURCES += \
     Simulator/Aircraft.cpp \
     Simulator/AircraftController.cpp \
     Simulator/Converter.cpp \
+    Sky.cpp \
     SkyBox.cpp \
     SpotLight.cpp \
     Terrain.cpp \

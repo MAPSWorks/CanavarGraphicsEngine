@@ -23,7 +23,7 @@
 // SOFTWARE.
 
 // Define the number of CPs in the output patch
-layout (vertices = 3) out;
+layout(vertices = 3) out;
 
 struct Terrain {
     vec4 clipPlane;
@@ -51,12 +51,12 @@ out vec3 tesPosition[];
 out vec3 tesNormal[];
 out vec2 tesTextureCoord[];
 
-const mat2 m = mat2(0.8,-0.6,0.6,0.8);
+const mat2 m = mat2(0.8, -0.6, 0.6, 0.8);
 
 // Dummy random
 float random2d(vec2 st)
 {
-     return fract(sin(dot(st.xy, vec2(12.9898, 78.233) + terrain.seed.xy)) * 43758.5453123);
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233) + terrain.seed.xy)) * 43758.5453123);
 }
 
 // Cosine interpolation
@@ -64,7 +64,7 @@ float interpolate(float a, float b, float x)
 {
     float ft = x * 3.14159265f;
     float f = (1 - cos(ft)) * 0.5;
-    return  a * (1 - f) + b * f;
+    return a * (1 - f) + b * f;
 }
 
 float interpolatedNoise(float x, float y)
@@ -82,14 +82,11 @@ float interpolatedNoise(float x, float y)
     vec2 w = vec2(fractional_x, fractional_y);
 
     // We can use cubic interpolation here
-    w = w*w*w*(10.0 + w * (-15.0 + 6.0*w));
+    w = w * w * w * (10.0 + w * (-15.0 + 6.0 * w));
 
-    float k0 = a,
-    k1 = b - a,
-    k2 = c - a,
-    k3 = d - c - b + a;
+    float k0 = a, k1 = b - a, k2 = c - a, k3 = d - c - b + a;
 
-    return k0 + k1*w.x + k2*w.y + k3*w.x*w.y;
+    return k0 + k1 * w.x + k2 * w.y + k3 * w.x * w.y;
 }
 
 float perlin(float x, float y)
@@ -119,8 +116,8 @@ float perlin(vec2 st)
     {
         frequency *= 2.0;
         amplitude *= persistence;
-        vec2 v = frequency*m*st;
-        total += interpolatedNoise(v.x,v.y) * amplitude;
+        vec2 v = frequency * m * st;
+        total += interpolatedNoise(v.x, v.y) * amplitude;
     }
 
     return pow(total, terrain.power);
@@ -137,20 +134,17 @@ float getTessellationLevel(float distance0, float distance1)
     if (averageDistance <= 70.0 * 10.0)
     {
         return 30.0;
-    }
-    else if (averageDistance <= 300.0 * 10.0)
+    } else if (averageDistance <= 300.0 * 10.0)
     {
         return 10.0;
 
-    }else if(averageDistance <= 1200.0 * 10.0)
+    } else if (averageDistance <= 1200.0 * 10.0)
     {
         return 2.5;
-    }
-    else if (averageDistance <= 3000.0 * 10.0)
+    } else if (averageDistance <= 3000.0 * 10.0)
     {
         return 1.0;
-    }
-    else
+    } else
     {
         return 1.0;
     }
@@ -160,7 +154,7 @@ void main()
 {
     // Set the control points of the output patch
     tesPosition[gl_InvocationID] = tcsPosition[gl_InvocationID];
-    tesNormal[gl_InvocationID]   = tcsNormal[gl_InvocationID];
+    tesNormal[gl_InvocationID] = tcsNormal[gl_InvocationID];
     tesTextureCoord[gl_InvocationID] = tcsTextureCoord[gl_InvocationID];
 
     // Calculate the distance from the camera to the three control points

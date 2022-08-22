@@ -78,59 +78,68 @@ in mat3 fsTBN;
 
 out vec4 outColor;
 
-vec4 getAmbientColor() {
-    if(useTexture) {
-        if(useTextureAmbient)
+vec4 getAmbientColor()
+{
+    if (useTexture)
+    {
+        if (useTextureAmbient)
             return texture(textureAmbient, fsTextureCoords);
         else
-            return vec4(0,0,0,0);
-    }
-    else {
+            return vec4(0, 0, 0, 0);
+    } else
+    {
         return node.ambient * node.color;
     }
 }
 
-vec4 getDiffuseColor() {
-    if(useTexture) {
-          if(useTextureDiffuse)
-            return  node.diffuse * texture(textureDiffuse, fsTextureCoords);
-          else
-              return vec4(0,0,0,0);
-    }
-    else {
+vec4 getDiffuseColor()
+{
+    if (useTexture)
+    {
+        if (useTextureDiffuse)
+            return node.diffuse * texture(textureDiffuse, fsTextureCoords);
+        else
+            return vec4(0, 0, 0, 0);
+    } else
+    {
         return node.diffuse * node.color;
     }
 }
 
-vec4 getSpecularColor() {
-    if(useTexture) {
-        if(useTextureSpecular)
+vec4 getSpecularColor()
+{
+    if (useTexture)
+    {
+        if (useTextureSpecular)
             return node.specular * texture(textureSpecular, fsTextureCoords);
         else
-            return vec4(0,0,0,0);
-    }
-    else {
+            return vec4(0, 0, 0, 0);
+    } else
+    {
         return node.specular * node.color;
     }
 }
 
-vec3 getNormal() {
-    if(useTexture) {
-        if(useTextureNormal) {
+vec3 getNormal()
+{
+    if (useTexture)
+    {
+        if (useTextureNormal)
+        {
             vec3 normal = texture(textureNormal, fsTextureCoords).rgb;
-            normal = 2.0 * normal  - 1.0;
+            normal = 2.0 * normal - 1.0;
             normal = normalize(fsTBN * normal);
             return normal;
-        }
-        else
+        } else
             return normalize(fsNormal);
-    }
-    else {
+    } else
+    {
         return normalize(fsNormal);
     }
 }
 
-float getHazeFactor() {
+float getHazeFactor()
+{
     float distance = length(cameraPosition - fsPosition);
     float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
     return clamp(factor, 0.0f, 1.0f);
@@ -141,12 +150,12 @@ void main()
     // Common Variables
     vec3 normal = getNormal();
     vec3 directionalLightDir = normalize(-directionalLight.direction);
-    vec4 ambientColor =  getAmbientColor();
+    vec4 ambientColor = getAmbientColor();
     vec4 diffuseColor = getDiffuseColor();
     vec4 specularColor = getSpecularColor();
     vec3 viewDir = normalize(cameraPosition - fsPosition);
 
-    vec4 result = vec4(0,0,0,0);
+    vec4 result = vec4(0, 0, 0, 0);
 
     // Directional Light
     {
@@ -159,66 +168,66 @@ void main()
 
         // Specular
         vec3 reflectDir = reflect(-directionalLightDir, normal);
-        vec4 specular = vec4(0,0,0,0);
+        vec4 specular = vec4(0, 0, 0, 0);
 
-        if(useBlinnShading) {
+        if (useBlinnShading)
+        {
             vec3 halfwayDir = normalize(directionalLightDir + viewDir);
             float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), node.shininess);
             specular = specularFactor * directionalLight.specular * specularColor;
-        }
-        else {
+        } else
+        {
             float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
             specular = specularFactor * directionalLight.specular * specularColor;
         }
 
         float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
 
-
         result = (ambient + diffuse + specular) * directionalLight.color;
     }
 
     // Point Lights
     {
-        for(int i = 0; i < numberOfPointLights; i++) {
+        for (int i = 0; i < numberOfPointLights; i++)
+        {
             // Ambient
-            vec4 ambient  = pointLights[i].ambient  * ambientColor;
+            vec4 ambient = pointLights[i].ambient * ambientColor;
 
             // Diffuse
             vec3 lightDir = normalize(pointLights[i].position - fsPosition);
             float diffuseFactor = max(dot(normal, lightDir), 0.0);
-            vec4 diffuse  = pointLights[i].diffuse  * diffuseFactor * diffuseColor;
+            vec4 diffuse = pointLights[i].diffuse * diffuseFactor * diffuseColor;
 
             // Specular
             vec3 reflectDir = reflect(-lightDir, normal);
-            vec4 specular = vec4(0,0,0,0);
+            vec4 specular = vec4(0, 0, 0, 0);
 
-            if(useBlinnShading) {
+            if (useBlinnShading)
+            {
                 vec3 halfwayDir = normalize(lightDir + viewDir);
                 float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), node.shininess);
                 specular = specularFactor * pointLights[i].specular * specularColor;
-            }
-            else {
+            } else
+            {
                 float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
                 specular = specularFactor * pointLights[i].specular * specularColor;
             }
 
             // Attenuation
             float distance = length(pointLights[i].position - fsPosition);
-            float attenuation = 1.0f / (pointLights[i].constant +
-                                        pointLights[i].linear * distance +
-                                        pointLights[i].quadratic * (distance * distance));
+            float attenuation = 1.0f / (pointLights[i].constant + pointLights[i].linear * distance + pointLights[i].quadratic * (distance * distance));
 
-            ambient  *= attenuation;
-            diffuse  *= attenuation;
+            ambient *= attenuation;
+            diffuse *= attenuation;
             specular *= attenuation;
             result += (ambient + diffuse + specular) * pointLights[i].color;
         }
     }
 
-
     // Spot Lights
     {
-        for(int i = 0; i < numberOfSpotLights; i++) {
+        for (int i = 0; i < numberOfSpotLights; i++)
+        {
             // Ambient
             vec4 ambient = spotLights[i].ambient * ambientColor;
 
@@ -229,14 +238,15 @@ void main()
 
             // Specular
             vec3 reflectDir = reflect(-lightDir, normal);
-            vec4 specular = vec4(0,0,0,0);
+            vec4 specular = vec4(0, 0, 0, 0);
 
-            if(useBlinnShading) {
+            if (useBlinnShading)
+            {
                 vec3 halfwayDir = normalize(lightDir + viewDir);
                 float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), node.shininess);
                 specular = specularFactor * spotLights[i].specular * specularColor;
-            }
-            else {
+            } else
+            {
                 float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), node.shininess);
                 specular = specularFactor * spotLights[i].specular * specularColor;
             }
@@ -245,28 +255,26 @@ void main()
             float theta = dot(lightDir, normalize(-spotLights[i].direction));
             float epsilon = (spotLights[i].cutOffAngle - spotLights[i].outerCutOffAngle);
             float intensity = clamp((theta - spotLights[i].outerCutOffAngle) / epsilon, 0.0, 1.0);
-            diffuse  *= intensity;
+            diffuse *= intensity;
             specular *= intensity;
 
             // Attenuation
             float distance = length(spotLights[i].position - fsPosition);
-            float attenuation = 1.0f / (spotLights[i].constant +
-                                        spotLights[i].linear * distance +
-                                        spotLights[i].quadratic * (distance * distance));
-            ambient  *= attenuation;
-            diffuse  *= attenuation;
+            float attenuation = 1.0f / (spotLights[i].constant + spotLights[i].linear * distance + spotLights[i].quadratic * (distance * distance));
+            ambient *= attenuation;
+            diffuse *= attenuation;
             specular *= attenuation;
 
             result += (ambient + diffuse + specular) * spotLights[i].color;
         }
     }
 
-    if(haze.enabled) {
+    if (haze.enabled)
+    {
         float hazeFactor = getHazeFactor();
         outColor = mix(vec4(haze.color, 1), result, hazeFactor);
-    }
-    else {
+    } else
+    {
         outColor = result;
     }
-
 }
