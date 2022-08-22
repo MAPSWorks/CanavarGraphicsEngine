@@ -35,7 +35,8 @@ void main()
     vec4 D = inverseViewProjectionMatrix * H;
 
     // Divide by w to get the world position.
-    vec4 worldPos = D / D.w;
+    //vec4 worldPos = D / D.w;
+    vec4 worldPos = D;
 
     // Current viewport position
     vec4 currentPos = H;
@@ -44,11 +45,11 @@ void main()
     vec4 previousPos = previousViewProjectionMatrix * worldPos;
 
     // Convert to nonhomogeneous points [-1,1] by dividing by w.
-    previousPos /= previousPos.w;
+    //previousPos /= previousPos.w;
 
     // Use this frame's position and last frame's to compute the pixel velocity.
     int x = int(width * (previousPos - currentPos).x * strength);
-    int y = int(height * (currentPos - previousPos).y * strength);
+    int y = int(height * (previousPos - currentPos).y * strength);
     ivec2 velocity = ivec2(x,y);
 
     ivec2 coords = ivec2(0, 0);
