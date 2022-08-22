@@ -7,6 +7,7 @@ uniform mat4 inverseVP;
 uniform mat4 previousVP;
 uniform int width;
 uniform int height;
+uniform int samples;
 
 out vec4 outColor;
 
@@ -22,12 +23,12 @@ vec4 getColor(ivec2 coords)
     return color / 4.0f;
 }
 
-vec4 getSample(ivec2 coords, int x, int y)
+vec4 getSample(vec2 center, vec2 coords)
 {
-    if(coords.x + x >= width || coords.x + x <= 0 || coords.y + y >= height || coords.y + y <= 0)
-        return getColor(coords);
+    if (coords.x >= 1 || coords.x <= 0 || coords.y >= 1 || coords.y <= 0)
+        return getColor(ivec2(width * center.x, height * center.y));
 
-    return getColor(coords + ivec2(x, y));
+    return getColor(ivec2(width * coords.x, height * coords.y));
 }
 
 vec2 getDeltaPosition()
@@ -58,27 +59,16 @@ vec2 getDeltaPosition()
 
 void main()
 {
-    int x = int(fsTextureCoords.x * width);
-    int y = int(fsTextureCoords.y * height);
-    ivec2 coords = ivec2(x, y);
+    vec2 coords = fsTextureCoords;
+    vec2 deltaPosition = getDeltaPosition();
+    vec2 step = deltaPosition / samples;
 
-    vec2 deltaPos = getDeltaPosition();
-    int dx = int(width * deltaPos.x);
-    int dy = int(height * deltaPos.y);
+    vec4 color = vec4(0);
 
-    int p = dx / abs(dx);
-    int q = dy / abs(dy);
-    int n = clamp(abs(dx), 1, 8);
-    int m = clamp(abs(dy), 1, 8);
-
-    vec4 totalColor = vec4(0);
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < samples; i++)
     {
-        for (int j = 0; j < m; j++)
-        {
-            totalColor += getSample(coords, p * i, q * j);
-        }
+        color += getSample(fsTextureCoords, coords + i * step);
     }
 
-    outColor = totalColor / (n * m);
+    outColor = color / samples;
 }

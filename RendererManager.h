@@ -93,6 +93,7 @@ private:
     bool mFlag;
 
     bool mApplyMotionBlur;
+    int mMotionBlurSamples;
 };
 
 #endif // RENDERERMANAGER_H

@@ -289,6 +289,7 @@ bool ShaderManager::init()
         shader->addUniform("previousVP");
         shader->addUniform("width");
         shader->addUniform("height");
+        shader->addUniform("samples");
 
         shader->addAttribute("position");
         shader->addAttribute("textureCoords");

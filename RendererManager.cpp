@@ -17,6 +17,7 @@ RendererManager::RendererManager(QObject *parent)
     , mHeight(900)
     , mFlag(false)
     , mApplyMotionBlur(false)
+    , mMotionBlurSamples(16)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
@@ -182,6 +183,7 @@ void RendererManager::applyMotionBlur(Framebuffer read, Framebuffer draw)
     mShaderManager->setUniformValue("previousVP", mCamera->previousVP());
     mShaderManager->setUniformValue("width", mWidth);
     mShaderManager->setUniformValue("height", mHeight);
+    mShaderManager->setUniformValue("samples", mMotionBlurSamples);
     mQuad->render();
     mShaderManager->release();
 }
@@ -506,6 +508,7 @@ void RendererManager::drawGui()
         ImGui::Checkbox("Render Normals", &mRenderNormals);
         ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading);
         ImGui::Checkbox("Motion Blur", &mApplyMotionBlur);
+        ImGui::SliderInt("Motion Blur Samples", &mMotionBlurSamples, 1, 128);
     }
 
     mSun->drawGui();
