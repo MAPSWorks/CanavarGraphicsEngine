@@ -39,8 +39,7 @@ struct Terrain {
     float specular;
 };
 
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
+uniform mat4 VP;
 uniform vec3 cameraPosition;
 uniform Terrain terrain;
 
@@ -198,5 +197,5 @@ void main()
     fsDistanceFromPosition = distance(fsWorldPosition, cameraPosition);
     fsHeight = fsWorldPosition.y;
 
-    gl_Position = projectionMatrix * viewMatrix * vec4(fsWorldPosition, 1.0);
+    gl_Position = VP * vec4(fsWorldPosition, 1.0);
 }

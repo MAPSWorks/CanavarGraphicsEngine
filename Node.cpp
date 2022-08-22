@@ -192,6 +192,11 @@ bool Node::renderable() const
     return mRenderable;
 }
 
+QMatrix4x4 Node::normalMatrix() const
+{
+    return worldTransformation().inverted().transposed();
+}
+
 void Node::drawGui()
 {
     // Position

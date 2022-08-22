@@ -33,10 +33,15 @@ public:
     float zFar() const;
     void setZFar(float newZFar);
 
+    bool active() const;
+    void setActive(bool newActive);
+
     virtual QMatrix4x4 transformation() const override;
     virtual QMatrix4x4 worldTransformation() const override;
     virtual QMatrix4x4 projection() const;
-    virtual QVector3D getViewDirection();
+    virtual QVector3D getViewDirection() const;
+    virtual QMatrix4x4 getVP() const;
+    virtual QMatrix4x4 getWorldRotation() const;
 
     virtual void onKeyPressed(QKeyEvent *) = 0;
     virtual void onKeyReleased(QKeyEvent *) = 0;
@@ -44,9 +49,6 @@ public:
     virtual void onMouseReleased(QMouseEvent *event) = 0;
     virtual void onMouseMoved(QMouseEvent *event) = 0;
     virtual void update(float) = 0;
-
-    bool active() const;
-    void setActive(bool newActive);
 
 protected:
     float mVerticalFov;

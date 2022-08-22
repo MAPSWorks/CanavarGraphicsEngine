@@ -21,10 +21,6 @@ RendererManager::RendererManager(QObject *parent)
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
-
-    mMotionBlur.samples = 12;
-    mMotionBlur.strength = 0.035f;
-    mMotionBlur.enabled = false;
 }
 
 RendererManager *RendererManager::instance()
@@ -90,7 +86,7 @@ void RendererManager::resize(int w, int h)
     {
         mFlag = true;
 
-        QTimer::singleShot(2000, [=]() {
+        QTimer::singleShot(1000, [=]() {
             deleteFramebuffers();
             createFramebuffers();
             mFlag = false;
@@ -127,8 +123,6 @@ void RendererManager::render(float ifps)
     mShaderManager->setUniformValue("screenTexture", 0);
     mQuad->render();
     mShaderManager->release();
-
-    mMotionBlur.previousViewProjectionMatrix = mCamera->projection() * mCamera->worldTransformation();
 }
 
 void RendererManager::fillStencilBuffer(Framebuffer framebuffer, float ifps)
@@ -161,29 +155,6 @@ void RendererManager::applyBlur(Framebuffer stencilSource, Framebuffer textureSo
     glDisable(GL_STENCIL_TEST);
 }
 
-void RendererManager::applyMotionBlur()
-{
-    glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[3].framebuffer);
-    glDisable(GL_STENCIL_TEST);
-    glStencilMask(0x00);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[2].texture);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, mFramebuffers[0].depthTexture);
-    mShaderManager->bind(ShaderManager::ShaderType::MotionBlurShader);
-    mShaderManager->setUniformValue("sceneTexture", 0);
-    mShaderManager->setUniformValue("depthTexture", 1);
-    mShaderManager->setUniformValue("inverseViewProjectionMatrix", (mCamera->projection() * mCamera->worldTransformation()).inverted());
-    mShaderManager->setUniformValue("previousViewProjectionMatrix", mMotionBlur.previousViewProjectionMatrix);
-    mShaderManager->setUniformValue("width", mWidth);
-    mShaderManager->setUniformValue("height", mHeight);
-    mShaderManager->setUniformValue("samples", mMotionBlur.samples);
-    mShaderManager->setUniformValue("strength", mMotionBlur.strength);
-    mQuad->render();
-    mShaderManager->release();
-}
-
 void RendererManager::fillFramebuffer(Framebuffer read, Framebuffer draw)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, draw.framebuffer);
@@ -201,70 +172,6 @@ void RendererManager::fillFramebuffer(Framebuffer read, Framebuffer draw)
 
 void RendererManager::renderModels(float)
 {
-    if (mCamera)
-    {
-        mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
-        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-        mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
-        mShaderManager->release();
-
-        mShaderManager->bind(ShaderManager::ShaderType::WireframeShader);
-        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-        mShaderManager->release();
-
-        mShaderManager->bind(ShaderManager::ShaderType::NormalsShader);
-        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-        mShaderManager->release();
-
-        mShaderManager->bind(ShaderManager::ShaderType::SkyBoxShader);
-        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-
-        QMatrix4x4 transformation = mCamera->worldTransformation();
-        transformation.setColumn(3, QVector4D(0, 0, 0, 1));
-        mShaderManager->setUniformValue("viewMatrix", transformation);
-        mShaderManager->release();
-
-        mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
-        mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-        mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-        mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
-        mShaderManager->release();
-    }
-
-    if (mSun)
-    {
-        mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
-        mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
-        mShaderManager->setUniformValue("directionalLight.color", mSun->color());
-        mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
-        mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
-        mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
-        mShaderManager->release();
-
-        mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
-        mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
-        mShaderManager->setUniformValue("directionalLight.color", mSun->color());
-        mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
-        mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
-        mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
-        mShaderManager->release();
-    }
-
-    if (mHaze)
-    {
-        mShaderManager->setUniformValue("haze.enabled", mHaze->enabled());
-        mShaderManager->setUniformValue("haze.color", mHaze->color());
-        mShaderManager->setUniformValue("haze.density", mHaze->density());
-        mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
-    }
-
-    mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
-    mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
-    mShaderManager->release();
-
     auto nodes = mNodeManager->nodes();
 
     for (const auto &node : nodes)
@@ -279,6 +186,8 @@ void RendererManager::renderModels(float)
 void RendererManager::renderSkyBox(float)
 {
     mShaderManager->bind(ShaderManager::ShaderType::SkyBoxShader);
+    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+    mShaderManager->setUniformValue("viewMatrix", mCamera->getWorldRotation());
     mShaderManager->setUniformValue("skybox", 0);
     mSkyBox->render();
     mShaderManager->release();
@@ -289,6 +198,13 @@ void RendererManager::renderTerrain(float)
     //glEnable(GL_CLIP_DISTANCE0);
 
     mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
+    mShaderManager->setUniformValue("VP", mCamera->getVP());
+    mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
+    mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
+    mShaderManager->setUniformValue("directionalLight.color", mSun->color());
+    mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
+    mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
+    mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
     mShaderManager->setUniformValue("nodeMatrix", mTerrain->transformation());
     mShaderManager->setUniformValue("terrain.amplitude", mTerrain->properties().amplitude);
     mShaderManager->setUniformValue("terrain.clipPlane", mTerrain->properties().clipPlane);
@@ -316,9 +232,7 @@ void RendererManager::renderTerrain(float)
 void RendererManager::renderParticles(float ifps)
 {
     mShaderManager->bind(ShaderManager::ShaderType::NozzleEffectShader);
-    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
+    mShaderManager->setUniformValue("MVP", mCamera->getVP() * mNozzleEffect->worldTransformation());
     mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
     mShaderManager->setUniformValue("velocity", mNozzleEffect->velocity());
     mNozzleEffect->renderParticles(ifps);
@@ -340,6 +254,18 @@ void RendererManager::renderModel(Model *model)
         if (mRenderObjects)
         {
             mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
+            mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
+            mShaderManager->setUniformValue("VP", mCamera->getVP());
+            mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
+            mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
+            mShaderManager->setUniformValue("directionalLight.color", mSun->color());
+            mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
+            mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
+            mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
+            mShaderManager->setUniformValue("haze.enabled", mHaze->enabled());
+            mShaderManager->setUniformValue("haze.color", mHaze->color());
+            mShaderManager->setUniformValue("haze.density", mHaze->density());
+            mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
 
             QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), model);
             mShaderManager->setUniformValue("numberOfPointLights", pointLights.size());
@@ -381,6 +307,8 @@ void RendererManager::renderModel(Model *model)
         if (mRenderWireframe)
         {
             mShaderManager->bind(ShaderManager::ShaderType::WireframeShader);
+            mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+            mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
             data->render(GL_TRIANGLES);
             mShaderManager->release();
@@ -389,6 +317,8 @@ void RendererManager::renderModel(Model *model)
         if (mRenderNormals)
         {
             mShaderManager->bind(ShaderManager::ShaderType::NormalsShader);
+            mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+            mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
             data->render(GL_TRIANGLES);
             mShaderManager->release();
@@ -407,7 +337,7 @@ void RendererManager::renderModel(Model *model)
 
 bool RendererManager::createFramebuffers()
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 2; i++)
     {
         // Creat framebuffer
         glGenFramebuffers(1, &mFramebuffers[i].framebuffer);
@@ -450,7 +380,7 @@ bool RendererManager::createFramebuffers()
 
 void RendererManager::deleteFramebuffers()
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 2; i++)
     {
         glDeleteFramebuffers(1, &mFramebuffers[i].framebuffer);
         glDeleteTextures(1, &mFramebuffers[i].texture);
@@ -528,17 +458,10 @@ void RendererManager::drawGui()
         ImGui::Checkbox("Wireframe", &mRenderWireframe);
         ImGui::Checkbox("Render Normals", &mRenderNormals);
         ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading);
-
-        ImGui::Text("Motion Blur:");
-        ImGui::Checkbox("Enabled", &mMotionBlur.enabled);
-        ImGui::SliderFloat("Strength##MotionBlur", &mMotionBlur.strength, 0.0f, 0.25f, "%.3f");
-        ImGui::SliderInt("Samples##MotionBlur", &mMotionBlur.samples, 1, 16);
     }
 
     mSun->drawGui();
-
     mHaze->drawGui();
-
     mTerrain->drawGui();
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

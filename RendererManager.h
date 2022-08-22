@@ -33,13 +33,6 @@ public:
         unsigned int depthTexture;
     };
 
-    struct MotionBlur {
-        QMatrix4x4 previousViewProjectionMatrix;
-        float strength;
-        int samples;
-        bool enabled;
-    };
-
     enum class BlurDirection { Horizontal, Vertical };
 
     static RendererManager *instance();
@@ -63,7 +56,6 @@ private:
     bool createFramebuffers();
     void deleteFramebuffers();
     void loadModels();
-    void applyMotionBlur();
     void fillStencilBuffer(Framebuffer framebuffer, float ifps);
     void applyBlur(Framebuffer stencilSource, Framebuffer textureSource);
 
@@ -90,7 +82,7 @@ private:
 
     Quad *mQuad;
 
-    Framebuffer mFramebuffers[4];
+    Framebuffer mFramebuffers[2];
 
     int mWidth;
     int mHeight;
@@ -98,8 +90,6 @@ private:
     NozzleEffect *mNozzleEffect;
 
     bool mFlag;
-
-    MotionBlur mMotionBlur;
 };
 
 #endif // RENDERERMANAGER_H

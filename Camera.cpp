@@ -75,6 +75,18 @@ void Camera::setZFar(float newZFar)
     mZFar = newZFar;
 }
 
+bool Camera::active() const
+{
+    return mActive;
+}
+
+void Camera::setActive(bool newActive)
+{
+    mActive = newActive;
+
+    emit activeChanged(mActive);
+}
+
 QMatrix4x4 Camera::projection() const
 {
     QMatrix4x4 projection;
@@ -82,9 +94,21 @@ QMatrix4x4 Camera::projection() const
     return projection;
 }
 
-QVector3D Camera::getViewDirection()
+QVector3D Camera::getViewDirection() const
 {
     return mRotation * QVector3D(0, 0, -1);
+}
+
+QMatrix4x4 Camera::getVP() const
+{
+    return projection() * worldTransformation();
+}
+
+QMatrix4x4 Camera::getWorldRotation() const
+{
+    QMatrix4x4 transformation = worldTransformation();
+    transformation.setColumn(3, QVector4D(0, 0, 0, 1));
+    return transformation;
 }
 
 QMatrix4x4 Camera::transformation() const
@@ -118,16 +142,4 @@ QMatrix4x4 Camera::worldTransformation() const
     {
         return transformation();
     }
-}
-
-bool Camera::active() const
-{
-    return mActive;
-}
-
-void Camera::setActive(bool newActive)
-{
-    mActive = newActive;
-
-    emit activeChanged(mActive);
 }

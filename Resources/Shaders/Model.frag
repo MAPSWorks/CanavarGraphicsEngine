@@ -78,7 +78,6 @@ in mat3 fsTBN;
 
 out vec4 outColor;
 
-
 vec4 getAmbientColor() {
     if(useTexture) {
         if(useTextureAmbient)

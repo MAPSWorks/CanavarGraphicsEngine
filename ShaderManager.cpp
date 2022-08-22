@@ -36,8 +36,7 @@ bool ShaderManager::init()
                  << "node.shininess"
                  << "node.color"
                  << "cameraPosition"
-                 << "viewMatrix"
-                 << "projectionMatrix"
+                 << "VP"
                  << "haze.enabled"
                  << "haze.color"
                  << "haze.density"
@@ -178,8 +177,7 @@ bool ShaderManager::init()
                  << "waterHeight"
                  << "cameraPosition"
                  << "nodeMatrix"
-                 << "viewMatrix"
-                 << "projectionMatrix"
+                 << "VP"
                  << "sand"
                  << "grass"
                  << "terrainTexture"
@@ -224,8 +222,7 @@ bool ShaderManager::init()
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffect.frag");
 
         shader->addUniform("screenTexture");
-        shader->addUniform("viewMatrix");
-        shader->addUniform("projectionMatrix");
+        shader->addUniform("MVP");
         shader->addUniform("velocity");
         shader->addUniform("radius");
 
@@ -247,30 +244,6 @@ bool ShaderManager::init()
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleBlur.frag");
 
         shader->addUniform("screenTexture");
-
-        shader->addAttribute("position");
-        shader->addAttribute("textureCoords");
-
-        if (!shader->init())
-            return false;
-    }
-
-    // Motion Blur Shader
-    {
-        Shader *shader = new Shader(ShaderType::MotionBlurShader);
-        mShaders.insert(shader->type(), shader);
-
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MotionBlur.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MotionBlur.frag");
-
-        shader->addUniform("depthTexture");
-        shader->addUniform("screenTexture");
-        shader->addUniform("inverseViewProjectionMatrix");
-        shader->addUniform("previousViewProjectionMatrix");
-        shader->addUniform("width");
-        shader->addUniform("height");
-        shader->addUniform("samples");
-        shader->addUniform("strength");
 
         shader->addAttribute("position");
         shader->addAttribute("textureCoords");

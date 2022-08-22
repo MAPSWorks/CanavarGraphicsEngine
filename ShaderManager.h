@@ -24,7 +24,6 @@ public:
         ScreenShader,
         NozzleEffectShader,
         NozzleBlurShader,
-        MotionBlurShader,
     };
 
     Shader *getShader(ShaderType shader);
