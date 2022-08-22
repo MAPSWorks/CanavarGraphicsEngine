@@ -207,11 +207,11 @@ bool ShaderManager::init()
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Screen.frag");
 
         shader->addUniform("screenTexture");
-        shader->addUniform("windowWidth");
-        shader->addUniform("windowHeight");
+        shader->addUniform("width");
+        shader->addUniform("height");
 
         shader->addAttribute("position");
-        shader->addAttribute("textureCoord");
+        shader->addAttribute("textureCoords");
 
         if (!shader->init())
             return false;
@@ -254,6 +254,30 @@ bool ShaderManager::init()
         shader->addAttribute("initialPosition");
         shader->addAttribute("velocity");
         shader->addAttribute("life");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Motion Blur Shader
+    {
+        Shader *shader = new Shader(ShaderType::MotionBlurShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MotionBlur.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MotionBlur.frag");
+
+        shader->addUniform("depthTexture");
+        shader->addUniform("screenTexture");
+        shader->addUniform("inverseViewProjectionMatrix");
+        shader->addUniform("previousViewProjectionMatrix");
+        shader->addUniform("width");
+        shader->addUniform("height");
+        shader->addUniform("samples");
+        shader->addUniform("strength");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
 
         if (!shader->init())
             return false;

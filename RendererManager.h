@@ -7,7 +7,7 @@
 #include "ModelData.h"
 #include "NodeManager.h"
 #include "NozzleEffect.h"
-#include "ScreenRenderer.h"
+#include "Quad.h"
 #include "ShaderManager.h"
 #include "SkyBox.h"
 #include "Terrain.h"
@@ -30,6 +30,14 @@ public:
         unsigned int framebuffer;
         unsigned int texture;
         unsigned int renderObject;
+        unsigned int depthTexture;
+    };
+
+    struct MotionBlur {
+        QMatrix4x4 previousViewProjectionMatrix;
+        float strength;
+        int samples;
+        bool enabled;
     };
 
     enum class BlurDirection { Horizontal, Vertical };
@@ -56,6 +64,7 @@ private:
     bool createFramebuffers();
     void deleteFramebuffers();
     void loadModels();
+    void applyMotionBlur();
 
 private:
     QMap<QString, ModelData *> mModelsData;
@@ -78,16 +87,18 @@ private:
 
     bool mUseBlinnShading;
 
-    ScreenRenderer *mScreenRenderer;
+    Quad *mQuad;
 
-    Framebuffer mFramebuffers[3];
+    Framebuffer mFramebuffers[4];
 
-    int mWindowWidth;
-    int mWindowHeight;
+    int mWidth;
+    int mHeight;
 
     NozzleEffect *mNozzleEffect;
 
     bool mFlag;
+
+    MotionBlur mMotionBlur;
 };
 
 #endif // RENDERERMANAGER_H

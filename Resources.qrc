@@ -20,5 +20,7 @@
         <file>Resources/Shaders/NozzleEffect.vert</file>
         <file>Resources/Shaders/NozzleParticles.frag</file>
         <file>Resources/Shaders/NozzleParticles.vert</file>
+        <file>Resources/Shaders/MotionBlur.frag</file>
+        <file>Resources/Shaders/MotionBlur.vert</file>
     </qresource>
 </RCC>

@@ -13,14 +13,18 @@ RendererManager::RendererManager(QObject *parent)
     , mRenderWireframe(false)
     , mRenderNormals(false)
     , mUseBlinnShading(true)
-    , mWindowWidth(1600)
-    , mWindowHeight(900)
+    , mWidth(1600)
+    , mHeight(900)
     , mFlag(false)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
+
+    mMotionBlur.samples = 8;
+    mMotionBlur.strength = 0.025f;
+    mMotionBlur.enabled = true;
 }
 
 RendererManager *RendererManager::instance()
@@ -69,8 +73,8 @@ bool RendererManager::init()
     mTerrain = Terrain::instance();
     mTerrain->create();
 
-    mScreenRenderer = new ScreenRenderer;
-    mScreenRenderer->create();
+    mQuad = new Quad;
+    mQuad->create();
 
     createFramebuffers();
 
@@ -79,8 +83,8 @@ bool RendererManager::init()
 
 void RendererManager::resize(int w, int h)
 {
-    mWindowWidth = w;
-    mWindowHeight = h;
+    mWidth = w;
+    mHeight = h;
 
     if (!mFlag)
     {
@@ -96,6 +100,9 @@ void RendererManager::resize(int w, int h)
 
 void RendererManager::render(float ifps)
 {
+    mCamera = mCameraManager->activeCamera();
+    mSun = mLightManager->directionalLight();
+
     // First pass
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[0].framebuffer);
     glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
@@ -129,25 +136,26 @@ void RendererManager::render(float ifps)
     // Fill: 1 ----> 2
     fillFramebuffer(mFramebuffers[1], mFramebuffers[2]);
 
+    if (mMotionBlur.enabled)
+        applyMotionBlur();
+
     // Render to default framebuffer now
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDisable(GL_STENCIL_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[2].texture);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mMotionBlur.enabled ? mFramebuffers[3].texture : mFramebuffers[2].texture);
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
-    mShaderManager->setUniformValue("windowWidth", mWindowWidth);
-    mShaderManager->setUniformValue("windowHeight", mWindowHeight);
-    mScreenRenderer->render();
+    mShaderManager->setUniformValue("width", mWidth);
+    mShaderManager->setUniformValue("height", mHeight);
+    mQuad->render();
     mShaderManager->release();
+
+    mMotionBlur.previousViewProjectionMatrix = mCamera->projection() * mCamera->worldTransformation();
 }
 
 void RendererManager::renderModels(float)
 {
-    mCamera = mCameraManager->activeCamera();
-    mSun = mLightManager->directionalLight();
-
     if (mCamera)
     {
         mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
@@ -360,9 +368,9 @@ void RendererManager::fillFramebuffer(Framebuffer read, Framebuffer draw)
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read.texture);
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
-    mShaderManager->setUniformValue("windowWidth", mWindowWidth);
-    mShaderManager->setUniformValue("windowHeight", mWindowHeight);
-    mScreenRenderer->render();
+    mShaderManager->setUniformValue("width", mWidth);
+    mShaderManager->setUniformValue("height", mHeight);
+    mQuad->render();
     mShaderManager->release();
 }
 
@@ -387,7 +395,7 @@ void RendererManager::applyBlur(Framebuffer stencil, Framebuffer read, BlurDirec
 
 bool RendererManager::createFramebuffers()
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
     {
         // Creat framebuffer
         glGenFramebuffers(1, &mFramebuffers[i].framebuffer);
@@ -396,14 +404,27 @@ bool RendererManager::createFramebuffers()
         // Create multisampled texture
         glGenTextures(1, &mFramebuffers[i].texture);
         glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture);
-        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWindowWidth, mWindowHeight, GL_TRUE);
+        glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, mWidth, mHeight, GL_TRUE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[i].texture, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         // Create depth buffer
         glGenRenderbuffers(1, &mFramebuffers[i].renderObject);
         glBindRenderbuffer(GL_RENDERBUFFER, mFramebuffers[i].renderObject);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWindowWidth, mWindowHeight);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, mWidth, mHeight);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFramebuffers[i].renderObject);
+
+        // Create depth "texture" in order to implement motion blur
+        glGenTextures(1, &mFramebuffers[i].depthTexture);
+        glBindTexture(GL_TEXTURE_2D, mFramebuffers[i].depthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, mWidth, mHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -417,7 +438,7 @@ bool RendererManager::createFramebuffers()
 
 void RendererManager::deleteFramebuffers()
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
     {
         glDeleteFramebuffers(1, &mFramebuffers[i].framebuffer);
         glDeleteTextures(1, &mFramebuffers[i].texture);
@@ -478,6 +499,29 @@ void RendererManager::loadModels()
     qInfo() << "All textured models are loaded.";
 }
 
+void RendererManager::applyMotionBlur()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[3].framebuffer);
+    glDisable(GL_STENCIL_TEST);
+    glStencilMask(0x00);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[2].texture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, mFramebuffers[0].depthTexture);
+    mShaderManager->bind(ShaderManager::ShaderType::MotionBlurShader);
+    mShaderManager->setUniformValue("sceneTexture", 0);
+    mShaderManager->setUniformValue("depthTexture", 1);
+    mShaderManager->setUniformValue("inverseViewProjectionMatrix", (mCamera->projection() * mCamera->worldTransformation()).inverted());
+    mShaderManager->setUniformValue("previousViewProjectionMatrix", mMotionBlur.previousViewProjectionMatrix);
+    mShaderManager->setUniformValue("width", mWidth);
+    mShaderManager->setUniformValue("height", mHeight);
+    mShaderManager->setUniformValue("samples", mMotionBlur.samples);
+    mShaderManager->setUniformValue("strength", mMotionBlur.strength);
+    mQuad->render();
+    mShaderManager->release();
+}
+
 void RendererManager::setNozzleEffect(NozzleEffect *newNozzleEffect)
 {
     mNozzleEffect = newNozzleEffect;
@@ -495,6 +539,11 @@ void RendererManager::drawGui()
         ImGui::Checkbox("Wireframe", &mRenderWireframe);
         ImGui::Checkbox("Render Normals", &mRenderNormals);
         ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading);
+
+        ImGui::Text("Motion Blur:");
+        ImGui::Checkbox("Enabled", &mMotionBlur.enabled);
+        ImGui::SliderFloat("Strength##MotionBlur", &mMotionBlur.strength, 0.0f, 0.25f, "%.3f");
+        ImGui::SliderInt("Samples##MotionBlur", &mMotionBlur.samples, 1, 16);
     }
 
     mSun->drawGui();

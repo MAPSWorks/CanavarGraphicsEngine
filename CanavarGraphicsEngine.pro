@@ -38,8 +38,8 @@ HEADERS += \
     NodeManager.h \
     NozzleEffect.h \
     PointLight.h \
+    Quad.h \
     RendererManager.h \
-    ScreenRenderer.h \
     Shader.h \
     ShaderManager.h \
     Simulator/Aircraft.h \
@@ -72,8 +72,8 @@ SOURCES += \
     NodeManager.cpp \
     NozzleEffect.cpp \
     PointLight.cpp \
+    Quad.cpp \
     RendererManager.cpp \
-    ScreenRenderer.cpp \
     Shader.cpp \
     ShaderManager.cpp \
     Simulator/Aircraft.cpp \
