@@ -64,6 +64,8 @@ private:
     void deleteFramebuffers();
     void loadModels();
     void applyMotionBlur();
+    void fillStencilBuffer(Framebuffer framebuffer, float ifps);
+    void applyBlur(Framebuffer stencilSource, Framebuffer textureSource);
 
 private:
     QMap<QString, ModelData *> mModelsData;

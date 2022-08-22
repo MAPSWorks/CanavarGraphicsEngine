@@ -76,11 +76,11 @@ vec4 applyVerticalLinearBlur(ivec2 windowCoords, int sampleNum){
 
 void main()
 {
-    ivec2 fragCoord = ivec2(int(gl_FragCoord.x), int(gl_FragCoord.y));
-    vec4 sample1 = applyBlur1(fragCoord, 0);
-    vec4 sample2 = applyBlur1(fragCoord, 1);
-    vec4 sample3 = applyBlur1(fragCoord, 2);
-    vec4 sample4 = applyBlur1(fragCoord, 3);
+    ivec2 coords = ivec2(gl_FragCoord.xy);
+    vec4 sample1 = applyBlur2(coords, 0);
+    vec4 sample2 = applyBlur2(coords, 1);
+    vec4 sample3 = applyBlur2(coords, 2);
+    vec4 sample4 = applyBlur2(coords, 3);
     outColor = vec4(sample1 + sample2 + sample3 + sample4) / 4.0f;
 
 //    if(applyHorizontalBlur)

@@ -207,8 +207,6 @@ bool ShaderManager::init()
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Screen.frag");
 
         shader->addUniform("screenTexture");
-        shader->addUniform("width");
-        shader->addUniform("height");
 
         shader->addAttribute("position");
         shader->addAttribute("textureCoords");

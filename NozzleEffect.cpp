@@ -6,7 +6,7 @@
 NozzleEffect::NozzleEffect(QObject *parent)
     : Node(parent)
     , mNumberOfParticles(50000)
-    , mRadius(0.7f)
+    , mRadius(0.9f)
     , mMaxLife(0.25f)
     , mVelocity(5.0f)
 {
@@ -32,7 +32,7 @@ void NozzleEffect::create()
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(CUBE_VERTICES), CUBE_VERTICES, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
 
     glGenBuffers(1, &mPBO);
@@ -71,7 +71,7 @@ void NozzleEffect::renderParticles(float ifps)
     mVAO->bind();
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, mParticles.size() * sizeof(Particle), mParticles.constData());
-    glDrawArraysInstanced(GL_POINTS, 0, 36, mNumberOfParticles);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mNumberOfParticles);
     mVAO->release();
 
     glDisable(GL_BLEND);
