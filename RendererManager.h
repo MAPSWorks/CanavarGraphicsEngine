@@ -59,7 +59,8 @@ private:
     void deleteFramebuffers();
     void loadModels();
     void fillStencilBuffer(Framebuffer framebuffer, float ifps);
-    void applyBlur(Framebuffer stencilSource, Framebuffer textureSource);
+    void applyNozzleBlur(Framebuffer stencilSource, Framebuffer textureSource);
+    void applyMotionBlur(Framebuffer read, Framebuffer draw);
 
 private:
     QMap<QString, ModelData *> mModelsData;
@@ -90,6 +91,8 @@ private:
     NozzleEffect *mNozzleEffect;
 
     bool mFlag;
+
+    bool mApplyMotionBlur;
 };
 
 #endif // RENDERERMANAGER_H

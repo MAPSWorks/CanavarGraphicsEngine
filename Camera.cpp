@@ -111,6 +111,16 @@ QMatrix4x4 Camera::getWorldRotation() const
     return transformation;
 }
 
+const QMatrix4x4 &Camera::previousVP() const
+{
+    return mPreviousVP;
+}
+
+void Camera::updateVP()
+{
+    mPreviousVP = projection() * worldTransformation();
+}
+
 QMatrix4x4 Camera::transformation() const
 {
     QMatrix4x4 transformation;

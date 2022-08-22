@@ -22,5 +22,7 @@
         <file>Resources/Shaders/NozzleBlur.vert</file>
         <file>Resources/Shaders/Sky.frag</file>
         <file>Resources/Shaders/Sky.vert</file>
+        <file>Resources/Shaders/MotionBlur.frag</file>
+        <file>Resources/Shaders/MotionBlur.vert</file>
     </qresource>
 </RCC>

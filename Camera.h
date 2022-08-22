@@ -42,6 +42,8 @@ public:
     virtual QVector3D getViewDirection() const;
     virtual QMatrix4x4 getVP() const;
     virtual QMatrix4x4 getWorldRotation() const;
+    const QMatrix4x4 &previousVP() const;
+    virtual void updateVP();
 
     virtual void onKeyPressed(QKeyEvent *) = 0;
     virtual void onKeyReleased(QKeyEvent *) = 0;
@@ -56,8 +58,9 @@ protected:
     float mAspectRatio;
     float mZNear;
     float mZFar;
-
     bool mActive;
+
+    QMatrix4x4 mPreviousVP;
 };
 
 #endif // CAMERA_H

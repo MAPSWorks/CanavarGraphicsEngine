@@ -275,6 +275,28 @@ bool ShaderManager::init()
             return false;
     }
 
+    // Motion Blur Shader
+    {
+        Shader *shader = new Shader(ShaderType::MotionBlurShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MotionBlur.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MotionBlur.frag");
+
+        shader->addUniform("depthTexture");
+        shader->addUniform("colorTexture");
+        shader->addUniform("inverseVP");
+        shader->addUniform("previousVP");
+        shader->addUniform("width");
+        shader->addUniform("height");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

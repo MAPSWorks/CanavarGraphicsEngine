@@ -16,6 +16,7 @@ RendererManager::RendererManager(QObject *parent)
     , mWidth(1600)
     , mHeight(900)
     , mFlag(false)
+    , mApplyMotionBlur(false)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
@@ -111,21 +112,26 @@ void RendererManager::render(float ifps)
     renderParticles(ifps);
 
     // Nozzle effect
-    // Fill: 0 ----> 1
     fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
     fillStencilBuffer(mFramebuffers[0], ifps);
-    applyBlur(mFramebuffers[0], mFramebuffers[1]);
+    applyNozzleBlur(mFramebuffers[0], mFramebuffers[1]);
+
+    // Motion Blur
+    if (mApplyMotionBlur)
+        applyMotionBlur(mFramebuffers[0], mFramebuffers[1]);
 
     // Render to default framebuffer now
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_STENCIL_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[0].texture);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[mApplyMotionBlur ? 1 : 0].texture);
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
     mQuad->render();
     mShaderManager->release();
+
+    mCamera->updateVP();
 }
 
 void RendererManager::fillStencilBuffer(Framebuffer framebuffer, float ifps)
@@ -141,7 +147,7 @@ void RendererManager::fillStencilBuffer(Framebuffer framebuffer, float ifps)
     glDisable(GL_STENCIL_TEST);
 }
 
-void RendererManager::applyBlur(Framebuffer stencilSource, Framebuffer textureSource)
+void RendererManager::applyNozzleBlur(Framebuffer stencilSource, Framebuffer textureSource)
 {
     // Blur pass
     glBindFramebuffer(GL_FRAMEBUFFER, stencilSource.framebuffer);
@@ -156,6 +162,28 @@ void RendererManager::applyBlur(Framebuffer stencilSource, Framebuffer textureSo
     mQuad->render();
     mShaderManager->release();
     glDisable(GL_STENCIL_TEST);
+}
+
+void RendererManager::applyMotionBlur(Framebuffer read, Framebuffer draw)
+{
+    // Motion Blur
+    glBindFramebuffer(GL_FRAMEBUFFER, draw.framebuffer);
+    glDisable(GL_STENCIL_TEST);
+    glStencilMask(0x00);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read.texture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, read.depthTexture);
+    mShaderManager->bind(ShaderManager::ShaderType::MotionBlurShader);
+    mShaderManager->setUniformValue("colorTexture", 0);
+    mShaderManager->setUniformValue("depthTexture", 1);
+    mShaderManager->setUniformValue("inverseVP", mCamera->getVP().inverted());
+    mShaderManager->setUniformValue("previousVP", mCamera->previousVP());
+    mShaderManager->setUniformValue("width", mWidth);
+    mShaderManager->setUniformValue("height", mHeight);
+    mQuad->render();
+    mShaderManager->release();
 }
 
 void RendererManager::fillFramebuffer(Framebuffer read, Framebuffer draw)
@@ -477,6 +505,7 @@ void RendererManager::drawGui()
         ImGui::Checkbox("Wireframe", &mRenderWireframe);
         ImGui::Checkbox("Render Normals", &mRenderNormals);
         ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading);
+        ImGui::Checkbox("Motion Blur", &mApplyMotionBlur);
     }
 
     mSun->drawGui();
