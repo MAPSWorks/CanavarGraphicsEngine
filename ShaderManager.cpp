@@ -217,7 +217,7 @@ bool ShaderManager::init()
             return false;
     }
 
-    // Nozzle Effect Shader
+    // Nozzle Particles Shader
     {
         Shader *shader = new Shader(ShaderType::NozzleEffectShader);
         mShaders.insert(shader->type(), shader);
@@ -225,35 +225,33 @@ bool ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleEffect.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffect.frag");
 
-        shader->addUniform("modelMatrix");
+        shader->addUniform("screenTexture");
         shader->addUniform("viewMatrix");
         shader->addUniform("projectionMatrix");
-        shader->addUniform("screenTexture");
-        shader->addUniform("applyHorizontalBlur");
+        shader->addUniform("velocity");
+        shader->addUniform("radius");
 
-        shader->addAttribute("position");
+        shader->addAttribute("vertexPosition");
+        shader->addAttribute("initialPosition");
+        shader->addAttribute("velocityDirection");
+        shader->addAttribute("life");
 
         if (!shader->init())
             return false;
     }
 
-    // Nozzle Particles Shader
+    // Nozzle Blur Shader
     {
-        Shader *shader = new Shader(ShaderType::NozzleParticlesShader);
+        Shader *shader = new Shader(ShaderType::NozzleBlurShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleParticles.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleParticles.frag");
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleBlur.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleBlur.frag");
 
-        shader->addUniform("nodeMatrix");
-        shader->addUniform("viewMatrix");
-        shader->addUniform("projectionMatrix");
-        shader->addUniform("radius");
+        shader->addUniform("screenTexture");
 
-        shader->addAttribute("vertexPosition");
-        shader->addAttribute("initialPosition");
-        shader->addAttribute("velocity");
-        shader->addAttribute("life");
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
 
         if (!shader->init())
             return false;

@@ -60,7 +60,6 @@ private:
     void renderParticles(float ifps);
     void renderModel(Model *model);
     void fillFramebuffer(Framebuffer read, Framebuffer draw);
-    void applyBlur(Framebuffer stencil, Framebuffer read, BlurDirection direction);
     bool createFramebuffers();
     void deleteFramebuffers();
     void loadModels();

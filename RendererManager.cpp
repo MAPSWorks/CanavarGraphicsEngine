@@ -103,7 +103,7 @@ void RendererManager::render(float ifps)
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
 
-    // First pass
+    // Render
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[0].framebuffer);
     glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -111,39 +111,35 @@ void RendererManager::render(float ifps)
     renderTerrain(ifps);
     renderParticles(ifps);
 
-    // Second pass for stencil test
-    glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[1].framebuffer);
-    glStencilMask(0x00);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    renderModels(ifps);
-    renderTerrain(ifps);
-    renderParticles(ifps);
-    glEnable(GL_STENCIL_TEST);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    // Fill: 0 ----> 1
+    fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
+
+    // Fill stencil buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[0].framebuffer);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Do not draw any pixels on the back buffer
+    glEnable(GL_STENCIL_TEST);                           // Enables testing AND writing functionalities
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);                   // Do not test the current value in the stencil buffer, always accept any value on there for drawing
     glStencilMask(0xFF);
-    mNozzleEffect->renderBlurEffect();
+    glStencilOp(GL_REPLACE, GL_KEEP, GL_REPLACE);
+    renderParticles(ifps);
 
-    // Apply blur
-    applyBlur(mFramebuffers[1], mFramebuffers[0], BlurDirection::Horizontal);
-
-    // Fill: 1 ----> 2
-    fillFramebuffer(mFramebuffers[1], mFramebuffers[2]);
-
-    // Apply blur
-    applyBlur(mFramebuffers[1], mFramebuffers[2], BlurDirection::Vertical);
-
-    // Fill: 1 ----> 2
-    fillFramebuffer(mFramebuffers[1], mFramebuffers[2]);
-
-    if (mMotionBlur.enabled)
-        applyMotionBlur();
+    // Blur pass
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);          // Make sure you will no longer (over)write stencil values, even if any test succeeds
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Make sure we draw on the backbuffer again.
+    glStencilFunc(GL_EQUAL, 1, 0xFF);                // Now we will only draw pixels where the corresponding stencil buffer value equals 1
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[1].texture);
+    mShaderManager->bind(ShaderManager::ShaderType::NozzleBlurShader);
+    mShaderManager->setUniformValue("screenTexture", 0);
+    mQuad->render();
+    mShaderManager->release();
 
     // Render to default framebuffer now
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_STENCIL_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mMotionBlur.enabled ? mFramebuffers[3].texture : mFramebuffers[2].texture);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[0].texture);
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setUniformValue("screenTexture", 0);
     mShaderManager->setUniformValue("width", mWidth);
@@ -270,11 +266,12 @@ void RendererManager::renderTerrain(float)
 
 void RendererManager::renderParticles(float ifps)
 {
-    mShaderManager->bind(ShaderManager::ShaderType::NozzleParticlesShader);
+    mShaderManager->bind(ShaderManager::ShaderType::NozzleEffectShader);
     mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
     mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->getParticlesWorldTransformation());
+    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
     mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
+    mShaderManager->setUniformValue("velocity", mNozzleEffect->velocity());
     mNozzleEffect->renderParticles(ifps);
     mShaderManager->release();
 }
@@ -372,25 +369,6 @@ void RendererManager::fillFramebuffer(Framebuffer read, Framebuffer draw)
     mShaderManager->setUniformValue("height", mHeight);
     mQuad->render();
     mShaderManager->release();
-}
-
-void RendererManager::applyBlur(Framebuffer stencil, Framebuffer read, BlurDirection direction)
-{
-    glBindFramebuffer(GL_FRAMEBUFFER, stencil.framebuffer);
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    mShaderManager->bind(ShaderManager::ShaderType::NozzleEffectShader);
-    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-    mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-    mShaderManager->setUniformValue("modelMatrix", mNozzleEffect->worldTransformation());
-    mShaderManager->setUniformValue("screenTexture", 0);
-    mShaderManager->setUniformValue("applyHorizontalBlur", direction == BlurDirection::Horizontal);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read.texture);
-    mNozzleEffect->renderBlurEffect();
-    mShaderManager->release();
-
-    glDisable(GL_STENCIL_TEST);
 }
 
 bool RendererManager::createFramebuffers()

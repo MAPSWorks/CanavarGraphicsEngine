@@ -198,8 +198,6 @@ QString Shader::getShaderTypeString()
         return "Screen Shader";
     case ShaderManager::ShaderType::NozzleEffectShader:
         return "Nozzle Effect Shader";
-    case ShaderManager::ShaderType::NozzleParticlesShader:
-        return "Nozzle Particles Shader";
     default:
         return "Unknown Shader";
     }

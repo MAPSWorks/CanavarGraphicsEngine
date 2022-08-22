@@ -7,9 +7,8 @@ NozzleEffect::NozzleEffect(QObject *parent)
     : Node(parent)
     , mNumberOfParticles(50000)
     , mRadius(0.7f)
-    , mMaxLife(0.05f)
-    , mMinVelocity(2.0f)
-    , mMaxVelocity(20.0f)
+    , mMaxLife(0.25f)
+    , mVelocity(5.0f)
 {
     mName = "Nozzle Effect";
     mNodeType = Node::NodeType::NozzleEffect;
@@ -44,7 +43,7 @@ void NozzleEffect::create()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) 0);
 
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, velocity));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, velocityDirection));
 
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, life));
@@ -60,8 +59,9 @@ void NozzleEffect::renderParticles(float ifps)
 {
     for (int i = 0; i < mParticles.size(); i++)
     {
+        float r = mParticles[i].initialPosition.length();
         mParticles[i].life += ifps;
-        if (mParticles[i].life >= mMaxLife + getRandomFloat(2 * mMaxLife))
+        if (mParticles[i].life >= mMaxLife + getRandomFloat(mMaxLife * (mRadius - r)))
             mParticles[i] = generateParticle();
     }
 
@@ -77,35 +77,6 @@ void NozzleEffect::renderParticles(float ifps)
     glDisable(GL_BLEND);
 }
 
-void NozzleEffect::renderBlurEffect()
-{
-    mModelData->render(GL_TRIANGLES);
-}
-
-QMatrix4x4 NozzleEffect::getParticlesWorldTransformation()
-{
-    QMatrix4x4 transformation;
-    transformation.rotate(mParticlesRotation);
-    transformation.setColumn(3, QVector4D(mParticlesPosition, 1.0f));
-
-    Node *node = dynamic_cast<Node *>(parent());
-
-    if (node)
-        return node->worldTransformation() * transformation;
-    else
-        return transformation;
-}
-
-ModelData *NozzleEffect::modelData() const
-{
-    return mModelData;
-}
-
-void NozzleEffect::setModelData(ModelData *newModelData)
-{
-    mModelData = newModelData;
-}
-
 float NozzleEffect::getRandomFloat(float bound)
 {
     return mRandomGenerator.bounded(bound);
@@ -117,151 +88,9 @@ NozzleEffect::Particle NozzleEffect::generateParticle()
     double theta = getRandomFloat(2.0f * M_PI);
     Particle particle;
     particle.initialPosition = QVector3D(r * cos(theta), r * sin(theta), 0);
-    particle.velocity = QVector3D(0, 0, mMinVelocity + getRandomFloat(mMaxVelocity - mMinVelocity));
+    particle.velocityDirection = QVector3D(0, 0, 0.5 + getRandomFloat(0.5));
     particle.life = 0.0f;
     return particle;
-}
-
-float NozzleEffect::radius() const
-{
-    return mRadius;
-}
-
-void NozzleEffect::setRadius(float newRadius)
-{
-    mRadius = newRadius;
-}
-
-void NozzleEffect::drawGui()
-{
-    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Nozzle Effect");
-
-    ImGui::SliderFloat("Radius##NozzleEffect", &mRadius, 0.001f, 4.0f, "%.3f");
-    ImGui::SliderFloat("Max Life##NozzleEffect", &mMaxLife, 0.001f, 2.0f, "%.3f");
-    ImGui::SliderFloat("Min Velocity##NozzleEffect", &mMinVelocity, 0.0f, 20.0f, "%.3f");
-    ImGui::SliderFloat("Max Velocity##NozzleEffect", &mMaxVelocity, 20.0f, 100.0f, "%.3f");
-
-    // Particles Position
-    {
-        ImGui::Text("Particles Position:");
-        float x = mParticlesPosition.x();
-        float y = mParticlesPosition.y();
-        float z = mParticlesPosition.z();
-
-        if (ImGui::DragFloat("x##NozzleEffectParticlesPosition", &x, 0.01f, -50.0f, 50.0f, "%.3f"))
-            mParticlesPosition = QVector3D(x, y, z);
-        if (ImGui::DragFloat("y##NozzleEffectParticlesPosition", &y, 0.01f, -50.0f, 50.0f, "%.3f"))
-            mParticlesPosition = QVector3D(x, y, z);
-        if (ImGui::DragFloat("z##NozzleEffectParticlesPosition", &z, 0.01f, -50.0f, 50.0f, "%.3f"))
-            mParticlesPosition = QVector3D(x, y, z);
-    }
-
-    // Particles Rotation
-    {
-        ImGui::Text("Particles Rotation:");
-        float w = mParticlesRotation.scalar();
-        float x = mParticlesRotation.x();
-        float y = mParticlesRotation.y();
-        float z = mParticlesRotation.z();
-
-        if (ImGui::DragFloat("w##NozzleEffectParticlesRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mParticlesRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("x##NozzleEffectParticlesRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mParticlesRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("y##NozzleEffectParticlesRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mParticlesRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("z##NozzleEffectParticlesRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mParticlesRotation = QQuaternion(w, x, y, z).normalized();
-    }
-
-    // Blur Position
-    {
-        ImGui::Text("Blur Position:");
-        float x = mPosition.x();
-        float y = mPosition.y();
-        float z = mPosition.z();
-
-        if (ImGui::DragFloat("x##NozzleEffectBlurPosition", &x, 0.01f, -50.0f, 50.0f, "%.3f"))
-            mPosition = QVector3D(x, y, z);
-        if (ImGui::DragFloat("y##NozzleEffectBlurPosition", &y, 0.01f, -50.0f, 50.0f, "%.3f"))
-            mPosition = QVector3D(x, y, z);
-        if (ImGui::DragFloat("z##NozzleEffectBlurPosition", &z, 0.01f, -50.0f, 50.0f, "%.3f"))
-            mPosition = QVector3D(x, y, z);
-    }
-
-    // Blur Rotation
-    {
-        ImGui::Text("Blur Rotation:");
-        float w = mRotation.scalar();
-        float x = mRotation.x();
-        float y = mRotation.y();
-        float z = mRotation.z();
-
-        if (ImGui::DragFloat("w##NozzleEffectBlurRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("x##NozzleEffectBlurRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("y##NozzleEffectBlurRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("z##NozzleEffectBlurRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mRotation = QQuaternion(w, x, y, z).normalized();
-    }
-
-    // Blur Scale
-    {
-        ImGui::Text("Blur Scale:");
-        float x = mScale.x();
-        float y = mScale.y();
-        float z = mScale.z();
-
-        if (ImGui::DragFloat("x##NozzleEffectBlurScale", &x, 0.00001f, 0.00001f, 1.0f, "%.6f"))
-            mScale = QVector3D(x, y, z);
-        if (ImGui::DragFloat("y##NozzleEffectBlurScale", &y, 0.00001f, 0.00001f, 1.0f, "%.6f"))
-            mScale = QVector3D(x, y, z);
-        if (ImGui::DragFloat("z##NozzleEffectBlurScale", &z, 0.00001f, 0.00001f, 1.0f, "%.6f"))
-            mScale = QVector3D(x, y, z);
-    }
-}
-
-float NozzleEffect::maxVelocity() const
-{
-    return mMaxVelocity;
-}
-
-void NozzleEffect::setMaxVelocity(float newMaxVelocity)
-{
-    mMaxVelocity = newMaxVelocity;
-}
-
-float NozzleEffect::minVelocity() const
-{
-    return mMinVelocity;
-}
-
-void NozzleEffect::setMinVelocity(float newMinVelocity)
-{
-    mMinVelocity = newMinVelocity;
-}
-
-const QQuaternion &NozzleEffect::particlesRotation() const
-{
-    return mParticlesRotation;
-}
-
-void NozzleEffect::setParticlesRotation(const QQuaternion &newParticlesRotation)
-{
-    mParticlesRotation = newParticlesRotation;
-}
-
-const QVector3D &NozzleEffect::particlesPosition() const
-{
-    return mParticlesPosition;
-}
-
-void NozzleEffect::setParticlesPosition(const QVector3D &newParticlesPosition)
-{
-    mParticlesPosition = newParticlesPosition;
 }
 
 float NozzleEffect::maxLife() const
@@ -269,9 +98,26 @@ float NozzleEffect::maxLife() const
     return mMaxLife;
 }
 
-void NozzleEffect::setMaxLife(float newMaxLife)
+float NozzleEffect::velocity() const
 {
-    mMaxLife = newMaxLife;
+    return mVelocity;
+}
+
+float NozzleEffect::radius() const
+{
+    return mRadius;
+}
+
+void NozzleEffect::drawGui()
+{
+    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Nozzle Effect");
+    ImGui::Text("Parameters:");
+    ImGui::SliderFloat("Radius##NozzleEffect", &mRadius, 0.001f, 4.0f, "%.4f");
+    ImGui::SliderFloat("Max Life##NozzleEffect", &mMaxLife, 0.001f, 10.0f, "%.4f");
+    ImGui::SliderFloat("Velocity##NozzleEffect", &mVelocity, 0.0f, 50.0f, "%.3f");
+
+    Node::drawGui();
 }
 
 const float NozzleEffect::CUBE_VERTICES[108] = {-0.0075f, -0.0075f, -0.0075f, -0.0075f, -0.0075f, 0.0075f,  -0.0075f, 0.0075f,  0.0075f,  0.0075f,  0.0075f,  -0.0075f, -0.0075f, -0.0075f,

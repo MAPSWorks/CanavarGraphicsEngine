@@ -23,8 +23,8 @@ public:
         TerrainShader,
         ScreenShader,
         NozzleEffectShader,
-        NozzleParticlesShader,
-        MotionBlurShader
+        NozzleBlurShader,
+        MotionBlurShader,
     };
 
     Shader *getShader(ShaderType shader);
