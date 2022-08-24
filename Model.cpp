@@ -57,10 +57,6 @@ void Model::drawGui()
         ImGui::SliderFloat("Diffuse##Model", &mMaterial.diffuse, 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Specular##Model", &mMaterial.specular, 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Shininess##Model", &mMaterial.shininess, 1.0f, 128.0f, "%.3f");
-
-        float color[4] = {mMaterial.color.x(), mMaterial.color.y(), mMaterial.color.z(), mMaterial.color.w()};
-
-        if (ImGui::ColorEdit4("Color##Model", (float *) &color))
-            mMaterial.color = QVector4D(color[0], color[1], color[2], color[3]);
+        ImGui::ColorEdit4("Color##Model", (float *) &mMaterial.color);
     }
 }

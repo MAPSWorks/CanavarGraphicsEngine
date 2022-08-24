@@ -263,6 +263,7 @@ bool ShaderManager::init()
         shader->addUniform("skyColorTop");
         shader->addUniform("skyColorBottom");
         shader->addUniform("lightDirection");
+        shader->addUniform("lightColor");
         shader->addUniform("width");
         shader->addUniform("height");
         shader->addUniform("inverseProjectionMatrix");
@@ -280,36 +281,37 @@ bool ShaderManager::init()
         Shader *shader = new Shader(ShaderType::VolumetricCloudsShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/VolumetricClouds.comp");
-        shader->addUniform("FOV");
-        shader->addUniform("width");
-        shader->addUniform("height");
-        shader->addUniform("time");
+        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/VolumetricClouds.glsl");
         shader->addUniform("cameraPosition");
         shader->addUniform("inverseViewMatrix");
         shader->addUniform("inverseProjectionMatrix");
         shader->addUniform("inverseVP");
+        shader->addUniform("width");
+        shader->addUniform("height");
+        shader->addUniform("time");
+        shader->addUniform("FOV");
+
         shader->addUniform("lightColor");
         shader->addUniform("lightDirection");
-        shader->addUniform("sky");
-        shader->addUniform("cloud");
-        shader->addUniform("worley32");
-        shader->addUniform("weatherTex");
+
         shader->addUniform("coverageMultiplier");
         shader->addUniform("cloudSpeed");
         shader->addUniform("crispiness");
-        shader->addUniform("cloudColorTop");
-        shader->addUniform("cloudColorBottom");
-        shader->addUniform("skyColorBottom");
-        shader->addUniform("skyColorTop");
+        shader->addUniform("curliness");
+        shader->addUniform("absorption");
+        shader->addUniform("densityFactor");
+        shader->addUniform("enablePowder");
+        shader->addUniform("windDirection");
+        shader->addUniform("cloudColor");
+        shader->addUniform("cloudFlareColor");
         shader->addUniform("earthRadius");
         shader->addUniform("sphereInnerRadius");
         shader->addUniform("sphereOuterRadius");
-        shader->addUniform("curliness");
-        shader->addUniform("absorption");
-        shader->addUniform("windDirection");
-        shader->addUniform("enablePowder");
-        shader->addUniform("densityFactor");
+
+        shader->addUniform("sky");
+        shader->addUniform("perlin");
+        shader->addUniform("worley");
+        shader->addUniform("weather");
 
         if (!shader->init())
             return false;
@@ -320,7 +322,7 @@ bool ShaderManager::init()
         Shader *shader = new Shader(ShaderType::WeatherShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/Weather.comp");
+        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/Weather.glsl");
 
         shader->addUniform("outWeatherTex");
         shader->addUniform("seed");
@@ -335,7 +337,7 @@ bool ShaderManager::init()
         Shader *shader = new Shader(ShaderType::PerlinWorleyShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/PerlinWorley.comp");
+        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/PerlinWorley.glsl");
         shader->addUniform("outVolTex");
 
         if (!shader->init())
@@ -347,8 +349,26 @@ bool ShaderManager::init()
         Shader *shader = new Shader(ShaderType::WorleyShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/Worley.comp");
+        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/Worley.glsl");
         shader->addUniform("outVolTex");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Screen Shader
+    {
+        Shader *shader = new Shader(ShaderType::PostProcessingShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/PostProcessing.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcessing.frag");
+
+        shader->addUniform("onlySkyTexture");
+        shader->addUniform("skyAndCloudsTexture");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
 
         if (!shader->init())
             return false;

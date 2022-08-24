@@ -56,6 +56,9 @@ private:
     QVector3D mSkyColorTop;
     QVector3D mSkyColorBottom;
 
+    QVector3D mCloudColor;
+    QVector3D mCloudFlareColor;
+
     float mCloudSpeed;
     float mCoverage;
     float mCrispiness;
@@ -70,8 +73,6 @@ private:
     float mPerlinFrequency;
     bool mEnablePower;
     QVector3D mSeed;
-    QVector3D mCloudColorTop;
-    QVector3D mCloudColorBottom;
 
     InputTextureSet mInputTextures;
     OutputTextureSet mOutputTextures;

@@ -5,19 +5,20 @@ Sky::Sky(QObject *parent)
     : QObject{parent}
     , mSkyColorTop(0.5, 0.7, 0.8)
     , mSkyColorBottom(0.9, 0.9, 0.95)
+    , mCloudColor(0.2f, 0.2f, 0.2f)
+    , mCloudFlareColor(0.4, 0.3, 0.15)
     , mCloudSpeed(450.f)
-    , mCoverage(0.45f)
-    , mCrispiness(0.1f)
+    , mCoverage(0.25f)
+    , mCrispiness(40.0f)
+    , mCurliness(0.1f)
     , mDensity(0.02f)
-    , mAbsorption(0.35f)
+    , mAbsorption(0.0035f)
     , mEarthRadius(600000.0f)
     , mSphereInnerRadius(5000.0f)
     , mSphereOuterRadius(17000.0f)
     , mPerlinFrequency(0.8f)
     , mEnablePower(false)
     , mSeed(0, 0, 0)
-    , mCloudColorTop(1, 0, 0)
-    , mCloudColorBottom(1, 0, 0)
     , mSkyBoxFramebuffer(nullptr)
     , mTimeElapsed(0.0f)
 
@@ -122,6 +123,7 @@ void Sky::render(float ifps)
     mShaderManager->setUniformValue("skyColorTop", mSkyColorTop);
     mShaderManager->setUniformValue("skyColorBottom", mSkyColorBottom);
     mShaderManager->setUniformValue("lightDirection", mSun->direction());
+    mShaderManager->setUniformValue("lightColor", mSun->color().toVector3D());
     mShaderManager->setUniformValue("width", mWidth);
     mShaderManager->setUniformValue("height", mHeight);
     mShaderManager->setUniformValue("inverseProjectionMatrix", mCamera->projection().inverted());
@@ -130,7 +132,6 @@ void Sky::render(float ifps)
     mShaderManager->release();
 
     // Clouds
-
     mShaderManager->bind(ShaderManager::ShaderType::VolumetricCloudsShader);
 
     glBindImageTexture(0, mOutputTextures.fragColor->id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
@@ -146,8 +147,8 @@ void Sky::render(float ifps)
     mShaderManager->setUniformValue("inverseVP", mCamera->worldTransformation().inverted() * mCamera->projection().inverted());
     mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
     mShaderManager->setUniformValue("FOV", mCamera->verticalFov());
-    mShaderManager->setUniformValue("lightDirection", mSun->direction());
-    mShaderManager->setUniformValue("lightColor", mSun->color());
+    mShaderManager->setUniformValue("lightDirection", -mSun->direction());
+    mShaderManager->setUniformValue("lightColor", mSun->color().toVector3D());
 
     mShaderManager->setUniformValue("coverageMultiplier", mCoverage);
     mShaderManager->setUniformValue("cloudSpeed", mCloudSpeed);
@@ -160,31 +161,14 @@ void Sky::render(float ifps)
     mShaderManager->setUniformValue("sphereInnerRadius", mSphereInnerRadius);
     mShaderManager->setUniformValue("sphereOuterRadius", mSphereOuterRadius);
 
-    mShaderManager->setUniformValue("cloudColorTop", mCloudColorTop);
-    mShaderManager->setUniformValue("cloudColorBottom", mCloudColorBottom);
-
-    mShaderManager->setUniformValue("skyColorTop", mSkyColorTop);
-    mShaderManager->setUniformValue("skyColorBottom", mSkyColorBottom);
-
-    mShaderManager->setUniformValue("skyColorTop", mSkyColorTop);
-    mShaderManager->setUniformValue("skyColorBottom", mSkyColorBottom);
+    mShaderManager->setUniformValue("cloudColor", mCloudColor);
+    mShaderManager->setUniformValue("cloudFlareColor", mCloudFlareColor);
 
     // Textures
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_3D, mInputTextures.perlin->id());
-    mShaderManager->setUniformValue("cloud", 0);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_3D, mInputTextures.worley->id());
-    mShaderManager->setUniformValue("worley32", 1);
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, mInputTextures.weather->id());
-    mShaderManager->setUniformValue("weatherTex", 2);
-
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mSkyBoxFramebuffer->texture());
-    mShaderManager->setUniformValue("sky", 3);
+    mShaderManager->setSampler("perlin", 0, mInputTextures.perlin->id(), GL_TEXTURE_3D);
+    mShaderManager->setSampler("worley", 1, mInputTextures.worley->id(), GL_TEXTURE_3D);
+    mShaderManager->setSampler("weather", 2, mInputTextures.weather->id(), GL_TEXTURE_2D);
+    mShaderManager->setSampler("sky", 3, mSkyBoxFramebuffer->texture(), GL_TEXTURE_2D_MULTISAMPLE);
 
     glDispatchCompute(INT_CEIL(mWidth, 16), INT_CEIL(mHeight, 16), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -194,7 +178,34 @@ void Sky::render(float ifps)
     glEnable(GL_DEPTH_TEST);
 }
 
-void Sky::drawGui() {}
+void Sky::drawGui()
+{
+    // Render Settings
+    if (!ImGui::CollapsingHeader("Sky"))
+    {
+        ImGui::Text("Clouds rendering");
+
+        ImGui::SliderFloat("Coverage", &mCoverage, 0.0f, 1.0f);
+        ImGui::SliderFloat("Speed", &mCloudSpeed, 0.0f, 5.0E3);
+        ImGui::SliderFloat("Crispiness", &mCrispiness, 0.0f, 120.0f);
+        ImGui::SliderFloat("Curliness", &mCurliness, 0.0f, 3.0f);
+        ImGui::SliderFloat("Density", &mDensity, 0.0f, 0.1f);
+        ImGui::SliderFloat("Light absorption", &mAbsorption, 0.0f, 0.01f, "%.6f");
+        ImGui::Checkbox("Enable sugar powder effect", &mEnablePower);
+
+        ImGui::Text("Dome controls");
+        ImGui::SliderFloat("Sky dome radius", &mEarthRadius, 10000.0f, 5000000.0f);
+        ImGui::SliderFloat("Clouds bottom height", &mSphereInnerRadius, 1000.0f, 15000.0f);
+        ImGui::SliderFloat("Clouds top height", &mSphereOuterRadius, 1000.0f, 40000.0f);
+
+        if (ImGui::SliderFloat("Clouds frequency", &mPerlinFrequency, 0.0f, 4.0f))
+        {}
+
+        ImGui::Text("Clouds colors");
+        ImGui::ColorEdit3("Cloud color", (float *) &mCloudColor);
+        ImGui::ColorEdit3("Cloud flare color", (float *) &mCloudFlareColor);
+    }
+}
 
 void Sky::setSun(DirectionalLight *newSun)
 {

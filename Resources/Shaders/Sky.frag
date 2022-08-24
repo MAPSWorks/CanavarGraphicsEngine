@@ -26,6 +26,7 @@ in vec2 fsTextureCoords;
 uniform vec3 skyColorTop;
 uniform vec3 skyColorBottom;
 uniform vec3 lightDirection;
+uniform vec3 lightColor;
 uniform int width;
 uniform int height;
 uniform mat4 inverseProjectionMatrix;
@@ -61,18 +62,13 @@ vec2 computeScreenPos(vec2 ndc)
     return (ndc * 0.5 + 0.5);
 }
 
-vec3 getSun(const vec3 d, float powExp)
-{
-    float sun = clamp(dot(normalize(-lightDirection), d), 0.0, 1.0);
-    vec3 color = 0.8 * vec3(1.0, 0.6, 0.1) * pow(sun, powExp);
-    return color;
-}
-
 vec4 colorCubeMap(vec3 endPos, const vec3 d)
 {
     vec3 color = mix(skyColorBottom, skyColorTop, clamp(1 - exp(8.5 - 17 * clamp(normalize(d).y * 0.5 + 0.5, 0.0, 1.0)), 0.0, 1.0));
-    color += getSun(d, 350.0);
-    return vec4(color.rgb, 1.0);
+    float sun = clamp(dot(normalize(-lightDirection), d), 0.0, 1.0);
+    vec3 sunColor = lightColor * pow(sun, 4250);
+
+    return vec4(color + vec3(1, 1, 0.25) * sunColor, 1.0);
 }
 
 void main()

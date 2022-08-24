@@ -120,31 +120,27 @@ void RendererManager::render(float ifps)
     renderTerrain(ifps);
     renderParticles(ifps);
 
-    //    glDepthFunc(GL_LEQUAL);
-    //    mShaderManager->bind(ShaderManager::ShaderType::PostProcessingShader);
-    //    glActiveTexture(GL_TEXTURE0);
-    //    glBindTexture(GL_TEXTURE_2D, mSky->outputTextures().fragColor->id());
-    //    mShaderManager->setUniformValue("cloudTex", 0);
-    //    mQuad->render();
-    //    mShaderManager->release();
-    //    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
+    mShaderManager->bind(ShaderManager::ShaderType::PostProcessingShader);
+    mShaderManager->setSampler("skyAndCloudsTexture", 0, mSky->outputTextures().fragColor->id(), GL_TEXTURE_2D);
+    mQuad->render();
+    mShaderManager->release();
+    glDepthFunc(GL_LESS);
 
     // Nozzle effect
     fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
     fillStencilBuffer(mFramebuffers[0], ifps);
     applyNozzleBlur(mFramebuffers[0], mFramebuffers[1]);
 
-    // Motion Blur
-    //    if (mApplyMotionBlur)
-    //        applyMotionBlur(mFramebuffers[0], mFramebuffers[1]);
-
     // Render to default framebuffer now
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDepthFunc(GL_LEQUAL);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setSampler("screenTexture", 0, mFramebuffers[0]->texture(), GL_TEXTURE_2D_MULTISAMPLE);
     mQuad->render();
     mShaderManager->release();
+    //    glDepthFunc(GL_LESS);
 
     mCamera->updateVP();
 }
@@ -445,6 +441,7 @@ void RendererManager::drawGui()
     }
 
     mSun->drawGui();
+    mSky->drawGui();
     mHaze->drawGui();
     mTerrain->drawGui();
 

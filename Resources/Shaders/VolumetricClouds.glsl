@@ -15,45 +15,40 @@ layout(rgba8, binding = 1) uniform image2D bloom;
 layout(rgba8, binding = 2) uniform image2D alphaness;
 layout(rgba8, binding = 3) uniform image2D cloudDistance;
 
-uniform float FOV;
-uniform int width;
-uniform int height;
-uniform float time;
-uniform vec3 cameraPosition;
+uniform sampler2DMS sky;
+uniform sampler3D perlin;
+uniform sampler3D worley;
+uniform sampler2D weather;
+
 uniform mat4 inverseViewMatrix;
 uniform mat4 inverseProjectionMatrix;
 uniform mat4 inverseVP;
-
-uniform vec3 lightColor = vec3(1.0);
-uniform sampler2DMS sky;
-uniform sampler3D cloud;
-uniform sampler3D worley32;
-uniform sampler2D weatherTex;
-uniform sampler2D depthMap;
-uniform vec3 lightDirection;
+uniform vec3 cameraPosition;
+uniform int width;
+uniform int height;
+uniform float FOV;
+uniform float time;
 
 uniform float coverageMultiplier = 0.4f;
 uniform float cloudSpeed;
 uniform float crispiness = 0.4f;
+uniform float curliness;
+uniform float absorption = 0.0035;
 
-uniform vec3 cloudColorTop = (vec3(169., 149., 149.) * (1.5 / 255.));
-uniform vec3 cloudColorBottom = (vec3(65., 70., 80.) * (1.5 / 255.));
+uniform vec3 lightDirection;
+uniform vec3 lightColor = vec3(1.0);
 
-uniform vec3 skyColorBottom;
-uniform vec3 skyColorTop;
+const vec3 windDirection = normalize(vec3(0.5, 0.0, 0.1));
+
+uniform vec3 cloudColor = (vec3(65., 70., 80.) * (1.5 / 255.));
+uniform vec3 cloudFlareColor = vec3(0.8, 0.4, 0.15);
 
 uniform float earthRadius = 600000.0f;
 uniform float sphereInnerRadius = 5000.0f;
 uniform float sphereOuterRadius = 17000.0f;
 
-uniform float curliness;
-uniform float absorption = 0.0035;
-
-const vec3 windDirection = normalize(vec3(0.5, 0.0, 0.1));
-
 uniform bool enablePowder = false;
 uniform float densityFactor = 0.02f;
-
 
 // Cone sampling random offsets
 uniform vec3 noiseKernel[6u] = vec3[](vec3(0.38051305, 0.92453449, -0.02111345),
@@ -63,9 +58,8 @@ uniform vec3 noiseKernel[6u] = vec3[](vec3(0.38051305, 0.92453449, -0.02111345),
                                       vec3(0.28128598, 0.42443639, -0.86065785),
                                       vec3(-0.16852403, 0.14748697, 0.97460106));
 
-
-#define CLOUDS_AMBIENT_COLOR_TOP cloudColorTop
-#define CLOUDS_AMBIENT_COLOR_BOTTOM cloudColorBottom
+#define CLOUDS_AMBIENT_COLOR_TOP cloudColor
+#define CLOUDS_AMBIENT_COLOR_BOTTOM cloudColor
 #define CLOUD_TOP_OFFSET 750.0
 #define SATURATE(x) clamp(x, 0.0, 1.0)
 #define CLOUD_SCALE crispiness
@@ -82,7 +76,7 @@ uniform vec3 noiseKernel[6u] = vec3[](vec3(0.38051305, 0.92453449, -0.02111345),
 #define CLOUDS_MIN_TRANSMITTANCE 1e-1
 #define CLOUDS_TRANSMITTANCE_THRESHOLD 1.0 - CLOUDS_MIN_TRANSMITTANCE
 #define SUN_DIR lightDirection
-#define SUN_COLOR lightColor *vec3(1.1, 1.1, 0.95)
+#define SUN_COLOR lightColor * vec3(1.1, 1.1, 0.95)
 
 vec3 sphereCenter = vec3(0.0, -EARTH_RADIUS, 0.0);
 
@@ -260,14 +254,14 @@ float sampleCloudDensity(vec3 p, bool expensive, float lod)
         return 0.0;
     }
 
-    vec4 low_frequency_noise = textureLod(cloud, vec3(uv * CLOUD_SCALE, heightFraction), lod);
+    vec4 low_frequency_noise = textureLod(perlin, vec3(uv * CLOUD_SCALE, heightFraction), lod);
     float lowFreqFBM = dot(low_frequency_noise.gba, vec3(0.625, 0.25, 0.125));
     float base_cloud = remap(low_frequency_noise.r, -(1.0 - lowFreqFBM), 1., 0.0, 1.0);
 
     float density = getDensityForCloud(heightFraction, 1.0);
     base_cloud *= (density / heightFraction);
 
-    vec3 weather_data = texture(weatherTex, moving_uv).rgb;
+    vec3 weather_data = texture(weather, moving_uv).rgb;
     float cloud_coverage = weather_data.r * coverageMultiplier;
     float base_cloud_with_coverage = remap(base_cloud, cloud_coverage, 1.0, 0.0, 1.0);
     base_cloud_with_coverage *= cloud_coverage;
@@ -276,7 +270,7 @@ float sampleCloudDensity(vec3 p, bool expensive, float lod)
 
     if (expensive)
     {
-        vec3 erodeCloudNoise = textureLod(worley32, vec3(moving_uv * CLOUD_SCALE, heightFraction) * curliness, lod).rgb;
+        vec3 erodeCloudNoise = textureLod(worley, vec3(moving_uv * CLOUD_SCALE, heightFraction) * curliness, lod).rgb;
         float highFreqFBM = dot(erodeCloudNoise.rgb, vec3(0.625, 0.25, 0.125)); //(erodeCloudNoise.r * 0.625) + (erodeCloudNoise.g * 0.25) + (erodeCloudNoise.b * 0.125);
         float highFreqNoiseModifier = mix(highFreqFBM, 1.0 - highFreqFBM, clamp(heightFraction * 10.0, 0.0, 1.0));
 
@@ -561,7 +555,7 @@ void main()
 
     // add sun glare to clouds
     float sun = clamp(dot(SUN_DIR, normalize(endPos - startPos)), 0.0, 1.0);
-    vec3 s = 0.8 * vec3(1.0, 0.4, 0.2) * pow(sun, 256.0);
+    vec3 s = cloudFlareColor * sun;
     v.rgb += s * v.a;
 
     // blend clouds and background
