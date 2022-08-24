@@ -40,7 +40,15 @@ Sky::Sky(QObject *parent)
     mOutputTextures.alphaness = new Texture(1600, 900);
     mOutputTextures.cloudDistance = new Texture(1600, 900);
 
-    mSkyBoxFramebuffer = new Framebuffer(1600, 900);
+    //    mSkyBoxFramebuffer = new Framebuffer(1600, 900);
+    //        mSkyBoxFramebuffer = new Framebuffer(1600, 900);
+    mSkyBoxFramebufferFormat.setAttachment((FramebufferFormat::Attachment)(0x03)); // Color, Depth and Stencil attachment
+    mSkyBoxFramebufferFormat.setSamples(0);
+    mSkyBoxFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2D, FramebufferFormat::TextureInternalFormat::RGBA8);
+    mSkyBoxFramebufferFormat.setWidth(1600);
+    mSkyBoxFramebufferFormat.setHeight(900);
+
+    mSkyBoxFramebuffer = new Framebuffer(mSkyBoxFramebufferFormat);
 }
 
 void Sky::resize(int width, int height)
@@ -68,7 +76,9 @@ void Sky::resize(int width, int height)
     mOutputTextures.alphaness = new Texture(mWidth, mHeight);
     mOutputTextures.cloudDistance = new Texture(mWidth, mHeight);
 
-    mSkyBoxFramebuffer = new Framebuffer(mWidth, mHeight);
+    mSkyBoxFramebufferFormat.setWidth(mWidth);
+    mSkyBoxFramebufferFormat.setHeight(mHeight);
+    mSkyBoxFramebuffer = new Framebuffer(mSkyBoxFramebufferFormat);
 }
 
 void Sky::render(float ifps)
@@ -127,7 +137,7 @@ void Sky::render(float ifps)
     mShaderManager->setSampler("perlin", 0, mInputTextures.perlin->id(), GL_TEXTURE_3D);
     mShaderManager->setSampler("worley", 1, mInputTextures.worley->id(), GL_TEXTURE_3D);
     mShaderManager->setSampler("weather", 2, mInputTextures.weather->id(), GL_TEXTURE_2D);
-    mShaderManager->setSampler("sky", 3, mSkyBoxFramebuffer->texture(), GL_TEXTURE_2D_MULTISAMPLE);
+    mShaderManager->setSampler("sky", 3, mSkyBoxFramebuffer->texture(), GL_TEXTURE_2D);
 
     glDispatchCompute(INT_CEIL(mWidth, 16), INT_CEIL(mHeight, 16), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -157,7 +167,7 @@ void Sky::drawGui()
         ImGui::SliderFloat("Clouds bottom height##Sky", &mSphereInnerRadius, 1000.0f, 15000.0f);
         ImGui::SliderFloat("Clouds top height##Sky", &mSphereOuterRadius, 1000.0f, 40000.0f);
 
-        ImGui::Text("Clouds colors##Sky");
+        ImGui::Text("Clouds colors");
         ImGui::ColorEdit3("Cloud color##Sky", (float *) &mCloudColor);
         ImGui::ColorEdit3("Cloud flare color##Sky", (float *) &mCloudFlareColor);
 

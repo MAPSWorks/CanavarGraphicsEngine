@@ -4,22 +4,21 @@
 #include <QMatrix4x4>
 
 Terrain::Terrain(QObject *parent)
-    : QObject{parent}
+    : QObject(parent)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
 
-    mProperties.numberOfVerticesOnEdge = 4;
-    mProperties.grids = 128;
-    mProperties.width = 1024;
-
     reset();
 }
 
-void Terrain::create()
+void Terrain::create(int numberOfVerticesOnEdge, int grids, float width)
 {
+    mProperties.numberOfVerticesOnEdge = numberOfVerticesOnEdge;
+    mProperties.grids = grids;
+    mProperties.width = width;
+
     const int n = mProperties.numberOfVerticesOnEdge;
-    const float width = mProperties.width;
 
     for (int i = 0; i < n; i++)
     {
@@ -97,12 +96,12 @@ void Terrain::create()
     glVertexAttribDivisor(3, 1);
     mVAO->release();
 
-    mTextureSand = new Texture(Texture::Type::Custom2D, "Resources/Terrain/sand.jpg");
-    mTextureGrass = new Texture(Texture::Type::Custom2D, "Resources/Terrain/grass0.jpg");
-    mTextureSnow = new Texture(Texture::Type::Custom2D, "Resources/Terrain/snow0.jpg");
-    mTextureRockDiffuse = new Texture(Texture::Type::Custom2D, "Resources/Terrain/rock0.jpg");
-    mTextureRockNormal = new Texture(Texture::Type::Custom2D, "Resources/Terrain/rnormal.jpg");
-    mTextureTerrain = new Texture(Texture::Type::Custom2D, "Resources/Terrain/terrain.jpg");
+    mTextureSand = new Texture(Texture::Type::Texture2D, "Resources/Terrain/sand.jpg");
+    mTextureGrass = new Texture(Texture::Type::Texture2D, "Resources/Terrain/grass0.jpg");
+    mTextureSnow = new Texture(Texture::Type::Texture2D, "Resources/Terrain/snow0.jpg");
+    mTextureRockDiffuse = new Texture(Texture::Type::Texture2D, "Resources/Terrain/rock0.jpg");
+    mTextureRockNormal = new Texture(Texture::Type::Texture2D, "Resources/Terrain/rnormal.jpg");
+    mTextureTerrain = new Texture(Texture::Type::Texture2D, "Resources/Terrain/terrain.jpg");
 }
 
 void Terrain::render()

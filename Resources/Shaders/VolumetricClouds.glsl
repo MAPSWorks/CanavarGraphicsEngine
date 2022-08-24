@@ -15,7 +15,7 @@ layout(rgba8, binding = 1) uniform image2D bloom;
 layout(rgba8, binding = 2) uniform image2D alphaness;
 layout(rgba8, binding = 3) uniform image2D cloudDistance;
 
-uniform sampler2DMS sky;
+uniform sampler2D sky;
 uniform sampler3D perlin;
 uniform sampler3D worley;
 uniform sampler2D weather;
@@ -463,15 +463,6 @@ float computeFogAmount(in vec3 startPos, in float factor)
 
 #define HDR(col, exps) 1.0 - exp(-col *exps)
 
-vec4 getSkyColor(ivec2 coords)
-{
-    vec4 color = vec4(0);
-
-    for (int i = 0; i < 4; i++)
-        color += texelFetch(sky, coords, i);
-
-    return color / 4.0f;
-}
 
 void main()
 {
@@ -494,7 +485,7 @@ void main()
     //intersectCubeMap(vec3(0.0, 0.0, 0.0), worldDir, stub, cubeMapEndPos);
     bool hit = raySphereIntersectionSkyMap(worldDir, 0.5, cubeMapEndPos);
 
-    vec4 bg = getSkyColor(fragCoord);
+    vec4 bg = texture(sky, vec2(fragCoord.xy) / vec2(width, height));
     vec3 red = vec3(1.0);
 
     bg = mix(mix(red.rgbr, vec4(1.0), SUN_DIR.y), bg, pow(max(cubeMapEndPos.y + 0.1, .0), 0.2));

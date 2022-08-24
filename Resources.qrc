@@ -28,5 +28,7 @@
         <file>Resources/Shaders/Worley.glsl</file>
         <file>Resources/Shaders/SkyPostProcessing.frag</file>
         <file>Resources/Shaders/SkyPostProcessing.vert</file>
+        <file>Resources/Shaders/Water.frag</file>
+        <file>Resources/Shaders/Water.vert</file>
     </qresource>
 </RCC>

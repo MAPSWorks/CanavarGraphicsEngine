@@ -43,7 +43,7 @@ public:
         QVector2D texture;
     };
 
-    void create();
+    void create(int numberOfVerticesOnEdge = 4, int grids = 128, float width = 1024.0f);
     void render();
     void reset();
     void drawGui();

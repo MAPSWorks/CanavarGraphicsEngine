@@ -26,6 +26,7 @@ HEADERS += \
     DirectionalLight.h \
     DummyCamera.h \
     Framebuffer.h \
+    FramebufferFormat.h \
     FreeCamera.h \
     Haze.h \
     Helper.h \
@@ -53,6 +54,7 @@ HEADERS += \
     Terrain.h \
     Texture.h \
     TextureMaterial.h \
+    Water.h \
     Window.h
 
 SOURCES += \
@@ -62,6 +64,7 @@ SOURCES += \
     DirectionalLight.cpp \
     DummyCamera.cpp \
     Framebuffer.cpp \
+    FramebufferFormat.cpp \
     FreeCamera.cpp \
     Haze.cpp \
     Helper.cpp \
@@ -90,6 +93,7 @@ SOURCES += \
     Terrain.cpp \
     Texture.cpp \
     TextureMaterial.cpp \
+    Water.cpp \
     Window.cpp
 
 INCLUDEPATH += $$PWD/Dependencies/Eigen/

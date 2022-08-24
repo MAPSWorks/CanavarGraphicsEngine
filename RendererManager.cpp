@@ -21,6 +21,12 @@ RendererManager::RendererManager(QObject *parent)
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
+
+    mFramebufferFormat.setAttachment((FramebufferFormat::Attachment)(0x03)); // Color, Depth and Stencil attachment
+    mFramebufferFormat.setSamples(4);
+    mFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2DMultisample, FramebufferFormat::TextureInternalFormat::RGBA8);
+    mFramebufferFormat.setWidth(1600);
+    mFramebufferFormat.setHeight(900);
 }
 
 RendererManager *RendererManager::instance()
@@ -354,9 +360,11 @@ void RendererManager::renderModel(Model *model)
 
 void RendererManager::createFramebuffers()
 {
+    mFramebufferFormat.setWidth(mWidth);
+    mFramebufferFormat.setHeight(mHeight);
     for (int i = 0; i < 2; i++)
     {
-        mFramebuffers[i] = new Framebuffer(mWidth, mHeight);
+        mFramebuffers[i] = new Framebuffer(mFramebufferFormat);
     }
 }
 

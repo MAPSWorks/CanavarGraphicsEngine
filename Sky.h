@@ -80,6 +80,7 @@ private:
     OutputTextureSet mOutputTextures;
 
     Framebuffer *mSkyBoxFramebuffer;
+    FramebufferFormat mSkyBoxFramebufferFormat;
     float mTimeElapsed;
 
     int mWidth;

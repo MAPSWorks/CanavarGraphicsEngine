@@ -10,8 +10,8 @@ class Texture : public QObject, protected QOpenGLExtraFunctions
     Q_OBJECT
 public:
     enum class Type { //
-        Custom2D,
-        Custom3D,
+        Texture2D,
+        Texture3D,
         Ambient,
         Diffuse,
         Specular,

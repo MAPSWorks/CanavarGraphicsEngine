@@ -1,6 +1,8 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
+#include "FramebufferFormat.h"
+
 #include <QMap>
 #include <QObject>
 #include <QOpenGLExtraFunctions>
@@ -9,18 +11,21 @@ class Framebuffer : public QObject, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 public:
-    explicit Framebuffer(int width, int height, QObject *parent = nullptr);
+    explicit Framebuffer(FramebufferFormat format, QObject *parent = nullptr);
     virtual ~Framebuffer();
 
-    unsigned int texture() const;
     void bind();
+    unsigned int texture(int index = 0);
+    unsigned int depth() const;
+
+    const FramebufferFormat &format() const;
 
 private:
+    FramebufferFormat mFormat;
     unsigned int mFramebuffer;
     unsigned int mRenderObject;
-    unsigned int mTexture;
-    int mWidth;
-    int mHeight;
+    QMap<unsigned int, unsigned int> mTextures;
+    unsigned int mDepth;
 };
 
 #endif // FRAMEBUFFER_H

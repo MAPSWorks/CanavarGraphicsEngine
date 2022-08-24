@@ -375,6 +375,36 @@ bool ShaderManager::init()
             return false;
     }
 
+    // Water Shader
+    {
+        Shader *shader = new Shader(ShaderType::WaterShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Water.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Water.frag");
+
+        shader->addUniform("nodeMatrix");
+        shader->addUniform("VP");
+
+        shader->addUniform("moveFactor");
+        shader->addUniform("cameraPosition");
+        shader->addUniform("lightColor");
+        shader->addUniform("lightDirection");
+        shader->addUniform("fogColor");
+
+        shader->addUniform("reflectionTex");
+        shader->addUniform("refractionTex");
+        shader->addUniform("waterDUDV");
+        shader->addUniform("normalMap");
+
+        shader->addAttribute("position");
+        shader->addAttribute("normal");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

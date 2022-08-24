@@ -74,6 +74,7 @@ private:
     bool mUseBlinnShading;
 
     Framebuffer *mFramebuffers[2];
+    FramebufferFormat mFramebufferFormat;
 
     int mWidth;
     int mHeight;
