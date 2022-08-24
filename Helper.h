@@ -25,7 +25,6 @@ public:
     static QQuaternion rotateX(float angleRadians);
     static QQuaternion rotateY(float angleRadians);
     static QQuaternion rotateZ(float angleRadians);
-    static QVector3D projectOntoPlane(const QVector3D &normal, const QVector3D &point, const QVector3D &subject);
     static ModelData *loadModel(const QString &name, const QString &path);
     static QVector<PointLight *> getClosePointLights(const QList<PointLight *> &pointLights, Node *node);
     static QVector<SpotLight *> getCloseSpotLights(const QList<SpotLight *> &spotLights, Node *node);

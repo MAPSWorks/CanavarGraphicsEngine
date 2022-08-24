@@ -17,4 +17,3 @@ QVector3D RandomGenerator::getRandomVec3(float x, float y, float z)
 }
 
 QRandomGenerator RandomGenerator::mGenerator = QRandomGenerator::securelySeeded();
-RandomGenerator *RandomGenerator::mInstance = new RandomGenerator;

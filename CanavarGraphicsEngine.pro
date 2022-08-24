@@ -96,7 +96,6 @@ SOURCES += \
     Water.cpp \
     Window.cpp
 
-INCLUDEPATH += $$PWD/Dependencies/Eigen/
 INCLUDEPATH += $$PWD/Dependencies/Assimp/include
 DEPENDPATH += $$PWD/Dependencies/Assimp/include
 

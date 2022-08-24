@@ -16,7 +16,6 @@ public:
 
 private:
     static QRandomGenerator mGenerator;
-    static RandomGenerator *mInstance;
 };
 
 #endif // RANDOMGENERATOR_H
