@@ -109,56 +109,37 @@ void Mesh::render(Model *model)
     mShaderManager->setUniformValue("useTextureDiffuse", false);
     mShaderManager->setUniformValue("useTextureSpecular", false);
     mShaderManager->setUniformValue("useTextureNormal", false);
-    mShaderManager->setUniformValue("textureAmbient", -1);
-    mShaderManager->setUniformValue("textureDiffuse", -1);
-    mShaderManager->setUniformValue("textureSpecular", -1);
-    mShaderManager->setUniformValue("textureNormal", -1);
     mShaderManager->setUniformValue("useTexture", materials[mMaterialIndex]->textures().size() != 0);
 
     if (ambientTexture)
     {
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, ambientTexture->id());
-
-        mShaderManager->setUniformValue("textureAmbient", 1);
+        mShaderManager->setSampler("textureAmbient", 1, ambientTexture->id());
         mShaderManager->setUniformValue("useTextureAmbient", true);
 
     } else
     {
         if (diffuseTexture)
         {
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, diffuseTexture->id());
-
-            mShaderManager->setUniformValue("textureAmbient", 2);
+            mShaderManager->setSampler("textureAmbient", 2, diffuseTexture->id());
             mShaderManager->setUniformValue("useTextureAmbient", true);
         }
     }
 
     if (diffuseTexture)
     {
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, diffuseTexture->id());
-
-        mShaderManager->setUniformValue("textureDiffuse", 3);
+        mShaderManager->setSampler("textureDiffuse", 3, diffuseTexture->id());
         mShaderManager->setUniformValue("useTextureDiffuse", true);
     }
 
     if (specularTexture)
     {
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, specularTexture->id());
-
-        mShaderManager->setUniformValue("textureSpecular", 4);
+        mShaderManager->setSampler("textureSpecular", 4, specularTexture->id());
         mShaderManager->setUniformValue("useTextureSepcular", true);
     }
 
     if (normalTexture)
     {
-        glActiveTexture(GL_TEXTURE5);
-        glBindTexture(GL_TEXTURE_2D, normalTexture->id());
-
-        mShaderManager->setUniformValue("textureNormal", 5);
+        mShaderManager->setSampler("textureNormal", 5, normalTexture->id());
         mShaderManager->setUniformValue("useTextureNormal", true);
     }
 

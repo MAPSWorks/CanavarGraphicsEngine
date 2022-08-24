@@ -16,8 +16,6 @@ RendererManager::RendererManager(QObject *parent)
     , mWidth(1600)
     , mHeight(900)
     , mFlag(false)
-    , mApplyMotionBlur(false)
-    , mMotionBlurSamples(16)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
@@ -131,12 +129,12 @@ void RendererManager::render(float ifps)
     //    mShaderManager->release();
     //    glDepthFunc(GL_LESS);
 
-    //    // Nozzle effect
-    //    fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
-    //    fillStencilBuffer(mFramebuffers[0], ifps);
-    //    applyNozzleBlur(mFramebuffers[0], mFramebuffers[1]);
+    // Nozzle effect
+    fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
+    fillStencilBuffer(mFramebuffers[0], ifps);
+    applyNozzleBlur(mFramebuffers[0], mFramebuffers[1]);
 
-    //    // Motion Blur
+    // Motion Blur
     //    if (mApplyMotionBlur)
     //        applyMotionBlur(mFramebuffers[0], mFramebuffers[1]);
 
@@ -144,9 +142,7 @@ void RendererManager::render(float ifps)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mFramebuffers[0]->texture());
-    mShaderManager->setUniformValue("screenTexture", 0);
+    mShaderManager->setSampler("screenTexture", 0, mFramebuffers[0]->texture(), GL_TEXTURE_2D_MULTISAMPLE);
     mQuad->render();
     mShaderManager->release();
 
@@ -174,36 +170,11 @@ void RendererManager::applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *t
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);          // Make sure you will no longer (over)write stencil values, even if any test succeeds
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Make sure we draw on the backbuffer again.
     glStencilFunc(GL_EQUAL, 1, 0xFF);                // Now we will only draw pixels where the corresponding stencil buffer value equals 1
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureSource->texture());
     mShaderManager->bind(ShaderManager::ShaderType::NozzleBlurShader);
-    mShaderManager->setUniformValue("screenTexture", 0);
+    mShaderManager->setSampler("screenTexture", 0, textureSource->texture(), GL_TEXTURE_2D_MULTISAMPLE);
     mQuad->render();
     mShaderManager->release();
     glDisable(GL_STENCIL_TEST);
-}
-
-void RendererManager::applyMotionBlur(Framebuffer *read, Framebuffer *draw)
-{
-    // Motion Blur
-    draw->bind();
-    glDisable(GL_STENCIL_TEST);
-    glStencilMask(0x00);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read->texture());
-    glActiveTexture(GL_TEXTURE1);
-    //    glBindTexture(GL_TEXTURE_2D, read->depth());
-    mShaderManager->bind(ShaderManager::ShaderType::MotionBlurShader);
-    mShaderManager->setUniformValue("colorTexture", 0);
-    mShaderManager->setUniformValue("depthTexture", 1);
-    mShaderManager->setUniformValue("inverseVP", mCamera->getVP().inverted());
-    mShaderManager->setUniformValue("previousVP", mCamera->previousVP());
-    mShaderManager->setUniformValue("width", mWidth);
-    mShaderManager->setUniformValue("height", mHeight);
-    mShaderManager->setUniformValue("samples", mMotionBlurSamples);
-    mQuad->render();
-    mShaderManager->release();
 }
 
 void RendererManager::fillFramebuffer(Framebuffer *read, Framebuffer *draw)
@@ -211,10 +182,8 @@ void RendererManager::fillFramebuffer(Framebuffer *read, Framebuffer *draw)
     draw->bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glDisable(GL_STENCIL_TEST);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, read->texture());
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
-    mShaderManager->setUniformValue("screenTexture", 0);
+    mShaderManager->setSampler("screenTexture", 0, read->texture(), GL_TEXTURE_2D_MULTISAMPLE);
     mShaderManager->setUniformValue("width", mWidth);
     mShaderManager->setUniformValue("height", mHeight);
     mQuad->render();
@@ -473,8 +442,6 @@ void RendererManager::drawGui()
         ImGui::Checkbox("Wireframe", &mRenderWireframe);
         ImGui::Checkbox("Render Normals", &mRenderNormals);
         ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading);
-        ImGui::Checkbox("Motion Blur", &mApplyMotionBlur);
-        ImGui::SliderInt("Motion Blur Samples", &mMotionBlurSamples, 1, 128);
     }
 
     mSun->drawGui();

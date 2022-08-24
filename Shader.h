@@ -32,6 +32,7 @@ public:
     void setUniformValue(const QString &name, const QMatrix4x4 &value);
     void setUniformValue(const QString &name, const QMatrix3x3 &value);
     void setUniformValueArray(const QString &name, const QVector<QVector3D> &values);
+    void setSampler(const QString &name, unsigned int unit, unsigned int id, GLenum target = GL_TEXTURE_2D);
 
     ShaderManager::ShaderType type() const;
 

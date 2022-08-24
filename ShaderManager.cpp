@@ -275,29 +275,6 @@ bool ShaderManager::init()
             return false;
     }
 
-    // Motion Blur Shader
-    {
-        Shader *shader = new Shader(ShaderType::MotionBlurShader);
-        mShaders.insert(shader->type(), shader);
-
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MotionBlur.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MotionBlur.frag");
-
-        shader->addUniform("depthTexture");
-        shader->addUniform("colorTexture");
-        shader->addUniform("inverseVP");
-        shader->addUniform("previousVP");
-        shader->addUniform("width");
-        shader->addUniform("height");
-        shader->addUniform("samples");
-
-        shader->addAttribute("position");
-        shader->addAttribute("textureCoords");
-
-        if (!shader->init())
-            return false;
-    }
-
     // Volumetric Clouds
     {
         Shader *shader = new Shader(ShaderType::VolumetricCloudsShader);
@@ -377,23 +354,6 @@ bool ShaderManager::init()
             return false;
     }
 
-    // Post Processing
-    {
-        Shader *shader = new Shader(ShaderType::PostProcessingShader);
-        mShaders.insert(shader->type(), shader);
-
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/PostProcessing.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcessing.frag");
-
-        shader->addUniform("cloudTex");
-
-        shader->addAttribute("position");
-        shader->addAttribute("textureCoords");
-
-        if (!shader->init())
-            return false;
-    }
-
     return true;
 }
 
@@ -446,6 +406,11 @@ void ShaderManager::setUniformValue(const QString &name, const QMatrix3x3 &value
 void ShaderManager::setUniformValueArray(const QString &name, const QVector<QVector3D> &values)
 {
     mShaders.value(mActiveShader)->setUniformValueArray(name, values);
+}
+
+void ShaderManager::setSampler(const QString &name, unsigned int unit, unsigned int id, GLenum target)
+{
+    mShaders.value(mActiveShader)->setSampler(name, unit, id, target);
 }
 
 ShaderManager *ShaderManager::instance()

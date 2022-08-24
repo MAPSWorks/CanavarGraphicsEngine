@@ -117,30 +117,12 @@ void Terrain::render()
 
     mVAO->bind();
 
-    mShaderManager->setUniformValue("sand", 1);
-    mShaderManager->setUniformValue("grass", 2);
-    mShaderManager->setUniformValue("terrainTexture", 3);
-    mShaderManager->setUniformValue("snow", 4);
-    mShaderManager->setUniformValue("rock", 5);
-    mShaderManager->setUniformValue("rockNormal", 6);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, mTextureSand->id());
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, mTextureGrass->id());
-
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, mTextureTerrain->id());
-
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, mTextureSnow->id());
-
-    glActiveTexture(GL_TEXTURE5);
-    glBindTexture(GL_TEXTURE_2D, mTextureRockDiffuse->id());
-
-    glActiveTexture(GL_TEXTURE6);
-    glBindTexture(GL_TEXTURE_2D, mTextureRockNormal->id());
+    mShaderManager->setSampler("sand", 1, mTextureSand->id());
+    mShaderManager->setSampler("grass", 2, mTextureGrass->id());
+    mShaderManager->setSampler("terrainTexture", 3, mTextureTerrain->id());
+    mShaderManager->setSampler("snow", 4, mTextureSnow->id());
+    mShaderManager->setSampler("rock", 5, mTextureRockDiffuse->id());
+    mShaderManager->setSampler("rockNormal", 6, mTextureRockNormal->id());
 
     glDrawElementsInstanced(GL_PATCHES, (mProperties.numberOfVerticesOnEdge - 1) * (mProperties.numberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mGridPositions.size());
 

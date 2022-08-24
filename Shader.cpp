@@ -154,6 +154,13 @@ void Shader::setUniformValueArray(const QString &name, const QVector<QVector3D> 
     mProgram->setUniformValueArray(mLocations[name], values.constData(), values.size());
 }
 
+void Shader::setSampler(const QString &name, unsigned int unit, unsigned int id, GLenum target)
+{
+    glActiveTexture(GL_TEXTURE0 + unit);
+    glBindTexture(target, id);
+    setUniformValue(name, unit);
+}
+
 ShaderManager::ShaderType Shader::type() const
 {
     return mType;

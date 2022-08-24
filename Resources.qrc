@@ -22,13 +22,9 @@
         <file>Resources/Shaders/NozzleBlur.vert</file>
         <file>Resources/Shaders/Sky.frag</file>
         <file>Resources/Shaders/Sky.vert</file>
-        <file>Resources/Shaders/MotionBlur.frag</file>
-        <file>Resources/Shaders/MotionBlur.vert</file>
         <file>Resources/Shaders/VolumetricClouds.comp</file>
         <file>Resources/Shaders/Weather.comp</file>
         <file>Resources/Shaders/PerlinWorley.comp</file>
         <file>Resources/Shaders/Worley.comp</file>
-        <file>Resources/Shaders/PostProcessing.frag</file>
-        <file>Resources/Shaders/PostProcessing.vert</file>
     </qresource>
 </RCC>
