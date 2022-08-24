@@ -108,21 +108,24 @@ void RendererManager::render(float ifps)
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
 
+    // Render sky
     mSky->render(ifps);
 
-    // Render
+    // Render objects
     mFramebuffers[0]->bind();
     glEnable(GL_DEPTH_TEST);
     glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
     renderModels(ifps);
     renderTerrain(ifps);
     renderParticles(ifps);
 
-    glDepthFunc(GL_LEQUAL);
-    mShaderManager->bind(ShaderManager::ShaderType::PostProcessingShader);
-    mShaderManager->setSampler("skyAndCloudsTexture", 0, mSky->outputTextures().fragColor->id(), GL_TEXTURE_2D);
+    // Sky Post Processing
+    glDepthFunc(GL_EQUAL);
+    mShaderManager->bind(ShaderManager::ShaderType::SkyPostProcessingShader);
+    mShaderManager->setSampler("skyTexture", 0, mSky->outputTextures().fragColor->id());
+    mShaderManager->setUniformValue("width", mWidth);
+    mShaderManager->setUniformValue("height", mHeight);
     mQuad->render();
     mShaderManager->release();
     glDepthFunc(GL_LESS);
@@ -134,13 +137,11 @@ void RendererManager::render(float ifps)
 
     // Render to default framebuffer now
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDepthFunc(GL_LEQUAL);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setSampler("screenTexture", 0, mFramebuffers[0]->texture(), GL_TEXTURE_2D_MULTISAMPLE);
     mQuad->render();
     mShaderManager->release();
-    //    glDepthFunc(GL_LESS);
 
     mCamera->updateVP();
 }

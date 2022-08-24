@@ -29,7 +29,7 @@ public:
         WeatherShader,
         PerlinWorleyShader,
         WorleyShader,
-        PostProcessingShader,
+        SkyPostProcessingShader
     };
 
     Shader *getShader(ShaderType shader);

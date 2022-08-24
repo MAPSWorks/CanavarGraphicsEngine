@@ -80,7 +80,6 @@ void Sky::render(float ifps)
 
     // Sky
     mSkyBoxFramebuffer->bind();
-    glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     mShaderManager->bind(ShaderManager::ShaderType::SkyShader);
     mShaderManager->setUniformValue("skyColorTop", mSkyColorTop);
@@ -112,18 +111,15 @@ void Sky::render(float ifps)
     mShaderManager->setUniformValue("FOV", mCamera->verticalFov());
     mShaderManager->setUniformValue("lightDirection", -mSun->direction());
     mShaderManager->setUniformValue("lightColor", mSun->color().toVector3D());
-
     mShaderManager->setUniformValue("coverageMultiplier", mCoverage);
     mShaderManager->setUniformValue("cloudSpeed", mCloudSpeed);
     mShaderManager->setUniformValue("crispiness", mCrispiness);
     mShaderManager->setUniformValue("curliness", mCurliness);
     mShaderManager->setUniformValue("absorption", mAbsorption);
     mShaderManager->setUniformValue("densityFactor", mDensity);
-
     mShaderManager->setUniformValue("earthRadius", mEarthRadius);
     mShaderManager->setUniformValue("sphereInnerRadius", mSphereInnerRadius);
     mShaderManager->setUniformValue("sphereOuterRadius", mSphereOuterRadius);
-
     mShaderManager->setUniformValue("cloudColor", mCloudColor);
     mShaderManager->setUniformValue("cloudFlareColor", mCloudFlareColor);
 
@@ -135,10 +131,7 @@ void Sky::render(float ifps)
 
     glDispatchCompute(INT_CEIL(mWidth, 16), INT_CEIL(mHeight, 16), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
     mShaderManager->release();
-
-    glEnable(GL_DEPTH_TEST);
 }
 
 void Sky::drawGui()

@@ -356,16 +356,17 @@ bool ShaderManager::init()
             return false;
     }
 
-    // Screen Shader
+    // Sky Post Processing
     {
-        Shader *shader = new Shader(ShaderType::PostProcessingShader);
+        Shader *shader = new Shader(ShaderType::SkyPostProcessingShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/PostProcessing.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcessing.frag");
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/SkyPostProcessing.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/SkyPostProcessing.frag");
 
-        shader->addUniform("onlySkyTexture");
-        shader->addUniform("skyAndCloudsTexture");
+        shader->addUniform("skyTexture");
+        shader->addUniform("width");
+        shader->addUniform("height");
 
         shader->addAttribute("position");
         shader->addAttribute("textureCoords");

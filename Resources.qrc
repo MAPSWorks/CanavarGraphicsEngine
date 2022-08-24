@@ -26,7 +26,7 @@
         <file>Resources/Shaders/Weather.glsl</file>
         <file>Resources/Shaders/PerlinWorley.glsl</file>
         <file>Resources/Shaders/Worley.glsl</file>
-        <file>Resources/Shaders/PostProcessing.frag</file>
-        <file>Resources/Shaders/PostProcessing.vert</file>
+        <file>Resources/Shaders/SkyPostProcessing.frag</file>
+        <file>Resources/Shaders/SkyPostProcessing.vert</file>
     </qresource>
 </RCC>

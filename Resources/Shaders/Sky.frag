@@ -66,7 +66,7 @@ vec4 colorCubeMap(vec3 endPos, const vec3 d)
 {
     vec3 color = mix(skyColorBottom, skyColorTop, clamp(1 - exp(8.5 - 17 * clamp(normalize(d).y * 0.5 + 0.5, 0.0, 1.0)), 0.0, 1.0));
     float sun = clamp(dot(normalize(-lightDirection), d), 0.0, 1.0);
-    vec3 sunColor = lightColor * pow(sun, 4250);
+    vec3 sunColor = 0.8 * vec3(1.0, 0.6, 0.1) * lightColor * pow(sun, 450);
 
     return vec4(color + vec3(1, 1, 0.25) * sunColor, 1.0);
 }
