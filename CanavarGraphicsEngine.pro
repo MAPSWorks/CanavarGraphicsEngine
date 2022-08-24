@@ -40,6 +40,7 @@ HEADERS += \
     NozzleEffect.h \
     PointLight.h \
     Quad.h \
+    RandomGenerator.h \
     RendererManager.h \
     Shader.h \
     ShaderManager.h \
@@ -76,6 +77,7 @@ SOURCES += \
     NozzleEffect.cpp \
     PointLight.cpp \
     Quad.cpp \
+    RandomGenerator.cpp \
     RendererManager.cpp \
     Shader.cpp \
     ShaderManager.cpp \

@@ -1,4 +1,5 @@
 #include "NozzleEffect.h"
+#include "RandomGenerator.h"
 
 #include <QDateTime>
 #include <QtMath>
@@ -13,7 +14,6 @@ NozzleEffect::NozzleEffect(QObject *parent)
     mName = "Nozzle Effect";
     mNodeType = Node::NodeType::NozzleEffect;
     mRenderable = false;
-    mRandomGenerator = QRandomGenerator::securelySeeded();
 }
 
 NozzleEffect::~NozzleEffect() {}
@@ -61,7 +61,7 @@ void NozzleEffect::renderParticles(float ifps)
     {
         float r = mParticles[i].initialPosition.length();
         mParticles[i].life += ifps;
-        if (mParticles[i].life >= mMaxLife + getRandomFloat(mMaxLife * (mRadius - r)))
+        if (mParticles[i].life >= mMaxLife + RandomGenerator::getRandomFloat(mMaxLife * (mRadius - r)))
             mParticles[i] = generateParticle();
     }
 
@@ -77,18 +77,13 @@ void NozzleEffect::renderParticles(float ifps)
     glDisable(GL_BLEND);
 }
 
-float NozzleEffect::getRandomFloat(float bound)
-{
-    return mRandomGenerator.bounded(bound);
-}
-
 NozzleEffect::Particle NozzleEffect::generateParticle()
 {
-    double r = getRandomFloat(mRadius);
-    double theta = getRandomFloat(2.0f * M_PI);
+    double r = RandomGenerator::getRandomFloat(mRadius);
+    double theta = RandomGenerator::getRandomFloat(2.0f * M_PI);
     Particle particle;
     particle.initialPosition = QVector3D(r * cos(theta), r * sin(theta), 0);
-    particle.velocityDirection = QVector3D(0, 0, 0.5 + getRandomFloat(0.5));
+    particle.velocityDirection = QVector3D(0, 0, 0.5 + RandomGenerator::getRandomFloat(0.5));
     particle.life = 0.0f;
     return particle;
 }

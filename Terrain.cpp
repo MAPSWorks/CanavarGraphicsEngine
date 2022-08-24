@@ -1,4 +1,5 @@
 #include "Terrain.h"
+#include "RandomGenerator.h"
 
 #include <QMatrix4x4>
 
@@ -7,7 +8,6 @@ Terrain::Terrain(QObject *parent)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
-    mRandomGenerator = QRandomGenerator::securelySeeded();
 
     mProperties.numberOfVerticesOnEdge = 4;
     mProperties.grids = 128;
@@ -167,7 +167,7 @@ void Terrain::drawGui()
         ImGui::SliderFloat("Shininess##Terrain", &mMaterial.shininess, 0.1f, 128.0f, "%.3f");
 
         if (ImGui::Button("Generate Seed##Terrain"))
-            mProperties.seed = getRandomSeed();
+            mProperties.seed = RandomGenerator::getRandomVec3();
 
         if (ImGui::Button("Reset##Terrain"))
             reset();
@@ -204,15 +204,6 @@ void Terrain::updatePositionVectors(const QVector2D &translation)
 
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, mGridPositions.size() * sizeof(QVector2D), mGridPositions.constData());
-}
-
-QVector3D Terrain::getRandomSeed()
-{
-    float x = mRandomGenerator.generateDouble();
-    float y = mRandomGenerator.generateDouble();
-    float z = mRandomGenerator.generateDouble();
-
-    return QVector3D(x, y, z);
 }
 
 const Model::Material &Terrain::material() const

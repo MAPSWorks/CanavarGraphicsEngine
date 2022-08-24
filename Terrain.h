@@ -11,7 +11,6 @@
 #include <QOpenGLExtraFunctionsPrivate>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
-#include <QRandomGenerator>
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
@@ -62,7 +61,6 @@ public:
 private:
     QVector2D getCurrentTilePosition() const;
     void updatePositionVectors(const QVector2D &translation);
-    QVector3D getRandomSeed();
 
 private:
     Properties mProperties;
@@ -87,8 +85,6 @@ private:
     QVector<unsigned int> mIndices;
 
     QVector2D mPreviousTilePosition;
-
-    QRandomGenerator mRandomGenerator;
 };
 
 #endif // TERRAIN_H

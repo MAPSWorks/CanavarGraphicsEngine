@@ -1,5 +1,6 @@
 #include "Sky.h"
 #include "LightManager.h"
+#include "RandomGenerator.h"
 
 Sky::Sky(QObject *parent)
     : QObject{parent}
@@ -32,45 +33,7 @@ Sky::Sky(QObject *parent)
 
     initializeOpenGLFunctions();
 
-    // Perlin - Worley
-    qInfo() << "Generating Perlin Worley 3D Texture 128x128x128...";
-    mShaderManager->bind(ShaderManager::ShaderType::PerlinWorleyShader);
-    mInputTextures.perlin = new Texture(128, 128, 128);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_3D, mInputTextures.perlin->id());
-    glBindImageTexture(0, mInputTextures.perlin->id(), 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA8);
-    mShaderManager->setUniformValue("outVolTex", 0);
-    glDispatchCompute(INT_CEIL(128, 4), INT_CEIL(128, 4), INT_CEIL(128, 4));
-    glGenerateMipmap(GL_TEXTURE_3D);
-    mShaderManager->release();
-    qInfo() << "Perlin Worley 3D Texture 128x128x128 is generated.";
-
-    // Worley
-    qInfo() << "Generating Worley 3D Texture 32x32x32...";
-    mShaderManager->bind(ShaderManager::ShaderType::WorleyShader);
-    mInputTextures.worley = new Texture(32, 32, 32);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_3D, mInputTextures.worley->id());
-    glBindImageTexture(0, mInputTextures.worley->id(), 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA8);
-    mShaderManager->setUniformValue("outVolTex", 0);
-    glDispatchCompute(INT_CEIL(32, 4), INT_CEIL(32, 4), INT_CEIL(32, 4));
-    glGenerateMipmap(GL_TEXTURE_3D);
-    mShaderManager->release();
-    qInfo() << "Worley 3D Texture 32x32x32 is generated.";
-
-    // Weather
-    qInfo() << "Generating Weather 2D Texture 1024x1024...";
-    mShaderManager->bind(ShaderManager::ShaderType::WeatherShader);
-    mInputTextures.weather = new Texture(1024, 1024);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, mInputTextures.weather->id());
-    glBindImageTexture(0, mInputTextures.weather->id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-    mShaderManager->setUniformValue("outWeatherTex", 0);
-    mShaderManager->setUniformValue("seed", mSeed);
-    mShaderManager->setUniformValue("perlinFrequency", mPerlinFrequency);
-    glDispatchCompute(INT_CEIL(1024, 8), INT_CEIL(1024, 8), 1);
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-    qInfo() << "Weather 2D Texture 1024x1024 is generated.";
+    generateMaps();
 
     mOutputTextures.fragColor = new Texture(1600, 900);
     mOutputTextures.bloom = new Texture(1600, 900);
@@ -181,35 +144,63 @@ void Sky::render(float ifps)
 void Sky::drawGui()
 {
     // Render Settings
-    if (!ImGui::CollapsingHeader("Sky"))
+    if (!ImGui::CollapsingHeader("Sky##Sky"))
     {
         ImGui::Text("Clouds rendering");
 
-        ImGui::SliderFloat("Coverage", &mCoverage, 0.0f, 1.0f);
-        ImGui::SliderFloat("Speed", &mCloudSpeed, 0.0f, 5.0E3);
-        ImGui::SliderFloat("Crispiness", &mCrispiness, 0.0f, 120.0f);
-        ImGui::SliderFloat("Curliness", &mCurliness, 0.0f, 3.0f);
-        ImGui::SliderFloat("Density", &mDensity, 0.0f, 0.1f);
-        ImGui::SliderFloat("Light absorption", &mAbsorption, 0.0f, 0.01f, "%.6f");
-        ImGui::Checkbox("Enable sugar powder effect", &mEnablePower);
-
-        ImGui::Text("Dome controls");
-        ImGui::SliderFloat("Sky dome radius", &mEarthRadius, 10000.0f, 5000000.0f);
-        ImGui::SliderFloat("Clouds bottom height", &mSphereInnerRadius, 1000.0f, 15000.0f);
-        ImGui::SliderFloat("Clouds top height", &mSphereOuterRadius, 1000.0f, 40000.0f);
-
-        if (ImGui::SliderFloat("Clouds frequency", &mPerlinFrequency, 0.0f, 4.0f))
+        ImGui::SliderFloat("Coverage##Sky", &mCoverage, 0.0f, 1.0f);
+        ImGui::SliderFloat("Speed##Sky", &mCloudSpeed, 0.0f, 5.0E3);
+        ImGui::SliderFloat("Crispiness##Sky", &mCrispiness, 0.0f, 120.0f);
+        ImGui::SliderFloat("Curliness##Sky", &mCurliness, 0.0f, 3.0f);
+        ImGui::SliderFloat("Density##Sky", &mDensity, 0.0f, 0.1f);
+        ImGui::SliderFloat("Light absorption##Sky", &mAbsorption, 0.0f, 0.01f, "%.6f");
+        if (ImGui::SliderFloat("Clouds frequency##Sky", &mPerlinFrequency, 0.0f, 4.0f))
         {}
 
-        ImGui::Text("Clouds colors");
-        ImGui::ColorEdit3("Cloud color", (float *) &mCloudColor);
-        ImGui::ColorEdit3("Cloud flare color", (float *) &mCloudFlareColor);
+        ImGui::Checkbox("Enable sugar powder effect##Sky", &mEnablePower);
+
+        ImGui::Text("Dome controls");
+        ImGui::SliderFloat("Sky dome radius##Sky", &mEarthRadius, 10000.0f, 5000000.0f);
+        ImGui::SliderFloat("Clouds bottom height##Sky", &mSphereInnerRadius, 1000.0f, 15000.0f);
+        ImGui::SliderFloat("Clouds top height##Sky", &mSphereOuterRadius, 1000.0f, 40000.0f);
+
+        ImGui::Text("Clouds colors##Sky");
+        ImGui::ColorEdit3("Cloud color##Sky", (float *) &mCloudColor);
+        ImGui::ColorEdit3("Cloud flare color##Sky", (float *) &mCloudFlareColor);
+
+        if (ImGui::Button("Generate Seed##Sky"))
+        {
+            mSeed = RandomGenerator::getRandomVec3();
+            generateMaps();
+        }
+
+        if (ImGui::Button("Reset##Sky"))
+        {
+            reset();
+            generateMaps();
+        }
     }
 }
 
-void Sky::setSun(DirectionalLight *newSun)
+void Sky::reset()
 {
-    mSun = newSun;
+    mSkyColorTop = QVector3D(0.5, 0.7, 0.8);
+    mSkyColorBottom = QVector3D(0.9, 0.9, 0.95);
+    mCloudColor = QVector3D(0.2f, 0.2f, 0.2f);
+    mCloudFlareColor = QVector3D(0.4, 0.3, 0.15);
+    mCloudSpeed = 450.f;
+    mCoverage = 0.25f;
+    mCrispiness = 40.0f;
+    mCurliness = 0.1f;
+    mDensity = 0.02f;
+    mAbsorption = 0.0035f;
+    mEarthRadius = 600000.0f;
+    mSphereInnerRadius = 5000.0f;
+    mSphereOuterRadius = 17000.0f;
+    mPerlinFrequency = 0.8f;
+    mEnablePower = false;
+    mSeed = QVector3D(0, 0, 0);
+    mTimeElapsed = 0.0f;
 }
 
 const Sky::OutputTextureSet &Sky::outputTextures() const
@@ -220,4 +211,47 @@ const Sky::OutputTextureSet &Sky::outputTextures() const
 Framebuffer *Sky::skyBoxFramebuffer() const
 {
     return mSkyBoxFramebuffer;
+}
+
+void Sky::generateMaps()
+{
+    // Perlin - Worley
+    qInfo() << "Generating Perlin Worley 3D Texture 128x128x128...";
+    mShaderManager->bind(ShaderManager::ShaderType::PerlinWorleyShader);
+    mInputTextures.perlin = new Texture(128, 128, 128);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_3D, mInputTextures.perlin->id());
+    glBindImageTexture(0, mInputTextures.perlin->id(), 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA8);
+    mShaderManager->setUniformValue("outVolTex", 0);
+    glDispatchCompute(INT_CEIL(128, 4), INT_CEIL(128, 4), INT_CEIL(128, 4));
+    glGenerateMipmap(GL_TEXTURE_3D);
+    mShaderManager->release();
+    qInfo() << "Perlin Worley 3D Texture 128x128x128 is generated.";
+
+    // Worley
+    qInfo() << "Generating Worley 3D Texture 32x32x32...";
+    mShaderManager->bind(ShaderManager::ShaderType::WorleyShader);
+    mInputTextures.worley = new Texture(32, 32, 32);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_3D, mInputTextures.worley->id());
+    glBindImageTexture(0, mInputTextures.worley->id(), 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA8);
+    mShaderManager->setUniformValue("outVolTex", 0);
+    glDispatchCompute(INT_CEIL(32, 4), INT_CEIL(32, 4), INT_CEIL(32, 4));
+    glGenerateMipmap(GL_TEXTURE_3D);
+    mShaderManager->release();
+    qInfo() << "Worley 3D Texture 32x32x32 is generated.";
+
+    // Weather
+    qInfo() << "Generating Weather 2D Texture 1024x1024...";
+    mShaderManager->bind(ShaderManager::ShaderType::WeatherShader);
+    mInputTextures.weather = new Texture(1024, 1024);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, mInputTextures.weather->id());
+    glBindImageTexture(0, mInputTextures.weather->id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+    mShaderManager->setUniformValue("outWeatherTex", 0);
+    mShaderManager->setUniformValue("seed", mSeed);
+    mShaderManager->setUniformValue("perlinFrequency", mPerlinFrequency);
+    glDispatchCompute(INT_CEIL(1024, 8), INT_CEIL(1024, 8), 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    qInfo() << "Weather 2D Texture 1024x1024 is generated.";
 }

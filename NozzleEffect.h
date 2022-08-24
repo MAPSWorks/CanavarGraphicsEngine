@@ -29,12 +29,10 @@ public:
     virtual void drawGui() override;
 
 private:
-    float getRandomFloat(float bound);
     NozzleEffect::Particle generateParticle();
 
 private:
     QVector<Particle> mParticles;
-    QRandomGenerator mRandomGenerator;
     int mNumberOfParticles;
 
     float mRadius;

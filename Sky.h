@@ -3,7 +3,7 @@
 
 #include "CameraManager.h"
 #include "DirectionalLight.h"
-#include "FrameBuffer.h"
+#include "Framebuffer.h"
 #include "Quad.h"
 #include "ShaderManager.h"
 #include "Texture.h"
@@ -37,12 +37,14 @@ public:
     void resize(int width, int height);
     void render(float ifps);
     void drawGui();
-
-    void setSun(DirectionalLight *newSun);
+    void reset();
 
     const OutputTextureSet &outputTextures() const;
 
     Framebuffer *skyBoxFramebuffer() const;
+
+private:
+    void generateMaps();
 
 private:
     ShaderManager *mShaderManager;
