@@ -1,6 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctionsPrivate>
 #include <QOpenGLWindow>
 #include <QRandomGenerator>
@@ -8,7 +9,7 @@
 #include <imgui.h>
 #include <QtImGui.h>
 
-class Window : public QOpenGLWindow, protected QOpenGLFunctions
+class Window : public QOpenGLWindow, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 

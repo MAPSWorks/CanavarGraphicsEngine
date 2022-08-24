@@ -16,9 +16,7 @@ vec4 getColor(ivec2 coords)
     vec4 color = vec4(0);
 
     for (int i = 0; i < 4; i++)
-    {
         color += texelFetch(colorTexture, coords, i);
-    }
 
     return color / 4.0f;
 }

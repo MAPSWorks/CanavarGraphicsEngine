@@ -44,7 +44,6 @@ private:
     FreeCamera *mFreeCamera;
     DummyCamera *mDummyCamera;
 
-    DirectionalLight *mSun;
     Qt::MouseButton mPressedButton;
 
     Node *mPlane;

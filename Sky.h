@@ -1,21 +1,86 @@
 #ifndef SKY_H
 #define SKY_H
 
+#include "CameraManager.h"
+#include "DirectionalLight.h"
+#include "FrameBuffer.h"
+#include "Quad.h"
+#include "ShaderManager.h"
+#include "Texture.h"
+
 #include <QObject>
+#include <QOpenGLExtraFunctions>
+#include <QVector3D>
 #include <QVector4D>
 
-class Sky : public QObject
+#define INT_CEIL(n, d) (int) ceil((float) n / d)
+
+class Sky : public QObject, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 public:
     explicit Sky(QObject *parent = nullptr);
 
-    const QVector4D &skyColorTop() const;
-    const QVector4D &skyColorBottom() const;
+    struct InputTextureSet {
+        Texture *weather;
+        Texture *perlin;
+        Texture *worley;
+    };
+
+    struct OutputTextureSet {
+        Texture *fragColor;
+        Texture *bloom;
+        Texture *alphaness;
+        Texture *cloudDistance;
+    };
+
+    void resize(int width, int height);
+    void render(float ifps);
+    void drawGui();
+
+    void setSun(DirectionalLight *newSun);
+
+    const OutputTextureSet &outputTextures() const;
+
+    Framebuffer *skyBoxFramebuffer() const;
 
 private:
-    QVector4D mSkyColorTop;
-    QVector4D mSkyColorBottom;
+    ShaderManager *mShaderManager;
+    CameraManager *mCameraManager;
+    LightManager *mLightManager;
+
+    DirectionalLight *mSun;
+    Camera *mCamera;
+    Quad *mQuad;
+
+    QVector3D mSkyColorTop;
+    QVector3D mSkyColorBottom;
+
+    float mCloudSpeed;
+    float mCoverage;
+    float mCrispiness;
+    float mCurliness;
+    float mDensity;
+    float mAbsorption;
+
+    float mEarthRadius;
+    float mSphereInnerRadius;
+    float mSphereOuterRadius;
+
+    float mPerlinFrequency;
+    bool mEnablePower;
+    QVector3D mSeed;
+    QVector3D mCloudColorTop;
+    QVector3D mCloudColorBottom;
+
+    InputTextureSet mInputTextures;
+    OutputTextureSet mOutputTextures;
+
+    Framebuffer *mSkyBoxFramebuffer;
+    float mTimeElapsed;
+
+    int mWidth;
+    int mHeight;
 };
 
 #endif // SKY_H

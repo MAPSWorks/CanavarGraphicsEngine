@@ -23,8 +23,8 @@
 
 in vec2 fsTextureCoords;
 
-uniform vec4 skyColorTop;
-uniform vec4 skyColorBottom;
+uniform vec3 skyColorTop;
+uniform vec3 skyColorBottom;
 uniform vec3 lightDirection;
 uniform int width;
 uniform int height;
@@ -61,16 +61,16 @@ vec2 computeScreenPos(vec2 ndc)
     return (ndc * 0.5 + 0.5);
 }
 
-vec4 getSun(const vec3 d, float powExp)
+vec3 getSun(const vec3 d, float powExp)
 {
     float sun = clamp(dot(normalize(-lightDirection), d), 0.0, 1.0);
     vec3 color = 0.8 * vec3(1.0, 0.6, 0.1) * pow(sun, powExp);
-    return vec4(color, 1);
+    return color;
 }
 
 vec4 colorCubeMap(vec3 endPos, const vec3 d)
 {
-    vec4 color = mix(skyColorBottom, skyColorTop, clamp(1 - exp(8.5 - 17 * clamp(normalize(d).y * 0.5 + 0.5, 0.0, 1.0)), 0.0, 1.0));
+    vec3 color = mix(skyColorBottom, skyColorTop, clamp(1 - exp(8.5 - 17 * clamp(normalize(d).y * 0.5 + 0.5, 0.0, 1.0)), 0.0, 1.0));
     color += getSun(d, 350.0);
     return vec4(color.rgb, 1.0);
 }

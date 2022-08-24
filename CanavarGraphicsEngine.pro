@@ -25,6 +25,7 @@ HEADERS += \
     Controller.h \
     DirectionalLight.h \
     DummyCamera.h \
+    Framebuffer.h \
     FreeCamera.h \
     Haze.h \
     Helper.h \
@@ -59,6 +60,7 @@ SOURCES += \
     Controller.cpp \
     DirectionalLight.cpp \
     DummyCamera.cpp \
+    Framebuffer.cpp \
     FreeCamera.cpp \
     Haze.cpp \
     Helper.cpp \

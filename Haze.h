@@ -26,7 +26,6 @@ public:
     void setEnabled(bool newEnabled);
 
     void drawGui();
-
     void reset();
 
 private:

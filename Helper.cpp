@@ -212,7 +212,6 @@ void Helper::processTexture(TextureMaterial *material, aiMaterial *aiMaterial, a
         aiMaterial->GetTexture(aiType, i, &str);
         QString filename = QString(str.C_Str());
         Texture *texture = new Texture(type, directory + "/" + filename);
-        texture->create();
         material->addTexture(texture);
     }
 }

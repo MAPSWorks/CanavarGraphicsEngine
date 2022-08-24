@@ -298,6 +298,102 @@ bool ShaderManager::init()
             return false;
     }
 
+    // Volumetric Clouds
+    {
+        Shader *shader = new Shader(ShaderType::VolumetricCloudsShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/VolumetricClouds.comp");
+        shader->addUniform("FOV");
+        shader->addUniform("width");
+        shader->addUniform("height");
+        shader->addUniform("time");
+        shader->addUniform("cameraPosition");
+        shader->addUniform("inverseViewMatrix");
+        shader->addUniform("inverseProjectionMatrix");
+        shader->addUniform("inverseVP");
+        shader->addUniform("lightColor");
+        shader->addUniform("lightDirection");
+        shader->addUniform("sky");
+        shader->addUniform("cloud");
+        shader->addUniform("worley32");
+        shader->addUniform("weatherTex");
+        shader->addUniform("coverageMultiplier");
+        shader->addUniform("cloudSpeed");
+        shader->addUniform("crispiness");
+        shader->addUniform("cloudColorTop");
+        shader->addUniform("cloudColorBottom");
+        shader->addUniform("skyColorBottom");
+        shader->addUniform("skyColorTop");
+        shader->addUniform("earthRadius");
+        shader->addUniform("sphereInnerRadius");
+        shader->addUniform("sphereOuterRadius");
+        shader->addUniform("curliness");
+        shader->addUniform("absorption");
+        shader->addUniform("windDirection");
+        shader->addUniform("enablePowder");
+        shader->addUniform("densityFactor");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Weather
+    {
+        Shader *shader = new Shader(ShaderType::WeatherShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/Weather.comp");
+
+        shader->addUniform("outWeatherTex");
+        shader->addUniform("seed");
+        shader->addUniform("perlinFrequency");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Perlin Worley
+    {
+        Shader *shader = new Shader(ShaderType::PerlinWorleyShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/PerlinWorley.comp");
+        shader->addUniform("outVolTex");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Worley
+    {
+        Shader *shader = new Shader(ShaderType::WorleyShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Compute, ":/Resources/Shaders/Worley.comp");
+        shader->addUniform("outVolTex");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Post Processing
+    {
+        Shader *shader = new Shader(ShaderType::PostProcessingShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/PostProcessing.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcessing.frag");
+
+        shader->addUniform("cloudTex");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

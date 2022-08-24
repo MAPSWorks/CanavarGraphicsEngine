@@ -83,9 +83,6 @@ void Controller::init()
     mDummyCamera->setZFar(1000000.0f);
     mRootJetNode->addChild(mDummyCamera);
 
-    mSun = dynamic_cast<DirectionalLight *>(mNodeManager->create(Node::NodeType::DirectionalLight));
-    mSun->setDirection(QVector3D(1, -1, 1));
-
     mPlane = mNodeManager->create(Model::NodeType::Model, "Plane");
     mPlane->setPosition(QVector3D(0, 100, 0));
     mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
@@ -109,13 +106,6 @@ void Controller::init()
     mRootJetNode->addChild(mNozzleEffect);
 
     mRendererManager->setNozzleEffect(mNozzleEffect);
-
-    mNodeManager->create(Node::NodeType::PointLight);
-    mNodeManager->create(Node::NodeType::PointLight);
-
-    mNodeManager->create(Node::NodeType::SpotLight);
-    mNodeManager->create(Node::NodeType::SpotLight);
-    mNodeManager->create(Node::NodeType::SpotLight);
 }
 
 void Controller::run()

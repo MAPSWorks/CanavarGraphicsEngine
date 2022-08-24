@@ -97,19 +97,12 @@ void Terrain::create()
     glVertexAttribDivisor(3, 1);
     mVAO->release();
 
-    mTextureSand = new Texture(Texture::Type::None, "Resources/Terrain/sand.jpg");
-    mTextureGrass = new Texture(Texture::Type::None, "Resources/Terrain/grass0.jpg");
-    mTextureSnow = new Texture(Texture::Type::None, "Resources/Terrain/snow0.jpg");
-    mTextureRockDiffuse = new Texture(Texture::Type::None, "Resources/Terrain/rock0.jpg");
-    mTextureRockNormal = new Texture(Texture::Type::None, "Resources/Terrain/rnormal.jpg");
-    mTextureTerrain = new Texture(Texture::Type::None, "Resources/Terrain/terrain.jpg");
-
-    mTextureSand->create();
-    mTextureGrass->create();
-    mTextureSnow->create();
-    mTextureRockDiffuse->create();
-    mTextureRockNormal->create();
-    mTextureTerrain->create();
+    mTextureSand = new Texture(Texture::Type::Custom2D, "Resources/Terrain/sand.jpg");
+    mTextureGrass = new Texture(Texture::Type::Custom2D, "Resources/Terrain/grass0.jpg");
+    mTextureSnow = new Texture(Texture::Type::Custom2D, "Resources/Terrain/snow0.jpg");
+    mTextureRockDiffuse = new Texture(Texture::Type::Custom2D, "Resources/Terrain/rock0.jpg");
+    mTextureRockNormal = new Texture(Texture::Type::Custom2D, "Resources/Terrain/rnormal.jpg");
+    mTextureTerrain = new Texture(Texture::Type::Custom2D, "Resources/Terrain/terrain.jpg");
 }
 
 void Terrain::render()
@@ -207,7 +200,7 @@ Terrain *Terrain::instance()
 
 QVector2D Terrain::getCurrentTilePosition() const
 {
-    const QVector3D cameraPosition = mCameraManager->activeCamera()->position();
+    const QVector3D cameraPosition = mCameraManager->activeCamera()->worldPosition();
 
     for (const auto &position : qAsConst(mGridPositions))
     {

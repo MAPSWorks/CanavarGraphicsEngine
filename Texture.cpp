@@ -5,20 +5,14 @@
 Texture::Texture(Type type, const QString &path, QObject *parent)
     : QObject(parent)
     , mType(type)
-    , mPath(path)
-{}
-
-Texture::~Texture() {}
-
-void Texture::create()
 {
     initializeOpenGLFunctions();
 
     glGenTextures(1, &mId);
-    QImage image(mPath);
+    QImage image(path);
     image = image.convertToFormat(QImage::Format_RGB888);
 
-    qInfo() << "Texture" << mPath << "is loaded and created. ID is" << mId << "Type is:" << int(mType);
+    qInfo() << "Texture" << path << "is loaded and created. ID is" << mId << "Type is:" << int(mType);
 
     glBindTexture(GL_TEXTURE_2D, mId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width(), image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.constBits());
@@ -27,6 +21,56 @@ void Texture::create()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+Texture::Texture(int width, int height, QObject *parent)
+    : QObject(parent)
+    , mType(Type::Custom2D)
+    , mWidth(width)
+    , mHeight(height)
+    , mDepth(0)
+{
+    initializeOpenGLFunctions();
+
+    glGenTextures(1, &mId);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, mId);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, mWidth, mHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+}
+
+Texture::Texture(int width, int height, int depth, QObject *parent)
+    : QObject(parent)
+    , mType(Type::Custom3D)
+    , mWidth(width)
+    , mHeight(height)
+    , mDepth(depth)
+{
+    initializeOpenGLFunctions();
+
+    glGenTextures(1, &mId);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_3D, mId);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, mWidth, mHeight, mDepth, 0, GL_RGBA, GL_FLOAT, NULL);
+    glGenerateMipmap(GL_TEXTURE_3D);
+}
+
+Texture::~Texture()
+{
+    glDeleteTextures(1, &mId);
+}
+
+unsigned int Texture::id() const
+{
+    return mId;
 }
 
 Texture::Type Texture::type() const
@@ -39,7 +83,17 @@ const QString &Texture::path() const
     return mPath;
 }
 
-unsigned int Texture::id() const
+int Texture::width() const
 {
-    return mId;
+    return mWidth;
+}
+
+int Texture::height() const
+{
+    return mHeight;
+}
+
+int Texture::depth() const
+{
+    return mDepth;
 }

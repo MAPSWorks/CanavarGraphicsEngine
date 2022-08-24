@@ -25,7 +25,12 @@ public:
         NozzleEffectShader,
         NozzleBlurShader,
         SkyShader,
-        MotionBlurShader
+        MotionBlurShader,
+        VolumetricCloudsShader,
+        WeatherShader,
+        PerlinWorleyShader,
+        WorleyShader,
+        PostProcessingShader,
     };
 
     Shader *getShader(ShaderType shader);

@@ -2,6 +2,7 @@
 #define RENDERERMANAGER_H
 
 #include "CameraManager.h"
+#include "Framebuffer.h"
 #include "Haze.h"
 #include "LightManager.h"
 #include "ModelData.h"
@@ -27,15 +28,6 @@ private:
     explicit RendererManager(QObject *parent = nullptr);
 
 public:
-    struct Framebuffer {
-        unsigned int framebuffer;
-        unsigned int texture;
-        unsigned int renderObject;
-        unsigned int depthTexture;
-    };
-
-    enum class BlurDirection { Horizontal, Vertical };
-
     static RendererManager *instance();
 
     bool init();
@@ -51,16 +43,15 @@ private:
     void renderModels(float ifps);
     void renderSkyBox(float ifps);
     void renderTerrain(float ifps);
-    void renderSky(float ifps);
     void renderParticles(float ifps);
     void renderModel(Model *model);
-    void fillFramebuffer(Framebuffer read, Framebuffer draw);
-    bool createFramebuffers();
+    void fillFramebuffer(Framebuffer *read, Framebuffer *draw);
+    void createFramebuffers();
     void deleteFramebuffers();
     void loadModels();
-    void fillStencilBuffer(Framebuffer framebuffer, float ifps);
-    void applyNozzleBlur(Framebuffer stencilSource, Framebuffer textureSource);
-    void applyMotionBlur(Framebuffer read, Framebuffer draw);
+    void fillStencilBuffer(Framebuffer *framebuffer, float ifps);
+    void applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource);
+    void applyMotionBlur(Framebuffer *read, Framebuffer *draw);
 
 private:
     QMap<QString, ModelData *> mModelsData;
@@ -83,7 +74,7 @@ private:
     bool mRenderNormals;
     bool mUseBlinnShading;
 
-    Framebuffer mFramebuffers[2];
+    Framebuffer *mFramebuffers[2];
 
     int mWidth;
     int mHeight;
