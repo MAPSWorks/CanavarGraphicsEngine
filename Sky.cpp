@@ -49,6 +49,12 @@ Sky::Sky(QObject *parent)
     mSkyFramebuffer = new Framebuffer(mSkyFramebufferFormat);
 }
 
+Sky *Sky::instance()
+{
+    static Sky sky;
+    return &sky;
+}
+
 void Sky::resize(int width, int height)
 {
     mWidth = width;

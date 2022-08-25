@@ -85,7 +85,7 @@ bool RendererManager::init()
     mSun = dynamic_cast<DirectionalLight *>(mNodeManager->create(Node::NodeType::DirectionalLight));
     mSun->setDirection(QVector3D(1, -1, 1));
 
-    mSky = new Sky;
+    mSky = Sky::instance();
 
     mWater = Water::instance();
     mWater->create();

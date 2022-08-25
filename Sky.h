@@ -18,7 +18,7 @@
 class Sky : public QObject, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
-public:
+private:
     explicit Sky(QObject *parent = nullptr);
 
     struct InputTextureSet {
@@ -34,6 +34,8 @@ public:
         Texture *cloudDistance;
     };
 
+public:
+    static Sky *instance();
     void resize(int width, int height);
     void renderWeather(float ifps);
     void render(float ifps);
