@@ -20,7 +20,9 @@ I will add following features:
 - Terrain generation using DTED
 - Albedo generation using satellite images
 - Post processing effects
+
 ## Screenshot
+![](Screenshot-2022-08-25-073955.png)
 
 ## Build
 // TODO
