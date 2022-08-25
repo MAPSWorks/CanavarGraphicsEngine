@@ -22,7 +22,6 @@ RendererManager::RendererManager(QObject *parent)
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
 
-    mFramebufferFormat.setAttachment((FramebufferFormat::Attachment)(0x03)); // Color, Depth and Stencil attachment
     mFramebufferFormat.setSamples(4);
     mFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2DMultisample, FramebufferFormat::TextureInternalFormat::RGBA8);
     mFramebufferFormat.setWidth(1600);
@@ -161,6 +160,7 @@ void RendererManager::render(float ifps)
 
         // Render objects and sky
         mFramebuffers[0]->bind();
+        glEnable(GL_DEPTH_TEST);
         glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         renderModels(ifps);
@@ -172,13 +172,14 @@ void RendererManager::render(float ifps)
         // Nozzle effect
         fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
         fillStencilBuffer(mFramebuffers[0], ifps);
-        applyNozzleBlur(mFramebuffers[0], mFramebuffers[1]);
+        applyNozzleBlur(mFramebuffers[0], mFramebuffers[1], 2);
 
         // Render to default framebuffer now
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_STENCIL_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
-        mShaderManager->setSampler("screenTexture", 0, mFramebuffers[0]->texture(), GL_TEXTURE_2D_MULTISAMPLE);
+        mShaderManager->setSampler("screenTexture", 0, mFramebuffers[0]->texture(0), GL_TEXTURE_2D_MULTISAMPLE);
         mQuad->render();
         mShaderManager->release();
     }
@@ -199,19 +200,39 @@ void RendererManager::fillStencilBuffer(Framebuffer *framebuffer, float ifps)
     glDisable(GL_STENCIL_TEST);
 }
 
-void RendererManager::applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource)
+void RendererManager::applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource, int times)
 {
     // Blur pass
-    stencilSource->bind();
-    glEnable(GL_STENCIL_TEST);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);          // Make sure you will no longer (over)write stencil values, even if any test succeeds
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Make sure we draw on the backbuffer again.
-    glStencilFunc(GL_EQUAL, 1, 0xFF);                // Now we will only draw pixels where the corresponding stencil buffer value equals 1
-    mShaderManager->bind(ShaderManager::ShaderType::NozzleBlurShader);
-    mShaderManager->setSampler("screenTexture", 0, textureSource->texture(), GL_TEXTURE_2D_MULTISAMPLE);
-    mQuad->render();
-    mShaderManager->release();
-    glDisable(GL_STENCIL_TEST);
+    for (int i = 0; i < times; i++)
+    {
+        stencilSource->bind();
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);          // Make sure you will no longer (over)write stencil values, even if any test succeeds
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Make sure we draw on the backbuffer again.
+        glStencilFunc(GL_EQUAL, 1, 0xFF);                // Now we will only draw pixels where the corresponding stencil buffer value equals 1
+        mShaderManager->bind(ShaderManager::ShaderType::BlurShader);
+        mShaderManager->setSampler("screenTexture", 0, textureSource->texture(), GL_TEXTURE_2D_MULTISAMPLE);
+        mShaderManager->setUniformValue("horizontal", true);
+        mQuad->render();
+        mShaderManager->release();
+
+        fillFramebuffer(stencilSource, textureSource);
+
+        stencilSource->bind();
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);          // Make sure you will no longer (over)write stencil values, even if any test succeeds
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Make sure we draw on the backbuffer again.
+        glStencilFunc(GL_EQUAL, 1, 0xFF);                // Now we will only draw pixels where the corresponding stencil buffer value equals 1
+        mShaderManager->bind(ShaderManager::ShaderType::BlurShader);
+        mShaderManager->setSampler("screenTexture", 0, textureSource->texture(), GL_TEXTURE_2D_MULTISAMPLE);
+        mShaderManager->setUniformValue("horizontal", false);
+        mQuad->render();
+        mShaderManager->release();
+
+        fillFramebuffer(stencilSource, textureSource);
+
+        glDisable(GL_STENCIL_TEST);
+    }
 }
 
 void RendererManager::fillFramebuffer(Framebuffer *read, Framebuffer *draw)
@@ -219,13 +240,14 @@ void RendererManager::fillFramebuffer(Framebuffer *read, Framebuffer *draw)
     draw->bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glDisable(GL_STENCIL_TEST);
+    glDisable(GL_DEPTH_TEST);
     mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
     mShaderManager->setSampler("screenTexture", 0, read->texture(), GL_TEXTURE_2D_MULTISAMPLE);
     mShaderManager->setUniformValue("width", mWidth);
     mShaderManager->setUniformValue("height", mHeight);
     mQuad->render();
     mShaderManager->release();
-    glEnable(GL_STENCIL_TEST);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void RendererManager::renderModels(float)

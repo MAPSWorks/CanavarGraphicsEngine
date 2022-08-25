@@ -23,14 +23,14 @@ public:
         TerrainShader,
         ScreenShader,
         NozzleEffectShader,
-        NozzleBlurShader,
         SkyShader,
         VolumetricCloudsShader,
         WeatherShader,
         PerlinWorleyShader,
         WorleyShader,
         SkyPostProcessingShader,
-        WaterShader
+        WaterShader,
+        BlurShader
     };
 
     Shader *getShader(ShaderType shader);

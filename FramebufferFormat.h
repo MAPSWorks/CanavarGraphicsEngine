@@ -7,13 +7,6 @@
 class FramebufferFormat
 {
 public:
-    enum class Attachment : unsigned int { //
-        NoAttachment = 0x00,
-        ColorAttachment = 0x01,
-        DepthAndStencilAttachment = 0x02,
-        DepthTextureAttachment = 0x04
-    };
-
     enum class TextureTarget : unsigned int { // OpenGL values
         Texture2D = 0x0DE1,
         Texture2DMultisample = 0x9100,
@@ -28,9 +21,6 @@ public:
     FramebufferFormat();
 
     void addColorAttachment(unsigned int index, TextureTarget target, TextureInternalFormat format);
-
-    Attachment attachment() const;
-    void setAttachment(Attachment newAttachment);
 
     const QMap<unsigned int, TextureInternalFormat> &textureInternalFormats() const;
     const QMap<unsigned int, TextureTarget> &textureTargets() const;
@@ -50,7 +40,6 @@ private:
     QMap<unsigned int, TextureTarget> mTextureTargets;
     QMap<unsigned int, TextureInternalFormat> mTextureInternalFormats;
 
-    Attachment mAttachment;
     int mWidth;
     int mHeight;
     int mSamples;

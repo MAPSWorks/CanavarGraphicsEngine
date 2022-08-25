@@ -13,7 +13,6 @@ Water::Water(QObject *parent)
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
 
-    mFramebufferFormat.setAttachment((FramebufferFormat::Attachment)(0x05)); // Color and Depth texture attachment
     mFramebufferFormat.setSamples(0);
     mFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2D, FramebufferFormat::TextureInternalFormat::RGBA8);
     mFramebufferFormat.setWidth(1600);

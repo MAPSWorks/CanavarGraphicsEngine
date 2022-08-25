@@ -18,8 +18,6 @@
         <file>Resources/Shaders/Screen.vert</file>
         <file>Resources/Shaders/NozzleEffect.frag</file>
         <file>Resources/Shaders/NozzleEffect.vert</file>
-        <file>Resources/Shaders/NozzleBlur.frag</file>
-        <file>Resources/Shaders/NozzleBlur.vert</file>
         <file>Resources/Shaders/Sky.frag</file>
         <file>Resources/Shaders/Sky.vert</file>
         <file>Resources/Shaders/VolumetricClouds.glsl</file>
@@ -30,5 +28,7 @@
         <file>Resources/Shaders/SkyPostProcessing.vert</file>
         <file>Resources/Shaders/Water.frag</file>
         <file>Resources/Shaders/Water.vert</file>
+        <file>Resources/Shaders/Blur.frag</file>
+        <file>Resources/Shaders/Blur.vert</file>
     </qresource>
 </RCC>

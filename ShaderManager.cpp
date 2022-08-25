@@ -236,23 +236,6 @@ bool ShaderManager::init()
             return false;
     }
 
-    // Nozzle Blur Shader
-    {
-        Shader *shader = new Shader(ShaderType::NozzleBlurShader);
-        mShaders.insert(shader->type(), shader);
-
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleBlur.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleBlur.frag");
-
-        shader->addUniform("screenTexture");
-
-        shader->addAttribute("position");
-        shader->addAttribute("textureCoords");
-
-        if (!shader->init())
-            return false;
-    }
-
     // Sky Shader
     {
         Shader *shader = new Shader(ShaderType::SkyShader);
@@ -398,6 +381,24 @@ bool ShaderManager::init()
 
         shader->addAttribute("position");
         shader->addAttribute("normal");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Screen Shader
+    {
+        Shader *shader = new Shader(ShaderType::BlurShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Blur.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
+
+        shader->addUniform("screenTexture");
+        shader->addUniform("horizontal");
+
+        shader->addAttribute("position");
         shader->addAttribute("textureCoords");
 
         if (!shader->init())

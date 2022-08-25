@@ -40,7 +40,6 @@ Sky::Sky(QObject *parent)
     mOutputTextures.alphaness = new Texture(1600, 900);
     mOutputTextures.cloudDistance = new Texture(1600, 900);
 
-    mSkyFramebufferFormat.setAttachment((FramebufferFormat::Attachment)(0x03)); // Color, Depth and Stencil attachment
     mSkyFramebufferFormat.setSamples(0);
     mSkyFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2D, FramebufferFormat::TextureInternalFormat::RGBA8);
     mSkyFramebufferFormat.setWidth(1600);

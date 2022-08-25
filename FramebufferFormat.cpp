@@ -1,8 +1,7 @@
 #include "FramebufferFormat.h"
 
 FramebufferFormat::FramebufferFormat()
-    : mAttachment(Attachment::NoAttachment)
-    , mWidth(0)
+    : mWidth(0)
     , mHeight(0)
     , mSamples(0)
 {}
@@ -57,14 +56,4 @@ void FramebufferFormat::setSamples(int newSamples)
 const QVector<unsigned int> &FramebufferFormat::textureIndices() const
 {
     return mTextureIndices;
-}
-
-FramebufferFormat::Attachment FramebufferFormat::attachment() const
-{
-    return mAttachment;
-}
-
-void FramebufferFormat::setAttachment(Attachment newAttachment)
-{
-    mAttachment = newAttachment;
 }

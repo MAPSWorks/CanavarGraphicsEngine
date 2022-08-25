@@ -51,7 +51,7 @@ private:
     void deleteFramebuffers();
     void loadModels();
     void fillStencilBuffer(Framebuffer *framebuffer, float ifps);
-    void applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource);
+    void applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource, int times);
 
 private:
     QMap<QString, ModelData *> mModelsData;
