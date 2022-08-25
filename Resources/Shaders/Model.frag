@@ -2,6 +2,7 @@
 
 struct Node {
     mat4 transformation;
+    mat3 normalMatrix;
     vec4 color;
     float ambient;
     float diffuse;

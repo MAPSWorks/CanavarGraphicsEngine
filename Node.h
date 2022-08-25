@@ -63,7 +63,7 @@ public:
 
     bool renderable() const;
 
-    virtual QMatrix4x4 normalMatrix() const;
+    virtual QMatrix3x3 normalMatrix() const;
 
     virtual void drawGui();
 

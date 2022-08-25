@@ -30,6 +30,7 @@ bool ShaderManager::init()
                  << "numberOfPointLights"
                  << "numberOfSpotLights"
                  << "node.transformation"
+                 << "node.normalMatrix"
                  << "node.ambient"
                  << "node.diffuse"
                  << "node.specular"

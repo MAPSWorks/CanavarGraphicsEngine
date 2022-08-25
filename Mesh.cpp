@@ -92,6 +92,7 @@ bool Mesh::create()
 void Mesh::render(Model *model)
 {
     mShaderManager->setUniformValue("node.transformation", model->worldTransformation() * model->getMeshTransformation(mName));
+    mShaderManager->setUniformValue("node.normalMatrix", model->normalMatrix());
     mShaderManager->setUniformValue("node.color", model->material().color);
     mShaderManager->setUniformValue("node.ambient", model->material().ambient);
     mShaderManager->setUniformValue("node.diffuse", model->material().diffuse);
