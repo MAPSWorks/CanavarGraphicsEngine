@@ -37,7 +37,6 @@ struct DirectionalLight {
 };
 
 struct Terrain {
-    vec4 clipPlane;
     vec3 seed;
     int octaves;
     float tessellationMultiplier;

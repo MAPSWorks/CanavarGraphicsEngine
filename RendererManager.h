@@ -13,6 +13,7 @@
 #include "Sky.h"
 #include "SkyBox.h"
 #include "Terrain.h"
+#include "Water.h"
 
 #include <QMap>
 #include <QMatrix4x4>
@@ -67,6 +68,7 @@ private:
     Haze *mHaze;
     Sky *mSky;
     Quad *mQuad;
+    Water *mWater;
 
     bool mRenderObjects;
     bool mRenderWireframe;

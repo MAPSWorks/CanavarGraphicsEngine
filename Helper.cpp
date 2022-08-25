@@ -116,6 +116,16 @@ QVector<SpotLight *> Helper::getCloseSpotLights(const QList<SpotLight *> &spotLi
     return lightsVector;
 }
 
+QQuaternion Helper::invertPitchAndRoll(const QQuaternion &rotation)
+{
+    float pitch;
+    float yaw;
+    float roll;
+    rotation.getEulerAngles(&pitch, &yaw, &roll);
+
+    return QQuaternion::fromEulerAngles(-pitch, yaw, -roll);
+}
+
 Mesh *Helper::processMesh(aiMesh *aiMesh)
 {
     Mesh *mesh = new Mesh;

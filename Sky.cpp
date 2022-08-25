@@ -8,8 +8,8 @@ Sky::Sky(QObject *parent)
     , mSkyColorBottom(0.9, 0.9, 0.95)
     , mCloudColor(0.2f, 0.2f, 0.2f)
     , mCloudFlareColor(0.4, 0.3, 0.15)
-    , mCloudSpeed(450.f)
-    , mCoverage(0.25f)
+    , mCloudSpeed(250.f)
+    , mCoverage(0.35f)
     , mCrispiness(40.0f)
     , mCurliness(0.1f)
     , mDensity(0.02f)
@@ -20,7 +20,7 @@ Sky::Sky(QObject *parent)
     , mPerlinFrequency(0.8f)
     , mEnablePower(false)
     , mSeed(0, 0, 0)
-    , mSkyBoxFramebuffer(nullptr)
+    , mSkyFramebuffer(nullptr)
     , mTimeElapsed(0.0f)
 
 {
@@ -40,15 +40,13 @@ Sky::Sky(QObject *parent)
     mOutputTextures.alphaness = new Texture(1600, 900);
     mOutputTextures.cloudDistance = new Texture(1600, 900);
 
-    //    mSkyBoxFramebuffer = new Framebuffer(1600, 900);
-    //        mSkyBoxFramebuffer = new Framebuffer(1600, 900);
-    mSkyBoxFramebufferFormat.setAttachment((FramebufferFormat::Attachment)(0x03)); // Color, Depth and Stencil attachment
-    mSkyBoxFramebufferFormat.setSamples(0);
-    mSkyBoxFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2D, FramebufferFormat::TextureInternalFormat::RGBA8);
-    mSkyBoxFramebufferFormat.setWidth(1600);
-    mSkyBoxFramebufferFormat.setHeight(900);
+    mSkyFramebufferFormat.setAttachment((FramebufferFormat::Attachment)(0x03)); // Color, Depth and Stencil attachment
+    mSkyFramebufferFormat.setSamples(0);
+    mSkyFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2D, FramebufferFormat::TextureInternalFormat::RGBA8);
+    mSkyFramebufferFormat.setWidth(1600);
+    mSkyFramebufferFormat.setHeight(900);
 
-    mSkyBoxFramebuffer = new Framebuffer(mSkyBoxFramebufferFormat);
+    mSkyFramebuffer = new Framebuffer(mSkyFramebufferFormat);
 }
 
 void Sky::resize(int width, int height)
@@ -68,29 +66,32 @@ void Sky::resize(int width, int height)
     if (mOutputTextures.cloudDistance)
         mOutputTextures.cloudDistance->deleteLater();
 
-    if (mSkyBoxFramebuffer)
-        mSkyBoxFramebuffer->deleteLater();
+    if (mSkyFramebuffer)
+        mSkyFramebuffer->deleteLater();
 
     mOutputTextures.fragColor = new Texture(mWidth, mHeight);
     mOutputTextures.bloom = new Texture(mWidth, mHeight);
     mOutputTextures.alphaness = new Texture(mWidth, mHeight);
     mOutputTextures.cloudDistance = new Texture(mWidth, mHeight);
 
-    mSkyBoxFramebufferFormat.setWidth(mWidth);
-    mSkyBoxFramebufferFormat.setHeight(mHeight);
-    mSkyBoxFramebuffer = new Framebuffer(mSkyBoxFramebufferFormat);
+    mSkyFramebufferFormat.setWidth(mWidth);
+    mSkyFramebufferFormat.setHeight(mHeight);
+    mSkyFramebuffer = new Framebuffer(mSkyFramebufferFormat);
 }
 
-void Sky::render(float ifps)
+void Sky::renderWeather(float ifps)
 {
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
 
     mTimeElapsed += ifps;
 
-    // Sky
-    mSkyBoxFramebuffer->bind();
+    glDisable(GL_MULTISAMPLE);
+
+    mSkyFramebuffer->bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    // Sky
     mShaderManager->bind(ShaderManager::ShaderType::SkyShader);
     mShaderManager->setUniformValue("skyColorTop", mSkyColorTop);
     mShaderManager->setUniformValue("skyColorBottom", mSkyColorBottom);
@@ -137,11 +138,25 @@ void Sky::render(float ifps)
     mShaderManager->setSampler("perlin", 0, mInputTextures.perlin->id(), GL_TEXTURE_3D);
     mShaderManager->setSampler("worley", 1, mInputTextures.worley->id(), GL_TEXTURE_3D);
     mShaderManager->setSampler("weather", 2, mInputTextures.weather->id(), GL_TEXTURE_2D);
-    mShaderManager->setSampler("sky", 3, mSkyBoxFramebuffer->texture(), GL_TEXTURE_2D);
+    mShaderManager->setSampler("sky", 3, mSkyFramebuffer->texture(), GL_TEXTURE_2D);
 
     glDispatchCompute(INT_CEIL(mWidth, 16), INT_CEIL(mHeight, 16), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     mShaderManager->release();
+
+    glEnable(GL_MULTISAMPLE);
+}
+
+void Sky::render(float)
+{
+    glDepthFunc(GL_LEQUAL);
+    mShaderManager->bind(ShaderManager::ShaderType::SkyPostProcessingShader);
+    mShaderManager->setSampler("skyTexture", 0, mOutputTextures.fragColor->id());
+    mShaderManager->setUniformValue("width", mWidth);
+    mShaderManager->setUniformValue("height", mHeight);
+    mQuad->render();
+    mShaderManager->release();
+    glDepthFunc(GL_LESS);
 }
 
 void Sky::drawGui()
@@ -204,16 +219,6 @@ void Sky::reset()
     mEnablePower = false;
     mSeed = QVector3D(0, 0, 0);
     mTimeElapsed = 0.0f;
-}
-
-const Sky::OutputTextureSet &Sky::outputTextures() const
-{
-    return mOutputTextures;
-}
-
-Framebuffer *Sky::skyBoxFramebuffer() const
-{
-    return mSkyBoxFramebuffer;
 }
 
 void Sky::generateMaps()

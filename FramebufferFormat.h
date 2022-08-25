@@ -8,7 +8,7 @@ class FramebufferFormat
 {
 public:
     enum class Attachment : unsigned int { //
-        NoAttachment,
+        NoAttachment = 0x00,
         ColorAttachment = 0x01,
         DepthAndStencilAttachment = 0x02,
         DepthTextureAttachment = 0x04

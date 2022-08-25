@@ -25,7 +25,6 @@
 layout(triangles, equal_spacing, ccw) in;
 
 struct Terrain {
-    vec4 clipPlane;
     vec3 seed;
     int octaves;
     float tessellationMultiplier;
@@ -39,9 +38,11 @@ struct Terrain {
     float specular;
 };
 
+uniform vec4 clipPlane;
 uniform mat4 VP;
 uniform vec3 cameraPosition;
 uniform Terrain terrain;
+
 
 in vec3 tesPosition[];
 in vec3 tesNormal[];

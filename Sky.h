@@ -35,13 +35,10 @@ public:
     };
 
     void resize(int width, int height);
+    void renderWeather(float ifps);
     void render(float ifps);
     void drawGui();
     void reset();
-
-    const OutputTextureSet &outputTextures() const;
-
-    Framebuffer *skyBoxFramebuffer() const;
 
 private:
     void generateMaps();
@@ -79,8 +76,8 @@ private:
     InputTextureSet mInputTextures;
     OutputTextureSet mOutputTextures;
 
-    Framebuffer *mSkyBoxFramebuffer;
-    FramebufferFormat mSkyBoxFramebufferFormat;
+    Framebuffer *mSkyFramebuffer;
+    FramebufferFormat mSkyFramebufferFormat;
     float mTimeElapsed;
 
     int mWidth;

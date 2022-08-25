@@ -39,7 +39,9 @@ bool RendererManager::init()
 {
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    //    glEnable(GL_CULL_FACE);
+    //    glCullFace(GL_BACK);
 
     qInfo() << "Initializing ShaderManager...";
 
@@ -85,6 +87,10 @@ bool RendererManager::init()
 
     mSky = new Sky;
 
+    mWater = Water::instance();
+    mWater->create();
+    mWater->setHaze(mHaze);
+
     createFramebuffers();
 
     return true;
@@ -101,7 +107,7 @@ void RendererManager::resize(int w, int h)
 
         QTimer::singleShot(1000, [=]() {
             mSky->resize(mWidth, mHeight);
-
+            mWater->resize(mWidth, mHeight);
             deleteFramebuffers();
             createFramebuffers();
             mFlag = false;
@@ -114,40 +120,68 @@ void RendererManager::render(float ifps)
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
 
-    // Render sky
-    mSky->render(ifps);
+    // For Water
+    {
+        glDisable(GL_MULTISAMPLE);
 
-    // Render objects
-    mFramebuffers[0]->bind();
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    renderModels(ifps);
-    renderTerrain(ifps);
-    renderParticles(ifps);
+        QVector3D originalPosition = mCamera->worldPosition();
+        QQuaternion originalRotation = mCamera->worldRotation();
 
-    // Sky Post Processing
-    glDepthFunc(GL_EQUAL);
-    mShaderManager->bind(ShaderManager::ShaderType::SkyPostProcessingShader);
-    mShaderManager->setSampler("skyTexture", 0, mSky->outputTextures().fragColor->id());
-    mShaderManager->setUniformValue("width", mWidth);
-    mShaderManager->setUniformValue("height", mHeight);
-    mQuad->render();
-    mShaderManager->release();
-    glDepthFunc(GL_LESS);
+        mCamera->setWorldPosition(originalPosition);
+        mCamera->setWorldRotation(Helper::invertPitchAndRoll(originalRotation));
 
-    // Nozzle effect
-    fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
-    fillStencilBuffer(mFramebuffers[0], ifps);
-    applyNozzleBlur(mFramebuffers[0], mFramebuffers[1]);
+        // Render Weather
+        mSky->renderWeather(ifps);
 
-    // Render to default framebuffer now
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
-    mShaderManager->setSampler("screenTexture", 0, mFramebuffers[0]->texture(), GL_TEXTURE_2D_MULTISAMPLE);
-    mQuad->render();
-    mShaderManager->release();
+        // Render objects and sky
+        mWater->reflectionFramebuffer()->bind();
+
+        glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        renderModels(ifps);
+        renderTerrain(ifps);
+        mSky->render(ifps);
+
+        mCamera->setWorldPosition(originalPosition);
+        mCamera->setWorldRotation(originalRotation);
+
+        // Refraction
+        mWater->refractionFramebuffer()->bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        renderModels(ifps);
+        renderTerrain(ifps);
+
+        glEnable(GL_MULTISAMPLE);
+    }
+
+    // Scene
+    {
+        // Render Weather
+        mSky->renderWeather(ifps);
+
+        // Render objects and sky
+        mFramebuffers[0]->bind();
+        glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        renderModels(ifps);
+        renderTerrain(ifps);
+        renderParticles(ifps);
+        mWater->render(ifps);
+        mSky->render(ifps);
+
+        // Nozzle effect
+        fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
+        fillStencilBuffer(mFramebuffers[0], ifps);
+        applyNozzleBlur(mFramebuffers[0], mFramebuffers[1]);
+
+        // Render to default framebuffer now
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        mShaderManager->bind(ShaderManager::ShaderType::ScreenShader);
+        mShaderManager->setSampler("screenTexture", 0, mFramebuffers[0]->texture(), GL_TEXTURE_2D_MULTISAMPLE);
+        mQuad->render();
+        mShaderManager->release();
+    }
 
     mCamera->updateVP();
 }
@@ -191,6 +225,7 @@ void RendererManager::fillFramebuffer(Framebuffer *read, Framebuffer *draw)
     mShaderManager->setUniformValue("height", mHeight);
     mQuad->render();
     mShaderManager->release();
+    glEnable(GL_STENCIL_TEST);
 }
 
 void RendererManager::renderModels(float)
@@ -218,9 +253,12 @@ void RendererManager::renderSkyBox(float)
 
 void RendererManager::renderTerrain(float)
 {
-    //glEnable(GL_CLIP_DISTANCE0);
+    //    if (up != 0)
+    //        glEnable(GL_CLIP_DISTANCE0);
 
     mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
+
+    mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * 0);
     mShaderManager->setUniformValue("VP", mCamera->getVP());
     mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
     mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
@@ -230,7 +268,6 @@ void RendererManager::renderTerrain(float)
     mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
     mShaderManager->setUniformValue("nodeMatrix", mTerrain->transformation());
     mShaderManager->setUniformValue("terrain.amplitude", mTerrain->properties().amplitude);
-    mShaderManager->setUniformValue("terrain.clipPlane", mTerrain->properties().clipPlane);
     mShaderManager->setUniformValue("terrain.seed", mTerrain->properties().seed);
     mShaderManager->setUniformValue("terrain.octaves", mTerrain->properties().octaves);
     mShaderManager->setUniformValue("terrain.frequency", mTerrain->properties().frequency);
@@ -245,11 +282,11 @@ void RendererManager::renderTerrain(float)
     mShaderManager->setUniformValue("haze.color", mHaze->color());
     mShaderManager->setUniformValue("haze.density", mHaze->density());
     mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
-    mShaderManager->setUniformValue("waterHeight", 1.0f);
+    mShaderManager->setUniformValue("waterHeight", mWater->waterHeight());
     mTerrain->render();
     mShaderManager->release();
 
-    //glDisable(GL_CLIP_DISTANCE0);
+    //    glDisable(GL_CLIP_DISTANCE0);
 }
 
 void RendererManager::renderParticles(float ifps)

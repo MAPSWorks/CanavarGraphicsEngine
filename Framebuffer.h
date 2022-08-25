@@ -15,7 +15,7 @@ public:
     virtual ~Framebuffer();
 
     void bind();
-    unsigned int texture(int index = 0);
+    unsigned int texture(int index = 0) const;
     unsigned int depth() const;
 
     const FramebufferFormat &format() const;

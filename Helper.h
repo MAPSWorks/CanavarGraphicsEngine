@@ -28,6 +28,7 @@ public:
     static ModelData *loadModel(const QString &name, const QString &path);
     static QVector<PointLight *> getClosePointLights(const QList<PointLight *> &pointLights, Node *node);
     static QVector<SpotLight *> getCloseSpotLights(const QList<SpotLight *> &spotLights, Node *node);
+    static QQuaternion invertPitchAndRoll(const QQuaternion &rotation);
 
 private:
     static Mesh *processMesh(aiMesh *aiMesh);

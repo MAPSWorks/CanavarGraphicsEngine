@@ -1,8 +1,29 @@
 #include "Water.h"
+#include "LightManager.h"
 
 Water::Water(QObject *parent)
     : QObject(parent)
-{}
+    , mWaterHeight(100.0f)
+    , mWaveSpeed(0.25f)
+    , mTimeElapsed(0.0f)
+    , mReflectionFramebuffer(nullptr)
+    , mRefractionFramebuffer(nullptr)
+{
+    mShaderManager = ShaderManager::instance();
+    mCameraManager = CameraManager::instance();
+    mLightManager = LightManager::instance();
+
+    mFramebufferFormat.setAttachment((FramebufferFormat::Attachment)(0x05)); // Color and Depth texture attachment
+    mFramebufferFormat.setSamples(0);
+    mFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2D, FramebufferFormat::TextureInternalFormat::RGBA8);
+    mFramebufferFormat.setWidth(1600);
+    mFramebufferFormat.setHeight(900);
+
+    mTransformation.translate(QVector3D(0, mWaterHeight, 0));
+    mTransformation.scale(128, 1, 128);
+
+    createFramebuffers();
+}
 
 Water *Water::instance()
 {
@@ -12,6 +33,7 @@ Water *Water::instance()
 
 void Water::create(int numberOfVerticesOnEdge, float width)
 {
+    mNumberOfVerticesOnEdge = numberOfVerticesOnEdge;
     const int n = numberOfVerticesOnEdge;
 
     for (int i = 0; i < n; i++)
@@ -66,4 +88,79 @@ void Water::create(int numberOfVerticesOnEdge, float width)
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
     glEnableVertexAttribArray(2);
+}
+
+void Water::render(float ifps)
+{
+    mTimeElapsed += ifps;
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_MULTISAMPLE);
+
+    mShaderManager->bind(ShaderManager::ShaderType::WaterShader);
+    mShaderManager->setUniformValue("nodeMatrix", mTransformation);
+
+    mShaderManager->setUniformValue("cameraPosition", mCameraManager->activeCamera()->worldPosition());
+    mShaderManager->setUniformValue("VP", mCameraManager->activeCamera()->getVP());
+
+    mShaderManager->setUniformValue("lightColor", mLightManager->directionalLight()->color().toVector3D());
+    mShaderManager->setUniformValue("lightDirection", mLightManager->directionalLight()->direction());
+
+    mShaderManager->setUniformValue("moveFactor", mWaveSpeed * mTimeElapsed);
+
+    mShaderManager->setSampler("reflectionTex", 0, mReflectionFramebuffer->texture());
+    mShaderManager->setSampler("refractionTex", 1, mRefractionFramebuffer->texture());
+    mShaderManager->setSampler("depthMap", 2, mRefractionFramebuffer->depth());
+
+    mVAO->bind();
+    glDrawElements(GL_TRIANGLES, (mNumberOfVerticesOnEdge - 1) * (mNumberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0);
+    mShaderManager->release();
+    mVAO->release();
+
+    glDisable(GL_BLEND);
+    glEnable(GL_MULTISAMPLE);
+}
+
+void Water::resize(int width, int height)
+{
+    mFramebufferFormat.setWidth(width);
+    mFramebufferFormat.setHeight(height);
+    deleteFramebuffers();
+    createFramebuffers();
+}
+
+void Water::createFramebuffers()
+{
+    mReflectionFramebuffer = new Framebuffer(mFramebufferFormat);
+    mRefractionFramebuffer = new Framebuffer(mFramebufferFormat);
+}
+
+void Water::deleteFramebuffers()
+{
+    if (mReflectionFramebuffer)
+        mReflectionFramebuffer->deleteLater();
+
+    if (mRefractionFramebuffer)
+        mRefractionFramebuffer->deleteLater();
+}
+
+Framebuffer *Water::refractionFramebuffer() const
+{
+    return mRefractionFramebuffer;
+}
+
+Framebuffer *Water::reflectionFramebuffer() const
+{
+    return mReflectionFramebuffer;
+}
+
+float Water::waterHeight() const
+{
+    return mWaterHeight;
+}
+
+void Water::setHaze(Haze *newHaze)
+{
+    mHaze = newHaze;
 }

@@ -158,7 +158,6 @@ bool ShaderManager::init()
                  << "terrain.octaves"
                  << "terrain.power"
                  << "terrain.seed"
-                 << "terrain.clipPlane"
                  << "terrain.tessellationMultiplier"
                  << "terrain.grassCoverage"
                  << "terrain.ambient"
@@ -183,7 +182,8 @@ bool ShaderManager::init()
                  << "terrainTexture"
                  << "snow"
                  << "rock"
-                 << "rockNormal";
+                 << "rockNormal"
+                 << "clipPlane";
 
         shader->addUniforms(uniforms);
 
@@ -394,8 +394,6 @@ bool ShaderManager::init()
 
         shader->addUniform("reflectionTex");
         shader->addUniform("refractionTex");
-        shader->addUniform("waterDUDV");
-        shader->addUniform("normalMap");
 
         shader->addAttribute("position");
         shader->addAttribute("normal");

@@ -123,11 +123,11 @@ void Camera::updateVP()
 
 QMatrix4x4 Camera::transformation() const
 {
-    QMatrix4x4 transformation;
-    transformation.rotate(mRotation.conjugated());
-    transformation.translate(-mPosition);
+    QMatrix4x4 t;
+    t.rotate(mRotation.conjugated());
+    t.translate(-mPosition);
 
-    return transformation;
+    return t;
 }
 
 QMatrix4x4 Camera::worldTransformation() const

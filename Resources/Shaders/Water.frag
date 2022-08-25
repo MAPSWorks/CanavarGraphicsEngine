@@ -15,8 +15,6 @@ uniform vec4 fogColor = vec4(0.4, 0.6, 0.75, 1.0);
 
 uniform sampler2D reflectionTex;
 uniform sampler2D refractionTex;
-uniform sampler2D waterDUDV;
-uniform sampler2D normalMap;
 
 out vec4 outColor;
 
@@ -156,9 +154,6 @@ void main()
 
     float grain = 50.0;
     vec2 ndc = (fsClipSpaceCoords.xy / fsClipSpaceCoords.w) / 2.0 + 0.5;
-    vec2 distortion1 = texture(waterDUDV, vec2(fsTextureCoords.x + moveFactor, fsTextureCoords.y) * grain).rg * 2.0 - 1.0;
-    vec2 distortion2 = texture(waterDUDV, vec2(fsTextureCoords.x + moveFactor, fsTextureCoords.y - moveFactor) * grain).rg * 2.0 - 1.0;
-    vec2 totalDistortion = distortion1 + distortion2;
     float st = 0.1;
     float dhdu = (perlin((fsPosition.x + st), fsPosition.z, moveFactor * 10.0) - perlin((fsPosition.x - st), fsPosition.z, moveFactor * 10.0)) / (2.0 * st);
     float dhdv = (perlin(fsPosition.x, (fsPosition.z + st), moveFactor * 10.0) - perlin(fsPosition.x, (fsPosition.z - st), moveFactor * 10.0)) / (2.0 * st);
@@ -167,7 +162,7 @@ void main()
     float waterDepth = 1.0 - floorY;
     float waterDepthClamped = clamp(waterDepth * 5.0, 0.0, 1.0);
 
-    totalDistortion = vec2(dhdu, dhdv) * distFactor * waterDepth;
+    vec2 totalDistortion = vec2(dhdu, dhdv) * distFactor * waterDepth;
 
     vec2 reflectionTexCoords = vec2(ndc.x, -ndc.y);
     reflectionTexCoords += totalDistortion;
@@ -187,14 +182,7 @@ void main()
     vec4 refr_reflCol = mix(reflectionColor, refractionColor, fresnelFactor);
 
     // calculate diffuse illumination
-    totalDistortion = normalize(totalDistortion);
-    vec3 X = vec3(1.0, totalDistortion.r, 1.0);
-    vec3 Z = vec3(0.0, totalDistortion.g, 1.0);
-    vec3 norm = texture(normalMap, totalDistortion).rgb;
-    norm = vec3(norm.r * 2 - 1, norm.b * 1.5, norm.g * 2 - 1);
-
-    //norm = normalize(cross(X, Z));
-    norm = computeNormals(fsPosition.xyz);
+    vec3 norm = computeNormals(fsPosition.xyz);
     norm = mix(norm, vec3(0.0, 1.0, 0.0), 0.25);
 
     float diffuseFactor = max(0.0, dot(lightDirection, norm.rgb));
@@ -209,13 +197,9 @@ void main()
     vec3 specular = spec * lightColor * specularFactor;
 
     vec4 color = vec4(0.2, 0.71, 0.85, 1.0);
-
-    //refr_reflCol *= fogColor;
     outColor = mix(mix(refr_reflCol, color * 0.8, 0.1) * 0.8 + vec4(diffuse + specular, 1.0), fogColor, (1 - fogFactor));
-    //float worley_ = worley( vec3(position.xz, moveFactor*10.0))*0.5 + worley( vec3(position.xz*2.0, moveFactor*5.0))*0.25;
     float foam = perlin(fsPosition.x * 4.0, fsPosition.z * 4.0, moveFactor * 10.0) * 0.25;
     foam = mix(foam * pow((1.0 - waterDepth), 8.0), foam * 0.01, 0.0);
     outColor.rgb *= 0.95;
-    //FragColor.rgb += foam;
     outColor.a = waterDepthClamped;
 }

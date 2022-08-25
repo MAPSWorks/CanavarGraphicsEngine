@@ -44,10 +44,10 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
 
     mFreeCamera = dynamic_cast<FreeCamera *>(mNodeManager->create(Node::NodeType::FreeCamera));
-    mFreeCamera->setPosition(QVector3D(0, 10, 10));
+    mFreeCamera->setPosition(QVector3D(0, 200, 0));
     mFreeCamera->setVerticalFov(60.0f);
-    mFreeCamera->setZNear(0.1f);
-    mFreeCamera->setZFar(1000000.0f);
+    mFreeCamera->setZNear(2.0f);
+    mFreeCamera->setZFar(100000.0f);
     mCameraManager->setActiveCamera(mFreeCamera);
 
     connect(mFreeCamera, &FreeCamera::mouseGrabbed, this, [=](bool grabbed) {
@@ -79,8 +79,8 @@ void Controller::init()
     mDummyCamera = dynamic_cast<DummyCamera *>(mNodeManager->create(Node::NodeType::DummyCamera));
     mDummyCamera->setPosition(QVector3D(0, 5, 30));
     mDummyCamera->setVerticalFov(80.0f);
-    mDummyCamera->setZNear(0.1f);
-    mDummyCamera->setZFar(1000000.0f);
+    mDummyCamera->setZNear(2.0f);
+    mDummyCamera->setZFar(100000.0f);
     mRootJetNode->addChild(mDummyCamera);
 
     mPlane = mNodeManager->create(Model::NodeType::Model, "Plane");
