@@ -171,8 +171,8 @@ void RendererManager::render(float ifps)
 
         // Nozzle effect
         fillFramebuffer(mFramebuffers[0], mFramebuffers[1]);
-        fillStencilBuffer(mFramebuffers[0], ifps);
-        applyNozzleBlur(mFramebuffers[0], mFramebuffers[1], 2);
+        fillStencilBuffer(mFramebuffers[0]);
+        applyNozzleBlur(mFramebuffers[0], mFramebuffers[1], 4);
 
         // Render to default framebuffer now
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -187,7 +187,7 @@ void RendererManager::render(float ifps)
     mCamera->updateVP();
 }
 
-void RendererManager::fillStencilBuffer(Framebuffer *framebuffer, float ifps)
+void RendererManager::fillStencilBuffer(Framebuffer *framebuffer)
 {
     // Fill stencil buffer
     framebuffer->bind();
@@ -196,7 +196,7 @@ void RendererManager::fillStencilBuffer(Framebuffer *framebuffer, float ifps)
     glStencilFunc(GL_ALWAYS, 1, 0xFF);                   // Do not test the current value in the stencil buffer, always accept any value on there for drawing
     glStencilMask(0xFF);
     glStencilOp(GL_REPLACE, GL_KEEP, GL_REPLACE);
-    renderParticles(ifps);
+    renderParticlesForStencilTest();
     glDisable(GL_STENCIL_TEST);
 }
 
@@ -318,6 +318,16 @@ void RendererManager::renderParticles(float ifps)
     mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
     mShaderManager->setUniformValue("velocity", mNozzleEffect->velocity());
     mNozzleEffect->renderParticles(ifps);
+    mShaderManager->release();
+}
+
+void RendererManager::renderParticlesForStencilTest()
+{
+    mShaderManager->bind(ShaderManager::ShaderType::NozzleEffectShader);
+    mShaderManager->setUniformValue("MVP", mCamera->getVP() * mNozzleEffect->worldTransformation());
+    mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
+    mShaderManager->setUniformValue("velocity", mNozzleEffect->velocity());
+    mNozzleEffect->renderParticlesForStencilTest();
     mShaderManager->release();
 }
 

@@ -21,6 +21,7 @@ public:
 
     void create();
     void renderParticles(float ifps);
+    void renderParticlesForStencilTest();
 
     float radius() const;
     float velocity() const;

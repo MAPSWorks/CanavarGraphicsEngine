@@ -214,7 +214,7 @@ bool ShaderManager::init()
             return false;
     }
 
-    // Nozzle Particles Shader
+    // Nozzle Effect Shader
     {
         Shader *shader = new Shader(ShaderType::NozzleEffectShader);
         mShaders.insert(shader->type(), shader);

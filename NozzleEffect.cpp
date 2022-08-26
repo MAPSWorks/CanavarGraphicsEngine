@@ -77,6 +77,18 @@ void NozzleEffect::renderParticles(float ifps)
     glDisable(GL_BLEND);
 }
 
+void NozzleEffect::renderParticlesForStencilTest()
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    mVAO->bind();
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mNumberOfParticles);
+    mVAO->release();
+
+    glDisable(GL_BLEND);
+}
+
 NozzleEffect::Particle NozzleEffect::generateParticle()
 {
     double r = RandomGenerator::getRandomFloat(mRadius);

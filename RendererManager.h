@@ -45,12 +45,13 @@ private:
     void renderSkyBox(float ifps);
     void renderTerrain(float ifps);
     void renderParticles(float ifps);
+    void renderParticlesForStencilTest();
     void renderModel(Model *model);
     void fillFramebuffer(Framebuffer *read, Framebuffer *draw);
     void createFramebuffers();
     void deleteFramebuffers();
     void loadModels();
-    void fillStencilBuffer(Framebuffer *framebuffer, float ifps);
+    void fillStencilBuffer(Framebuffer *framebuffer);
     void applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource, int times);
 
 private:
