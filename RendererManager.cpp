@@ -24,7 +24,11 @@ RendererManager::RendererManager(QObject *parent)
     mShaderManager = ShaderManager::instance();
 
     mFramebufferFormat.setSamples(4);
-    mFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2DMultisample, FramebufferFormat::TextureInternalFormat::RGBA8);
+    mFramebufferFormat.addColorAttachment(0, //
+                                          FramebufferFormat::TextureTarget::TEXTURE_2D_MULTISAMPLE,
+                                          FramebufferFormat::TextureInternalFormat::RGBA8,
+                                          FramebufferFormat::TexturePixelFormat::RGBA,
+                                          FramebufferFormat::TextureDataType::UNSIGNED_BYTE);
     mFramebufferFormat.setWidth(1600);
     mFramebufferFormat.setHeight(900);
 }
@@ -105,7 +109,7 @@ void RendererManager::resize(int w, int h)
     {
         mFlag = true;
 
-        QTimer::singleShot(1000, [=]() {
+        QTimer::singleShot(250, [=]() {
             mSky->resize(mWidth, mHeight);
             mWater->resize(mWidth, mHeight);
             deleteFramebuffers();
@@ -286,7 +290,22 @@ void RendererManager::renderNodes(int up)
     auto nodes = mNodeManager->nodes();
 
     for (const auto &node : nodes)
-        renderNode(node, up);
+    {
+        if (!node->visible())
+            continue;
+
+        if (!node->renderable())
+            continue;
+
+        Model *model = dynamic_cast<Model *>(node);
+        NozzleParticles *particles = dynamic_cast<NozzleParticles *>(node);
+
+        if (model)
+            renderModel(model, up);
+
+        if (particles)
+            particles->render(mIfps);
+    }
 }
 
 void RendererManager::renderSkyBox()
@@ -337,32 +356,6 @@ void RendererManager::renderTerrain(int up)
     glDisable(GL_CLIP_DISTANCE0);
 }
 
-void RendererManager::renderNode(Node *node, int up)
-{
-    if (!node->visible())
-        return;
-
-    if (!node->renderable())
-        return;
-
-    Model *model = dynamic_cast<Model *>(node);
-    NozzleParticles *particles = dynamic_cast<NozzleParticles *>(node);
-
-    if (model)
-        renderModel(model, up);
-
-    if (particles)
-        particles->render(mIfps);
-
-    auto children = node->children();
-
-    for (const auto &child : children)
-    {
-        if (child)
-            renderNode(child, up);
-    }
-}
-
 void RendererManager::renderModel(Model *model, int up)
 {
     if (up != 0)
@@ -375,6 +368,7 @@ void RendererManager::renderModel(Model *model, int up)
         if (mRenderObjects)
         {
             mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
+            mShaderManager->setUniformValue("selected", model->selected());
             mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * up);
             mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
             mShaderManager->setUniformValue("VP", mCamera->getVP());
@@ -432,7 +426,7 @@ void RendererManager::renderModel(Model *model, int up)
             mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
             mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-            data->render(GL_TRIANGLES);
+            data->render(Primitive::Triangles);
             mShaderManager->release();
         }
 
@@ -442,7 +436,7 @@ void RendererManager::renderModel(Model *model, int up)
             mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
             mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-            data->render(GL_TRIANGLES);
+            data->render(Primitive::Triangles);
             mShaderManager->release();
         }
     }

@@ -72,6 +72,8 @@ uniform bool useTextureNormal;
 
 uniform bool useBlinnShading;
 
+uniform bool selected = false;
+
 in vec3 fsPosition;
 in vec3 fsNormal;
 in vec2 fsTextureCoords;
@@ -273,9 +275,25 @@ void main()
     if (haze.enabled)
     {
         float hazeFactor = getHazeFactor();
-        outColor = mix(vec4(haze.color, 1), result, hazeFactor);
+        if (selected)
+        {
+            vec4 color = mix(vec4(haze.color, 1), result, hazeFactor);
+            outColor = mix(color, vec4(1,0,0,1), 0.125);
+
+        } else
+        {
+            outColor = mix(vec4(haze.color, 1), result, hazeFactor);
+        }
+
     } else
     {
-        outColor = result;
+        if (selected)
+        {
+            outColor = mix(result, vec4(1,0,0,1), 0.125);
+
+        } else
+        {
+            outColor = result;
+        }
     }
 }

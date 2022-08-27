@@ -15,19 +15,23 @@ Framebuffer::Framebuffer(FramebufferFormat format, QObject *parent)
     auto textureIndices = mFormat.textureIndices();
     auto textureTargets = mFormat.textureTargets();
     auto textureInternalFormats = mFormat.textureInternalFormats();
+    auto texturePixelFormat = mFormat.texturePixelFormats();
+    auto textureDataTypes = mFormat.textureDataTypes();
     auto samples = mFormat.samples();
 
     for (auto index : textureIndices)
     {
         unsigned int id;
-        unsigned int target = (unsigned int) textureTargets.value(index, FramebufferFormat::TextureTarget::Texture2D);
-        unsigned int format = (unsigned int) textureInternalFormats.value(index, FramebufferFormat::TextureInternalFormat::RGBA8);
+        unsigned int target = (unsigned int) textureTargets.value(index, FramebufferFormat::TextureTarget::TEXTURE_2D);
+        unsigned int internalFormat = (unsigned int) textureInternalFormats.value(index, FramebufferFormat::TextureInternalFormat::RGBA8);
+        unsigned int pixelFormat = (unsigned int) texturePixelFormat.value(index, FramebufferFormat::TexturePixelFormat::RGBA);
+        unsigned int dataType = (unsigned int) textureDataTypes.value(index, FramebufferFormat::TextureDataType::UNSIGNED_BYTE);
 
         if (target == GL_TEXTURE_2D)
         {
             glGenTextures(1, &id);
             glBindTexture(GL_TEXTURE_2D, id);
-            glTexImage2D(GL_TEXTURE_2D, 0, format, mFormat.width(), mFormat.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, mFormat.width(), mFormat.height(), 0, pixelFormat, dataType, NULL);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_2D, id, 0);
@@ -36,7 +40,7 @@ Framebuffer::Framebuffer(FramebufferFormat format, QObject *parent)
         {
             glGenTextures(1, &id);
             glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, id);
-            glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, mFormat.width(), mFormat.height(), GL_TRUE);
+            glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, mFormat.width(), mFormat.height(), GL_TRUE);
             glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

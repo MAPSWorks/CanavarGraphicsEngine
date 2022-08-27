@@ -16,6 +16,8 @@ protected:
     friend class NodeManager;
     explicit Node(QObject *parent = nullptr);
     virtual ~Node();
+    void setSelected(bool newSelected);
+    void setNodeIndex(unsigned int newNodeIndex);
 
 public:
     enum class NodeType { //
@@ -61,11 +63,12 @@ public:
     bool visible() const;
     void setVisible(bool newVisible);
 
-    bool renderable() const;
-
     virtual QMatrix3x3 normalMatrix() const;
-
     virtual void drawGui();
+
+    bool renderable() const;
+    unsigned int nodeIndex() const;
+    bool selected() const;
 
 protected:
     QVector3D mPosition;
@@ -76,6 +79,8 @@ protected:
     QList<Node *> mChildren;
     bool mVisible;
     bool mRenderable;
+    unsigned int mNodeIndex;
+    bool mSelected;
 };
 
 #endif // NODE_H

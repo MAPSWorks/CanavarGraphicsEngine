@@ -34,5 +34,7 @@
         <file>Resources/Shaders/ScreenMultisampled.vert</file>
         <file>Resources/Shaders/BlurMultisampled.frag</file>
         <file>Resources/Shaders/BlurMultisampled.vert</file>
+        <file>Resources/Shaders/NodeSelection.frag</file>
+        <file>Resources/Shaders/NodeSelection.vert</file>
     </qresource>
 </RCC>

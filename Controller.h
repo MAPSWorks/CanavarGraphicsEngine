@@ -4,6 +4,7 @@
 #include "DummyCamera.h"
 #include "FreeCamera.h"
 #include "Model.h"
+#include "NodeSelector.h"
 #include "NozzleParticles.h"
 #include "RendererManager.h"
 #include "Simulator/Aircraft.h"
@@ -41,6 +42,7 @@ private:
     LightManager *mLightManager;
     NodeManager *mNodeManager;
     Window *mWindow;
+    NodeSelector *mNodeSelector;
 
     FreeCamera *mFreeCamera;
     DummyCamera *mDummyCamera;
@@ -64,6 +66,7 @@ private:
     Aircraft::PrimaryFlightData mPfd;
 
     bool mImGuiWantCapture;
+    bool mResizeFlag;
 };
 
 #endif // CONTROLLER_H

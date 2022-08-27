@@ -7,7 +7,8 @@ Node::Node(QObject *parent)
     , mNodeType(NodeType::DummyNode)
     , mVisible(true)
     , mRenderable(true)
-
+    , mNodeIndex(0)
+    , mSelected(false)
 {}
 
 Node::~Node() {}
@@ -285,4 +286,24 @@ void Node::drawGui()
         if (ImGui::DragFloat("z##NodeScale", &z, 0.01f, 0.0001f, 100.0f, "%.3f"))
             mScale = QVector3D(x, y, z);
     }
+}
+
+unsigned int Node::nodeIndex() const
+{
+    return mNodeIndex;
+}
+
+void Node::setNodeIndex(unsigned int newNodeIndex)
+{
+    mNodeIndex = newNodeIndex;
+}
+
+bool Node::selected() const
+{
+    return mSelected;
+}
+
+void Node::setSelected(bool newSelected)
+{
+    mSelected = newSelected;
 }

@@ -52,7 +52,8 @@ bool ShaderManager::init()
                  << "useTextureSpecular"
                  << "useTextureNormal"
                  << "useBlinnShading"
-                 << "clipPlane";
+                 << "clipPlane"
+                 << "selected";
 
         shader->addUniforms(uniforms);
         shader->setUniformArray("pointLights[%1].color", 8);
@@ -438,6 +439,30 @@ bool ShaderManager::init()
 
         shader->addAttribute("position");
         shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Node Selection Shader
+    {
+        Shader *shader = new Shader(ShaderType::NodeSelectionShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NodeSelection.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NodeSelection.frag");
+
+        shader->addUniform("VP");
+        shader->addUniform("nodeMatrix");
+        shader->addUniform("nodeIndex");
+
+        shader->addAttribute("position");
+        shader->addAttribute("normal");
+        shader->addAttribute("textureCoords");
+        shader->addAttribute("tangent");
+        shader->addAttribute("bitangent");
+        shader->addAttribute("ids");
+        shader->addAttribute("weights");
 
         if (!shader->init())
             return false;

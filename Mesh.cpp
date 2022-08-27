@@ -149,10 +149,18 @@ void Mesh::render(Model *model)
     mVertexArray.release();
 }
 
-void Mesh::render(GLenum primitive)
+void Mesh::renderForNodeSelector(Model *model)
+{
+    mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation() * model->getMeshTransformation(mName));
+    mVertexArray.bind();
+    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+    mVertexArray.release();
+}
+
+void Mesh::render(Primitive primitive)
 {
     mVertexArray.bind();
-    glDrawElements(primitive, mIndices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements((unsigned int) primitive, mIndices.size(), GL_UNSIGNED_INT, 0);
     mVertexArray.release();
 }
 

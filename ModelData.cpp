@@ -32,9 +32,14 @@ void ModelData::render(Model *model)
     mRootNode->render(model);
 }
 
-void ModelData::render(GLenum primitive)
+void ModelData::render(Primitive primitive)
 {
     mRootNode->render(primitive);
+}
+
+void ModelData::renderForNodeSelector(Model *model)
+{
+    mRootNode->renderForNodeSelector(model);
 }
 
 Mesh *ModelData::getMesh(const QString &meshName)

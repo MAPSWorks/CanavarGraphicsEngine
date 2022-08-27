@@ -42,7 +42,7 @@ void Terrain::render()
     mShaderManager->setSampler("rock", 5, mTextureRockDiffuse->id());
     mShaderManager->setSampler("rockNormal", 6, mTextureRockNormal->id());
 
-    mTileGenerator->render(TileGenerator::Primitive::Patches);
+    mTileGenerator->render(Primitive::Patches);
 }
 
 QMatrix4x4 Terrain::transformation() const

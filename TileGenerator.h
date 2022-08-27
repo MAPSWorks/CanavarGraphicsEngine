@@ -1,6 +1,8 @@
 #ifndef TILEGENERATOR_H
 #define TILEGENERATOR_H
 
+#include "Common.h"
+
 #include <QObject>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLVertexArrayObject>
@@ -15,11 +17,6 @@ public:
         QVector3D position;
         QVector3D normal;
         QVector2D texture;
-    };
-
-    enum class Primitive : unsigned int {
-        Triangles = 0x0004,
-        Patches = 0x000E,
     };
 
     explicit TileGenerator(int resolution, int tiles, float width, QObject *parent = nullptr);

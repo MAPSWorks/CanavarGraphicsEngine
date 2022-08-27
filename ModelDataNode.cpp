@@ -44,7 +44,7 @@ void ModelDataNode::render(Model *model)
         mChildren[i]->render(model);
 }
 
-void ModelDataNode::render(GLenum primitive)
+void ModelDataNode::render(Primitive primitive)
 {
     auto meshes = mData->meshes();
 
@@ -53,6 +53,17 @@ void ModelDataNode::render(GLenum primitive)
 
     for (int i = 0; i < mChildren.size(); i++)
         mChildren[i]->render(primitive);
+}
+
+void ModelDataNode::renderForNodeSelector(Model *model)
+{
+    auto meshes = mData->meshes();
+
+    for (auto index : qAsConst(mMeshIndices))
+        meshes[index]->renderForNodeSelector(model);
+
+    for (int i = 0; i < mChildren.size(); i++)
+        mChildren[i]->renderForNodeSelector(model);
 }
 
 QMatrix4x4 ModelDataNode::getWorldTransformation() const

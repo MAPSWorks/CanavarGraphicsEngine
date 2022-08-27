@@ -1,6 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include "Common.h"
 #include "Model.h"
 #include "ShaderManager.h"
 
@@ -46,7 +47,8 @@ public:
 
     bool create();
     void render(Model *model);
-    void render(GLenum primitive);
+    void render(Primitive primitive);
+    void renderForNodeSelector(Model *model);
 
     const QString &name() const;
     void setName(const QString &newName);

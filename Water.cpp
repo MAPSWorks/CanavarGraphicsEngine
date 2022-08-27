@@ -14,7 +14,11 @@ Water::Water(QObject *parent)
     mLightManager = LightManager::instance();
 
     mFramebufferFormat.setSamples(0);
-    mFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2D, FramebufferFormat::TextureInternalFormat::RGBA8);
+    mFramebufferFormat.addColorAttachment(0, //
+                                          FramebufferFormat::TextureTarget::TEXTURE_2D,
+                                          FramebufferFormat::TextureInternalFormat::RGBA8,
+                                          FramebufferFormat::TexturePixelFormat::RGBA,
+                                          FramebufferFormat::TextureDataType::UNSIGNED_BYTE);
     mFramebufferFormat.setWidth(1600);
     mFramebufferFormat.setHeight(900);
 
@@ -61,7 +65,7 @@ void Water::render(float ifps)
     mShaderManager->setUniformValue("moveFactor", mWaveSpeed * mTimeElapsed);
     mShaderManager->setSampler("reflectionTex", 0, mReflectionFramebuffer->texture());
     mShaderManager->setSampler("refractionTex", 1, mRefractionFramebuffer->texture());
-    mTileGenerator->render(TileGenerator::Primitive::Triangles);
+    mTileGenerator->render(Primitive::Triangles);
     mShaderManager->release();
 
     glDisable(GL_BLEND);

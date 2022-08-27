@@ -15,6 +15,7 @@ Controller::Controller(QApplication *app, QObject *parent)
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mNodeManager = NodeManager::instance();
+    mNodeSelector = NodeSelector::instance();
     mWindow = new Window;
 
     mJet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "f16c"));
@@ -75,6 +76,7 @@ void Controller::init()
     initializeOpenGLFunctions();
 
     mRendererManager->init();
+    mNodeSelector->init();
 
     mDummyCamera = dynamic_cast<DummyCamera *>(mNodeManager->create(Node::NodeType::DummyCamera));
     mDummyCamera->setPosition(QVector3D(0, 5, 30));
@@ -122,6 +124,7 @@ void Controller::onMousePressed(QMouseEvent *event)
     mPressedButton = event->button();
 
     mCameraManager->onMousePressed(event);
+    mNodeSelector->onMousePressed(event);
 }
 
 void Controller::onMouseReleased(QMouseEvent *event)
@@ -176,6 +179,7 @@ void Controller::onResized(int w, int h)
 {
     mCameraManager->setAspectRatio((float) (w) / h);
     mRendererManager->resize(w, h);
+    mNodeSelector->resize(w, h);
 }
 
 void Controller::onMouseDoubleClicked(QMouseEvent *) {}

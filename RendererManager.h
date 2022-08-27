@@ -2,6 +2,7 @@
 #define RENDERERMANAGER_H
 
 #include "CameraManager.h"
+#include "Common.h"
 #include "Framebuffer.h"
 #include "Haze.h"
 #include "LightManager.h"
@@ -41,7 +42,6 @@ private:
     void renderNodes(int up);
     void renderSkyBox();
     void renderTerrain(int up);
-    void renderNode(Node *node, int up);
     void renderModel(Model *model, int up);
     void fillFramebuffer(Framebuffer *source, Framebuffer *target);
     void fillFramebufferMultisampled(Framebuffer *source, Framebuffer *target);

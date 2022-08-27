@@ -32,7 +32,8 @@ public:
         SkyPostProcessingShader,
         WaterShader,
         BlurShader,
-        BlurMultisampledShader
+        BlurMultisampledShader,
+        NodeSelectionShader,
     };
 
     Shader *getShader(ShaderType shader);

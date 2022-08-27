@@ -22,6 +22,7 @@ RESOURCES += \
 HEADERS += \
     Camera.h \
     CameraManager.h \
+    Common.h \
     Controller.h \
     DirectionalLight.h \
     DummyCamera.h \
@@ -38,6 +39,7 @@ HEADERS += \
     ModelDataNode.h \
     Node.h \
     NodeManager.h \
+    NodeSelector.h \
     NozzleParticles.h \
     PointLight.h \
     Quad.h \
@@ -78,6 +80,7 @@ SOURCES += \
     ModelDataNode.cpp \
     Node.cpp \
     NodeManager.cpp \
+    NodeSelector.cpp \
     NozzleParticles.cpp \
     PointLight.cpp \
     Quad.cpp \

@@ -17,6 +17,8 @@ private:
 public:
     Node *create(Node::NodeType type, const QString &name = QString());
     void removeNode(Node *node);
+    void setSelectedNode(Node *node);
+    void setSelectedNode(unsigned int nodeIndex);
 
     const QList<Node *> &nodes() const;
     static NodeManager *instance();

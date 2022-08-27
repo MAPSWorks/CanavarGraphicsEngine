@@ -17,96 +17,67 @@ NodeManager::NodeManager(QObject *parent)
 
 Node *NodeManager::create(Node::NodeType type, const QString &name)
 {
+    Node *node = nullptr;
     switch (type)
     {
     case Node::NodeType::DummyNode: {
-        Node *node = new Node;
-        if (name.isEmpty())
-            node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
-        else
-            node->setName(name);
-        mNodes << node;
-        mNumberOfNodes++;
-        return node;
+        node = new Node;
+        break;
     }
     case Node::NodeType::Model: {
-        Model *node = new Model(name);
-        if (name.isEmpty())
-            node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
-        else
-            node->setName(name);
-        mNodes << node;
-        mNumberOfNodes++;
-        return node;
+        node = new Model(name);
+        break;
     }
     case Node::NodeType::FreeCamera: {
-        FreeCamera *node = new FreeCamera;
-        if (name.isEmpty())
-            node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
-        else
-            node->setName(name);
-        mNodes << node;
-        mNumberOfNodes++;
-        mCameraManager->addCamera(node);
-        return node;
+        node = new FreeCamera;
+        mCameraManager->addCamera(dynamic_cast<FreeCamera *>(node));
+        break;
     }
     case Node::NodeType::DummyCamera: {
-        DummyCamera *node = new DummyCamera;
-        if (name.isEmpty())
-            node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
-        else
-            node->setName(name);
-        mNodes << node;
-        mNumberOfNodes++;
-        mCameraManager->addCamera(node);
-        return node;
+        node = new DummyCamera;
+        mCameraManager->addCamera(dynamic_cast<DummyCamera *>(node));
+        break;
     }
     case Node::NodeType::DirectionalLight: {
-        DirectionalLight *node = new DirectionalLight;
-        if (name.isEmpty())
-            node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
-        else
-            node->setName(name);
-        mNodes << node;
-        mNumberOfNodes++;
-        mLightManager->setDirectionalLight(node);
-
-        return node;
+        node = new DirectionalLight;
+        mLightManager->setDirectionalLight(dynamic_cast<DirectionalLight *>(node));
+        break;
     }
     case Node::NodeType::PointLight: {
-        PointLight *node = new PointLight;
-        if (name.isEmpty())
-            node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
-        else
-            node->setName(name);
-        mNodes << node;
-        mNumberOfNodes++;
-        mLightManager->addLight(node);
-        return node;
+        node = new PointLight;
+        mLightManager->addLight(dynamic_cast<PointLight *>(node));
+        break;
     }
     case Node::NodeType::SpotLight: {
-        SpotLight *node = new SpotLight;
-        if (name.isEmpty())
-            node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
-        else
-            node->setName(name);
-        mNodes << node;
-        mNumberOfNodes++;
-        mLightManager->addLight(node);
-        return node;
+        node = new SpotLight;
+        mLightManager->addLight(dynamic_cast<SpotLight *>(node));
+        break;
     }
     case Node::NodeType::NozzleParticles: {
-        NozzleParticles *node = new NozzleParticles;
-        node->create();
+        node = new NozzleParticles;
+        dynamic_cast<NozzleParticles *>(node)->create();
+        break;
+    }
+    default: {
+        qWarning() << Q_FUNC_INFO << "Implement creation algorithm for this NodeType:" << (int) type;
+        return nullptr;
+    }
+    }
+
+    if (node)
+    {
+        mNumberOfNodes++;
+
         if (name.isEmpty())
             node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
         else
             node->setName(name);
+
+        node->setNodeIndex(mNumberOfNodes);
         mNodes << node;
-        mNumberOfNodes++;
-        return node;
     }
-    }
+
+    return node;
 }
 
 void NodeManager::removeNode(Node *node)
@@ -156,6 +127,34 @@ void NodeManager::removeNode(Node *node)
     }
 }
 
+void NodeManager::setSelectedNode(Node *node)
+{
+    if (mSelectedNode == node)
+        return;
+
+    if (node)
+        node->setSelected(true);
+
+    if (mSelectedNode)
+        mSelectedNode->setSelected(false);
+
+    mSelectedNode = node;
+}
+
+void NodeManager::setSelectedNode(unsigned int nodeIndex)
+{
+    for (auto node : qAsConst(mNodes))
+    {
+        if (node->nodeIndex() == nodeIndex)
+        {
+            setSelectedNode(node);
+            return;
+        }
+    }
+
+    setSelectedNode(nullptr);
+}
+
 NodeManager *NodeManager::instance()
 {
     static NodeManager instance;
@@ -184,6 +183,7 @@ void NodeManager::drawGui()
     if (mSelectedNode)
     {
         ImGui::Text("Type: %s", mSelectedNode->nodeTypeString().toStdString().c_str());
+        ImGui::Text("Index: %d", mSelectedNode->nodeIndex());
         Node *parent = dynamic_cast<Node *>(mSelectedNode->parent());
         ImGui::Text("Parent: 0x%p", parent);
 

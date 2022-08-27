@@ -41,7 +41,11 @@ Sky::Sky(QObject *parent)
     mOutputTextures.cloudDistance = new Texture(1600, 900);
 
     mSkyFramebufferFormat.setSamples(0);
-    mSkyFramebufferFormat.addColorAttachment(0, FramebufferFormat::TextureTarget::Texture2D, FramebufferFormat::TextureInternalFormat::RGBA8);
+    mSkyFramebufferFormat.addColorAttachment(0, //
+                                             FramebufferFormat::TextureTarget::TEXTURE_2D,
+                                             FramebufferFormat::TextureInternalFormat::RGBA8,
+                                             FramebufferFormat::TexturePixelFormat::RGBA,
+                                             FramebufferFormat::TextureDataType::UNSIGNED_BYTE);
     mSkyFramebufferFormat.setWidth(1600);
     mSkyFramebufferFormat.setHeight(900);
 
