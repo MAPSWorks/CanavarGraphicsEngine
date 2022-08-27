@@ -21,6 +21,7 @@ public:
     void onMouseReleased(QMouseEvent *event) override;
     void onMouseMoved(QMouseEvent *event) override;
     void update(float ifps) override;
+    void drawGui() override;
 
     enum class Mode { //
         RotateWhileMouseIsPressing,
@@ -38,6 +39,8 @@ private:
 
     float mMovementSpeed;
     float mAngularSpeed;
+    float mMovementSpeedMultiplier;
+    float mAngularSpeedMultiplier;
 
     bool mMousePressed;
     float mMousePreviousX;

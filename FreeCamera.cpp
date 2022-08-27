@@ -7,6 +7,8 @@ FreeCamera::FreeCamera(QObject *parent)
     : Camera(parent)
     , mMovementSpeed(5.0f)
     , mAngularSpeed(25.0f)
+    , mMovementSpeedMultiplier(1.0f)
+    , mAngularSpeedMultiplier(1.0f)
     , mMousePressed(false)
     , mMousePreviousX(0.0f)
     , mMousePreviousY(0.0f)
@@ -112,8 +114,8 @@ void FreeCamera::update(float ifps)
     // Rotation
     if (mUpdateRotation)
     {
-        mRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mAngularSpeed * mMouseDeltaX * ifps) * mRotation;
-        mRotation = mRotation * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mAngularSpeed * mMouseDeltaY * ifps);
+        mRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mAngularSpeedMultiplier * mAngularSpeed * mMouseDeltaX * ifps) * mRotation;
+        mRotation = mRotation * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mAngularSpeedMultiplier * mAngularSpeed * mMouseDeltaY * ifps);
 
         mMouseDeltaY = 0.0f;
         mMouseDeltaX = 0.0f;
@@ -134,11 +136,35 @@ void FreeCamera::update(float ifps)
 
         for (auto key : keys)
             if (mPressedKeys.value(key, false))
-                mPosition += mMovementSpeed * ifps * mRotation.rotatedVector(KEY_BINDINGS.value(key, QVector3D(0, 0, 0)));
+                mPosition += mMovementSpeedMultiplier * mMovementSpeed * ifps * mRotation.rotatedVector(KEY_BINDINGS.value(key, QVector3D(0, 0, 0)));
     }
 
     if (mPressedKeys.empty())
         mUpdatePosition = false;
+}
+
+void FreeCamera::drawGui()
+{
+    if (!ImGui::CollapsingHeader("Speed##FreeCamera"))
+    {
+        ImGui::SliderFloat("Movement Speed##FreeCamera", &mMovementSpeedMultiplier, 0, 100);
+        ImGui::SliderFloat("Angular Speed##FreeCamera", &mAngularSpeedMultiplier, 0, 5);
+    }
+
+    if (!ImGui::CollapsingHeader("World Position##FreeCamera"))
+    {
+        QVector3D position = worldPosition();
+        float x = position.x();
+        float y = position.y();
+        float z = position.z();
+
+        if (ImGui::InputFloat("x##FreeCameraWorldPosition", &x, 0.01f, 10.0f, "%.3f"))
+            setWorldPosition(QVector3D(x, y, z));
+        if (ImGui::InputFloat("y##FreeCameraWorldPosition", &y, 0.01f, 10.0f, "%.3f"))
+            setWorldPosition(QVector3D(x, y, z));
+        if (ImGui::InputFloat("z##FreeCameraWorldPosition", &z, 0.01f, 10.0f, "%.3f"))
+            setWorldPosition(QVector3D(x, y, z));
+    }
 }
 
 bool FreeCamera::getMouseGrabbed() const

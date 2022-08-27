@@ -198,7 +198,6 @@ void NodeManager::populateComboBox(Node *node)
 {
     switch (node->nodeType())
     {
-    case Node::NodeType::FreeCamera:
     case Node::NodeType::DirectionalLight:
         return;
     default:
