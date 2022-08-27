@@ -29,7 +29,7 @@ public:
     void create(int numberOfVerticesOnEdge = 3, float width = 1024.0f);
     void render(float ifps);
     void resize(int width, int height);
-
+    void drawGui();
     void setHaze(Haze *newHaze);
 
     float waterHeight() const;

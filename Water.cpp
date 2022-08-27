@@ -93,6 +93,8 @@ void Water::render(float ifps)
 {
     mTimeElapsed += ifps;
 
+    mTransformation.setColumn(3, QVector4D(0, mWaterHeight, 0, 1));
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_MULTISAMPLE);
@@ -126,6 +128,15 @@ void Water::resize(int width, int height)
     mFramebufferFormat.setHeight(height);
     deleteFramebuffers();
     createFramebuffers();
+}
+
+void Water::drawGui()
+{
+    if (!ImGui::CollapsingHeader("Water##Water"))
+    {
+        ImGui::SliderFloat("Water Height##Water", &mWaterHeight, -1000, 1000);
+        ImGui::SliderFloat("Wave Speed##Water", &mWaveSpeed, 0, 10);
+    }
 }
 
 void Water::createFramebuffers()
