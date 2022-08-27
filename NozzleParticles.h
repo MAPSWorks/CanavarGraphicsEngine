@@ -1,13 +1,14 @@
-#ifndef NOZZLEEFFECT_H
-#define NOZZLEEFFECT_H
+#ifndef NOZZLEPARTICLES_H
+#define NOZZLEPARTICLES_H
 
-#include "Node.h"
+#include "CameraManager.h"
+#include "ShaderManager.h"
 
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QRandomGenerator>
 
-class NozzleEffect : public Node, protected QOpenGLExtraFunctions
+class NozzleParticles : public Node, protected QOpenGLExtraFunctions
 {
 public:
     struct Particle {
@@ -16,23 +17,23 @@ public:
         float life;
     };
 
-    explicit NozzleEffect(QObject *parent = nullptr);
-    virtual ~NozzleEffect();
+private:
+    friend class NodeManager;
+    explicit NozzleParticles(Node *parent = nullptr);
+    virtual ~NozzleParticles();
 
-    void create();
-    void renderParticles(float ifps);
-    void renderParticlesForStencilTest();
-
-    float radius() const;
-    float velocity() const;
-    float maxLife() const;
-
+public:
+    virtual void create();
+    virtual void render(float ifps);
     virtual void drawGui() override;
 
 private:
-    NozzleEffect::Particle generateParticle();
+    NozzleParticles::Particle generateParticle();
 
 private:
+    ShaderManager *mShaderManager;
+    CameraManager *mCameraManager;
+
     QVector<Particle> mParticles;
     int mNumberOfParticles;
 
@@ -49,4 +50,4 @@ private:
     static const float CUBE_VERTICES[108];
 };
 
-#endif // NOZZLEEFFECT_H
+#endif // NOZZLEPARTICLES_H

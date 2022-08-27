@@ -234,11 +234,11 @@ bool ShaderManager::init()
 
     // Nozzle Effect Shader
     {
-        Shader *shader = new Shader(ShaderType::NozzleEffectShader);
+        Shader *shader = new Shader(ShaderType::NozzleParticlesShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleEffect.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffect.frag");
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleParticles.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleParticles.frag");
 
         shader->addUniform("screenTexture");
         shader->addUniform("MVP");

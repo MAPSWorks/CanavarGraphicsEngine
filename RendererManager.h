@@ -7,7 +7,6 @@
 #include "LightManager.h"
 #include "ModelData.h"
 #include "NodeManager.h"
-#include "NozzleEffect.h"
 #include "Quad.h"
 #include "ShaderManager.h"
 #include "Sky.h"
@@ -36,24 +35,19 @@ public:
     void resize(int w, int h);
 
     ModelData *getModelData(const QString &modelName);
-    void setNozzleModel(ModelData *newNozzleModel);
-    void setNozzleEffect(NozzleEffect *newNozzleEffect);
     void drawGui();
 
 private:
-    void renderModels(float ifps, int up);
-    void renderSkyBox(float ifps);
-    void renderTerrain(float ifps, int up);
-    void renderParticles(float ifps);
-    void renderParticlesForStencilTest();
+    void renderNodes(int up);
+    void renderSkyBox();
+    void renderTerrain(int up);
+    void renderNode(Node *node, int up);
     void renderModel(Model *model, int up);
     void fillFramebuffer(Framebuffer *source, Framebuffer *target);
     void fillFramebufferMultisampled(Framebuffer *source, Framebuffer *target);
     void createFramebuffers();
     void deleteFramebuffers();
     void loadModels();
-    void fillStencilBuffer(Framebuffer *framebuffer);
-    void applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource, int times);
     void applyBlur(Framebuffer *read, Framebuffer *draw, int times);
     void applyBlurMultisampled(Framebuffer *read, Framebuffer *draw, int times);
 
@@ -85,9 +79,8 @@ private:
     int mWidth;
     int mHeight;
 
-    NozzleEffect *mNozzleEffect;
-
     bool mFlag;
+    float mIfps;
 };
 
 #endif // RENDERERMANAGER_H

@@ -170,8 +170,8 @@ QString Node::nodeTypeString()
         return "Point Light";
     case NodeType::SpotLight:
         return "Spot Light";
-    case NodeType::NozzleEffect:
-        return "Nozzle Effect";
+    case NodeType::NozzleParticles:
+        return "Nozzle Particles";
     default:
         return "Unknown Node";
     }
@@ -274,7 +274,10 @@ void Node::drawGui()
         float x = scale.x();
         float y = scale.y();
         float z = scale.z();
+        float all = qMin(x, qMin(y, z));
 
+        if (ImGui::DragFloat("All##NodeScale", &all, 0.01f, 0.0001f, 100.0f, "%.3f"))
+            mScale = QVector3D(all, all, all);
         if (ImGui::DragFloat("x##NodeScale", &x, 0.01f, 0.0001f, 100.0f, "%.3f"))
             mScale = QVector3D(x, y, z);
         if (ImGui::DragFloat("y##NodeScale", &y, 0.01f, 0.0001f, 100.0f, "%.3f"))

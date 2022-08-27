@@ -38,7 +38,7 @@ HEADERS += \
     ModelDataNode.h \
     Node.h \
     NodeManager.h \
-    NozzleEffect.h \
+    NozzleParticles.h \
     PointLight.h \
     Quad.h \
     RandomGenerator.h \
@@ -78,7 +78,7 @@ SOURCES += \
     ModelDataNode.cpp \
     Node.cpp \
     NodeManager.cpp \
-    NozzleEffect.cpp \
+    NozzleParticles.cpp \
     PointLight.cpp \
     Quad.cpp \
     RandomGenerator.cpp \

@@ -9,12 +9,9 @@ uniform mat4 MVP;
 uniform float velocity;
 
 out float fsRadius;
-out float fsLength;
 
 void main()
 {
-    vec3 position = life * velocity * velocityDirection;
-    gl_Position = MVP * vec4(position + initialPosition + vertexPosition, 1.0f);
+    gl_Position = MVP * vec4(life * velocity * velocityDirection + initialPosition + vertexPosition, 1.0f);
     fsRadius = length(initialPosition);
-    fsLength = length(position);
 }

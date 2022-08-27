@@ -83,29 +83,21 @@ void Controller::init()
     mDummyCamera->setZFar(100000.0f);
     mRootJetNode->addChild(mDummyCamera);
 
-    mPlane = mNodeManager->create(Model::NodeType::Model, "Plane");
-    mPlane->setPosition(QVector3D(0, 100, 0));
-    mPlane->setScale(QVector3D(1.0f, 1.0f, 1.0f));
-    mPlane->setVisible(false);
-
     mBackpack = mNodeManager->create(Model::NodeType::Model, "Backpack");
-    mBackpack->setPosition(QVector3D(-5, 5, -5));
+    mBackpack->setPosition(QVector3D(0, 122, 0));
 
     mCyborg = mNodeManager->create(Model::NodeType::Model, "Cyborg");
-    mCyborg->setPosition(QVector3D(-5, 10, -5));
+    mCyborg->setPosition(QVector3D(0, 122, 15));
 
     mNanoSuit = mNodeManager->create(Model::NodeType::Model, "Nanosuit");
-    mNanoSuit->setPosition(QVector3D(-5, 15, -5));
+    mNanoSuit->setPosition(QVector3D(15, 122, 0));
 
     mPlanet = mNodeManager->create(Model::NodeType::Model, "Planet");
-    mPlanet->setPosition(QVector3D(15, 5, -5));
+    mPlanet->setPosition(QVector3D(15, 122, 15));
 
-    mNozzleEffect = new NozzleEffect;
-    mNozzleEffect->setPosition(QVector3D(0, 0.14f, 11.5f));
-    mNozzleEffect->create();
-    mRootJetNode->addChild(mNozzleEffect);
-
-    mRendererManager->setNozzleEffect(mNozzleEffect);
+    mNozzleParticles = mNodeManager->create(Node::NodeType::NozzleParticles);
+    mNozzleParticles->setPosition(QVector3D(0, 0.14f, 11.5f));
+    mRootJetNode->addChild(mNozzleParticles);
 }
 
 void Controller::run()

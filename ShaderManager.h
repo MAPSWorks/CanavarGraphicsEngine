@@ -23,7 +23,7 @@ public:
         TerrainShader,
         ScreenShader,
         ScreenMultisampledShader,
-        NozzleEffectShader,
+        NozzleParticlesShader,
         SkyShader,
         VolumetricCloudsShader,
         WeatherShader,

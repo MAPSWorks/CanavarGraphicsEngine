@@ -4,6 +4,7 @@
 #include "DummyCamera.h"
 #include "FreeCamera.h"
 #include "Model.h"
+#include "NozzleParticles.h"
 #include "RendererManager.h"
 #include "Simulator/Aircraft.h"
 #include "Simulator/AircraftController.h"
@@ -46,15 +47,13 @@ private:
 
     Qt::MouseButton mPressedButton;
 
-    Node *mPlane;
-    Node *mCone;
     Node *mBackpack;
     Node *mCyborg;
     Node *mNanoSuit;
     Node *mPlanet;
-    Node *mRock;
     Model *mJet;
     Node *mRootJetNode;
+    Node *mNozzleParticles;
 
     QApplication *mApp;
 
@@ -63,8 +62,6 @@ private:
     Aircraft *mAircraft;
     AircraftController *mAircraftController;
     Aircraft::PrimaryFlightData mPfd;
-
-    NozzleEffect *mNozzleEffect;
 
     bool mImGuiWantCapture;
 };

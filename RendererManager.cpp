@@ -3,7 +3,7 @@
 #include "Helper.h"
 #include "Light.h"
 #include "Model.h"
-
+#include "NozzleParticles.h"
 #include <QDir>
 #include <QtMath>
 
@@ -16,6 +16,7 @@ RendererManager::RendererManager(QObject *parent)
     , mWidth(1600)
     , mHeight(900)
     , mFlag(false)
+    , mIfps(0.0f)
 {
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
@@ -116,6 +117,7 @@ void RendererManager::resize(int w, int h)
 
 void RendererManager::render(float ifps)
 {
+    mIfps = ifps;
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
 
@@ -140,8 +142,8 @@ void RendererManager::render(float ifps)
         mWater->reflectionFramebuffer()->bind();
         glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderModels(ifps, 1);
-        renderTerrain(ifps, 1);
+        renderNodes(1);
+        renderTerrain(1);
         mSky->render(ifps);
 
         mCamera->setWorldPosition(originalPosition);
@@ -150,8 +152,8 @@ void RendererManager::render(float ifps)
         // Refraction
         mWater->refractionFramebuffer()->bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderModels(ifps, -1);
-        renderTerrain(ifps, -1);
+        renderNodes(-1);
+        renderTerrain(-1);
 
         glEnable(GL_MULTISAMPLE);
     }
@@ -166,16 +168,10 @@ void RendererManager::render(float ifps)
         glEnable(GL_DEPTH_TEST);
         glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderModels(ifps, 0);
-        renderTerrain(ifps, 0);
-        renderParticles(ifps);
+        renderNodes(0);
+        renderTerrain(0);
         mWater->render(ifps);
         mSky->render(ifps);
-
-        // Nozzle effect
-        fillFramebufferMultisampled(mFramebuffers[0], mFramebuffers[1]);
-        fillStencilBuffer(mFramebuffers[0]);
-        applyNozzleBlur(mFramebuffers[0], mFramebuffers[1], 4);
 
         // Render to default framebuffer now
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -188,54 +184,6 @@ void RendererManager::render(float ifps)
     }
 
     mCamera->updateVP();
-}
-
-void RendererManager::fillStencilBuffer(Framebuffer *framebuffer)
-{
-    // Fill stencil buffer
-    framebuffer->bind();
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Do not draw any pixels on the back buffer
-    glEnable(GL_STENCIL_TEST);                           // Enables testing AND writing functionalities
-    glStencilFunc(GL_ALWAYS, 1, 0xFF);                   // Do not test the current value in the stencil buffer, always accept any value on there for drawing
-    glStencilMask(0xFF);
-    glStencilOp(GL_REPLACE, GL_KEEP, GL_REPLACE);
-    renderParticlesForStencilTest();
-    glDisable(GL_STENCIL_TEST);
-}
-
-void RendererManager::applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource, int times)
-{
-    // Blur pass
-    for (int i = 0; i < times; i++)
-    {
-        stencilSource->bind();
-        glEnable(GL_STENCIL_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);          // Make sure you will no longer (over)write stencil values, even if any test succeeds
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Make sure we draw on the backbuffer again.
-        glStencilFunc(GL_EQUAL, 1, 0xFF);                // Now we will only draw pixels where the corresponding stencil buffer value equals 1
-        mShaderManager->bind(ShaderManager::ShaderType::BlurMultisampledShader);
-        mShaderManager->setSampler("screenTexture", 0, textureSource->texture(), GL_TEXTURE_2D_MULTISAMPLE);
-        mShaderManager->setUniformValue("horizontal", true);
-        mQuad->render();
-        mShaderManager->release();
-
-        fillFramebuffer(stencilSource, textureSource);
-
-        stencilSource->bind();
-        glEnable(GL_STENCIL_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);          // Make sure you will no longer (over)write stencil values, even if any test succeeds
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Make sure we draw on the backbuffer again.
-        glStencilFunc(GL_EQUAL, 1, 0xFF);                // Now we will only draw pixels where the corresponding stencil buffer value equals 1
-        mShaderManager->bind(ShaderManager::ShaderType::BlurMultisampledShader);
-        mShaderManager->setSampler("screenTexture", 0, textureSource->texture(), GL_TEXTURE_2D_MULTISAMPLE);
-        mShaderManager->setUniformValue("horizontal", false);
-        mQuad->render();
-        mShaderManager->release();
-
-        fillFramebuffer(stencilSource, textureSource);
-
-        glDisable(GL_STENCIL_TEST);
-    }
 }
 
 void RendererManager::applyBlur(Framebuffer *read, Framebuffer *draw, int times)
@@ -333,20 +281,15 @@ void RendererManager::fillFramebufferMultisampled(Framebuffer *source, Framebuff
     glEnable(GL_DEPTH_TEST);
 }
 
-void RendererManager::renderModels(float, int up)
+void RendererManager::renderNodes(int up)
 {
     auto nodes = mNodeManager->nodes();
 
     for (const auto &node : nodes)
-    {
-        Model *model = dynamic_cast<Model *>(node);
-
-        if (model)
-            renderModel(model, up);
-    }
+        renderNode(node, up);
 }
 
-void RendererManager::renderSkyBox(float)
+void RendererManager::renderSkyBox()
 {
     mShaderManager->bind(ShaderManager::ShaderType::SkyBoxShader);
     mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
@@ -356,7 +299,7 @@ void RendererManager::renderSkyBox(float)
     mShaderManager->release();
 }
 
-void RendererManager::renderTerrain(float, int up)
+void RendererManager::renderTerrain(int up)
 {
     if (up != 0)
         glEnable(GL_CLIP_DISTANCE0);
@@ -394,34 +337,34 @@ void RendererManager::renderTerrain(float, int up)
     glDisable(GL_CLIP_DISTANCE0);
 }
 
-void RendererManager::renderParticles(float ifps)
+void RendererManager::renderNode(Node *node, int up)
 {
-    mShaderManager->bind(ShaderManager::ShaderType::NozzleEffectShader);
-    mShaderManager->setUniformValue("MVP", mCamera->getVP() * mNozzleEffect->worldTransformation());
-    mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
-    mShaderManager->setUniformValue("velocity", mNozzleEffect->velocity());
-    mNozzleEffect->renderParticles(ifps);
-    mShaderManager->release();
-}
+    if (!node->visible())
+        return;
 
-void RendererManager::renderParticlesForStencilTest()
-{
-    mShaderManager->bind(ShaderManager::ShaderType::NozzleEffectShader);
-    mShaderManager->setUniformValue("MVP", mCamera->getVP() * mNozzleEffect->worldTransformation());
-    mShaderManager->setUniformValue("radius", mNozzleEffect->radius());
-    mShaderManager->setUniformValue("velocity", mNozzleEffect->velocity());
-    mNozzleEffect->renderParticlesForStencilTest();
-    mShaderManager->release();
+    if (!node->renderable())
+        return;
+
+    Model *model = dynamic_cast<Model *>(node);
+    NozzleParticles *particles = dynamic_cast<NozzleParticles *>(node);
+
+    if (model)
+        renderModel(model, up);
+
+    if (particles)
+        particles->render(mIfps);
+
+    auto children = node->children();
+
+    for (const auto &child : children)
+    {
+        if (child)
+            renderNode(child, up);
+    }
 }
 
 void RendererManager::renderModel(Model *model, int up)
 {
-    if (!model->visible())
-        return;
-
-    if (!model->renderable())
-        return;
-
     if (up != 0)
         glEnable(GL_CLIP_DISTANCE0);
 
@@ -505,15 +448,6 @@ void RendererManager::renderModel(Model *model, int up)
     }
 
     glDisable(GL_CLIP_DISTANCE0);
-
-    auto children = model->children();
-
-    for (const auto &child : children)
-    {
-        Model *model = dynamic_cast<Model *>(child);
-        if (model)
-            renderModel(model, up);
-    }
 }
 
 void RendererManager::createFramebuffers()
@@ -588,11 +522,6 @@ void RendererManager::loadModels()
     qInfo() << "All textured models are loaded.";
 }
 
-void RendererManager::setNozzleEffect(NozzleEffect *newNozzleEffect)
-{
-    mNozzleEffect = newNozzleEffect;
-}
-
 void RendererManager::drawGui()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
@@ -614,9 +543,6 @@ void RendererManager::drawGui()
     mTerrain->drawGui();
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-    // Seperate Window
-    mNozzleEffect->drawGui();
 }
 
 ModelData *RendererManager::getModelData(const QString &modelName)

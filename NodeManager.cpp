@@ -4,6 +4,7 @@
 #include "FreeCamera.h"
 #include "LightManager.h"
 #include "Model.h"
+#include "NozzleParticles.h"
 
 NodeManager::NodeManager(QObject *parent)
     : QObject(parent)
@@ -94,7 +95,17 @@ Node *NodeManager::create(Node::NodeType type, const QString &name)
         mLightManager->addLight(node);
         return node;
     }
-    break;
+    case Node::NodeType::NozzleParticles: {
+        NozzleParticles *node = new NozzleParticles;
+        node->create();
+        if (name.isEmpty())
+            node->setName(QString("%1 #%2").arg(node->nodeTypeString()).arg(mNumberOfNodes));
+        else
+            node->setName(name);
+        mNodes << node;
+        mNumberOfNodes++;
+        return node;
+    }
     }
 }
 
@@ -106,7 +117,8 @@ void NodeManager::removeNode(Node *node)
     switch (node->nodeType())
     {
     case Node::NodeType::Model:
-    case Node::NodeType::DummyNode: {
+    case Node::NodeType::DummyNode:
+    case Node::NodeType::NozzleParticles: {
         if (parent)
             parent->removeChild(node);
         mNodes.removeAll(node);
@@ -172,7 +184,11 @@ void NodeManager::drawGui()
     if (mSelectedNode)
     {
         ImGui::Text("Type: %s", mSelectedNode->nodeTypeString().toStdString().c_str());
-        ImGui::Text("Parent: 0x%p", static_cast<void *>(mSelectedNode->parent()));
+        Node *parent = dynamic_cast<Node *>(mSelectedNode->parent());
+        ImGui::Text("Parent: 0x%p", parent);
+
+        if (parent)
+            ImGui::Text("Parent Name: %s", parent->name().toStdString().c_str());
 
         mSelectedNode->drawGui();
     }

@@ -203,7 +203,7 @@ QString Shader::getShaderTypeString()
         return "Terrain Shader";
     case ShaderManager::ShaderType::ScreenShader:
         return "Screen Shader";
-    case ShaderManager::ShaderType::NozzleEffectShader:
+    case ShaderManager::ShaderType::NozzleParticlesShader:
         return "Nozzle Effect Shader";
     default:
         return "Unknown Shader";

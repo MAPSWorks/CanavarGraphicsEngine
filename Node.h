@@ -26,7 +26,7 @@ public:
         DirectionalLight,
         PointLight,
         SpotLight,
-        NozzleEffect
+        NozzleParticles
     };
 
     virtual QMatrix4x4 transformation() const;
