@@ -205,5 +205,5 @@ void NodeManager::populateComboBox(Node *node)
     }
 
     if (ImGui::Selectable(node->name().toStdString().c_str()))
-        mSelectedNode = node;
+        setSelectedNode(node);
 }
