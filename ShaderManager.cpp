@@ -51,7 +51,8 @@ bool ShaderManager::init()
                  << "useTextureDiffuse"
                  << "useTextureSpecular"
                  << "useTextureNormal"
-                 << "useBlinnShading";
+                 << "useBlinnShading"
+                 << "clipPlane";
 
         shader->addUniforms(uniforms);
         shader->setUniformArray("pointLights[%1].color", 8);

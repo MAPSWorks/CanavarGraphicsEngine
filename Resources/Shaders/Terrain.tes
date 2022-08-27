@@ -194,9 +194,9 @@ void main()
     // Displace the vertex along the normal
     float displacement = perlin(fsWorldPosition.xz);
     fsWorldPosition += fsNormal * displacement;
-    //gl_ClipDistance[0] = dot(clipPlane, vec4(fsWorldPosition, 1.0));
     fsDistanceFromPosition = distance(fsWorldPosition, cameraPosition);
     fsHeight = fsWorldPosition.y;
 
+    gl_ClipDistance[0] = dot(clipPlane, vec4(fsWorldPosition, 1.0));
     gl_Position = VP * vec4(fsWorldPosition, 1.0);
 }

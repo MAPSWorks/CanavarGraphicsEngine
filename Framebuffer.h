@@ -16,7 +16,6 @@ public:
 
     void bind();
     unsigned int texture(int index = 0) const;
-    unsigned int depth() const;
 
     const FramebufferFormat &format() const;
 
@@ -25,7 +24,6 @@ private:
     unsigned int mFramebuffer;
     unsigned int mRenderObject;
     QMap<unsigned int, unsigned int> mTextures;
-    unsigned int mDepth;
 };
 
 #endif // FRAMEBUFFER_H

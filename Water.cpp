@@ -3,7 +3,7 @@
 
 Water::Water(QObject *parent)
     : QObject(parent)
-    , mWaterHeight(100.0f)
+    , mWaterHeight(120.0f)
     , mWaveSpeed(0.25f)
     , mTimeElapsed(0.0f)
     , mReflectionFramebuffer(nullptr)
@@ -110,7 +110,6 @@ void Water::render(float ifps)
 
     mShaderManager->setSampler("reflectionTex", 0, mReflectionFramebuffer->texture());
     mShaderManager->setSampler("refractionTex", 1, mRefractionFramebuffer->texture());
-    mShaderManager->setSampler("depthMap", 2, mRefractionFramebuffer->depth());
 
     mVAO->bind();
     glDrawElements(GL_TRIANGLES, (mNumberOfVerticesOnEdge - 1) * (mNumberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0);

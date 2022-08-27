@@ -126,8 +126,12 @@ void RendererManager::render(float ifps)
         QVector3D originalPosition = mCamera->worldPosition();
         QQuaternion originalRotation = mCamera->worldRotation();
 
-        mCamera->setWorldPosition(originalPosition);
+        float x = originalPosition.x();
+        float y = originalPosition.y() - 2 * (originalPosition.y() - mWater->waterHeight());
+        float z = originalPosition.z();
+
         mCamera->setWorldRotation(Helper::invertPitchAndRoll(originalRotation));
+        mCamera->setWorldPosition(QVector3D(x, y, z));
 
         // Render Weather
         mSky->renderWeather(ifps);
@@ -137,8 +141,8 @@ void RendererManager::render(float ifps)
 
         glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderModels(ifps);
-        renderTerrain(ifps);
+        renderModels(ifps, 1);
+        renderTerrain(ifps, 1);
         mSky->render(ifps);
 
         mCamera->setWorldPosition(originalPosition);
@@ -147,8 +151,8 @@ void RendererManager::render(float ifps)
         // Refraction
         mWater->refractionFramebuffer()->bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderModels(ifps);
-        renderTerrain(ifps);
+        renderModels(ifps, -1);
+        renderTerrain(ifps, -1);
 
         glEnable(GL_MULTISAMPLE);
     }
@@ -163,8 +167,8 @@ void RendererManager::render(float ifps)
         glEnable(GL_DEPTH_TEST);
         glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderModels(ifps);
-        renderTerrain(ifps);
+        renderModels(ifps, 0);
+        renderTerrain(ifps, 0);
         renderParticles(ifps);
         mWater->render(ifps);
         mSky->render(ifps);
@@ -250,7 +254,7 @@ void RendererManager::fillFramebuffer(Framebuffer *read, Framebuffer *draw)
     glEnable(GL_DEPTH_TEST);
 }
 
-void RendererManager::renderModels(float)
+void RendererManager::renderModels(float, int up)
 {
     auto nodes = mNodeManager->nodes();
 
@@ -259,7 +263,7 @@ void RendererManager::renderModels(float)
         Model *model = dynamic_cast<Model *>(node);
 
         if (model)
-            renderModel(model);
+            renderModel(model, up);
     }
 }
 
@@ -273,14 +277,14 @@ void RendererManager::renderSkyBox(float)
     mShaderManager->release();
 }
 
-void RendererManager::renderTerrain(float)
+void RendererManager::renderTerrain(float, int up)
 {
-    //    if (up != 0)
-    //        glEnable(GL_CLIP_DISTANCE0);
+    if (up != 0)
+        glEnable(GL_CLIP_DISTANCE0);
 
     mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
 
-    mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * 0);
+    mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * up);
     mShaderManager->setUniformValue("VP", mCamera->getVP());
     mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
     mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
@@ -308,7 +312,7 @@ void RendererManager::renderTerrain(float)
     mTerrain->render();
     mShaderManager->release();
 
-    //    glDisable(GL_CLIP_DISTANCE0);
+    glDisable(GL_CLIP_DISTANCE0);
 }
 
 void RendererManager::renderParticles(float ifps)
@@ -331,13 +335,16 @@ void RendererManager::renderParticlesForStencilTest()
     mShaderManager->release();
 }
 
-void RendererManager::renderModel(Model *model)
+void RendererManager::renderModel(Model *model, int up)
 {
     if (!model->visible())
         return;
 
     if (!model->renderable())
         return;
+
+    if (up != 0)
+        glEnable(GL_CLIP_DISTANCE0);
 
     ModelData *data = mModelsData.value(model->modelName(), nullptr);
 
@@ -346,6 +353,7 @@ void RendererManager::renderModel(Model *model)
         if (mRenderObjects)
         {
             mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
+            mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * up);
             mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
             mShaderManager->setUniformValue("VP", mCamera->getVP());
             mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
@@ -417,13 +425,15 @@ void RendererManager::renderModel(Model *model)
         }
     }
 
+    glDisable(GL_CLIP_DISTANCE0);
+
     auto children = model->children();
 
     for (const auto &child : children)
     {
         Model *model = dynamic_cast<Model *>(child);
         if (model)
-            renderModel(model);
+            renderModel(model, up);
     }
 }
 

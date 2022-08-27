@@ -41,12 +41,12 @@ public:
     void drawGui();
 
 private:
-    void renderModels(float ifps);
+    void renderModels(float ifps, int up);
     void renderSkyBox(float ifps);
-    void renderTerrain(float ifps);
+    void renderTerrain(float ifps, int up);
     void renderParticles(float ifps);
     void renderParticlesForStencilTest();
-    void renderModel(Model *model);
+    void renderModel(Model *model, int up);
     void fillFramebuffer(Framebuffer *read, Framebuffer *draw);
     void createFramebuffers();
     void deleteFramebuffers();

@@ -7,8 +7,6 @@ Framebuffer::Framebuffer(FramebufferFormat format, QObject *parent)
     , mFormat(format)
     , mFramebuffer(0)
     , mRenderObject(0)
-    , mDepth(0)
-
 {
     initializeOpenGLFunctions();
     glGenFramebuffers(1, &mFramebuffer);
@@ -80,9 +78,6 @@ Framebuffer::~Framebuffer()
     if (mRenderObject)
         glDeleteBuffers(1, &mRenderObject);
 
-    if (mDepth)
-        glDeleteTextures(1, &mDepth);
-
     auto textureIndices = mTextures.keys();
 
     for (auto index : qAsConst(textureIndices))
@@ -111,11 +106,6 @@ void Framebuffer::bind()
 unsigned int Framebuffer::texture(int index) const
 {
     return mTextures.value(index);
-}
-
-unsigned int Framebuffer::depth() const
-{
-    return mDepth;
 }
 
 const FramebufferFormat &Framebuffer::format() const

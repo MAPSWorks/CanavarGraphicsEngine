@@ -19,7 +19,7 @@ struct Node {
 
 uniform Node node;
 uniform mat4 VP;
-
+uniform vec4 clipPlane;
 uniform bool useTextureNormal;
 
 out vec3 fsPosition;
@@ -41,5 +41,6 @@ void main()
         fsTBN = node.normalMatrix * mat3(T, B, N);
     }
 
+    gl_ClipDistance[0] = dot(clipPlane, vec4(fsPosition, 1.0));
     gl_Position = VP * vec4(fsPosition, 1.0);
 }
