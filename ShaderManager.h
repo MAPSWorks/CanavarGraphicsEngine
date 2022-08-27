@@ -22,6 +22,7 @@ public:
         SkyBoxShader,
         TerrainShader,
         ScreenShader,
+        ScreenMultisampledShader,
         NozzleEffectShader,
         SkyShader,
         VolumetricCloudsShader,
@@ -30,7 +31,8 @@ public:
         WorleyShader,
         SkyPostProcessingShader,
         WaterShader,
-        BlurShader
+        BlurShader,
+        BlurMultisampledShader
     };
 
     Shader *getShader(ShaderType shader);

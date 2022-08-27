@@ -47,12 +47,15 @@ private:
     void renderParticles(float ifps);
     void renderParticlesForStencilTest();
     void renderModel(Model *model, int up);
-    void fillFramebuffer(Framebuffer *read, Framebuffer *draw);
+    void fillFramebuffer(Framebuffer *source, Framebuffer *target);
+    void fillFramebufferMultisampled(Framebuffer *source, Framebuffer *target);
     void createFramebuffers();
     void deleteFramebuffers();
     void loadModels();
     void fillStencilBuffer(Framebuffer *framebuffer);
     void applyNozzleBlur(Framebuffer *stencilSource, Framebuffer *textureSource, int times);
+    void applyBlur(Framebuffer *read, Framebuffer *draw, int times);
+    void applyBlurMultisampled(Framebuffer *read, Framebuffer *draw, int times);
 
 private:
     QMap<QString, ModelData *> mModelsData;

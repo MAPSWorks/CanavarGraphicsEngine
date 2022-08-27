@@ -215,6 +215,23 @@ bool ShaderManager::init()
             return false;
     }
 
+    // Screen Multisampled Shader
+    {
+        Shader *shader = new Shader(ShaderType::ScreenMultisampledShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/ScreenMultisampled.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ScreenMultisampled.frag");
+
+        shader->addUniform("screenTexture");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
     // Nozzle Effect Shader
     {
         Shader *shader = new Shader(ShaderType::NozzleEffectShader);
@@ -388,13 +405,33 @@ bool ShaderManager::init()
             return false;
     }
 
-    // Screen Shader
+    // Blur Shader
     {
         Shader *shader = new Shader(ShaderType::BlurShader);
         mShaders.insert(shader->type(), shader);
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Blur.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
+
+        shader->addUniform("screenTexture");
+        shader->addUniform("horizontal");
+        shader->addUniform("width");
+        shader->addUniform("height");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Blur Multisampled Shader
+    {
+        Shader *shader = new Shader(ShaderType::BlurMultisampledShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/BlurMultisampled.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/BlurMultisampled.frag");
 
         shader->addUniform("screenTexture");
         shader->addUniform("horizontal");
