@@ -54,6 +54,7 @@ HEADERS += \
     Terrain.h \
     Texture.h \
     TextureMaterial.h \
+    TileGenerator.h \
     Water.h \
     Window.h
 
@@ -93,6 +94,7 @@ SOURCES += \
     Terrain.cpp \
     Texture.cpp \
     TextureMaterial.cpp \
+    TileGenerator.cpp \
     Water.cpp \
     Window.cpp
 

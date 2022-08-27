@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "ShaderManager.h"
 #include "Texture.h"
+#include "TileGenerator.h"
 
 #include <QObject>
 #include <QOpenGLBuffer>
@@ -24,9 +25,6 @@ private:
 
 public:
     struct Properties {
-        int numberOfVerticesOnEdge;
-        int grids;
-        float width;
         float amplitude;
         float frequency;
         int octaves;
@@ -36,13 +34,7 @@ public:
         float grassCoverage;
     };
 
-    struct Vertex {
-        QVector3D position;
-        QVector3D normal;
-        QVector2D texture;
-    };
-
-    void create(int numberOfVerticesOnEdge = 3, int grids = 128, float width = 1024.0f);
+    void create();
     void render();
     void reset();
     void drawGui();
@@ -58,30 +50,19 @@ public:
     void setMaterial(const Model::Material &newMaterial);
 
 private:
-    QVector2D getCurrentTilePosition() const;
-    void updatePositionVectors(const QVector2D &translation);
-
-private:
+    TileGenerator *mTileGenerator;
     Properties mProperties;
     Model::Material mMaterial;
-    QVector<QVector2D> mGridPositions;
 
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
 
-    QOpenGLVertexArrayObject *mVAO;
-    unsigned int mVBO;
-    unsigned int mEBO;
-    unsigned int mPBO;
     Texture *mTextureSand;
     Texture *mTextureGrass;
     Texture *mTextureSnow;
     Texture *mTextureRockDiffuse;
     Texture *mTextureRockNormal;
     Texture *mTextureTerrain;
-
-    QVector<Vertex> mVertices;
-    QVector<unsigned int> mIndices;
 
     QVector2D mPreviousTilePosition;
 };

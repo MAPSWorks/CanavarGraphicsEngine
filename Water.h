@@ -5,6 +5,7 @@
 #include "Framebuffer.h"
 #include "Haze.h"
 #include "ShaderManager.h"
+#include "TileGenerator.h"
 
 #include <QObject>
 #include <QOpenGLExtraFunctions>
@@ -26,7 +27,7 @@ private:
 
 public:
     static Water *instance();
-    void create(int numberOfVerticesOnEdge = 3, float width = 1024.0f);
+    void create();
     void render(float ifps);
     void resize(int width, int height);
     void drawGui();
@@ -45,13 +46,9 @@ private:
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
-    Haze *mHaze;
 
-    QVector<Vertex> mVertices;
-    QVector<unsigned int> mIndices;
-    QOpenGLVertexArrayObject *mVAO;
-    unsigned int mVBO;
-    unsigned int mEBO;
+    TileGenerator *mTileGenerator;
+    Haze *mHaze;
 
     float mWaterHeight;
     float mWaveSpeed;
@@ -63,7 +60,7 @@ private:
 
     QMatrix4x4 mTransformation;
 
-    int mNumberOfVerticesOnEdge;
+    QVector2D mPreviousTilePosition;
 };
 
 #endif // WATER_H

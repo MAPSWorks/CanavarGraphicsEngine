@@ -18,9 +18,7 @@ Water::Water(QObject *parent)
     mFramebufferFormat.setWidth(1600);
     mFramebufferFormat.setHeight(900);
 
-    mTransformation.translate(QVector3D(0, mWaterHeight, 0));
-    mTransformation.scale(128, 1, 128);
-
+    initializeOpenGLFunctions();
     createFramebuffers();
 }
 
@@ -30,67 +28,22 @@ Water *Water::instance()
     return &water;
 }
 
-void Water::create(int numberOfVerticesOnEdge, float width)
+void Water::create()
 {
-    mNumberOfVerticesOnEdge = numberOfVerticesOnEdge;
-    const int n = numberOfVerticesOnEdge;
-
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            float x = j * width / (n - 1) - width / 2.0f;
-            float y = 0;
-            float z = i * width / (n - 1) - width / 2.0f;
-            float u = float(j) / (n - 1);
-            float v = float(n - i - 1) / (n - 1);
-
-            Vertex vertex;
-            vertex.position = QVector3D(x, y, z);
-            vertex.normal = QVector3D(0, 1, 0);
-            vertex.texture = QVector2D(u, v);
-
-            mVertices << vertex;
-        }
-    }
-
-    for (int i = 0; i < n - 1; i++)
-    {
-        for (int j = 0; j < n - 1; j++)
-        {
-            mIndices << n * i + j;
-            mIndices << n * (i + 1) + j;
-            mIndices << n * i + j + 1;
-
-            mIndices << n * (i + 1) + j;
-            mIndices << n * (i + 1) + j + 1;
-            mIndices << n * i + j + 1;
-        }
-    }
-
-    initializeOpenGLFunctions();
-    mVAO = new QOpenGLVertexArrayObject;
-    mVAO->create();
-    mVAO->bind();
-
-    glGenBuffers(1, &mEBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(unsigned int), mIndices.constData(), GL_STATIC_DRAW);
-
-    glGenBuffers(1, &mVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.constData(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
-    glEnableVertexAttribArray(2);
+    mTileGenerator = new TileGenerator(3, 128, 1024.0f);
+    mTileGenerator->generate();
 }
 
 void Water::render(float ifps)
 {
+    QVector2D currentTilePosition = mTileGenerator->whichTile(mCameraManager->activeCamera()->worldPosition());
+
+    if (currentTilePosition != mPreviousTilePosition)
+    {
+        mTileGenerator->translateTiles(currentTilePosition - mPreviousTilePosition);
+        mPreviousTilePosition = currentTilePosition;
+    }
+
     mTimeElapsed += ifps;
 
     mTransformation.setColumn(3, QVector4D(0, mWaterHeight, 0, 1));
@@ -101,22 +54,15 @@ void Water::render(float ifps)
 
     mShaderManager->bind(ShaderManager::ShaderType::WaterShader);
     mShaderManager->setUniformValue("nodeMatrix", mTransformation);
-
     mShaderManager->setUniformValue("cameraPosition", mCameraManager->activeCamera()->worldPosition());
     mShaderManager->setUniformValue("VP", mCameraManager->activeCamera()->getVP());
-
     mShaderManager->setUniformValue("lightColor", mLightManager->directionalLight()->color().toVector3D());
     mShaderManager->setUniformValue("lightDirection", mLightManager->directionalLight()->direction());
-
     mShaderManager->setUniformValue("moveFactor", mWaveSpeed * mTimeElapsed);
-
     mShaderManager->setSampler("reflectionTex", 0, mReflectionFramebuffer->texture());
     mShaderManager->setSampler("refractionTex", 1, mRefractionFramebuffer->texture());
-
-    mVAO->bind();
-    glDrawElements(GL_TRIANGLES, (mNumberOfVerticesOnEdge - 1) * (mNumberOfVerticesOnEdge - 1) * 2 * 3, GL_UNSIGNED_INT, 0);
+    mTileGenerator->render(TileGenerator::Primitive::Triangles);
     mShaderManager->release();
-    mVAO->release();
 
     glDisable(GL_BLEND);
     glEnable(GL_MULTISAMPLE);

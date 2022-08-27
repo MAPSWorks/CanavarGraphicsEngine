@@ -75,6 +75,10 @@ bool RendererManager::init()
     mTerrain = Terrain::instance();
     mTerrain->create();
 
+    mWater = Water::instance();
+    mWater->create();
+    mWater->setHaze(mHaze);
+
     mQuad = new Quad;
     mQuad->create();
 
@@ -85,10 +89,6 @@ bool RendererManager::init()
     mSun->setDirection(QVector3D(1, -1, 1));
 
     mSky = Sky::instance();
-
-    mWater = Water::instance();
-    mWater->create();
-    mWater->setHaze(mHaze);
 
     createFramebuffers();
 
@@ -143,8 +143,6 @@ void RendererManager::render(float ifps)
         renderModels(ifps, 1);
         renderTerrain(ifps, 1);
         mSky->render(ifps);
-
-        applyBlur(mWater->reflectionFramebuffer(), mFramebuffers[0], 4);
 
         mCamera->setWorldPosition(originalPosition);
         mCamera->setWorldRotation(originalRotation);
