@@ -1,4 +1,5 @@
 #include "FreeCamera.h"
+#include "Helper.h"
 
 #include <QTransform>
 #include <QtMath>
@@ -164,6 +165,22 @@ void FreeCamera::drawGui()
             setWorldPosition(QVector3D(x, y, z));
         if (ImGui::InputFloat("z##FreeCameraWorldPosition", &z, 0.01f, 10.0f, "%.3f"))
             setWorldPosition(QVector3D(x, y, z));
+    }
+
+    // World rotation
+    if (!ImGui::CollapsingHeader("World Rotation##FreeCamera"))
+    {
+        QQuaternion rotation = worldRotation();
+        float yaw, pitch, roll;
+
+        Helper::getEulerDegrees(rotation, yaw, pitch, roll);
+
+        if (ImGui::SliderFloat("Yaw##FreeCamera", &yaw, 0.0f, 359.999f, "%.3f"))
+            setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
+        if (ImGui::SliderFloat("Pitch##FreeCamera", &pitch, -89.999f, 89.999f, "%.3f"))
+            setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
+        if (ImGui::SliderFloat("Roll##FreeCamera", &roll, -179.999f, 179.999f, "%.3f"))
+            setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
     }
 }
 

@@ -1,4 +1,7 @@
 #include "Node.h"
+#include "Helper.h"
+
+#include <QtMath>
 
 Node::Node(QObject *parent)
     : QObject{parent}
@@ -9,6 +12,7 @@ Node::Node(QObject *parent)
     , mRenderable(true)
     , mNodeIndex(0)
     , mSelected(false)
+
 {}
 
 Node::~Node() {}
@@ -201,7 +205,7 @@ QMatrix3x3 Node::normalMatrix() const
 void Node::drawGui()
 {
     // Position
-    if (!ImGui::CollapsingHeader("Position##NodePosition"))
+    if (!ImGui::CollapsingHeader("Position##Node"))
     {
         float x = mPosition.x();
         float y = mPosition.y();
@@ -216,25 +220,22 @@ void Node::drawGui()
     }
 
     // Rotation
-    if (ImGui::CollapsingHeader("Rotation##NodeRotation"))
+    if (ImGui::CollapsingHeader("Rotation##Node"))
     {
-        float w = mRotation.scalar();
-        float x = mRotation.x();
-        float y = mRotation.y();
-        float z = mRotation.z();
+        float yaw, pitch, roll;
 
-        if (ImGui::DragFloat("w##NodeRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("x##NodeRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("y##NodeRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mRotation = QQuaternion(w, x, y, z).normalized();
-        if (ImGui::DragFloat("z##NodeRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
-            mRotation = QQuaternion(w, x, y, z).normalized();
+        Helper::getEulerDegrees(mRotation, yaw, pitch, roll);
+
+        if (ImGui::SliderFloat("Yaw##NodeRotation", &yaw, 0.0f, 359.999f, "%.3f"))
+            mRotation = Helper::constructFromEulerDegrees(yaw, pitch, roll);
+        if (ImGui::SliderFloat("Pitch##NodeRotation", &pitch, -89.999f, 89.999f, "%.3f"))
+            mRotation = Helper::constructFromEulerDegrees(yaw, pitch, roll);
+        if (ImGui::SliderFloat("Roll##NodeRotation", &roll, -179.999f, 179.999f, "%.3f"))
+            mRotation = Helper::constructFromEulerDegrees(yaw, pitch, roll);
     }
 
     // World Position
-    if (ImGui::CollapsingHeader("World Position##NodeRotation"))
+    if (ImGui::CollapsingHeader("World Position##Node"))
     {
         QVector3D position = worldPosition();
         float x = position.x();
@@ -250,26 +251,23 @@ void Node::drawGui()
     }
 
     // World rotation
-    if (ImGui::CollapsingHeader("World Rotation##NodeRotation"))
+    if (ImGui::CollapsingHeader("World Rotation##Node"))
     {
         QQuaternion rotation = worldRotation();
-        float w = rotation.scalar();
-        float x = rotation.x();
-        float y = rotation.y();
-        float z = rotation.z();
+        float yaw, pitch, roll;
 
-        if (ImGui::DragFloat("w##NodeWorldRotation", &w, 0.001f, -1.0f, 1.0f, "%.3f"))
-            setWorldRotation(QQuaternion(w, x, y, z).normalized());
-        if (ImGui::DragFloat("x##NodeWorldRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
-            setWorldRotation(QQuaternion(w, x, y, z).normalized());
-        if (ImGui::DragFloat("y##NodeWorldRotation", &y, 0.001f, -1.0f, 1.0f, "%.3f"))
-            setWorldRotation(QQuaternion(w, x, y, z).normalized());
-        if (ImGui::DragFloat("z##NodeWorldRotation", &x, 0.001f, -1.0f, 1.0f, "%.3f"))
-            setWorldRotation(QQuaternion(w, x, y, z).normalized());
+        Helper::getEulerDegrees(rotation, yaw, pitch, roll);
+
+        if (ImGui::SliderFloat("Yaw##NodeRotation", &yaw, 0.0f, 359.999f, "%.3f"))
+            setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
+        if (ImGui::SliderFloat("Pitch##NodeRotation", &pitch, -89.999f, 89.999f, "%.3f"))
+            setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
+        if (ImGui::SliderFloat("Roll##NodeRotation", &roll, -179.999f, 179.999f, "%.3f"))
+            setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
     }
 
     // Scale
-    if (ImGui::CollapsingHeader("Scale##NodeRotation"))
+    if (ImGui::CollapsingHeader("Scale##Node"))
     {
         QVector3D scale = mScale;
         float x = scale.x();

@@ -136,7 +136,7 @@ void RendererManager::render(float ifps)
         float y = originalPosition.y() - 2 * (originalPosition.y() - mWater->waterHeight());
         float z = originalPosition.z();
 
-        mCamera->setWorldRotation(Helper::invertPitchAndRoll(originalRotation));
+        mCamera->setWorldRotation(Helper::invert(originalRotation));
         mCamera->setWorldPosition(QVector3D(x, y, z));
 
         // Render Weather

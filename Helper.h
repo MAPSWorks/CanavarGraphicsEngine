@@ -28,7 +28,10 @@ public:
     static ModelData *loadModel(const QString &name, const QString &path);
     static QVector<PointLight *> getClosePointLights(const QList<PointLight *> &pointLights, Node *node);
     static QVector<SpotLight *> getCloseSpotLights(const QList<SpotLight *> &spotLights, Node *node);
-    static QQuaternion invertPitchAndRoll(const QQuaternion &rotation);
+    static QQuaternion invert(const QQuaternion &rotation);
+    static float angleBetween(const QVector3D &v1, const QVector3D &v2, const QVector3D &left);
+    static void getEulerDegrees(const QQuaternion &rotation, float &yaw, float &pitch, float &roll);
+    static QQuaternion constructFromEulerDegrees(float yaw, float pitch, float roll);
 
 private:
     static Mesh *processMesh(aiMesh *aiMesh);
