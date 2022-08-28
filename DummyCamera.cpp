@@ -19,3 +19,5 @@ void DummyCamera::onMouseReleased(QMouseEvent *) {}
 void DummyCamera::onMouseMoved(QMouseEvent *) {}
 
 void DummyCamera::update(float) {}
+
+void DummyCamera::onResized(int, int) {}

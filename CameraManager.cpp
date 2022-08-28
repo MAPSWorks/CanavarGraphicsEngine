@@ -74,12 +74,10 @@ void CameraManager::onMouseMoved(QMouseEvent *event)
         mActiveCamera->onMouseMoved(event);
 }
 
-void CameraManager::setAspectRatio(float newAspectRatio)
+void CameraManager::resize(int width, int height)
 {
-    mAspectRatio = newAspectRatio;
-
     if (mActiveCamera)
-        mActiveCamera->setAspectRatio(newAspectRatio);
+        mActiveCamera->onResized(width, height);
 }
 
 void CameraManager::update(float ifps)

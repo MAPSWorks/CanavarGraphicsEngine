@@ -20,6 +20,7 @@ public:
     void onMousePressed(QMouseEvent *event) override;
     void onMouseReleased(QMouseEvent *event) override;
     void onMouseMoved(QMouseEvent *event) override;
+    void onResized(int, int) override;
     void update(float ifps) override;
     void drawGUI() override;
 

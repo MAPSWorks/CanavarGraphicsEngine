@@ -22,7 +22,7 @@ public:
     void onMousePressed(QMouseEvent *event);
     void onMouseReleased(QMouseEvent *event);
     void onMouseMoved(QMouseEvent *event);
-    void setAspectRatio(float newAspectRatio);
+    void resize(int width, int height);
 
     void update(float ifps);
 

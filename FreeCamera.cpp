@@ -110,6 +110,11 @@ void FreeCamera::onMouseMoved(QMouseEvent *event)
     }
 }
 
+void FreeCamera::onResized(int width, int height)
+{
+    setAspectRatio(float(width) / float(height));
+}
+
 void FreeCamera::update(float ifps)
 {
     // Rotation

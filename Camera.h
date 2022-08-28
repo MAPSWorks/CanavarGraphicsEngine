@@ -49,6 +49,7 @@ public:
     virtual void onMousePressed(QMouseEvent *event) = 0;
     virtual void onMouseReleased(QMouseEvent *event) = 0;
     virtual void onMouseMoved(QMouseEvent *event) = 0;
+    virtual void onResized(int, int) = 0;
     virtual void update(float) = 0;
 
 protected:

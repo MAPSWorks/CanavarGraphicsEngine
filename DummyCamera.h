@@ -16,12 +16,13 @@ private:
 
     // Camera interface
 public:
-    void onKeyPressed(QKeyEvent *);
-    void onKeyReleased(QKeyEvent *);
-    void onMousePressed(QMouseEvent *);
-    void onMouseReleased(QMouseEvent *);
-    void onMouseMoved(QMouseEvent *);
-    void update(float);
+    void onKeyPressed(QKeyEvent *) override;
+    void onKeyReleased(QKeyEvent *) override;
+    void onMousePressed(QMouseEvent *) override;
+    void onMouseReleased(QMouseEvent *) override;
+    void onMouseMoved(QMouseEvent *) override;
+    void onResized(int, int) override;
+    void update(float) override;
 };
 
 #endif // DUMMYCAMERA_H

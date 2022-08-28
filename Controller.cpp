@@ -177,7 +177,7 @@ void Controller::onKeyReleased(QKeyEvent *event)
 
 void Controller::onResized(int w, int h)
 {
-    mCameraManager->setAspectRatio((float) (w) / h);
+    mCameraManager->resize(w, h);
     mRendererManager->resize(w, h);
     mNodeSelector->resize(w, h);
 }
