@@ -308,16 +308,6 @@ void RendererManager::renderNodes(int up)
     }
 }
 
-void RendererManager::renderSkyBox()
-{
-    mShaderManager->bind(ShaderManager::ShaderType::SkyBoxShader);
-    mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-    mShaderManager->setUniformValue("viewMatrix", mCamera->getWorldRotation());
-    mShaderManager->setUniformValue("skybox", 0);
-    mSkyBox->render();
-    mShaderManager->release();
-}
-
 void RendererManager::renderTerrain(int up)
 {
     if (up != 0)

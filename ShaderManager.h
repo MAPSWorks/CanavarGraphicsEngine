@@ -19,7 +19,6 @@ public:
         ModelShader,
         WireframeShader,
         NormalsShader,
-        SkyBoxShader,
         TerrainShader,
         ScreenShader,
         ScreenMultisampledShader,

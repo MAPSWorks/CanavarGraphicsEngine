@@ -41,7 +41,6 @@ public:
     virtual QMatrix4x4 projection() const;
     virtual QVector3D getViewDirection() const;
     virtual QMatrix4x4 getVP() const;
-    virtual QMatrix4x4 getWorldRotation() const;
     const QMatrix4x4 &previousVP() const;
     virtual void updateVP();
 

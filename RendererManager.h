@@ -40,7 +40,6 @@ public:
 
 private:
     void renderNodes(int up);
-    void renderSkyBox();
     void renderTerrain(int up);
     void renderModel(Model *model, int up);
     void fillFramebuffer(Framebuffer *source, Framebuffer *target);

@@ -127,24 +127,6 @@ bool ShaderManager::init()
             return false;
     }
 
-    // SkyBox Shader
-    {
-        Shader *shader = new Shader(ShaderType::SkyBoxShader);
-        mShaders.insert(shader->type(), shader);
-
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/SkyBox.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/SkyBox.frag");
-
-        shader->addUniform("skybox");
-        shader->addUniform("viewMatrix");
-        shader->addUniform("projectionMatrix");
-
-        shader->addAttribute("position");
-
-        if (!shader->init())
-            return false;
-    }
-
     // Terrain Shader
     {
         Shader *shader = new Shader(ShaderType::TerrainShader);
