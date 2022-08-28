@@ -121,8 +121,6 @@ QQuaternion Helper::invert(const QQuaternion &rotation)
     float yaw, pitch, roll;
     getEulerDegrees(rotation, yaw, pitch, roll);
 
-    qDebug() << yaw << pitch << roll;
-
     QQuaternion r = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), yaw);
     r = r * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), -pitch);
     r = r * QQuaternion::fromAxisAndAngle(QVector3D(0, 0, 1), roll);

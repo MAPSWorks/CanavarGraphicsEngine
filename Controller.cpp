@@ -197,6 +197,8 @@ void Controller::render(float ifps)
     mNodeManager->drawGui();
     mAircraftController->drawGui();
 
+    //ImGui::ShowDemoWindow();
+
     glViewport(0, 0, mWindow->width(), mWindow->height());
     ImGui::Render();
     QtImGui::render();

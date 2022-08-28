@@ -5,7 +5,6 @@
 #include "FreeCamera.h"
 #include "Model.h"
 #include "NodeSelector.h"
-#include "NozzleParticles.h"
 #include "RendererManager.h"
 #include "Simulator/Aircraft.h"
 #include "Simulator/AircraftController.h"
