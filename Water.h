@@ -30,7 +30,7 @@ public:
     void create();
     void render(float ifps);
     void resize(int width, int height);
-    void drawGui();
+    void drawGUI();
     void setHaze(Haze *newHaze);
 
     float waterHeight() const;

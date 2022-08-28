@@ -68,7 +68,7 @@ void Terrain::reset()
     mMaterial.specular = 0.05f;
 }
 
-void Terrain::drawGui()
+void Terrain::drawGUI()
 {
     if (!ImGui::CollapsingHeader("Terrain"))
     {

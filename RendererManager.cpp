@@ -506,7 +506,7 @@ void RendererManager::loadModels()
     qInfo() << "All textured models are loaded.";
 }
 
-void RendererManager::drawGui()
+void RendererManager::drawGUI()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Graphics");
@@ -520,11 +520,11 @@ void RendererManager::drawGui()
         ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading);
     }
 
-    mSun->drawGui();
-    mSky->drawGui();
-    mHaze->drawGui();
-    mWater->drawGui();
-    mTerrain->drawGui();
+    mSun->drawGUI();
+    mSky->drawGUI();
+    mHaze->drawGUI();
+    mWater->drawGUI();
+    mTerrain->drawGUI();
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }

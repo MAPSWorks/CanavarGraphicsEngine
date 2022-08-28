@@ -144,7 +144,7 @@ void FreeCamera::update(float ifps)
         mUpdatePosition = false;
 }
 
-void FreeCamera::drawGui()
+void FreeCamera::drawGUI()
 {
     if (!ImGui::CollapsingHeader("Speed##FreeCamera"))
     {

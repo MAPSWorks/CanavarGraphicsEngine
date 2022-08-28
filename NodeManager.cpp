@@ -166,7 +166,7 @@ const QList<Node *> &NodeManager::nodes() const
     return mNodes;
 }
 
-void NodeManager::drawGui()
+void NodeManager::drawGUI()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Nodes");
@@ -190,7 +190,7 @@ void NodeManager::drawGui()
         if (parent)
             ImGui::Text("Parent Name: %s", parent->name().toStdString().c_str());
 
-        mSelectedNode->drawGui();
+        mSelectedNode->drawGUI();
     }
 }
 

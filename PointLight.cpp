@@ -41,9 +41,9 @@ void PointLight::setQuadratic(float newQuadratic)
     mQuadratic = newQuadratic;
 }
 
-void PointLight::drawGui()
+void PointLight::drawGUI()
 {
-    Light::drawGui();
+    Light::drawGUI();
 
     if (!ImGui::CollapsingHeader("Attenuation##PointLight"))
     {

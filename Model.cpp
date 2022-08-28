@@ -46,9 +46,9 @@ const QMap<QString, QMatrix4x4> &Model::meshTransformations() const
     return mMeshTransformations;
 }
 
-void Model::drawGui()
+void Model::drawGUI()
 {
-    Node::drawGui();
+    Node::drawGUI();
 
     // Shading Parameters
     if (!ImGui::CollapsingHeader("Shading Parameters##Model"))

@@ -12,7 +12,8 @@ private:
 public:
     const QVector3D &direction() const;
     void setDirection(const QVector3D &newDirection);
-    virtual void drawGui() override;
+
+    virtual void drawGUI() override;
 
 private:
     QVector3D mDirection;

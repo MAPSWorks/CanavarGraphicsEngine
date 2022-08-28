@@ -23,7 +23,7 @@ public:
     const QList<Node *> &nodes() const;
     static NodeManager *instance();
 
-    void drawGui();
+    void drawGUI();
 
 private:
     void populateComboBox(Node *node);

@@ -202,7 +202,7 @@ QMatrix3x3 Node::normalMatrix() const
     return worldTransformation().normalMatrix();
 }
 
-void Node::drawGui()
+void Node::drawGUI()
 {
     // Position
     if (!ImGui::CollapsingHeader("Position##Node"))

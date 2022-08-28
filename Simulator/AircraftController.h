@@ -20,7 +20,7 @@ public:
     void onKeyPressed(QKeyEvent *);
     void onKeyReleased(QKeyEvent *);
 
-    void drawGui();
+    void drawGUI();
     void setJet(Model *newJet);
     void setRootJetNode(Node *newRootJetNode);
 

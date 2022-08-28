@@ -21,7 +21,7 @@ public:
     void onMouseReleased(QMouseEvent *event) override;
     void onMouseMoved(QMouseEvent *event) override;
     void update(float ifps) override;
-    void drawGui() override;
+    void drawGUI() override;
 
     enum class Mode { //
         RotateWhileMouseIsPressing,

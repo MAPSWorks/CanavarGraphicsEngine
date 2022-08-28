@@ -168,7 +168,7 @@ void Sky::render(float)
     glDepthFunc(GL_LESS);
 }
 
-void Sky::drawGui()
+void Sky::drawGUI()
 {
     // Render Settings
     if (!ImGui::CollapsingHeader("Sky##Sky"))

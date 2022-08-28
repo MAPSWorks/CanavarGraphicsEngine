@@ -20,7 +20,7 @@ public:
     float outerCutOffAngle() const;
     void setOuterCutOffAngle(float newOuterCutOffAngle);
 
-    virtual void drawGui() override;
+    virtual void drawGUI() override;
 
 private:
     QVector3D mDirection;

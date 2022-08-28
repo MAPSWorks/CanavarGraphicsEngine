@@ -97,7 +97,7 @@ NozzleParticles::Particle NozzleParticles::generateParticle()
     return particle;
 }
 
-void NozzleParticles::drawGui()
+void NozzleParticles::drawGUI()
 {
     if (!ImGui::CollapsingHeader("Parameters##NozzleParticles"))
     {
@@ -106,7 +106,7 @@ void NozzleParticles::drawGui()
         ImGui::SliderFloat("Velocity##NozzleParticles", &mVelocity, 0.0f, 50.0f, "%.3f");
     }
 
-    Node::drawGui();
+    Node::drawGUI();
 }
 
 const float NozzleParticles::CUBE_VERTICES[108] = {-0.0175f, -0.0175f, -0.0175f, -0.0175f, -0.0175f, 0.0175f,  -0.0175f, 0.0175f,  0.0175f,  0.0175f,  0.0175f,  -0.0175f, -0.0175f, -0.0175f,

@@ -22,7 +22,7 @@ public:
     float specular() const;
     void setSpecular(float newSpecular);
 
-    virtual void drawGui() override;
+    virtual void drawGUI() override;
 
 protected:
     QVector4D mColor;

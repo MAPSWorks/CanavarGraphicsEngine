@@ -36,7 +36,7 @@ public:
     void resize(int w, int h);
 
     ModelData *getModelData(const QString &modelName);
-    void drawGui();
+    void drawGUI();
 
 private:
     void renderNodes(int up);

@@ -37,7 +37,7 @@ public:
     void create();
     void render();
     void reset();
-    void drawGui();
+    void drawGUI();
 
     QMatrix4x4 transformation() const;
 

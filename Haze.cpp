@@ -46,7 +46,7 @@ void Haze::setEnabled(bool newEnabled)
     mEnabled = newEnabled;
 }
 
-void Haze::drawGui()
+void Haze::drawGUI()
 {
     if (!ImGui::CollapsingHeader("Haze"))
     {

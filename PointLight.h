@@ -20,7 +20,7 @@ public:
     float quadratic() const;
     void setQuadratic(float newQuadratic);
 
-    virtual void drawGui() override;
+    virtual void drawGUI() override;
 
 protected:
     float mConstant;

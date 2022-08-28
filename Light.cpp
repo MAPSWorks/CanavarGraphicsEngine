@@ -52,9 +52,9 @@ void Light::setSpecular(float newSpecular)
     mSpecular = newSpecular;
 }
 
-void Light::drawGui()
+void Light::drawGUI()
 {
-    Node::drawGui();
+    Node::drawGUI();
 
     if (!ImGui::CollapsingHeader("Shading Parameters##Light"))
     {

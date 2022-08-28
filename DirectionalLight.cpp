@@ -25,7 +25,7 @@ void DirectionalLight::setDirection(const QVector3D &newDirection)
     mDirection = newDirection;
 }
 
-void DirectionalLight::drawGui()
+void DirectionalLight::drawGUI()
 {
     // Light
     if (!ImGui::CollapsingHeader("Sun"))

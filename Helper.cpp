@@ -147,7 +147,6 @@ float Helper::angleBetween(const QVector3D &v1, const QVector3D &v2, const QVect
         float angle = qRadiansToDegrees(acos(dot));
         QVector3D u1xu2 = QVector3D::crossProduct(u1, u2);
 
-        qDebug() << QVector3D::dotProduct(u1xu2, left);
         if (QVector3D::dotProduct(u1xu2, left) < 0.0001f)
             return angle;
         else

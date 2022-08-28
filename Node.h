@@ -64,7 +64,7 @@ public:
     void setVisible(bool newVisible);
 
     virtual QMatrix3x3 normalMatrix() const;
-    virtual void drawGui();
+    virtual void drawGUI();
 
     bool renderable() const;
     unsigned int nodeIndex() const;

@@ -164,7 +164,7 @@ void AircraftController::setJet(Model *newJet)
     mJet = newJet;
 }
 
-void AircraftController::drawGui()
+void AircraftController::drawGUI()
 {
     // Simulator
     {

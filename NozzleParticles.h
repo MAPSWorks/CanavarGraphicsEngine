@@ -25,7 +25,7 @@ private:
 public:
     virtual void create();
     virtual void render(float ifps);
-    virtual void drawGui() override;
+    virtual void drawGUI() override;
 
 private:
     NozzleParticles::Particle generateParticle();

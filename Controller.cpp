@@ -193,9 +193,9 @@ void Controller::render(float ifps)
     mImGuiWantCapture = ImGui::GetIO().WantCaptureMouse;
 
     QtImGui::newFrame();
-    mRendererManager->drawGui();
-    mNodeManager->drawGui();
-    mAircraftController->drawGui();
+    mRendererManager->drawGUI();
+    mNodeManager->drawGUI();
+    mAircraftController->drawGUI();
 
     //ImGui::ShowDemoWindow();
 

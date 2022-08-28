@@ -197,8 +197,6 @@ QString Shader::getShaderTypeString()
         return "Wireframe Shader";
     case ShaderManager::ShaderType::NormalsShader:
         return "Normals Shader";
-    case ShaderManager::ShaderType::SkyBoxShader:
-        return "SkyBox Shader";
     case ShaderManager::ShaderType::TerrainShader:
         return "Terrain Shader";
     case ShaderManager::ShaderType::ScreenShader:

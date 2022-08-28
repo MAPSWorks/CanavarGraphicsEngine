@@ -65,7 +65,6 @@ private:
     Aircraft::PrimaryFlightData mPfd;
 
     bool mImGuiWantCapture;
-    bool mResizeFlag;
 };
 
 #endif // CONTROLLER_H

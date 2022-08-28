@@ -39,7 +39,7 @@ public:
     void resize(int width, int height);
     void renderWeather(float ifps);
     void render(float ifps);
-    void drawGui();
+    void drawGUI();
     void reset();
 
 private:

@@ -80,7 +80,7 @@ void Water::resize(int width, int height)
     createFramebuffers();
 }
 
-void Water::drawGui()
+void Water::drawGUI()
 {
     if (!ImGui::CollapsingHeader("Water##Water"))
     {

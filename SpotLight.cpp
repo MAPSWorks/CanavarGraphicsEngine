@@ -41,9 +41,9 @@ void SpotLight::setOuterCutOffAngle(float newOuterCutOffAngle)
     mOuterCutOffAngle = newOuterCutOffAngle;
 }
 
-void SpotLight::drawGui()
+void SpotLight::drawGUI()
 {
-    PointLight::drawGui();
+    PointLight::drawGUI();
 
     if (!ImGui::CollapsingHeader("Direction##SpotLight"))
     {

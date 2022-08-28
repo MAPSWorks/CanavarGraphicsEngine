@@ -25,7 +25,7 @@ public:
     bool enabled() const;
     void setEnabled(bool newEnabled);
 
-    void drawGui();
+    void drawGUI();
     void reset();
 
 private:
