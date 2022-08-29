@@ -12,22 +12,22 @@ class CameraManager : public QObject
 
 private:
     friend class NodeManager;
+
     explicit CameraManager(QObject *parent = nullptr);
+
     void addCamera(Camera *camera);
     void removeCamera(Camera *camera);
 
 public:
-    void onKeyPressed(QKeyEvent *event);
-    void onKeyReleased(QKeyEvent *event);
+    void onMouseDoubleClicked(QMouseEvent *event);
     void onMousePressed(QMouseEvent *event);
     void onMouseReleased(QMouseEvent *event);
     void onMouseMoved(QMouseEvent *event);
+    void onWheelMoved(QWheelEvent *event);
+    void onKeyPressed(QKeyEvent *event);
+    void onKeyReleased(QKeyEvent *event);
     void resize(int width, int height);
-
     void update(float ifps);
-
-    QVector3D getViewDirection();
-    QVector3D getDirectionFromScreen(int x, int y, int width, int height);
 
     Camera *activeCamera() const;
     void setActiveCamera(Camera *newActiveCamera);
@@ -38,7 +38,8 @@ private:
     Camera *mActiveCamera;
     QList<Camera *> mCameras;
 
-    float mAspectRatio;
+    int mWidth;
+    int mHeight;
 };
 
 #endif // CAMERAMANAGER_H

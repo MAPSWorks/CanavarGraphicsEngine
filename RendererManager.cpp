@@ -186,8 +186,6 @@ void RendererManager::render(float ifps)
         mQuad->render();
         mShaderManager->release();
     }
-
-    mCamera->updateVP();
 }
 
 void RendererManager::applyBlur(Framebuffer *read, Framebuffer *draw, int times)

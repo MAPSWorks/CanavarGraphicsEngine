@@ -4,6 +4,7 @@
 #include "CameraManager.h"
 #include "DirectionalLight.h"
 #include "Framebuffer.h"
+#include "PerspectiveCamera.h"
 #include "Quad.h"
 #include "ShaderManager.h"
 #include "Texture.h"
@@ -51,7 +52,7 @@ private:
     LightManager *mLightManager;
 
     DirectionalLight *mSun;
-    Camera *mCamera;
+    PerspectiveCamera *mCamera;
     Quad *mQuad;
 
     QVector3D mSkyColorTop;

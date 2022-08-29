@@ -14,7 +14,9 @@ class LightManager : public QObject
 
 private:
     friend class NodeManager;
+
     explicit LightManager(QObject *parent = nullptr);
+
     void addLight(Light *light);
     void removeLight(Light *light);
     void setDirectionalLight(DirectionalLight *newDirectionalLight);

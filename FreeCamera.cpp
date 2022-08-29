@@ -5,20 +5,10 @@
 #include <QtMath>
 
 FreeCamera::FreeCamera(QObject *parent)
-    : Camera(parent)
-    , mMovementSpeed(5.0f)
-    , mAngularSpeed(25.0f)
-    , mMovementSpeedMultiplier(1.0f)
-    , mAngularSpeedMultiplier(1.0f)
-    , mMousePressed(false)
-    , mMousePreviousX(0.0f)
-    , mMousePreviousY(0.0f)
-    , mMouseDeltaX(0.0f)
-    , mMouseDeltaY(0.0f)
+    : PerspectiveCamera(parent)
+    , mMode(Mode::RotateWhileMouseIsMoving)
     , mUpdateRotation(true)
     , mUpdatePosition(true)
-    , mMode(Mode::RotateWhileMouseIsMoving)
-    , mMouseGrabbed(false)
 
 {
     mNodeType = Node::NodeType::FreeCamera;
@@ -26,7 +16,7 @@ FreeCamera::FreeCamera(QObject *parent)
     connect(this, &Camera::activeChanged, this, [=](bool active) {
         if (!active)
         {
-            mMouseGrabbed = false;
+            mMouse.grabbed = false;
             emit mouseGrabbed(false);
 
             auto keys = mPressedKeys.keys();
@@ -37,6 +27,71 @@ FreeCamera::FreeCamera(QObject *parent)
 }
 
 FreeCamera::~FreeCamera() {}
+
+void FreeCamera::onMouseDoubleClicked(QMouseEvent *) {}
+
+void FreeCamera::onWheelMoved(QWheelEvent *) {}
+
+void FreeCamera::onMousePressed(QMouseEvent *event)
+{
+    switch (mMode)
+    {
+    case Mode::RotateWhileMouseIsPressing: {
+        mMouse.x = event->x();
+        mMouse.y = event->y();
+        mMouse.pressed = true;
+        break;
+    }
+    case Mode::RotateWhileMouseIsMoving: {
+        if (event->button() == Qt::RightButton)
+        {
+            mMouse.grabbed = !mMouse.grabbed;
+            mMouse.grabPosition = QPoint(event->localPos().x(), event->localPos().y());
+            emit mouseGrabbed(mMouse.grabbed);
+        }
+        break;
+    }
+    }
+}
+
+void FreeCamera::onMouseReleased(QMouseEvent *)
+{
+    mMouse.pressed = false;
+}
+
+void FreeCamera::onMouseMoved(QMouseEvent *event)
+{
+    switch (mMode)
+    {
+    case Mode::RotateWhileMouseIsPressing: {
+        if (mMouse.pressed)
+        {
+            mMouse.dx += mMouse.x - event->x();
+            mMouse.dy += mMouse.y - event->y();
+
+            mMouse.x = event->x();
+            mMouse.y = event->y();
+            mUpdateRotation = true;
+        }
+        break;
+    }
+    case Mode::RotateWhileMouseIsMoving: {
+        if (mMouse.grabbed)
+        {
+            if (mMouse.grabPosition.x() != event->pos().x() || mMouse.grabPosition.y() != event->pos().y())
+            {
+                mMouse.dx += mMouse.grabPosition.x() - event->x();
+                mMouse.dy += mMouse.grabPosition.y() - event->y();
+                mUpdateRotation = true;
+            }
+
+            emit setCursorPosition(mMouse.grabPosition);
+        }
+    }
+
+    break;
+    }
+}
 
 void FreeCamera::onKeyPressed(QKeyEvent *event)
 {
@@ -49,82 +104,16 @@ void FreeCamera::onKeyReleased(QKeyEvent *event)
     mPressedKeys.insert((Qt::Key) event->key(), false);
 }
 
-void FreeCamera::onMousePressed(QMouseEvent *event)
-{
-    switch (mMode)
-    {
-    case Mode::RotateWhileMouseIsPressing: {
-        mMousePreviousX = event->x();
-        mMousePreviousY = event->y();
-        mMousePressed = true;
-        break;
-    }
-    case Mode::RotateWhileMouseIsMoving: {
-        if (event->button() == Qt::RightButton)
-        {
-            mMouseGrabbed = !mMouseGrabbed;
-            mMouseGrabPosition = QPoint(event->localPos().x(), event->localPos().y());
-            emit mouseGrabbed(mMouseGrabbed);
-        }
-        break;
-    }
-    }
-}
-
-void FreeCamera::onMouseReleased(QMouseEvent *)
-{
-    mMousePressed = false;
-}
-
-void FreeCamera::onMouseMoved(QMouseEvent *event)
-{
-    switch (mMode)
-    {
-    case Mode::RotateWhileMouseIsPressing: {
-        if (mMousePressed)
-        {
-            mMouseDeltaX += mMousePreviousX - event->x();
-            mMouseDeltaY += mMousePreviousY - event->y();
-
-            mMousePreviousX = event->x();
-            mMousePreviousY = event->y();
-            mUpdateRotation = true;
-        }
-        break;
-    }
-    case Mode::RotateWhileMouseIsMoving: {
-        if (mMouseGrabbed)
-        {
-            if (mMouseGrabPosition.x() != event->pos().x() || mMouseGrabPosition.y() != event->pos().y())
-            {
-                mMouseDeltaX += mMouseGrabPosition.x() - event->x();
-                mMouseDeltaY += mMouseGrabPosition.y() - event->y();
-                mUpdateRotation = true;
-            }
-
-            emit setCursorPosition(mMouseGrabPosition);
-        }
-    }
-
-    break;
-    }
-}
-
-void FreeCamera::onResized(int width, int height)
-{
-    setAspectRatio(float(width) / float(height));
-}
-
 void FreeCamera::update(float ifps)
 {
     // Rotation
     if (mUpdateRotation)
     {
-        mRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mAngularSpeedMultiplier * mAngularSpeed * mMouseDeltaX * ifps) * mRotation;
-        mRotation = mRotation * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mAngularSpeedMultiplier * mAngularSpeed * mMouseDeltaY * ifps);
+        mRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mSpeed.angularMultiplier * mSpeed.angular * mMouse.dx * ifps) * mRotation;
+        mRotation = mRotation * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mSpeed.angularMultiplier * mSpeed.angular * mMouse.dy * ifps);
 
-        mMouseDeltaY = 0.0f;
-        mMouseDeltaX = 0.0f;
+        mMouse.dx = 0.0f;
+        mMouse.dy = 0.0f;
         mUpdateRotation = false;
     }
 
@@ -134,15 +123,15 @@ void FreeCamera::update(float ifps)
         const QList<Qt::Key> keys = mPressedKeys.keys();
 
         if (mPressedKeys[Qt::Key_Control])
-            mMovementSpeed = 1000.0f;
+            mSpeed.movement = 1000.0f;
         else if (mPressedKeys[Qt::Key_Shift])
-            mMovementSpeed = 100.0f;
+            mSpeed.movement = 100.0f;
         else
-            mMovementSpeed = 5.0f;
+            mSpeed.movement = 5.0f;
 
         for (auto key : keys)
             if (mPressedKeys.value(key, false))
-                mPosition += mMovementSpeedMultiplier * mMovementSpeed * ifps * mRotation.rotatedVector(KEY_BINDINGS.value(key, QVector3D(0, 0, 0)));
+                mPosition += mSpeed.movementMultiplier * mSpeed.movement * ifps * mRotation.rotatedVector(KEY_BINDINGS.value(key, QVector3D(0, 0, 0)));
     }
 
     if (mPressedKeys.empty())
@@ -151,10 +140,14 @@ void FreeCamera::update(float ifps)
 
 void FreeCamera::drawGUI()
 {
-    if (!ImGui::CollapsingHeader("Speed##FreeCamera"))
+    if (!ImGui::CollapsingHeader("Parameters##FreeCamera"))
     {
-        ImGui::SliderFloat("Movement Speed##FreeCamera", &mMovementSpeedMultiplier, 0, 100);
-        ImGui::SliderFloat("Angular Speed##FreeCamera", &mAngularSpeedMultiplier, 0, 5);
+        ImGui::SliderFloat("Movement Speed##FreeCamera", &mSpeed.movementMultiplier, 0, 100);
+        ImGui::SliderFloat("Angular Speed##FreeCamera", &mSpeed.angularMultiplier, 0, 5);
+        if (ImGui::SliderFloat("FOV##ProjectionParameters", &mVerticalFov, 1.0f, 120.0))
+            setVerticalFov(mVerticalFov);
+        ImGui::SliderFloat("Z-Near##ProjectionParameters", &mZNear, 0.1f, 100.0f);
+        ImGui::SliderFloat("Z-Far##ProjectionParameters", &mZFar, 1000.0f, 1000000.0f);
     }
 
     if (!ImGui::CollapsingHeader("World Position##FreeCamera"))
@@ -191,7 +184,7 @@ void FreeCamera::drawGUI()
 
 bool FreeCamera::getMouseGrabbed() const
 {
-    return mMouseGrabbed;
+    return mMouse.grabbed;
 }
 
 const QMap<Qt::Key, QVector3D> FreeCamera::KEY_BINDINGS = {

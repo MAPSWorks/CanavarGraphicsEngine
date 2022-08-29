@@ -38,22 +38,17 @@ void CameraManager::setActiveCamera(Camera *newActiveCamera)
     if (newActiveCamera)
     {
         newActiveCamera->setActive(true);
-        newActiveCamera->setAspectRatio(mAspectRatio);
+        newActiveCamera->setWidth(mWidth);
+        newActiveCamera->setHeight(mHeight);
     }
 
     mActiveCamera = newActiveCamera;
 }
 
-void CameraManager::onKeyPressed(QKeyEvent *event)
+void CameraManager::onMouseDoubleClicked(QMouseEvent *event)
 {
     if (mActiveCamera)
-        mActiveCamera->onKeyPressed(event);
-}
-
-void CameraManager::onKeyReleased(QKeyEvent *event)
-{
-    if (mActiveCamera)
-        mActiveCamera->onKeyReleased(event);
+        mActiveCamera->onMouseDoubleClicked(event);
 }
 
 void CameraManager::onMousePressed(QMouseEvent *event)
@@ -74,46 +69,40 @@ void CameraManager::onMouseMoved(QMouseEvent *event)
         mActiveCamera->onMouseMoved(event);
 }
 
-void CameraManager::resize(int width, int height)
+void CameraManager::onWheelMoved(QWheelEvent *event)
 {
     if (mActiveCamera)
-        mActiveCamera->onResized(width, height);
+        mActiveCamera->onWheelMoved(event);
+}
+
+void CameraManager::onKeyPressed(QKeyEvent *event)
+{
+    if (mActiveCamera)
+        mActiveCamera->onKeyPressed(event);
+}
+
+void CameraManager::onKeyReleased(QKeyEvent *event)
+{
+    if (mActiveCamera)
+        mActiveCamera->onKeyReleased(event);
+}
+
+void CameraManager::resize(int width, int height)
+{
+    mWidth = width;
+    mHeight = height;
+
+    if (mActiveCamera)
+    {
+        mActiveCamera->setWidth(mWidth);
+        mActiveCamera->setHeight(mHeight);
+    }
 }
 
 void CameraManager::update(float ifps)
 {
     if (mActiveCamera)
         mActiveCamera->update(ifps);
-}
-
-QVector3D CameraManager::getViewDirection()
-{
-    if (mActiveCamera)
-        return mActiveCamera->getViewDirection();
-
-    return QVector3D();
-}
-
-QVector3D CameraManager::getDirectionFromScreen(int x, int y, int width, int height)
-{
-    if (mActiveCamera)
-    {
-        const float halfVerticalFovRadian = 0.5f * qDegreesToRadians(mActiveCamera->verticalFov());
-        const float halfHorizontalFovRadian = atan(tan(halfVerticalFovRadian) * mActiveCamera->aspectRatio());
-
-        const float horizontalRotationAngleRadian = atan(tan(halfHorizontalFovRadian) * (0.5f * width - x) / (0.5f * width));
-        const float horizontalRotationAngle = qRadiansToDegrees(horizontalRotationAngleRadian);
-
-        const float verticalRotationAngleRadian = atan(((0.5f * height - y) / (0.5f * width - x)) * sin(horizontalRotationAngleRadian));
-        const float verticalRotationAngle = qRadiansToDegrees(verticalRotationAngleRadian);
-
-        QQuaternion left = mActiveCamera->rotation() * QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), horizontalRotationAngle);
-        QQuaternion leftThenUp = left * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), verticalRotationAngle);
-
-        return leftThenUp * QVector3D(0, 0, -1);
-    }
-
-    return QVector3D();
 }
 
 CameraManager *CameraManager::instance()

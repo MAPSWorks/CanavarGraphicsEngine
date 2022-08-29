@@ -7,6 +7,7 @@ class Model : public Node
 {
 protected:
     friend class NodeManager;
+
     explicit Model(const QString &modelName, QObject *parent = nullptr);
     virtual ~Model();
 

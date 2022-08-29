@@ -41,6 +41,8 @@ HEADERS += \
     NodeManager.h \
     NodeSelector.h \
     NozzleParticles.h \
+    OrthographicCamera.h \
+    PerspectiveCamera.h \
     PointLight.h \
     Quad.h \
     RandomGenerator.h \
@@ -82,6 +84,8 @@ SOURCES += \
     NodeManager.cpp \
     NodeSelector.cpp \
     NozzleParticles.cpp \
+    OrthographicCamera.cpp \
+    PerspectiveCamera.cpp \
     PointLight.cpp \
     Quad.cpp \
     RandomGenerator.cpp \

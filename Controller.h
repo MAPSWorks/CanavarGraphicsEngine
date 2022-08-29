@@ -25,14 +25,14 @@ public:
 
 private slots:
     void init();
-    void onWheelMoved(QWheelEvent *event);
+    void onMouseDoubleClicked(QMouseEvent *event);
     void onMousePressed(QMouseEvent *event);
     void onMouseReleased(QMouseEvent *event);
     void onMouseMoved(QMouseEvent *event);
+    void onWheelMoved(QWheelEvent *event);
     void onKeyPressed(QKeyEvent *event);
     void onKeyReleased(QKeyEvent *event);
-    void onResized(int w, int h);
-    void onMouseDoubleClicked(QMouseEvent *event);
+    void resize(int w, int h);
     void render(float ifps);
 
 private:

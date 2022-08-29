@@ -18,14 +18,30 @@ signals:
     void activeChanged(bool active);
 
 public:
-    float verticalFov() const;
-    void setVerticalFov(float newVerticalFov);
+    virtual QMatrix4x4 transformation() const override;
+    virtual QMatrix4x4 worldTransformation() const override;
+    virtual QMatrix4x4 getVP();
+    virtual QMatrix4x4 projection() = 0;
 
-    float horizontalFov() const;
-    void setHorizontalFov(float newHorizontalFov);
+    virtual void onMouseDoubleClicked(QMouseEvent *) = 0;
+    virtual void onMousePressed(QMouseEvent *) = 0;
+    virtual void onMouseReleased(QMouseEvent *) = 0;
+    virtual void onMouseMoved(QMouseEvent *) = 0;
+    virtual void onWheelMoved(QWheelEvent *) = 0;
+    virtual void onKeyPressed(QKeyEvent *) = 0;
+    virtual void onKeyReleased(QKeyEvent *) = 0;
+    virtual void update(float) = 0;
 
-    float aspectRatio() const;
-    void setAspectRatio(float newAspectRatio);
+    virtual void resize(int width, int height);
+
+    bool active() const;
+    void setActive(bool newActive);
+
+    int width() const;
+    void setWidth(int newWidth);
+
+    int height() const;
+    void setHeight(int newHeight);
 
     float zNear() const;
     void setZNear(float newZNear);
@@ -33,34 +49,12 @@ public:
     float zFar() const;
     void setZFar(float newZFar);
 
-    bool active() const;
-    void setActive(bool newActive);
-
-    virtual QMatrix4x4 transformation() const override;
-    virtual QMatrix4x4 worldTransformation() const override;
-    virtual QMatrix4x4 projection() const;
-    virtual QVector3D getViewDirection() const;
-    virtual QMatrix4x4 getVP() const;
-    const QMatrix4x4 &previousVP() const;
-    virtual void updateVP();
-
-    virtual void onKeyPressed(QKeyEvent *) = 0;
-    virtual void onKeyReleased(QKeyEvent *) = 0;
-    virtual void onMousePressed(QMouseEvent *event) = 0;
-    virtual void onMouseReleased(QMouseEvent *event) = 0;
-    virtual void onMouseMoved(QMouseEvent *event) = 0;
-    virtual void onResized(int, int) = 0;
-    virtual void update(float) = 0;
-
 protected:
-    float mVerticalFov;
-    float mHorizontalFov;
-    float mAspectRatio;
+    bool mActive;
+    int mWidth;
+    int mHeight;
     float mZNear;
     float mZFar;
-    bool mActive;
-
-    QMatrix4x4 mPreviousVP;
 };
 
 #endif // CAMERA_H

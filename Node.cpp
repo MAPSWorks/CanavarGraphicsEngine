@@ -169,6 +169,8 @@ QString Node::nodeTypeString()
         return "Free Camera";
     case NodeType::DummyCamera:
         return "Dummy Camera";
+    case NodeType::OrthographicCamera:
+        return "Orthographic Camera";
     case NodeType::DirectionalLight:
         return "Directional Light";
     case NodeType::PointLight:

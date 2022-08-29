@@ -39,7 +39,7 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mWindow, &Window::mouseMoved, this, &Controller::onMouseMoved);
     connect(mWindow, &Window::keyPressed, this, &Controller::onKeyPressed);
     connect(mWindow, &Window::keyReleased, this, &Controller::onKeyReleased);
-    connect(mWindow, &Window::resized, this, &Controller::onResized);
+    connect(mWindow, &Window::resized, this, &Controller::resize);
     connect(mWindow, &Window::init, this, &Controller::init);
     connect(mWindow, &Window::render, this, &Controller::render);
     connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
@@ -175,7 +175,7 @@ void Controller::onKeyReleased(QKeyEvent *event)
     mAircraftController->onKeyReleased(event);
 }
 
-void Controller::onResized(int w, int h)
+void Controller::resize(int w, int h)
 {
     mCameraManager->resize(w, h);
     mRendererManager->resize(w, h);

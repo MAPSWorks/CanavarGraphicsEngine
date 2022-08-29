@@ -25,6 +25,7 @@ public:
         Model,
         FreeCamera,
         DummyCamera,
+        OrthographicCamera,
         DirectionalLight,
         PointLight,
         SpotLight,
