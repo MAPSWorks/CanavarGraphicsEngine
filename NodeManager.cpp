@@ -192,6 +192,8 @@ void NodeManager::drawGUI()
 
         mSelectedNode->drawGUI();
     }
+
+    ImGui::End();
 }
 
 void NodeManager::populateComboBox(Node *node)

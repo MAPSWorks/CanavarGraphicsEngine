@@ -166,35 +166,32 @@ void AircraftController::setJet(Model *newJet)
 
 void AircraftController::drawGUI()
 {
-    // Simulator
-    {
-        ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-        ImGui::Begin("Simulator");
+    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Simulator");
 
-        ImGui::BeginDisabled();
+    ImGui::BeginDisabled();
+    ImGui::SliderFloat("Elevator", &mElevator, -1.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Aileron", &mAileron, -1.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Rudder", &mRudder, -1.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Throttle", &mThrottle, 0.0f, 1.0f, "%.3f");
+    ImGui::EndDisabled();
 
-        ImGui::SliderFloat("Elevator", &mElevator, -1.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Aileron", &mAileron, -1.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Rudder", &mRudder, -1.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Throttle", &mThrottle, 0.0f, 1.0f, "%.3f");
+    if (ImGui::Button("Init Running"))
+        emit command(Aircraft::Command::InitRunning);
 
-        ImGui::EndDisabled();
+    if (ImGui::Button("Hold"))
+        emit command(Aircraft::Command::Hold);
 
-        if (ImGui::Button("Init Running"))
-            emit command(Aircraft::Command::InitRunning);
+    if (ImGui::Button("Resume"))
+        emit command(Aircraft::Command::Resume);
 
-        if (ImGui::Button("Hold"))
-            emit command(Aircraft::Command::Hold);
+    ImGui::Text("Airspeed:    %.2f knots", mPfd.airspeed);
+    ImGui::Text("Latitude:    %.6f °", mPfd.latitude);
+    ImGui::Text("Longitude:   %.6f °", mPfd.longitude);
+    ImGui::Text("Altitude:    %.2f meters", mPfd.altitude);
+    ImGui::Text("Roll:        %.1f °", mPfd.roll);
+    ImGui::Text("Pitch:       %.1f °", mPfd.pitch);
+    ImGui::Text("Heading:     %.1f °", mPfd.heading);
 
-        if (ImGui::Button("Resume"))
-            emit command(Aircraft::Command::Resume);
-
-        ImGui::Text("Airspeed:    %.2f knots", mPfd.airspeed);
-        ImGui::Text("Latitude:    %.6f °", mPfd.latitude);
-        ImGui::Text("Longitude:   %.6f °", mPfd.longitude);
-        ImGui::Text("Altitude:    %.2f meters", mPfd.altitude);
-        ImGui::Text("Roll:        %.1f °", mPfd.roll);
-        ImGui::Text("Pitch:       %.1f °", mPfd.pitch);
-        ImGui::Text("Heading:     %.1f °", mPfd.heading);
-    }
+    ImGui::End();
 }
