@@ -63,6 +63,10 @@ void Water::render(float ifps)
     mShaderManager->setUniformValue("lightColor", mLightManager->directionalLight()->color().toVector3D());
     mShaderManager->setUniformValue("lightDirection", mLightManager->directionalLight()->direction());
     mShaderManager->setUniformValue("moveFactor", mWaveSpeed * mTimeElapsed);
+    mShaderManager->setUniformValue("haze.enabled", false);
+    mShaderManager->setUniformValue("haze.color", mHaze->color());
+    mShaderManager->setUniformValue("haze.density", mHaze->density());
+    mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
     mShaderManager->setSampler("reflectionTex", 0, mReflectionFramebuffer->texture());
     mShaderManager->setSampler("refractionTex", 1, mRefractionFramebuffer->texture());
     mTileGenerator->render(Primitive::Triangles);

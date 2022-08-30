@@ -298,6 +298,11 @@ bool ShaderManager::init()
         shader->addUniform("worley");
         shader->addUniform("weather");
 
+        shader->addUniform("haze.enabled");
+        shader->addUniform("haze.color");
+        shader->addUniform("haze.density");
+        shader->addUniform("haze.gradient");
+
         if (!shader->init())
             return false;
     }
@@ -370,15 +375,16 @@ bool ShaderManager::init()
 
         shader->addUniform("nodeMatrix");
         shader->addUniform("VP");
-
         shader->addUniform("moveFactor");
         shader->addUniform("cameraPosition");
         shader->addUniform("lightColor");
         shader->addUniform("lightDirection");
-        shader->addUniform("fogColor");
-
         shader->addUniform("reflectionTex");
         shader->addUniform("refractionTex");
+        shader->addUniform("haze.enabled");
+        shader->addUniform("haze.color");
+        shader->addUniform("haze.density");
+        shader->addUniform("haze.gradient");
 
         shader->addAttribute("position");
         shader->addAttribute("normal");

@@ -85,7 +85,7 @@ void NodeSelector::render()
             {
                 mShaderManager->bind(ShaderManager::ShaderType::NodeSelectionShader);
                 mShaderManager->setUniformValue("VP", mCameraManager->activeCamera()->getVP());
-                mShaderManager->setUniformValue("nodeIndex", model->nodeIndex());
+                mShaderManager->setUniformValue("nodeIndex", model->index());
                 data->renderForNodeSelector(model);
                 mShaderManager->release();
             }

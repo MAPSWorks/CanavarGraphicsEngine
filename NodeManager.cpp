@@ -73,7 +73,7 @@ Node *NodeManager::create(Node::NodeType type, const QString &name)
         else
             node->setName(name);
 
-        node->setNodeIndex(mNumberOfNodes);
+        node->setIndex(mNumberOfNodes);
         mNodes << node;
     }
 
@@ -145,7 +145,7 @@ void NodeManager::setSelectedNode(unsigned int nodeIndex)
 {
     for (auto node : qAsConst(mNodes))
     {
-        if (node->nodeIndex() == nodeIndex)
+        if (node->index() == nodeIndex)
         {
             setSelectedNode(node);
             return;
@@ -175,7 +175,7 @@ void NodeManager::drawGUI()
     if (ImGui::BeginCombo("Select a node", preview.toStdString().c_str()))
     {
         for (int i = 0; i < mNodes.size(); ++i)
-            populateComboBox(mNodes[i]);
+            populateNodesComboBox(mNodes[i]);
 
         ImGui::EndCombo();
     }
@@ -183,7 +183,7 @@ void NodeManager::drawGUI()
     if (mSelectedNode)
     {
         ImGui::Text("Type: %s", mSelectedNode->nodeTypeString().toStdString().c_str());
-        ImGui::Text("Index: %d", mSelectedNode->nodeIndex());
+        ImGui::Text("Index: %d", mSelectedNode->index());
         Node *parent = dynamic_cast<Node *>(mSelectedNode->parent());
         ImGui::Text("Parent: 0x%p", parent);
 
@@ -196,7 +196,7 @@ void NodeManager::drawGUI()
     ImGui::End();
 }
 
-void NodeManager::populateComboBox(Node *node)
+void NodeManager::populateNodesComboBox(Node *node)
 {
     switch (node->nodeType())
     {

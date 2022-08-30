@@ -4,6 +4,7 @@
 #include "CameraManager.h"
 #include "DirectionalLight.h"
 #include "Framebuffer.h"
+#include "Haze.h"
 #include "PerspectiveCamera.h"
 #include "Quad.h"
 #include "ShaderManager.h"
@@ -42,6 +43,8 @@ public:
     void render(float ifps);
     void drawGUI();
     void reset();
+
+    void setHaze(Haze *newHaze);
 
 private:
     void generateMaps();
@@ -85,6 +88,8 @@ private:
 
     int mWidth;
     int mHeight;
+
+    Haze *mHaze;
 };
 
 #endif // SKY_H

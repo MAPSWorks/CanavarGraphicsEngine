@@ -37,6 +37,15 @@ layout(rgba8, binding = 1) uniform image2D bloom;
 layout(rgba8, binding = 2) uniform image2D alphaness;
 layout(rgba8, binding = 3) uniform image2D cloudDistance;
 
+struct Haze {
+    bool enabled;
+    vec3 color;
+    float density;
+    float gradient;
+};
+
+uniform Haze haze;
+
 uniform sampler2D sky;
 uniform sampler3D perlin;
 uniform sampler3D worley;
@@ -473,14 +482,16 @@ vec2 computeScreenPos(vec2 ndc)
     return (ndc * 0.5 + 0.5);
 }
 
-float computeFogAmount(in vec3 startPos, in float factor)
-{
-    float dist = length(startPos - cameraPosition);
-    float radius = (cameraPosition.y - sphereCenter.y) * 0.3;
-    float alpha = (dist / radius);
-    //v.rgb = mix(v.rgb, ambientColor, alpha*alpha);
 
-    return (1. - exp(-dist * alpha * factor));
+float getHazeFactor(vec3 startPos)
+{
+    if (haze.enabled)
+    {
+        float distance = length(cameraPosition - startPos);
+        float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
+        return clamp(factor, 0.0f, 1.0f);
+    } else
+        return 0.0f;
 }
 
 #define HDR(col, exps) 1.0 - exp(-col *exps)
@@ -537,7 +548,7 @@ void main()
     }
 
     //compute fog amount and early exit if over a certain value
-    float fogAmount = computeFogAmount(fogRay, 0.00006);
+    float fogAmount = getHazeFactor(fogRay);
 
     fragColor_v = bg;
     bloom_v = vec4(getSun(worldDir, 128) * 1.3, 1.0);
@@ -581,7 +592,7 @@ void main()
 
     if (cloudAlphaness > 0.1)
     { //apply fog to bloom buffer
-        float fogAmount = computeFogAmount(startPos, 0.00003);
+        float fogAmount = getHazeFactor(startPos);
 
         vec3 cloud = mix(vec3(0.0), bloom_v.rgb, clamp(fogAmount, 0., 1.));
         bloom_v.rgb = bloom_v.rgb * (1.0 - cloudAlphaness) + cloud.rgb;

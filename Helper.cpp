@@ -63,6 +63,7 @@ ModelData *Helper::loadModel(const QString &name, const QString &path)
     {
         aiMesh *aiMesh = aiScene->mMeshes[i];
         Mesh *mesh = processMesh(aiMesh);
+        mesh->setIndex(i);
         mesh->setData(data);
         data->addMesh(mesh);
     }

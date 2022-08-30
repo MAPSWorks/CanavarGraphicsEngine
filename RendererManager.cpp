@@ -94,6 +94,7 @@ bool RendererManager::init()
     mSun->setDirection(QVector3D(1, -1, 1));
 
     mSky = Sky::instance();
+    mSky->setHaze(mHaze);
 
     createFramebuffers();
 
@@ -144,10 +145,10 @@ void RendererManager::render(float ifps)
 
         // Render objects and sky
         mWater->reflectionFramebuffer()->bind();
-        glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
+        glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderNodes(1);
-        renderTerrain(1);
+        renderNodes(RenderFor::Reflection);
+        renderTerrain(RenderFor::Reflection);
         mSky->render(ifps);
 
         mCamera->setWorldPosition(originalPosition);
@@ -155,9 +156,10 @@ void RendererManager::render(float ifps)
 
         // Refraction
         mWater->refractionFramebuffer()->bind();
+        glClearColor(0, 0, 0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderNodes(-1);
-        renderTerrain(-1);
+        renderNodes(RenderFor::Refraction);
+        renderTerrain(RenderFor::Refraction);
 
         glEnable(GL_MULTISAMPLE);
     }
@@ -172,8 +174,8 @@ void RendererManager::render(float ifps)
         glEnable(GL_DEPTH_TEST);
         glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderNodes(0);
-        renderTerrain(0);
+        renderNodes(RenderFor::Default);
+        renderTerrain(RenderFor::Default);
         mWater->render(ifps);
         mSky->render(ifps);
 
@@ -283,7 +285,7 @@ void RendererManager::fillFramebufferMultisampled(Framebuffer *source, Framebuff
     glEnable(GL_DEPTH_TEST);
 }
 
-void RendererManager::renderNodes(int up)
+void RendererManager::renderNodes(RenderFor renderFor)
 {
     auto nodes = mNodeManager->nodes();
 
@@ -299,21 +301,21 @@ void RendererManager::renderNodes(int up)
         NozzleParticles *particles = dynamic_cast<NozzleParticles *>(node);
 
         if (model)
-            renderModel(model, up);
+            renderModel(model, renderFor);
 
         if (particles)
             particles->render(mIfps);
     }
 }
 
-void RendererManager::renderTerrain(int up)
+void RendererManager::renderTerrain(RenderFor renderFor)
 {
-    if (up != 0)
+    if ((int) renderFor != 0)
         glEnable(GL_CLIP_DISTANCE0);
 
     mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
 
-    mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * up);
+    mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * (int) renderFor);
     mShaderManager->setUniformValue("VP", mCamera->getVP());
     mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
     mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
@@ -333,7 +335,7 @@ void RendererManager::renderTerrain(int up)
     mShaderManager->setUniformValue("terrain.diffuse", mTerrain->material().diffuse);
     mShaderManager->setUniformValue("terrain.shininess", mTerrain->material().shininess);
     mShaderManager->setUniformValue("terrain.specular", mTerrain->material().specular);
-    mShaderManager->setUniformValue("haze.enabled", mHaze->enabled());
+    mShaderManager->setUniformValue("haze.enabled", renderFor == RenderFor::Refraction ? false : mHaze->enabled());
     mShaderManager->setUniformValue("haze.color", mHaze->color());
     mShaderManager->setUniformValue("haze.density", mHaze->density());
     mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
@@ -344,9 +346,9 @@ void RendererManager::renderTerrain(int up)
     glDisable(GL_CLIP_DISTANCE0);
 }
 
-void RendererManager::renderModel(Model *model, int up)
+void RendererManager::renderModel(Model *model, RenderFor renderFor)
 {
-    if (up != 0)
+    if ((int) renderFor != 0)
         glEnable(GL_CLIP_DISTANCE0);
 
     ModelData *data = mModelsData.value(model->modelName(), nullptr);
@@ -357,7 +359,7 @@ void RendererManager::renderModel(Model *model, int up)
         {
             mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
             mShaderManager->setUniformValue("selected", model->selected());
-            mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * up);
+            mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * (int) renderFor);
             mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
             mShaderManager->setUniformValue("VP", mCamera->getVP());
             mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());

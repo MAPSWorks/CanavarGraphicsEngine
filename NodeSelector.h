@@ -16,6 +16,12 @@ private:
     explicit NodeSelector(QObject *parent = nullptr);
 
 public:
+    struct SelectionInfo {
+        unsigned int nodeIndex;
+        unsigned int meshIndex;
+        unsigned int vertexIndex;
+    };
+
     void init();
     void onMousePressed(QMouseEvent *event);
     void resize(int width, int height);

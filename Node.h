@@ -17,7 +17,7 @@ protected:
     explicit Node(QObject *parent = nullptr);
     virtual ~Node();
     void setSelected(bool newSelected);
-    void setNodeIndex(unsigned int newNodeIndex);
+    void setIndex(unsigned int newIndex);
 
 public:
     enum class NodeType { //
@@ -68,8 +68,8 @@ public:
     virtual void drawGUI();
 
     bool renderable() const;
-    unsigned int nodeIndex() const;
     bool selected() const;
+    unsigned int index() const;
 
 protected:
     QVector3D mPosition;
@@ -80,7 +80,7 @@ protected:
     QList<Node *> mChildren;
     bool mVisible;
     bool mRenderable;
-    unsigned int mNodeIndex;
+    unsigned int mIndex;
     bool mSelected;
 };
 

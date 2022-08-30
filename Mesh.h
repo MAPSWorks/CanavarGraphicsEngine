@@ -59,12 +59,18 @@ public:
     const Mesh::AABB &getAABB() const;
     void setAABB(const Mesh::AABB &newAABB);
 
+    unsigned int index() const;
+    void setIndex(unsigned int newIndex);
+
+    void drawGUI();
+
 private:
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;
 
     QString mName;
     int mMaterialIndex;
+    unsigned int mIndex;
 
     QOpenGLVertexArrayObject mVertexArray;
     unsigned int mEBO;

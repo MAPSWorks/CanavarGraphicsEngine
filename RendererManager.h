@@ -39,9 +39,11 @@ public:
     void drawGUI();
 
 private:
-    void renderNodes(int up);
-    void renderTerrain(int up);
-    void renderModel(Model *model, int up);
+    enum class RenderFor { Default = 0, Reflection = 1, Refraction = -1 };
+
+    void renderNodes(RenderFor renderFor);
+    void renderTerrain(RenderFor renderFor);
+    void renderModel(Model *model, RenderFor renderFor);
     void fillFramebuffer(Framebuffer *source, Framebuffer *target);
     void fillFramebufferMultisampled(Framebuffer *source, Framebuffer *target);
     void createFramebuffers();

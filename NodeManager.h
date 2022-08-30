@@ -1,6 +1,7 @@
 #ifndef NODEMANAGER_H
 #define NODEMANAGER_H
 
+#include "Mesh.h"
 #include "Node.h"
 
 #include <QObject>
@@ -26,7 +27,8 @@ public:
     void drawGUI();
 
 private:
-    void populateComboBox(Node *node);
+    void populateNodesComboBox(Node *node);
+    void populateMeshesComboBox(Mesh *mesh);
 
 private:
     QList<Node *> mNodes;

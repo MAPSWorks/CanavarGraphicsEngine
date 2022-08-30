@@ -24,6 +24,13 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+struct Haze {
+    bool enabled;
+    vec3 color;
+    float density;
+    float gradient;
+};
+
 in vec3 fsNormal;
 in vec4 fsClipSpaceCoords;
 in vec2 fsTextureCoords;
@@ -33,10 +40,11 @@ uniform float moveFactor;
 uniform vec3 cameraPosition;
 uniform vec3 lightColor;
 uniform vec3 lightDirection;
-uniform vec4 fogColor = vec4(0.4, 0.6, 0.75, 1.0);
 
 uniform sampler2D reflectionTex;
 uniform sampler2D refractionTex;
+
+uniform Haze haze;
 
 out vec4 outColor;
 
@@ -168,12 +176,19 @@ float worley(vec3 st)
     return color;
 }
 
+float getHazeFactor()
+{
+    if (haze.enabled)
+    {
+        float distance = length(cameraPosition - fsPosition.xyz);
+        float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
+        return clamp(factor, 0.0f, 1.0f);
+    } else
+        return 0.0f;
+}
+
 void main()
 {
-    float distFromPos = distance(fsPosition.xyz, cameraPosition);
-    vec2 fogDist = vec2(4000.0, 12000.0);
-    float fogFactor = clamp((fogDist.y - distFromPos) / (fogDist.y - fogDist.x), 0.0, 1.0);
-
     float grain = 50.0;
     vec2 ndc = (fsClipSpaceCoords.xy / fsClipSpaceCoords.w) / 2.0 + 0.5;
     float st = 0.1;
@@ -218,8 +233,9 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 512.);
     vec3 specular = spec * lightColor * specularFactor;
 
+    float hazeFactor = getHazeFactor();
     vec4 color = vec4(0.2, 0.71, 0.85, 1.0);
-    outColor = mix(mix(refr_reflCol, color * 0.8, 0.1) * 0.8 + vec4(diffuse + specular, 1.0), fogColor, (1 - fogFactor));
+    outColor = mix(mix(refr_reflCol, color * 0.8, 0.1) * 0.8 + vec4(diffuse + specular, 1.0), vec4(haze.color, 1.0f), hazeFactor);
     float foam = perlin(fsPosition.x * 4.0, fsPosition.z * 4.0, moveFactor * 10.0) * 0.25;
     foam = mix(foam * pow((1.0 - waterDepth), 8.0), foam * 0.01, 0.0);
     outColor.rgb *= 0.95;

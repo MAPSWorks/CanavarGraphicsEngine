@@ -194,3 +194,18 @@ void Mesh::setAABB(const Mesh::AABB &newAABB)
 {
     mAABB = newAABB;
 }
+
+unsigned int Mesh::index() const
+{
+    return mIndex;
+}
+
+void Mesh::setIndex(unsigned int newIndex)
+{
+    mIndex = newIndex;
+}
+
+void Mesh::drawGUI()
+{
+
+}

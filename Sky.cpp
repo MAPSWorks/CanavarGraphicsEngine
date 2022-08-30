@@ -98,6 +98,7 @@ void Sky::renderWeather(float ifps)
     glDisable(GL_MULTISAMPLE);
 
     mSkyFramebuffer->bind();
+    glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // Sky
@@ -142,6 +143,11 @@ void Sky::renderWeather(float ifps)
     mShaderManager->setUniformValue("sphereOuterRadius", mSphereOuterRadius);
     mShaderManager->setUniformValue("cloudColor", mCloudColor);
     mShaderManager->setUniformValue("cloudFlareColor", mCloudFlareColor);
+
+    mShaderManager->setUniformValue("haze.enabled", mHaze->enabled());
+    mShaderManager->setUniformValue("haze.color", mHaze->color());
+    mShaderManager->setUniformValue("haze.density", mHaze->density());
+    mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
 
     // Textures
     mShaderManager->setSampler("perlin", 0, mInputTextures.perlin->id(), GL_TEXTURE_3D);
@@ -271,4 +277,9 @@ void Sky::generateMaps()
     glDispatchCompute(INT_CEIL(1024, 8), INT_CEIL(1024, 8), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     qInfo() << "Weather 2D Texture 1024x1024 is generated.";
+}
+
+void Sky::setHaze(Haze *newHaze)
+{
+    mHaze = newHaze;
 }

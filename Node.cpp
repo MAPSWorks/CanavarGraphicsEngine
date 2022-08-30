@@ -10,7 +10,7 @@ Node::Node(QObject *parent)
     , mNodeType(NodeType::DummyNode)
     , mVisible(true)
     , mRenderable(true)
-    , mNodeIndex(0)
+    , mIndex(0)
     , mSelected(false)
 
 {}
@@ -280,19 +280,19 @@ void Node::drawGUI()
     }
 }
 
-unsigned int Node::nodeIndex() const
-{
-    return mNodeIndex;
-}
-
-void Node::setNodeIndex(unsigned int newNodeIndex)
-{
-    mNodeIndex = newNodeIndex;
-}
-
 bool Node::selected() const
 {
     return mSelected;
+}
+
+unsigned int Node::index() const
+{
+    return mIndex;
+}
+
+void Node::setIndex(unsigned int newIndex)
+{
+    mIndex = newIndex;
 }
 
 void Node::setSelected(bool newSelected)
