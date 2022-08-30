@@ -32,7 +32,7 @@ QVector3D Node::worldPosition() const
     Node *parent = dynamic_cast<Node *>(this->parent());
 
     if (parent)
-        return parent->worldPosition() + mPosition;
+        return parent->worldPosition() + parent->worldRotation() * mPosition;
     else
         return mPosition;
 }
@@ -42,13 +42,9 @@ void Node::setWorldPosition(const QVector3D &newWorldPosition)
     Node *parent = dynamic_cast<Node *>(this->parent());
 
     if (parent)
-    {
-        QVector3D parentWorldPosition = parent->worldPosition();
-        mPosition = newWorldPosition - parentWorldPosition;
-    } else
-    {
+        mPosition = parent->worldRotation().inverted() * (newWorldPosition - parent->worldPosition());
+    else
         mPosition = newWorldPosition;
-    }
 }
 
 const QQuaternion &Node::rotation() const
@@ -76,13 +72,9 @@ void Node::setWorldRotation(const QQuaternion &newWorldRotation)
     Node *parent = dynamic_cast<Node *>(this->parent());
 
     if (parent)
-    {
-        QQuaternion parentWorldRotation = parent->worldRotation();
-        mRotation = parentWorldRotation.inverted() * newWorldRotation;
-    } else
-    {
+        mRotation = parent->worldRotation().inverted() * newWorldRotation;
+    else
         mRotation = newWorldRotation;
-    }
 }
 
 const QVector3D &Node::scale() const

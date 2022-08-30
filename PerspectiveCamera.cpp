@@ -52,3 +52,10 @@ void PerspectiveCamera::drawGUI()
 {
     Camera::drawGUI();
 }
+
+void PerspectiveCamera::animate(const Animation &animation) {}
+
+const PerspectiveCamera::Animation &PerspectiveCamera::animation() const
+{
+    return mAnimation;
+}

@@ -90,7 +90,7 @@ void Sky::resize(int width, int height)
 
 void Sky::renderWeather(float ifps)
 {
-    mCamera = dynamic_cast<PerspectiveCamera *>(mCameraManager->activeCamera());
+    mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
 
     mTimeElapsed += ifps;

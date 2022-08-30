@@ -22,12 +22,12 @@ void CameraManager::removeCamera(Camera *camera)
     }
 }
 
-Camera *CameraManager::activeCamera() const
+PerspectiveCamera *CameraManager::activeCamera() const
 {
     return mActiveCamera;
 }
 
-void CameraManager::setActiveCamera(Camera *newActiveCamera)
+void CameraManager::setActiveCamera(PerspectiveCamera *newActiveCamera)
 {
     if (mActiveCamera == newActiveCamera)
         return;

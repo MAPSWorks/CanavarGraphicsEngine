@@ -58,7 +58,7 @@ private:
     LightManager *mLightManager;
     ShaderManager *mShaderManager;
 
-    Camera *mCamera;
+    PerspectiveCamera *mCamera;
     DirectionalLight *mSun;
     SkyBox *mSkyBox;
     Terrain *mTerrain;

@@ -85,8 +85,8 @@ void AircraftController::tick()
 
 void AircraftController::update(float)
 {
-    mRootJetNode->setRotation(mPfd.rotation);
-    mRootJetNode->setPosition(mPfd.position);
+    mRootJetNode->setWorldRotation(mPfd.rotation);
+    mRootJetNode->setWorldPosition(mPfd.position);
 
     // Rudder
     {

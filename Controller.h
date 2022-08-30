@@ -64,7 +64,8 @@ private:
     AircraftController *mAircraftController;
     Aircraft::PrimaryFlightData mPfd;
 
-    bool mImGuiWantCapture;
+    bool mImGuiWantsMouseCapture;
+    bool mImGuiWantsKeyboardCapture;
 };
 
 #endif // CONTROLLER_H

@@ -40,6 +40,7 @@ public:
     void onKeyReleased(QKeyEvent *event) override;
     void onWheelMoved(QWheelEvent *) override;
     void update(float ifps) override;
+    void animate(const Animation &animation) override;
     void drawGUI() override;
 
     enum class Mode { //
@@ -62,6 +63,12 @@ private:
 
     bool mUpdateRotation;
     bool mUpdatePosition;
+
+    float mTimeElapsed;
+
+    QVector3D mPositionBeforeAnimation;
+    QQuaternion mRotationBeforeAnimation;
+    float mVerticalFovBeforeAnimation;
 
     static const QMap<Qt::Key, QVector3D> KEY_BINDINGS;
 };

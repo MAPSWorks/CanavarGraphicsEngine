@@ -9,7 +9,7 @@ Controller::Controller(QApplication *app, QObject *parent)
     , mPressedButton(Qt::NoButton)
     , mApp(app)
     , mMouseCaptured(false)
-    , mImGuiWantCapture(false)
+    , mImGuiWantsMouseCapture(false)
 {
     mRendererManager = RendererManager::instance();
     mCameraManager = CameraManager::instance();
@@ -63,6 +63,10 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mFreeCamera, &FreeCamera::setCursorPosition, this, [=](QPoint position) { //
         mWindow->cursor().setPos(mWindow->mapToGlobal(position));
     });
+
+    connect(mFreeCamera, &FreeCamera::animationDone, this, [=](PerspectiveCamera *newActiveCamera) { //
+        mCameraManager->setActiveCamera(newActiveCamera);
+    });
 }
 
 Controller::~Controller()
@@ -79,14 +83,15 @@ void Controller::init()
     mNodeSelector->init();
 
     mDummyCamera = dynamic_cast<DummyCamera *>(mNodeManager->create(Node::NodeType::DummyCamera));
+
+    mRootJetNode->addChild(mDummyCamera);
     mDummyCamera->setPosition(QVector3D(0, 5, 30));
-    mDummyCamera->setVerticalFov(80.0f);
+    mDummyCamera->setVerticalFov(75.0f);
     mDummyCamera->setZNear(2.0f);
     mDummyCamera->setZFar(100000.0f);
-    mRootJetNode->addChild(mDummyCamera);
 
     mBackpack = mNodeManager->create(Model::NodeType::Model, "Backpack");
-    mBackpack->setPosition(QVector3D(0, 122, 0));
+    mBackpack->setPosition(QVector3D(0, 0, 0));
 
     mCyborg = mNodeManager->create(Model::NodeType::Model, "Cyborg");
     mCyborg->setPosition(QVector3D(0, 122, 15));
@@ -112,13 +117,13 @@ void Controller::run()
 
 void Controller::onWheelMoved(QWheelEvent *)
 {
-    if (mImGuiWantCapture)
+    if (mImGuiWantsMouseCapture)
         return;
 }
 
 void Controller::onMousePressed(QMouseEvent *event)
 {
-    if (mImGuiWantCapture)
+    if (mImGuiWantsMouseCapture)
         return;
 
     mPressedButton = event->button();
@@ -129,7 +134,7 @@ void Controller::onMousePressed(QMouseEvent *event)
 
 void Controller::onMouseReleased(QMouseEvent *event)
 {
-    if (mImGuiWantCapture)
+    if (mImGuiWantsMouseCapture)
         return;
 
     mPressedButton = Qt::NoButton;
@@ -139,7 +144,7 @@ void Controller::onMouseReleased(QMouseEvent *event)
 
 void Controller::onMouseMoved(QMouseEvent *event)
 {
-    if (mImGuiWantCapture)
+    if (mImGuiWantsMouseCapture)
         return;
 
     mCameraManager->onMouseMoved(event);
@@ -147,19 +152,65 @@ void Controller::onMouseMoved(QMouseEvent *event)
 
 void Controller::onKeyPressed(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_1)
-    {
-        mCameraManager->setActiveCamera(mFreeCamera);
+    if (mImGuiWantsKeyboardCapture)
+        return;
 
-        if (mFreeCamera->getMouseGrabbed())
-            mApp->setOverrideCursor(QCursor(Qt::BlankCursor));
-        else
+    if (event->key() == Qt::Key_1) // Free Camera
+    {
+        if (mCameraManager->activeCamera()->animation().animating)
+            return;
+
+        if (mCameraManager->activeCamera() != mFreeCamera)
+        {
+            PerspectiveCamera::Animation animation;
+            animation.startingPosition = mCameraManager->activeCamera()->worldPosition();
+            animation.startingRotation = mCameraManager->activeCamera()->worldRotation();
+            animation.startingVerticalFov = mCameraManager->activeCamera()->verticalFov();
+
+            animation.finalPosition = mFreeCamera->worldPosition();
+            animation.finalRotation = mFreeCamera->worldRotation();
+            animation.finalVerticalFov = mFreeCamera->verticalFov();
+
+            animation.subject = nullptr;
+            animation.duration = 1.5f;
+            animation.animating = true;
+            animation.saveFinalTransformation = true;
+            animation.activeCameraAfterAnimation = mFreeCamera;
+            mFreeCamera->animate(animation);
+            mCameraManager->setActiveCamera(mFreeCamera);
+
+            if (mFreeCamera->getMouseGrabbed())
+                mApp->setOverrideCursor(QCursor(Qt::BlankCursor));
+            else
+                mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
+        }
+
+    } else if (event->key() == Qt::Key_2) // Dummy Camera
+    {
+        if (mCameraManager->activeCamera()->animation().animating)
+            return;
+
+        qDebug() << mRootJetNode->worldPosition() << mDummyCamera->worldPosition() << mDummyCamera->position();
+
+        if (mCameraManager->activeCamera() != mDummyCamera)
+        {
+            PerspectiveCamera::Animation animation;
+            animation.startingPosition = mCameraManager->activeCamera()->worldPosition();
+            animation.startingRotation = mCameraManager->activeCamera()->worldRotation();
+            animation.startingVerticalFov = mCameraManager->activeCamera()->verticalFov();
+
+            animation.subject = mDummyCamera;
+
+            animation.duration = 1.5f;
+            animation.animating = true;
+            animation.saveFinalTransformation = false;
+            animation.activeCameraAfterAnimation = mDummyCamera;
+            mFreeCamera->animate(animation);
+            mCameraManager->setActiveCamera(mFreeCamera);
+
             mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
+        }
 
-    } else if (event->key() == Qt::Key_2)
-    {
-        mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
-        mCameraManager->setActiveCamera(mDummyCamera);
     } else
     {
         mCameraManager->onKeyPressed(event);
@@ -170,8 +221,10 @@ void Controller::onKeyPressed(QKeyEvent *event)
 
 void Controller::onKeyReleased(QKeyEvent *event)
 {
-    mCameraManager->onKeyReleased(event);
+    if (mImGuiWantsKeyboardCapture)
+        return;
 
+    mCameraManager->onKeyReleased(event);
     mAircraftController->onKeyReleased(event);
 }
 
@@ -190,7 +243,8 @@ void Controller::render(float ifps)
     mCameraManager->update(ifps);
     mRendererManager->render(ifps);
 
-    mImGuiWantCapture = ImGui::GetIO().WantCaptureMouse;
+    mImGuiWantsMouseCapture = ImGui::GetIO().WantCaptureMouse;
+    mImGuiWantsKeyboardCapture = ImGui::GetIO().WantCaptureKeyboard;
 
     QtImGui::newFrame();
     mRendererManager->drawGUI();

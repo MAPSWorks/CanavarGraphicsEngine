@@ -3,6 +3,7 @@
 
 #include "Camera.h"
 #include "NodeManager.h"
+#include "PerspectiveCamera.h"
 
 #include <QObject>
 
@@ -29,13 +30,13 @@ public:
     void resize(int width, int height);
     void update(float ifps);
 
-    Camera *activeCamera() const;
-    void setActiveCamera(Camera *newActiveCamera);
+    PerspectiveCamera *activeCamera() const;
+    void setActiveCamera(PerspectiveCamera *newActiveCamera);
 
     static CameraManager *instance();
 
 private:
-    Camera *mActiveCamera;
+    PerspectiveCamera *mActiveCamera;
     QList<Camera *> mCameras;
 
     int mWidth;

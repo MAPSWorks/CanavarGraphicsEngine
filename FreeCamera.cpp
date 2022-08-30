@@ -22,18 +22,31 @@ FreeCamera::FreeCamera(QObject *parent)
             auto keys = mPressedKeys.keys();
             for (auto key : qAsConst(keys))
                 mPressedKeys.insert(key, false);
+
+            mMouse.pressed = false;
         }
     });
 }
 
 FreeCamera::~FreeCamera() {}
 
-void FreeCamera::onMouseDoubleClicked(QMouseEvent *) {}
+void FreeCamera::onMouseDoubleClicked(QMouseEvent *)
+{
+    if (mAnimation.animating)
+        return;
+}
 
-void FreeCamera::onWheelMoved(QWheelEvent *) {}
+void FreeCamera::onWheelMoved(QWheelEvent *)
+{
+    if (mAnimation.animating)
+        return;
+}
 
 void FreeCamera::onMousePressed(QMouseEvent *event)
 {
+    if (mAnimation.animating)
+        return;
+
     switch (mMode)
     {
     case Mode::RotateWhileMouseIsPressing: {
@@ -61,6 +74,9 @@ void FreeCamera::onMouseReleased(QMouseEvent *)
 
 void FreeCamera::onMouseMoved(QMouseEvent *event)
 {
+    if (mAnimation.animating)
+        return;
+
     switch (mMode)
     {
     case Mode::RotateWhileMouseIsPressing: {
@@ -95,17 +111,56 @@ void FreeCamera::onMouseMoved(QMouseEvent *event)
 
 void FreeCamera::onKeyPressed(QKeyEvent *event)
 {
+    if (mAnimation.animating)
+        return;
+
     mPressedKeys.insert((Qt::Key) event->key(), true);
     mUpdatePosition = true;
 }
 
 void FreeCamera::onKeyReleased(QKeyEvent *event)
 {
+    if (mAnimation.animating)
+        return;
+
     mPressedKeys.insert((Qt::Key) event->key(), false);
 }
 
 void FreeCamera::update(float ifps)
 {
+    if (mAnimation.animating)
+    {
+        float t = qMax(0.0f, qMin(1.0f, mTimeElapsed / mAnimation.duration));
+
+        if (mAnimation.subject)
+        {
+            setWorldRotation(QQuaternion::slerp(mAnimation.startingRotation, mAnimation.subject->worldRotation(), t));
+            setWorldPosition(mAnimation.startingPosition + (mAnimation.subject->worldPosition() - mAnimation.startingPosition) * t);
+            setVerticalFov(mAnimation.startingVerticalFov + (mAnimation.subject->verticalFov() - mAnimation.startingVerticalFov) * t);
+        } else
+        {
+            setWorldRotation(QQuaternion::slerp(mAnimation.startingRotation, mAnimation.finalRotation, t));
+            setWorldPosition(mAnimation.startingPosition + (mAnimation.finalPosition - mAnimation.startingPosition) * t);
+            setVerticalFov(mAnimation.startingVerticalFov + (mAnimation.finalVerticalFov - mAnimation.startingVerticalFov) * t);
+        }
+
+        if (qFuzzyCompare(t, 1.0f))
+        {
+            if (!mAnimation.saveFinalTransformation)
+            {
+                setWorldPosition(mPositionBeforeAnimation);
+                setWorldRotation(mRotationBeforeAnimation);
+                setVerticalFov(mVerticalFovBeforeAnimation);
+            }
+
+            mAnimation.animating = false;
+            emit animationDone(mAnimation.activeCameraAfterAnimation);
+        }
+
+        mTimeElapsed += ifps;
+        return;
+    }
+
     // Rotation
     if (mUpdateRotation)
     {
@@ -136,6 +191,16 @@ void FreeCamera::update(float ifps)
 
     if (mPressedKeys.empty())
         mUpdatePosition = false;
+}
+
+void FreeCamera::animate(const Animation &animation)
+{
+    PerspectiveCamera::mAnimation = animation;
+    mAnimation.animating = true;
+    mPositionBeforeAnimation = mPosition;
+    mRotationBeforeAnimation = mRotation;
+    mVerticalFovBeforeAnimation = mVerticalFov;
+    mTimeElapsed = 0.0f;
 }
 
 void FreeCamera::drawGUI()
