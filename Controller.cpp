@@ -190,8 +190,6 @@ void Controller::onKeyPressed(QKeyEvent *event)
         if (mCameraManager->activeCamera()->animation().animating)
             return;
 
-        qDebug() << mRootJetNode->worldPosition() << mDummyCamera->worldPosition() << mDummyCamera->position();
-
         if (mCameraManager->activeCamera() != mDummyCamera)
         {
             PerspectiveCamera::Animation animation;
