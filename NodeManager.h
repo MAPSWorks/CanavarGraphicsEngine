@@ -8,6 +8,7 @@
 
 class CameraManager;
 class LightManager;
+class RendererManager;
 class NodeManager : public QObject
 {
     Q_OBJECT
@@ -20,6 +21,8 @@ public:
     void removeNode(Node *node);
     void setSelectedNode(Node *node);
     void setSelectedNode(unsigned int nodeIndex);
+    void setSelectedMesh(unsigned int meshIndex);
+    void setSelectedMesh(Mesh *mesh);
 
     const QList<Node *> &nodes() const;
     static NodeManager *instance();
@@ -35,9 +38,13 @@ private:
     int mNumberOfNodes;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
+    RendererManager *mRendererManager;
 
     // Gui
     Node *mSelectedNode;
+    Mesh *mSelectedMesh;
+    Model *mSelectedModel; // Casted from mSelectedNode
+    QVector<Mesh *> mSelectedModelMeshes;
 };
 
 #endif // NODEMANAGER_H

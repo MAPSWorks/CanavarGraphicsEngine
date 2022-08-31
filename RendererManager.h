@@ -2,7 +2,6 @@
 #define RENDERERMANAGER_H
 
 #include "CameraManager.h"
-#include "Common.h"
 #include "Framebuffer.h"
 #include "Haze.h"
 #include "LightManager.h"

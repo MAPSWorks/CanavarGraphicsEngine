@@ -5,14 +5,18 @@
 #include "LightManager.h"
 #include "Model.h"
 #include "NozzleParticles.h"
+#include "RendererManager.h"
 
 NodeManager::NodeManager(QObject *parent)
     : QObject(parent)
     , mNumberOfNodes(0)
     , mSelectedNode(nullptr)
+    , mSelectedMesh(nullptr)
+    , mSelectedModel(nullptr)
 {
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
+    mRendererManager = RendererManager::instance();
 }
 
 Node *NodeManager::create(Node::NodeType type, const QString &name)
@@ -124,6 +128,9 @@ void NodeManager::removeNode(Node *node)
         light->deleteLater();
         break;
     }
+    default: {
+        qWarning() << Q_FUNC_INFO << "Unkown Node. Implement creation algorithm for this Node";
+    }
     }
 }
 
@@ -139,6 +146,13 @@ void NodeManager::setSelectedNode(Node *node)
         mSelectedNode->setSelected(false);
 
     mSelectedNode = node;
+
+    mSelectedModel = dynamic_cast<Model *>(mSelectedNode);
+
+    if (mSelectedModel)
+        mSelectedModelMeshes = mRendererManager->getModelData(mSelectedModel->modelName())->meshes();
+
+    setSelectedMesh(nullptr);
 }
 
 void NodeManager::setSelectedNode(unsigned int nodeIndex)
@@ -153,6 +167,38 @@ void NodeManager::setSelectedNode(unsigned int nodeIndex)
     }
 
     setSelectedNode(nullptr);
+}
+
+void NodeManager::setSelectedMesh(unsigned int meshIndex)
+{
+    if (mSelectedModel)
+    {
+        auto data = mRendererManager->getModelData(mSelectedModel->modelName());
+        auto meshes = data->meshes();
+
+        for (auto mesh : meshes)
+        {
+            if (mesh->index() == meshIndex)
+            {
+                setSelectedMesh(mesh);
+                return;
+            }
+        }
+    }
+}
+
+void NodeManager::setSelectedMesh(Mesh *mesh)
+{
+    if (mSelectedMesh == mesh)
+        return;
+
+    if (mesh)
+        mesh->setSelected(true);
+
+    if (mSelectedMesh)
+        mSelectedMesh->setSelected(false);
+
+    mSelectedMesh = mesh;
 }
 
 NodeManager *NodeManager::instance()
@@ -193,6 +239,26 @@ void NodeManager::drawGUI()
         mSelectedNode->drawGUI();
     }
 
+    if (mSelectedModel)
+    {
+        if (!ImGui::CollapsingHeader("Meshes"))
+        {
+            QString preview = mSelectedMesh ? mSelectedMesh->name() : "-";
+            if (ImGui::BeginCombo("Select a mesh", preview.toStdString().c_str()))
+            {
+                for (int i = 0; i < mSelectedModelMeshes.size(); ++i)
+                    populateMeshesComboBox(mSelectedModelMeshes[i]);
+
+                ImGui::EndCombo();
+            }
+
+            if (mSelectedMesh)
+            {
+                mSelectedMesh->drawGUI();
+            }
+        }
+    }
+
     ImGui::End();
 }
 
@@ -208,4 +274,10 @@ void NodeManager::populateNodesComboBox(Node *node)
 
     if (ImGui::Selectable(node->name().toStdString().c_str()))
         setSelectedNode(node);
+}
+
+void NodeManager::populateMeshesComboBox(Mesh *mesh)
+{
+    if (ImGui::Selectable(mesh->name().toStdString().c_str()))
+        setSelectedMesh(mesh);
 }

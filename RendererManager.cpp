@@ -18,11 +18,6 @@ RendererManager::RendererManager(QObject *parent)
     , mFlag(false)
     , mIfps(0.0f)
 {
-    mNodeManager = NodeManager::instance();
-    mCameraManager = CameraManager::instance();
-    mLightManager = LightManager::instance();
-    mShaderManager = ShaderManager::instance();
-
     mFramebufferFormat.setSamples(4);
     mFramebufferFormat.addColorAttachment(0, //
                                           FramebufferFormat::TextureTarget::TEXTURE_2D_MULTISAMPLE,
@@ -41,6 +36,11 @@ RendererManager *RendererManager::instance()
 
 bool RendererManager::init()
 {
+    mNodeManager = NodeManager::instance();
+    mCameraManager = CameraManager::instance();
+    mLightManager = LightManager::instance();
+    mShaderManager = ShaderManager::instance();
+
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);

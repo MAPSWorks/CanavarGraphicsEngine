@@ -3,6 +3,7 @@
 
 Mesh::Mesh(QObject *parent)
     : QObject(parent)
+    , mSelected(false)
 {
     mShaderManager = ShaderManager::instance();
 }
@@ -205,7 +206,18 @@ void Mesh::setIndex(unsigned int newIndex)
     mIndex = newIndex;
 }
 
+bool Mesh::selected() const
+{
+    return mSelected;
+}
+
+void Mesh::setSelected(bool newSelected)
+{
+    mSelected = newSelected;
+}
+
 void Mesh::drawGUI()
 {
-
+    ImGui::Text("Index: %d", mIndex);
+    ImGui::Text("Number of vertices: %d", mVertices.size());
 }

@@ -18,6 +18,31 @@ Controller::Controller(QApplication *app, QObject *parent)
     mNodeSelector = NodeSelector::instance();
     mWindow = new Window;
 
+    connect(mWindow, &Window::wheelMoved, this, &Controller::onWheelMoved);
+    connect(mWindow, &Window::mousePressed, this, &Controller::onMousePressed);
+    connect(mWindow, &Window::mouseReleased, this, &Controller::onMouseReleased);
+    connect(mWindow, &Window::mouseMoved, this, &Controller::onMouseMoved);
+    connect(mWindow, &Window::keyPressed, this, &Controller::onKeyPressed);
+    connect(mWindow, &Window::keyReleased, this, &Controller::onKeyReleased);
+    connect(mWindow, &Window::resized, this, &Controller::resize);
+    connect(mWindow, &Window::init, this, &Controller::init);
+    connect(mWindow, &Window::render, this, &Controller::render);
+    connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
+}
+
+Controller::~Controller()
+{
+    qDebug() << thread() << "Controller is being deleted...";
+    mAircraft->stop();
+}
+
+void Controller::init()
+{
+    initializeOpenGLFunctions();
+
+    mRendererManager->init();
+    mNodeSelector->init();
+
     mJet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "f16c"));
 
     mRootJetNode = mNodeManager->create(Model::NodeType::DummyNode, "JET_ROOT_NODE");
@@ -32,17 +57,6 @@ Controller::Controller(QApplication *app, QObject *parent)
 
     connect(
         mAircraft, &Aircraft::pfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
-
-    connect(mWindow, &Window::wheelMoved, this, &Controller::onWheelMoved);
-    connect(mWindow, &Window::mousePressed, this, &Controller::onMousePressed);
-    connect(mWindow, &Window::mouseReleased, this, &Controller::onMouseReleased);
-    connect(mWindow, &Window::mouseMoved, this, &Controller::onMouseMoved);
-    connect(mWindow, &Window::keyPressed, this, &Controller::onKeyPressed);
-    connect(mWindow, &Window::keyReleased, this, &Controller::onKeyReleased);
-    connect(mWindow, &Window::resized, this, &Controller::resize);
-    connect(mWindow, &Window::init, this, &Controller::init);
-    connect(mWindow, &Window::render, this, &Controller::render);
-    connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
 
     mFreeCamera = dynamic_cast<FreeCamera *>(mNodeManager->create(Node::NodeType::FreeCamera));
     mFreeCamera->setPosition(QVector3D(0, 200, 0));
@@ -67,20 +81,6 @@ Controller::Controller(QApplication *app, QObject *parent)
     connect(mFreeCamera, &FreeCamera::animationDone, this, [=](PerspectiveCamera *newActiveCamera) { //
         mCameraManager->setActiveCamera(newActiveCamera);
     });
-}
-
-Controller::~Controller()
-{
-    qDebug() << thread() << "Controller is being deleted...";
-    mAircraft->stop();
-}
-
-void Controller::init()
-{
-    initializeOpenGLFunctions();
-
-    mRendererManager->init();
-    mNodeSelector->init();
 
     mDummyCamera = dynamic_cast<DummyCamera *>(mNodeManager->create(Node::NodeType::DummyCamera));
 

@@ -62,6 +62,9 @@ public:
     unsigned int index() const;
     void setIndex(unsigned int newIndex);
 
+    bool selected() const;
+    void setSelected(bool newSelected);
+
     void drawGUI();
 
 private:
@@ -80,6 +83,8 @@ private:
     ShaderManager *mShaderManager;
 
     AABB mAABB;
+
+    bool mSelected;
 };
 
 #endif // MESH_H
