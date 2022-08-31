@@ -69,6 +69,10 @@ private:
 
     bool mImGuiWantsMouseCapture;
     bool mImGuiWantsKeyboardCapture;
+
+    bool mSuccess;
+
+    QVector<Manager *> mManagers;
 };
 
 #endif // CONTROLLER_H

@@ -5,7 +5,7 @@
 #include <QtMath>
 
 Aircraft::Aircraft(QObject *parent)
-    : QObject(parent)
+    : Manager(parent)
 {}
 
 bool Aircraft::init()

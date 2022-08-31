@@ -3,7 +3,7 @@
 #include "RendererManager.h"
 
 NodeSelector::NodeSelector(QObject *parent)
-    : QObject{parent}
+    : Manager(parent)
     , mSelectionFramebuffer(nullptr)
     , mResizeFlag(false)
 {
@@ -20,10 +20,11 @@ NodeSelector::NodeSelector(QObject *parent)
                                           FramebufferFormat::TextureDataType::UNSIGNED_INT);
 }
 
-void NodeSelector::init()
+bool NodeSelector::init()
 {
     initializeOpenGLFunctions();
     mSelectionFramebuffer = new Framebuffer(mFramebufferFormat);
+    return true;
 }
 
 void NodeSelector::onMousePressed(QMouseEvent *event)

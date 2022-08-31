@@ -4,6 +4,7 @@
 #include "Aircraft.h"
 #include "Model.h"
 
+#include <Manager.h>
 #include <QKeyEvent>
 #include <QObject>
 #include <QTimer>
@@ -11,7 +12,7 @@
 #include <imgui.h>
 #include <QtImGui.h>
 
-class AircraftController : public QObject
+class AircraftController : public Manager
 {
     Q_OBJECT
 public:
@@ -28,7 +29,7 @@ signals:
     void command(Aircraft::Command command, QVariant variant = QVariant());
 
 public slots:
-    void init();
+    bool init() override;
     void tick();
     void update(float ifps);
 

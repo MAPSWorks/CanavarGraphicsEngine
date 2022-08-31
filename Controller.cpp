@@ -10,6 +10,7 @@ Controller::Controller(QApplication *app, QObject *parent)
     , mApp(app)
     , mMouseCaptured(false)
     , mImGuiWantsMouseCapture(false)
+    , mSuccess(true)
 {
     mWindow = new Window;
 
@@ -27,8 +28,11 @@ Controller::Controller(QApplication *app, QObject *parent)
 
 Controller::~Controller()
 {
-    qDebug() << thread() << "Controller is being deleted...";
-    mAircraft->stop();
+    if (mSuccess)
+    {
+        qDebug() << thread() << "Controller is being deleted...";
+        mAircraft->stop();
+    }
 }
 
 void Controller::init()
@@ -42,12 +46,21 @@ void Controller::init()
     mNodeSelector = NodeSelector::instance();
     mRendererManager = RendererManager::instance();
 
-    mShaderManager->init();
-    mCameraManager->init();
-    mLightManager->init();
-    mNodeManager->init();
-    mNodeSelector->init();
-    mRendererManager->init();
+    mManagers << mShaderManager;
+    mManagers << mCameraManager;
+    mManagers << mLightManager;
+    mManagers << mNodeManager;
+    mManagers << mNodeSelector;
+    mManagers << mRendererManager;
+
+    for (const auto &manager : qAsConst(mManagers))
+    {
+        if (!manager->init())
+        {
+            mSuccess = false;
+            return;
+        }
+    }
 
     mJet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "f16c"));
 
@@ -127,12 +140,18 @@ void Controller::run()
 
 void Controller::onWheelMoved(QWheelEvent *)
 {
+    if (!mSuccess)
+        return;
+
     if (mImGuiWantsMouseCapture)
         return;
 }
 
 void Controller::onMousePressed(QMouseEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     if (mImGuiWantsMouseCapture)
         return;
 
@@ -144,6 +163,9 @@ void Controller::onMousePressed(QMouseEvent *event)
 
 void Controller::onMouseReleased(QMouseEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     mPressedButton = Qt::NoButton;
 
     mCameraManager->onMouseReleased(event);
@@ -151,6 +173,9 @@ void Controller::onMouseReleased(QMouseEvent *event)
 
 void Controller::onMouseMoved(QMouseEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     if (mImGuiWantsMouseCapture)
         return;
 
@@ -159,6 +184,9 @@ void Controller::onMouseMoved(QMouseEvent *event)
 
 void Controller::onKeyPressed(QKeyEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     if (mImGuiWantsKeyboardCapture)
         return;
 
@@ -226,21 +254,34 @@ void Controller::onKeyPressed(QKeyEvent *event)
 
 void Controller::onKeyReleased(QKeyEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     mCameraManager->onKeyReleased(event);
     mAircraftController->onKeyReleased(event);
 }
 
 void Controller::resize(int w, int h)
 {
+    if (!mSuccess)
+        return;
+
     mCameraManager->resize(w, h);
     mRendererManager->resize(w, h);
     mNodeSelector->resize(w, h);
 }
 
-void Controller::onMouseDoubleClicked(QMouseEvent *) {}
+void Controller::onMouseDoubleClicked(QMouseEvent *)
+{
+    if (!mSuccess)
+        return;
+}
 
 void Controller::render(float ifps)
 {
+    if (!mSuccess)
+        return;
+
     mAircraftController->update(ifps);
     mCameraManager->update(ifps);
     mRendererManager->render(ifps);

@@ -1,7 +1,7 @@
 #include "AircraftController.h"
 
 AircraftController::AircraftController(Aircraft *aircraft, QObject *parent)
-    : QObject(parent)
+    : Manager(parent)
     , mAircraft(aircraft)
     , mAileron(0)
     , mElevator(0)
@@ -24,11 +24,13 @@ void AircraftController::onKeyReleased(QKeyEvent *event)
     mPressedKeys.insert((Qt::Key) event->key(), false);
 }
 
-void AircraftController::init()
+bool AircraftController::init()
 {
     emit command(Aircraft::Command::Hold);
 
     mTimer.start(10);
+
+    return true;
 }
 
 void AircraftController::tick()

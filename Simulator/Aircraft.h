@@ -3,6 +3,7 @@
 
 #include "Converter.h"
 
+#include <Manager.h>
 #include <QObject>
 #include <QThread>
 #include <QTimer>
@@ -19,7 +20,7 @@
 #include <models/FGPropulsion.h>
 #include <models/propulsion/FGThruster.h>
 
-class Aircraft : public QObject
+class Aircraft : public Manager
 {
     Q_OBJECT
 public:
@@ -66,7 +67,7 @@ public:
     };
 
     explicit Aircraft(QObject *parent = nullptr);
-    bool init();
+    bool init() override;
     bool holding() const;
 
 public slots:
