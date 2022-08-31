@@ -15,8 +15,8 @@ Sky::Sky(QObject *parent)
     , mDensity(0.02f)
     , mAbsorption(0.0035f)
     , mEarthRadius(600000.0f)
-    , mSphereInnerRadius(5000.0f)
-    , mSphereOuterRadius(17000.0f)
+    , mSphereInnerRadius(10000.0f)
+    , mSphereOuterRadius(20000.0f)
     , mPerlinFrequency(0.8f)
     , mEnablePower(false)
     , mSeed(0, 0, 0)
@@ -58,8 +58,8 @@ Sky *Sky::instance()
 
 void Sky::resize(int width, int height)
 {
-    mWidth = width;
-    mHeight = height;
+    mWidth = 0.5 * width;
+    mHeight = 0.5 * height;
 
     if (mOutputTextures.fragColor)
         mOutputTextures.fragColor->deleteLater();
@@ -192,7 +192,7 @@ void Sky::drawGUI()
 
         ImGui::Text("Dome controls");
         ImGui::SliderFloat("Sky dome radius##Sky", &mEarthRadius, 10000.0f, 5000000.0f);
-        ImGui::SliderFloat("Clouds bottom height##Sky", &mSphereInnerRadius, 1000.0f, 15000.0f);
+        ImGui::SliderFloat("Clouds bottom height##Sky", &mSphereInnerRadius, 8000.0f, 15000.0f);
         ImGui::SliderFloat("Clouds top height##Sky", &mSphereOuterRadius, 1000.0f, 40000.0f);
 
         ImGui::Text("Clouds colors");
