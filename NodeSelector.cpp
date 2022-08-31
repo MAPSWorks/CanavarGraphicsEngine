@@ -16,8 +16,8 @@ NodeSelector::NodeSelector(QObject *parent)
     mFramebufferFormat.setHeight(900);
     mFramebufferFormat.addColorAttachment(0, //
                                           FramebufferFormat::TextureTarget::TEXTURE_2D,
-                                          FramebufferFormat::TextureInternalFormat::RGB32UI,
-                                          FramebufferFormat::TexturePixelFormat::RGB_INTEGER,
+                                          FramebufferFormat::TextureInternalFormat::RGBA32UI,
+                                          FramebufferFormat::TexturePixelFormat::RGBA_INTEGER,
                                           FramebufferFormat::TextureDataType::UNSIGNED_INT);
 }
 
@@ -37,11 +37,10 @@ void NodeSelector::onMousePressed(QMouseEvent *event)
         render();
         glFinish();
 
-        unsigned int info[3];
-        glReadPixels(event->x(), mFramebufferFormat.height() - event->y(), 1, 1, GL_RGB_INTEGER, GL_UNSIGNED_INT, info);
+        glReadPixels(event->x(), mFramebufferFormat.height() - event->y(), 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, &mSelectionInfo);
 
-        unsigned int index = info[0];
-        mNodeManager->setSelectedNode(index);
+        mNodeManager->setSelectedNode(mSelectionInfo.nodeIndex);
+        mNodeManager->setSelectedMesh(mSelectionInfo.meshIndex);
     }
 }
 

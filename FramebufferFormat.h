@@ -16,13 +16,15 @@ public:
         RGBA = 0x1908,
         RGBA8 = 0x8058,
         RGBA32F = 0x8814,
+        RGBA32UI = 0x8D70,
         RGB32UI = 0x8D71,
     };
 
     enum class TexturePixelFormat : unsigned int { // OpenGL values
         RGBA = 0x1908,
         RGB = 0x1907,
-        RGB_INTEGER = 0x8D98
+        RGB_INTEGER = 0x8D98,
+        RGBA_INTEGER = 0x8D99
     };
 
     enum class TextureDataType : unsigned int { // OpenGL values

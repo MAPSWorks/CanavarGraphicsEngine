@@ -40,6 +40,8 @@ private:
     Framebuffer *mSelectionFramebuffer;
     FramebufferFormat mFramebufferFormat;
     bool mResizeFlag;
+
+    SelectionInfo mSelectionInfo;
 };
 
 #endif // NODESELECTOR_H

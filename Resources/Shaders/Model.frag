@@ -72,7 +72,8 @@ uniform bool useTextureNormal;
 
 uniform bool useBlinnShading;
 
-uniform bool selected = false;
+uniform bool modelSelected = false;
+uniform bool meshSelected = false;
 
 in vec3 fsPosition;
 in vec3 fsNormal;
@@ -275,10 +276,14 @@ void main()
     if (haze.enabled)
     {
         float hazeFactor = getHazeFactor();
-        if (selected)
+        if (modelSelected)
         {
             vec4 color = mix(vec4(haze.color, 1), result, hazeFactor);
-            outColor = mix(color, vec4(1,0,0,1), 0.125);
+
+            if (meshSelected)
+                outColor = mix(color, vec4(1, 1, 0, 1), 0.125);
+            else
+                outColor = mix(color, vec4(1, 0, 0, 1), 0.125);
 
         } else
         {
@@ -287,9 +292,12 @@ void main()
 
     } else
     {
-        if (selected)
+        if (modelSelected)
         {
-            outColor = mix(result, vec4(1,0,0,1), 0.125);
+            if (meshSelected)
+                outColor = mix(result, vec4(1, 1, 0, 1), 0.125);
+            else
+                outColor = mix(result, vec4(1, 0, 0, 1), 0.125);
 
         } else
         {

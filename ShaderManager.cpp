@@ -53,7 +53,8 @@ bool ShaderManager::init()
                  << "useTextureNormal"
                  << "useBlinnShading"
                  << "clipPlane"
-                 << "selected";
+                 << "modelSelected"
+                 << "meshSelected";
 
         shader->addUniforms(uniforms);
         shader->setUniformArray("pointLights[%1].color", 8);
@@ -443,6 +444,7 @@ bool ShaderManager::init()
         shader->addUniform("VP");
         shader->addUniform("nodeMatrix");
         shader->addUniform("nodeIndex");
+        shader->addUniform("meshIndex");
 
         shader->addAttribute("position");
         shader->addAttribute("normal");

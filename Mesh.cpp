@@ -92,6 +92,7 @@ bool Mesh::create()
 
 void Mesh::render(Model *model)
 {
+    mShaderManager->setUniformValue("meshSelected", mSelected);
     mShaderManager->setUniformValue("node.transformation", model->worldTransformation() * model->getMeshTransformation(mName));
     mShaderManager->setUniformValue("node.normalMatrix", model->normalMatrix());
     mShaderManager->setUniformValue("node.color", model->material().color);
@@ -153,6 +154,7 @@ void Mesh::render(Model *model)
 void Mesh::renderForNodeSelector(Model *model)
 {
     mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation() * model->getMeshTransformation(mName));
+    mShaderManager->setUniformValue("meshIndex", mIndex);
     mVertexArray.bind();
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
     mVertexArray.release();

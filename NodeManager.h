@@ -45,6 +45,7 @@ private:
     Mesh *mSelectedMesh;
     Model *mSelectedModel; // Casted from mSelectedNode
     QVector<Mesh *> mSelectedModelMeshes;
+    bool mMeshSelectionEnabled;
 };
 
 #endif // NODEMANAGER_H

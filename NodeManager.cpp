@@ -13,6 +13,7 @@ NodeManager::NodeManager(QObject *parent)
     , mSelectedNode(nullptr)
     , mSelectedMesh(nullptr)
     , mSelectedModel(nullptr)
+    , mMeshSelectionEnabled(false)
 {
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
@@ -189,6 +190,9 @@ void NodeManager::setSelectedMesh(unsigned int meshIndex)
 
 void NodeManager::setSelectedMesh(Mesh *mesh)
 {
+    if (!mMeshSelectionEnabled)
+        return;
+
     if (mSelectedMesh == mesh)
         return;
 
@@ -241,20 +245,30 @@ void NodeManager::drawGUI()
 
     if (mSelectedModel)
     {
-        if (!ImGui::CollapsingHeader("Meshes"))
+        if (ImGui::Checkbox("Mesh selection", &mMeshSelectionEnabled))
         {
-            QString preview = mSelectedMesh ? mSelectedMesh->name() : "-";
-            if (ImGui::BeginCombo("Select a mesh", preview.toStdString().c_str()))
-            {
-                for (int i = 0; i < mSelectedModelMeshes.size(); ++i)
-                    populateMeshesComboBox(mSelectedModelMeshes[i]);
+            if (!mMeshSelectionEnabled)
+                if (mSelectedMesh)
+                    mSelectedMesh->setSelected(false);
+        }
 
-                ImGui::EndCombo();
-            }
-
-            if (mSelectedMesh)
+        if (mMeshSelectionEnabled)
+        {
+            if (!ImGui::CollapsingHeader("Meshes"))
             {
-                mSelectedMesh->drawGUI();
+                QString preview = mSelectedMesh ? mSelectedMesh->name() : "-";
+                if (ImGui::BeginCombo("Select a mesh", preview.toStdString().c_str()))
+                {
+                    for (int i = 0; i < mSelectedModelMeshes.size(); ++i)
+                        populateMeshesComboBox(mSelectedModelMeshes[i]);
+
+                    ImGui::EndCombo();
+                }
+
+                if (mSelectedMesh)
+                {
+                    mSelectedMesh->drawGUI();
+                }
             }
         }
     }

@@ -358,7 +358,7 @@ void RendererManager::renderModel(Model *model, RenderFor renderFor)
         if (mRenderObjects)
         {
             mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
-            mShaderManager->setUniformValue("selected", model->selected());
+            mShaderManager->setUniformValue("modelSelected", model->selected());
             mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * (int) renderFor);
             mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
             mShaderManager->setUniformValue("VP", mCamera->getVP());
