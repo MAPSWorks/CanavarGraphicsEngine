@@ -26,7 +26,7 @@ public:
     void setSelectedNode(unsigned int nodeIndex);
     void setSelectedMesh(unsigned int meshIndex);
     void setSelectedMesh(Mesh *mesh);
-    void setSelectedVertex(int vertex);
+    void setSelectedVertexIndex(int index);
 
     const QList<Node *> &nodes() const;
     static NodeManager *instance();
@@ -36,6 +36,9 @@ public:
     Node *selectedNode() const;
     Mesh *selectedMesh() const;
     Model *selectedModel() const;
+
+    bool vertexSelectionEnabled() const;
+    bool meshSelectionEnabled() const;
 
 private:
     void populateNodesComboBox(Node *node);
@@ -54,7 +57,8 @@ private:
     Model *mSelectedModel; // Casted from mSelectedNode
     QVector<Mesh *> mSelectedModelMeshes;
     bool mMeshSelectionEnabled;
-    int mSelectedVertex;
+    bool mVertexSelectionEnabled;
+    int mSelectedVertexIndex;
 };
 
 #endif // NODEMANAGER_H

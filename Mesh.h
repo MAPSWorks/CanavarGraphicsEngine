@@ -71,10 +71,11 @@ public:
     bool selected() const;
     void setSelected(bool newSelected);
 
-    int selectedVertex() const;
-    void setSelectedVertex(int newSelectedVertex);
+    int selectedVertexIndex() const;
+    void setSelectedVertexIndex(int newSelectedVertexIndex);
 
     void drawGUI();
+    void drawGUIForVertex();
 
 private:
     void pointLights();
@@ -85,6 +86,7 @@ private:
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
+    NodeManager *mNodeManager;
     PerspectiveCamera *mCamera;
     DirectionalLight *mSun;
     Haze *mHaze;
@@ -97,7 +99,7 @@ private:
 
     AABB mAABB;
     bool mSelected;
-    int mSelectedVertex;
+    int mSelectedVertexIndex;
 
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;

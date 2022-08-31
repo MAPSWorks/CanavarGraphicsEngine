@@ -32,21 +32,27 @@ void NodeSelector::onMousePressed(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        mRenderSettings.renderFor = RenderFor::NodeSelectorMeshes;
-        mMeshSelectionFramebuffer->bind();
-        glEnable(GL_DEPTH_TEST);
-        glClearColor(0, 0, 0, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        render();
-        glFinish();
+        // If vertex selection is enabled then DO NOT select mesh
+        if (!mNodeManager->vertexSelectionEnabled())
+        {
+            mRenderSettings.renderFor = RenderFor::NodeSelectorMeshes;
+            mMeshSelectionFramebuffer->bind();
+            glEnable(GL_DEPTH_TEST);
+            glClearColor(0, 0, 0, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            render();
+            glFinish();
 
-        unsigned int info[3];
-        glReadPixels(event->x(), mFramebufferFormat.height() - event->y(), 1, 1, GL_RGB_INTEGER, GL_UNSIGNED_INT, info);
+            unsigned int info[3];
+            glReadPixels(event->x(), mFramebufferFormat.height() - event->y(), 1, 1, GL_RGB_INTEGER, GL_UNSIGNED_INT, info);
 
-        mNodeManager->setSelectedNode(info[0]);
-        mNodeManager->setSelectedMesh(info[1]);
+            mNodeManager->setSelectedNode(info[0]);
 
-        if (mNodeManager->selectedMesh())
+            if (mNodeManager->meshSelectionEnabled())
+                mNodeManager->setSelectedMesh(info[1]);
+        }
+
+        if (mNodeManager->vertexSelectionEnabled())
         {
             mRenderSettings.renderFor = RenderFor::NodeSelectorVertices;
             mVertexSelectionFramebuffer->bind();
@@ -57,11 +63,12 @@ void NodeSelector::onMousePressed(QMouseEvent *event)
             glFinish();
 
             unsigned int info[3];
+
             glReadPixels(event->x(), mFramebufferFormat.height() - event->y(), 1, 1, GL_RGB_INTEGER, GL_UNSIGNED_INT, info);
             if (info[2] == 1)
-                mNodeManager->setSelectedVertex(info[0]);
+                mNodeManager->setSelectedVertexIndex(info[0]);
             else
-                mNodeManager->setSelectedVertex(-1);
+                mNodeManager->setSelectedVertexIndex(-1);
         }
     }
 }

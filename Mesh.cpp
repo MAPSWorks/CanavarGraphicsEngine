@@ -10,11 +10,12 @@
 Mesh::Mesh(QObject *parent)
     : QObject(parent)
     , mSelected(false)
-    , mSelectedVertex(-1)
+    , mSelectedVertexIndex(-1)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
+    mNodeManager = NodeManager::instance();
     mHaze = Haze::instance();
     mWater = Water::instance();
 }
@@ -150,6 +151,7 @@ void Mesh::render(Model *model, const RenderSettings &settings)
         mVAO->release();
         mShaderManager->release();
 
+        // Now render cubes
         mShaderManager->bind(ShaderManager::ShaderType::NodeSelectionVerticesShader);
         mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
         mShaderManager->setUniformValue("vertexModelTransformation", mVertexModelTransformation);
@@ -159,12 +161,13 @@ void Mesh::render(Model *model, const RenderSettings &settings)
         mShaderManager->release();
     } else
     {
-        if (mSelected)
+        if (mSelected && mNodeManager->vertexSelectionEnabled())
         {
+            // Render vertices as small cubes
             mShaderManager->bind(ShaderManager::ShaderType::VertexRendererShader);
             mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
             mShaderManager->setUniformValue("vertexModelTransformation", mVertexModelTransformation);
-            mShaderManager->setUniformValue("selectedVertex", mSelectedVertex);
+            mShaderManager->setUniformValue("selectedVertex", mSelectedVertexIndex);
             mVerticesVAO->bind();
             glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mVertices.size());
             mVerticesVAO->release();
@@ -322,6 +325,16 @@ void Mesh::materials()
     }
 }
 
+int Mesh::selectedVertexIndex() const
+{
+    return mSelectedVertexIndex;
+}
+
+void Mesh::setSelectedVertexIndex(int newSelectedVertexIndex)
+{
+    mSelectedVertexIndex = newSelectedVertexIndex;
+}
+
 const QString &Mesh::name() const
 {
     return mName;
@@ -371,31 +384,26 @@ bool Mesh::selected() const
 void Mesh::setSelected(bool newSelected)
 {
     mSelected = newSelected;
-    mSelectedVertex = -1;
-}
-
-int Mesh::selectedVertex() const
-{
-    return mSelectedVertex;
-}
-
-void Mesh::setSelectedVertex(int newSelectedVertex)
-{
-    mSelectedVertex = newSelectedVertex;
+    mSelectedVertexIndex = -1;
 }
 
 void Mesh::drawGUI()
 {
+    ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Info");
     ImGui::Text("Index: %d", mIndex);
     ImGui::Text("Number of vertices: %d", mVertices.size());
+}
 
-    if (mSelectedVertex != -1 && mSelectedVertex < mIndices.size())
+void Mesh::drawGUIForVertex()
+{
+    if (mSelectedVertexIndex != -1 && mSelectedVertexIndex < mIndices.size())
     {
-        ImGui::Text("Selected vertex index: %d", mSelectedVertex);
+        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Vertex Info");
+        ImGui::Text("Selected vertex index: %d", mSelectedVertexIndex);
         ImGui::Text("Selected vertex position: (%.3f, %.3f, %.3f)", //
-                    mVertices[mSelectedVertex].position[0],
-                    mVertices[mSelectedVertex].position[1],
-                    mVertices[mSelectedVertex].position[2]);
+                    mVertices[mSelectedVertexIndex].position[0],
+                    mVertices[mSelectedVertexIndex].position[1],
+                    mVertices[mSelectedVertexIndex].position[2]);
     }
 }
 

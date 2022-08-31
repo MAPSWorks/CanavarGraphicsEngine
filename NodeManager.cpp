@@ -14,7 +14,8 @@ NodeManager::NodeManager(QObject *parent)
     , mSelectedMesh(nullptr)
     , mSelectedModel(nullptr)
     , mMeshSelectionEnabled(false)
-    , mSelectedVertex(-1)
+    , mVertexSelectionEnabled(false)
+    , mSelectedVertexIndex(-1)
 {}
 
 bool NodeManager::init()
@@ -160,6 +161,7 @@ void NodeManager::setSelectedNode(Node *node)
         mSelectedModelMeshes = mRendererManager->getModelData(mSelectedModel->modelName())->meshes();
 
     setSelectedMesh(nullptr);
+    mVertexSelectionEnabled = false;
 }
 
 void NodeManager::setSelectedNode(unsigned int nodeIndex)
@@ -196,9 +198,6 @@ void NodeManager::setSelectedMesh(unsigned int meshIndex)
 
 void NodeManager::setSelectedMesh(Mesh *mesh)
 {
-    if (!mMeshSelectionEnabled)
-        return;
-
     if (mSelectedMesh == mesh)
         return;
 
@@ -211,12 +210,12 @@ void NodeManager::setSelectedMesh(Mesh *mesh)
     mSelectedMesh = mesh;
 }
 
-void NodeManager::setSelectedVertex(int vertex)
+void NodeManager::setSelectedVertexIndex(int index)
 {
-    mSelectedVertex = vertex;
+    mSelectedVertexIndex = index;
 
     if (mSelectedMesh)
-        mSelectedMesh->setSelectedVertex(mSelectedVertex);
+        mSelectedMesh->setSelectedVertexIndex(mSelectedVertexIndex);
 }
 
 NodeManager *NodeManager::instance()
@@ -259,12 +258,7 @@ void NodeManager::drawGUI()
 
     if (mSelectedModel)
     {
-        if (ImGui::Checkbox("Mesh selection", &mMeshSelectionEnabled))
-        {
-            if (!mMeshSelectionEnabled)
-                if (mSelectedMesh)
-                    mSelectedMesh->setSelected(false);
-        }
+        ImGui::Checkbox("Mesh selection", &mMeshSelectionEnabled);
 
         if (mMeshSelectionEnabled)
         {
@@ -280,12 +274,26 @@ void NodeManager::drawGUI()
                 }
 
                 if (mSelectedMesh)
-                {
                     mSelectedMesh->drawGUI();
-                }
+
+                ImGui::BeginDisabled(!mSelectedMesh);
+                ImGui::Checkbox("Vertex selection", &mVertexSelectionEnabled);
+                ImGui::EndDisabled();
+
+                if (mSelectedMesh)
+                    mSelectedMesh->drawGUIForVertex();
             }
         }
     }
+
+    if (!mMeshSelectionEnabled)
+    {
+        setSelectedMesh(nullptr);
+        mVertexSelectionEnabled = false;
+    }
+
+    if (!mVertexSelectionEnabled)
+        setSelectedVertexIndex(-1);
 
     ImGui::End();
 }
@@ -307,7 +315,20 @@ void NodeManager::populateNodesComboBox(Node *node)
 void NodeManager::populateMeshesComboBox(Mesh *mesh)
 {
     if (ImGui::Selectable(mesh->name().toStdString().c_str()))
+    {
+        mMeshSelectionEnabled = true;
         setSelectedMesh(mesh);
+    }
+}
+
+bool NodeManager::meshSelectionEnabled() const
+{
+    return mMeshSelectionEnabled;
+}
+
+bool NodeManager::vertexSelectionEnabled() const
+{
+    return mVertexSelectionEnabled;
 }
 
 Model *NodeManager::selectedModel() const

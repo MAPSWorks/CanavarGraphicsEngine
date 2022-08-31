@@ -124,10 +124,6 @@ void Controller::init()
     mNozzleParticles = mNodeManager->create(Node::NodeType::NozzleParticles);
     mNozzleParticles->setPosition(QVector3D(0, 0.14f, 11.5f));
     mRootJetNode->addChild(mNozzleParticles);
-
-    mCube = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "Cube"));
-    mCube->setScale(QVector3D(0.1, 0.1, 0.1));
-    mCube->setPosition(QVector3D(15, 150, 15));
 }
 
 void Controller::run()
