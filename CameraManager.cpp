@@ -110,6 +110,12 @@ void CameraManager::update(float ifps)
         mActiveCamera->update(ifps);
 }
 
+void CameraManager::reset()
+{
+    if (mActiveCamera)
+        mActiveCamera->reset();
+}
+
 CameraManager *CameraManager::instance()
 {
     static CameraManager instance;

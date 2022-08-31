@@ -19,6 +19,7 @@ public:
     virtual void onKeyPressed(QKeyEvent *) override;
     virtual void onKeyReleased(QKeyEvent *) override;
     virtual void update(float) override;
+    virtual void reset() override;
     virtual void drawGUI() override;
     virtual QMatrix4x4 projection() override;
 

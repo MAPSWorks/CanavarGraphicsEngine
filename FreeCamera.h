@@ -40,6 +40,7 @@ public:
     void onKeyReleased(QKeyEvent *event) override;
     void onWheelMoved(QWheelEvent *) override;
     void update(float ifps) override;
+    void reset() override;
     void animate(const Animation &animation) override;
     void drawGUI() override;
 

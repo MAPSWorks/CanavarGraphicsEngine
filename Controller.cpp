@@ -144,9 +144,6 @@ void Controller::onMousePressed(QMouseEvent *event)
 
 void Controller::onMouseReleased(QMouseEvent *event)
 {
-    if (mImGuiWantsMouseCapture)
-        return;
-
     mPressedButton = Qt::NoButton;
 
     mCameraManager->onMouseReleased(event);
@@ -229,9 +226,6 @@ void Controller::onKeyPressed(QKeyEvent *event)
 
 void Controller::onKeyReleased(QKeyEvent *event)
 {
-    if (mImGuiWantsKeyboardCapture)
-        return;
-
     mCameraManager->onKeyReleased(event);
     mAircraftController->onKeyReleased(event);
 }

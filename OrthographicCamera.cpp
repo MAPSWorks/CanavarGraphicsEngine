@@ -68,6 +68,8 @@ void OrthographicCamera::update(float ifps)
     }
 }
 
+void OrthographicCamera::reset() {}
+
 void OrthographicCamera::drawGUI()
 {
     if (!ImGui::CollapsingHeader("Camera##OrthographicCamera"))

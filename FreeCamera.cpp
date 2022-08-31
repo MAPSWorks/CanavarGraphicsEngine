@@ -15,16 +15,7 @@ FreeCamera::FreeCamera(QObject *parent)
 
     connect(this, &Camera::activeChanged, this, [=](bool active) {
         if (!active)
-        {
-            mMouse.grabbed = false;
-            emit mouseGrabbed(false);
-
-            auto keys = mPressedKeys.keys();
-            for (auto key : qAsConst(keys))
-                mPressedKeys.insert(key, false);
-
-            mMouse.pressed = false;
-        }
+            reset();
     });
 }
 
@@ -191,6 +182,18 @@ void FreeCamera::update(float ifps)
 
     if (mPressedKeys.empty())
         mUpdatePosition = false;
+}
+
+void FreeCamera::reset()
+{
+    mMouse.grabbed = false;
+    emit mouseGrabbed(false);
+
+    auto keys = mPressedKeys.keys();
+    for (auto key : qAsConst(keys))
+        mPressedKeys.insert(key, false);
+
+    mMouse.pressed = false;
 }
 
 void FreeCamera::animate(const Animation &animation)

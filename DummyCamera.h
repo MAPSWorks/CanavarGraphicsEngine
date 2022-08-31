@@ -23,6 +23,7 @@ public:
     void onKeyPressed(QKeyEvent *) override;
     void onKeyReleased(QKeyEvent *) override;
     void update(float) override;
+    void reset() override;
     void animate(const Animation &animation) override;
 };
 

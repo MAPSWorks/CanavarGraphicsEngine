@@ -31,6 +31,7 @@ public:
     virtual void onKeyPressed(QKeyEvent *) = 0;
     virtual void onKeyReleased(QKeyEvent *) = 0;
     virtual void update(float) = 0;
+    virtual void reset() = 0;
 
     virtual void resize(int width, int height);
 

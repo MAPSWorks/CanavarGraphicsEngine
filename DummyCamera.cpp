@@ -24,4 +24,6 @@ void DummyCamera::onKeyReleased(QKeyEvent *) {}
 
 void DummyCamera::update(float) {}
 
+void DummyCamera::reset() {}
+
 void DummyCamera::animate(const Animation &animation) {}

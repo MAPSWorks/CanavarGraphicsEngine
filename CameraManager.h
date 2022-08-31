@@ -32,6 +32,7 @@ public:
     void onKeyReleased(QKeyEvent *event);
     void resize(int width, int height);
     void update(float ifps);
+    void reset();
 
     PerspectiveCamera *activeCamera() const;
     void setActiveCamera(PerspectiveCamera *newActiveCamera);
