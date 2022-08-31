@@ -226,6 +226,7 @@ bool ShaderManager::init()
 
         shader->addUniform("screenTexture");
         shader->addUniform("MVP");
+        shader->addUniform("nozzleParticleTransformation");
         shader->addUniform("velocity");
         shader->addUniform("radius");
 
@@ -449,6 +450,23 @@ bool ShaderManager::init()
         shader->addAttribute("bitangent");
         shader->addAttribute("ids");
         shader->addAttribute("weights");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Vertex Renderer Shader
+    {
+        Shader *shader = new Shader(ShaderType::VertexRendererShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/VertexRenderer.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/VertexRenderer.frag");
+        shader->addUniform("MVP");
+        shader->addUniform("vertexModelTransformation");
+        shader->addAttribute("position");
+        shader->addAttribute("instancePosition");
+        shader->addAttribute("instanceNormal");
 
         if (!shader->init())
             return false;

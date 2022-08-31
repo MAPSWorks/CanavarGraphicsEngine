@@ -57,6 +57,7 @@ private:
     Model *mJet;
     Node *mRootJetNode;
     Node *mNozzleParticles;
+    Model *mCube;
 
     QApplication *mApp;
 

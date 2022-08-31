@@ -35,6 +35,7 @@ public:
         BlurShader,
         BlurMultisampledShader,
         NodeSelectionShader,
+        VertexRendererShader
     };
 
     Shader *getShader(ShaderType shader);

@@ -40,6 +40,9 @@ private:
     float mRadius;
     float mMaxLife;
     float mVelocity;
+    float mScale;
+
+    QMatrix4x4 mNozzleParticleTransformation; // For scaling
 
     // OpenGL stuff
     QVector<QVector3D> mVertices;

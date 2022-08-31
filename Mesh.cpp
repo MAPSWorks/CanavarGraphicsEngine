@@ -21,12 +21,9 @@ Mesh::Mesh(QObject *parent)
 
 Mesh::~Mesh()
 {
-    mVertexArray.bind();
+    mVAO->destroy();
     glDeleteBuffers(1, &mEBO);
     glDeleteBuffers(1, &mVBO);
-    mVertexArray.release();
-
-    mVertexArray.destroy();
 }
 
 void Mesh::addVertex(const Vertex &vertex)
@@ -54,49 +51,72 @@ bool Mesh::create()
     //qInfo() << "Creating VAO for mesh [" << mName << "] of model [" << parent()->objectName() << "]...";
 
     initializeOpenGLFunctions();
-
-    mVertexArray.create();
-    mVertexArray.bind();
+    mVAO = new QOpenGLVertexArrayObject;
+    mVAO->create();
+    mVAO->bind();
 
     glGenBuffers(1, &mEBO);
-    glGenBuffers(1, &mVBO);
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(unsigned int), mIndices.constData(), GL_STATIC_DRAW);
 
+    glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.constData(), GL_STATIC_DRAW);
 
     // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,
-                          3,              // Size
-                          GL_FLOAT,       // Type
-                          GL_FALSE,       // Normalized
-                          sizeof(Vertex), // Stride
-                          (void *) 0      // Offset
-    );
 
     // Normals
-    glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
-    //Texture Cooords
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
-    // Tangent
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, tangent));
-    // Bitangent
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, bitangent));
-    // IDs
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_INT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, boneIDs));
-    // Weights
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, weights));
+    glEnableVertexAttribArray(1);
 
-    mVertexArray.release();
+    //Texture Cooords
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
+    glEnableVertexAttribArray(2);
+
+    // Tangent
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, tangent));
+    glEnableVertexAttribArray(3);
+
+    // Bitangent
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, bitangent));
+    glEnableVertexAttribArray(4);
+
+    // IDs
+    glVertexAttribPointer(5, 4, GL_INT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, boneIDs));
+    glEnableVertexAttribArray(5);
+
+    // Weights
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, weights));
+    glEnableVertexAttribArray(6);
+
+    mVAO->release();
+
+    // Vertex Rendering for Node Selector Setup
+
+    mVertexModelTransformation.scale(0.025f, 0.025f, 0.025f);
+
+    mVerticesVAO = new QOpenGLVertexArrayObject;
+    mVerticesVAO->create();
+    mVerticesVAO->bind();
+
+    glGenBuffers(1, &mVerticesVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVerticesVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CUBE_VERTICES), CUBE_VERTICES, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(2, 1);
+
+    mVerticesVAO->release();
 
     return true;
 }
@@ -115,17 +135,21 @@ void Mesh::render(Model *model, const RenderSettings &settings)
         mShaderManager->setUniformValue("nodeIndex", model->index());
         mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation() * model->getMeshTransformation(mName));
         mShaderManager->setUniformValue("meshIndex", mIndex);
-        mVertexArray.bind();
+        mVAO->bind();
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-        mVertexArray.release();
+        mVAO->release();
         mShaderManager->release();
+
     } else
     {
+        if (mSelected)
+            renderVertices(model);
+
+        if ((int) settings.renderFor <= 1)
+            glEnable(GL_CLIP_DISTANCE0);
+
         if (settings.renderModels)
         {
-            if ((int) settings.renderFor <= 1)
-                glEnable(GL_CLIP_DISTANCE0);
-
             mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
             mShaderManager->setUniformValue("modelSelected", model->selected());
             mShaderManager->setUniformValue("meshSelected", mSelected);
@@ -153,13 +177,13 @@ void Mesh::render(Model *model, const RenderSettings &settings)
             spotLights();
             materials();
 
-            mVertexArray.bind();
+            mVAO->bind();
             glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-            mVertexArray.release();
+            mVAO->release();
             mShaderManager->release();
-
-            glDisable(GL_CLIP_DISTANCE0);
         }
+
+        glDisable(GL_CLIP_DISTANCE0);
 
         if (settings.renderWireframe)
         {
@@ -167,9 +191,9 @@ void Mesh::render(Model *model, const RenderSettings &settings)
             mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
             mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-            mVertexArray.bind();
+            mVAO->bind();
             glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-            mVertexArray.release();
+            mVAO->release();
             mShaderManager->release();
         }
 
@@ -179,87 +203,11 @@ void Mesh::render(Model *model, const RenderSettings &settings)
             mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
             mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
             mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-            mVertexArray.bind();
+            mVAO->bind();
             glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-            mVertexArray.release();
+            mVAO->release();
             mShaderManager->release();
         }
-    }
-}
-
-const QString &Mesh::name() const
-{
-    return mName;
-}
-
-void Mesh::setName(const QString &newName)
-{
-    setObjectName(newName);
-    mName = newName;
-}
-
-ModelData *Mesh::data() const
-{
-    return mData;
-}
-
-void Mesh::setData(ModelData *newData)
-{
-    mData = newData;
-}
-
-const Mesh::AABB &Mesh::getAABB() const
-{
-    return mAABB;
-}
-
-void Mesh::setAABB(const Mesh::AABB &newAABB)
-{
-    mAABB = newAABB;
-}
-
-unsigned int Mesh::index() const
-{
-    return mIndex;
-}
-
-void Mesh::setIndex(unsigned int newIndex)
-{
-    mIndex = newIndex;
-}
-
-bool Mesh::selected() const
-{
-    return mSelected;
-}
-
-void Mesh::setSelected(bool newSelected)
-{
-    mSelected = newSelected;
-    mSelectedVertex = -1;
-}
-
-int Mesh::selectedVertex() const
-{
-    return mSelectedVertex;
-}
-
-void Mesh::setSelectedVertex(int newSelectedVertex)
-{
-    mSelectedVertex = newSelectedVertex;
-}
-
-void Mesh::drawGUI()
-{
-    ImGui::Text("Index: %d", mIndex);
-    ImGui::Text("Number of vertices: %d", mVertices.size());
-
-    if (mSelectedVertex != -1 && mSelectedVertex < mIndices.size())
-    {
-        ImGui::Text("Selected vertex position: (%.3f, %.3f, %.3f)", //
-                    mVertices[mSelectedVertex].position[0],
-                    mVertices[mSelectedVertex].position[1],
-                    mVertices[mSelectedVertex].position[2]);
     }
 }
 
@@ -347,3 +295,97 @@ void Mesh::materials()
         mShaderManager->setUniformValue("useTextureNormal", true);
     }
 }
+
+void Mesh::renderVertices(Model *model)
+{
+    mShaderManager->bind(ShaderManager::ShaderType::VertexRendererShader);
+    mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
+    mShaderManager->setUniformValue("vertexModelTransformation", mVertexModelTransformation);
+    mShaderManager->setUniformValue("selectedVertex", mSelectedVertex);
+    mVerticesVAO->bind();
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mVertices.size());
+    mVerticesVAO->release();
+    mShaderManager->release();
+}
+
+const QString &Mesh::name() const
+{
+    return mName;
+}
+
+void Mesh::setName(const QString &newName)
+{
+    setObjectName(newName);
+    mName = newName;
+}
+
+ModelData *Mesh::data() const
+{
+    return mData;
+}
+
+void Mesh::setData(ModelData *newData)
+{
+    mData = newData;
+}
+
+const Mesh::AABB &Mesh::getAABB() const
+{
+    return mAABB;
+}
+
+void Mesh::setAABB(const Mesh::AABB &newAABB)
+{
+    mAABB = newAABB;
+}
+
+unsigned int Mesh::index() const
+{
+    return mIndex;
+}
+
+void Mesh::setIndex(unsigned int newIndex)
+{
+    mIndex = newIndex;
+}
+
+bool Mesh::selected() const
+{
+    return mSelected;
+}
+
+void Mesh::setSelected(bool newSelected)
+{
+    mSelected = newSelected;
+    mSelectedVertex = -1;
+}
+
+int Mesh::selectedVertex() const
+{
+    return mSelectedVertex;
+}
+
+void Mesh::setSelectedVertex(int newSelectedVertex)
+{
+    mSelectedVertex = newSelectedVertex;
+}
+
+void Mesh::drawGUI()
+{
+    ImGui::Text("Index: %d", mIndex);
+    ImGui::Text("Number of vertices: %d", mVertices.size());
+
+    if (mSelectedVertex != -1 && mSelectedVertex < mIndices.size())
+    {
+        ImGui::Text("Selected vertex position: (%.3f, %.3f, %.3f)", //
+                    mVertices[mSelectedVertex].position[0],
+                    mVertices[mSelectedVertex].position[1],
+                    mVertices[mSelectedVertex].position[2]);
+    }
+}
+
+const float Mesh::CUBE_VERTICES[108] = {-1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f,
+                                        -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,
+                                        -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,
+                                        1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, -1.0f,
+                                        1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  -1.0f, 1.0f};

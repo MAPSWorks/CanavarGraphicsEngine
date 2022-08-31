@@ -308,8 +308,7 @@ void RendererManager::loadModels()
                << "*.blend"
                << "*.dae"
                << "*.glb"
-               << "*.gltf"
-               << "*.bin";
+               << "*.gltf";
 
     for (const auto &dirName : qAsConst(dirs))
     {

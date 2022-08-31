@@ -10,6 +10,7 @@ NozzleParticles::NozzleParticles(Node *parent)
     , mRadius(0.9f)
     , mMaxLife(0.25f)
     , mVelocity(5.0f)
+    , mScale(0.015f)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
@@ -41,14 +42,14 @@ void NozzleParticles::create()
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
     glBufferData(GL_ARRAY_BUFFER, mParticles.size() * sizeof(Particle), mParticles.constData(), GL_DYNAMIC_DRAW);
 
-    glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) 0);
+    glEnableVertexAttribArray(1);
 
-    glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, velocityDirection));
+    glEnableVertexAttribArray(2);
 
-    glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, life));
+    glEnableVertexAttribArray(3);
 
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
@@ -70,8 +71,12 @@ void NozzleParticles::render(const RenderSettings &settings)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    mNozzleParticleTransformation.setToIdentity();
+    mNozzleParticleTransformation.scale(mScale, mScale, mScale);
+
     mShaderManager->bind(ShaderManager::ShaderType::NozzleParticlesShader);
     mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getVP() * worldTransformation());
+    mShaderManager->setUniformValue("nozzleParticleTransformation", mNozzleParticleTransformation);
     mShaderManager->setUniformValue("radius", mRadius);
     mShaderManager->setUniformValue("velocity", mVelocity);
 
@@ -104,16 +109,15 @@ void NozzleParticles::drawGUI()
         ImGui::SliderFloat("Radius##NozzleParticles", &mRadius, 0.001f, 4.0f, "%.4f");
         ImGui::SliderFloat("Max Life##NozzleParticles", &mMaxLife, 0.001f, 10.0f, "%.4f");
         ImGui::SliderFloat("Velocity##NozzleParticles", &mVelocity, 0.0f, 50.0f, "%.3f");
+        ImGui::SliderFloat("Scale##NozzleParticles", &mScale, 0.001f, 0.1f, "%.4f");
     }
 
     Node::drawGUI();
 }
 
-const float NozzleParticles::CUBE_VERTICES[108] = {-0.0175f, -0.0175f, -0.0175f, -0.0175f, -0.0175f, 0.0175f,  -0.0175f, 0.0175f,  0.0175f,  0.0175f,  0.0175f,  -0.0175f, -0.0175f, -0.0175f,
-                                                   -0.0175f, -0.0175f, 0.0175f,  -0.0175f, 0.0175f,  -0.0175f, 0.0175f,  -0.0175f, -0.0175f, -0.0175f, 0.0175f,  -0.0175f, -0.0175f, 0.0175f,
-                                                   0.0175f,  -0.0175f, 0.0175f,  -0.0175f, -0.0175f, -0.0175f, -0.0175f, -0.0175f, -0.0175f, -0.0175f, -0.0175f, -0.0175f, 0.0175f,  0.0175f,
-                                                   -0.0175f, 0.0175f,  -0.0175f, 0.0175f,  -0.0175f, 0.0175f,  -0.0175f, -0.0175f, 0.0175f,  -0.0175f, -0.0175f, -0.0175f, -0.0175f, 0.0175f,
-                                                   0.0175f,  -0.0175f, -0.0175f, 0.0175f,  0.0175f,  -0.0175f, 0.0175f,  0.0175f,  0.0175f,  0.0175f,  0.0175f,  -0.0175f, -0.0175f, 0.0175f,
-                                                   0.0175f,  -0.0175f, 0.0175f,  -0.0175f, -0.0175f, 0.0175f,  0.0175f,  0.0175f,  0.0175f,  -0.0175f, 0.0175f,  0.0175f,  0.0175f,  0.0175f,
-                                                   0.0175f,  0.0175f,  -0.0175f, -0.0175f, 0.0175f,  -0.0175f, 0.0175f,  0.0175f,  0.0175f,  -0.0175f, 0.0175f,  -0.0175f, -0.0175f, 0.0175f,
-                                                   0.0175f,  0.0175f,  0.0175f,  0.0175f,  -0.0175f, 0.0175f,  0.0175f,  0.0175f,  -0.0175f, 0.0175f};
+const float NozzleParticles::CUBE_VERTICES[108] = {-1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,
+                                                   1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,
+                                                   -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, 1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f,
+                                                   -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f, 1.0f,  1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f,
+                                                   1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
+                                                   1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  -1.0f, 1.0f};

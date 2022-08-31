@@ -5,13 +5,14 @@ layout(location = 2) in vec3 velocityDirection;
 layout(location = 3) in float life;
 
 uniform mat4 MVP;
-
+uniform mat4 nozzleParticleTransformation; // For scaling
 uniform float velocity;
 
 out float fsRadius;
 
 void main()
 {
-    gl_Position = MVP * vec4(life * velocity * velocityDirection + initialPosition + vertexPosition, 1.0f);
+    vec3 position = vec3(nozzleParticleTransformation * vec4(vertexPosition, 1.0f));
+    gl_Position = MVP * vec4(life * velocity * velocityDirection + initialPosition + position, 1.0f);
     fsRadius = length(initialPosition);
 }

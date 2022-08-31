@@ -10,7 +10,7 @@
 
 #include <QObject>
 #include <QOpenGLBuffer>
-#include <QOpenGLFunctions>
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 #include <QVector2D>
@@ -23,7 +23,7 @@ class LightManager;
 class Haze;
 class Water;
 
-class Mesh : public QObject, protected QOpenGLFunctions
+class Mesh : public QObject, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 public:
@@ -80,6 +80,7 @@ private:
     void pointLights();
     void spotLights();
     void materials();
+    void renderVertices(Model *model);
 
 private:
     ShaderManager *mShaderManager;
@@ -102,12 +103,19 @@ private:
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;
 
-    QOpenGLVertexArrayObject mVertexArray;
+    QOpenGLVertexArrayObject *mVAO;
     unsigned int mEBO;
     unsigned int mVBO;
 
     QVector<PointLight *> mClosePointLights;
     QVector<SpotLight *> mCloseSpotLights;
+
+    // Vertex rendering for NodeSelector
+    QOpenGLVertexArrayObject *mVerticesVAO;
+    unsigned int mVerticesVBO;
+    unsigned int mVerticesPBO;
+    static const float CUBE_VERTICES[108];
+    QMatrix4x4 mVertexModelTransformation;
 };
 
 #endif // MESH_H

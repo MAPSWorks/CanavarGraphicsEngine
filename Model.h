@@ -13,11 +13,11 @@ protected:
 
 public:
     struct Material {
-        QVector4D color;
-        float ambient;
-        float diffuse;
-        float specular;
-        float shininess;
+        QVector4D color = QVector4D(1, 1, 1, 1);
+        float ambient = 0.5f;
+        float diffuse = 0.75f;
+        float specular = 0.25f;
+        float shininess = 32.0f;
     };
 
     const QString &modelName() const;
