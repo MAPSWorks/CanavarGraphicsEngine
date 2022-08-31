@@ -41,6 +41,9 @@ public:
     bool meshSelectionEnabled() const;
     bool meshLockEnabled() const;
 
+signals:
+    void goToNode(Node *node);
+
 private:
     void populateNodesComboBox(Node *node);
     void populateMeshesComboBox(Mesh *mesh);

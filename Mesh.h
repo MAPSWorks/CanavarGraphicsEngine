@@ -117,6 +117,7 @@ private:
     unsigned int mVerticesPBO;
     static const float CUBE_VERTICES[108];
     QMatrix4x4 mVertexModelTransformation;
+    float mVertexModelScale;
 };
 
 #endif // MESH_H

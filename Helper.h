@@ -30,6 +30,7 @@ public:
     static QVector<SpotLight *> getCloseSpotLights(const QList<SpotLight *> &spotLights, Node *node);
     static QQuaternion invert(const QQuaternion &rotation);
     static float angleBetween(const QVector3D &v1, const QVector3D &v2, const QVector3D &left);
+    static float angleBetween(const QVector3D &v1, const QVector3D &v2);
     static void getEulerDegrees(const QQuaternion &rotation, float &yaw, float &pitch, float &roll);
     static QQuaternion constructFromEulerDegrees(float yaw, float pitch, float roll);
 

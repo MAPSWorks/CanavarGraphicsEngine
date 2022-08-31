@@ -258,6 +258,9 @@ void NodeManager::drawGUI()
             ImGui::Text("Parent Name: %s", parent->name().toStdString().c_str());
 
         mSelectedNode->drawGUI();
+
+        if (ImGui::Button("Go to node"))
+            emit goToNode(mSelectedNode);
     }
 
     if (mSelectedModel)

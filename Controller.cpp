@@ -1,5 +1,6 @@
 #include "Controller.h"
 #include "FreeCamera.h"
+#include "Helper.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -101,6 +102,30 @@ void Controller::init()
         mCameraManager->setActiveCamera(newActiveCamera);
     });
 
+    connect(mNodeManager, &NodeManager::goToNode, this, [=](Node *node) {
+        if (node)
+        {
+            PerspectiveCamera::Animation animation;
+            animation.startingPosition = mCameraManager->activeCamera()->worldPosition();
+            animation.startingRotation = mCameraManager->activeCamera()->worldRotation();
+            animation.startingVerticalFov = mCameraManager->activeCamera()->verticalFov();
+
+            animation.finalPosition = node->worldPosition() + node->worldRotation() * QVector3D(0, 0, 20);
+            float yaw, pitch, roll;
+            Helper::getEulerDegrees(node->worldRotation(), yaw, pitch, roll);
+
+            animation.finalRotation = Helper::constructFromEulerDegrees(yaw, pitch, 0);
+            animation.finalVerticalFov = mFreeCamera->verticalFov();
+            animation.subject = nullptr;
+            animation.duration = 1.5f;
+            animation.animating = true;
+            animation.saveFinalTransformation = true;
+            animation.activeCameraAfterAnimation = mFreeCamera;
+            mFreeCamera->animate(animation);
+            mCameraManager->setActiveCamera(mFreeCamera);
+        }
+    });
+
     mDummyCamera = dynamic_cast<DummyCamera *>(mNodeManager->create(Node::NodeType::DummyCamera));
 
     mRootJetNode->addChild(mDummyCamera);
@@ -110,7 +135,7 @@ void Controller::init()
     mDummyCamera->setZFar(100000.0f);
 
     mBackpack = mNodeManager->create(Model::NodeType::Model, "Backpack");
-    mBackpack->setPosition(QVector3D(0, 0, 0));
+    mBackpack->setPosition(QVector3D(0, 500, 0));
 
     mCyborg = mNodeManager->create(Model::NodeType::Model, "Cyborg");
     mCyborg->setPosition(QVector3D(0, 122, 15));

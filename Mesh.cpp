@@ -11,6 +11,7 @@ Mesh::Mesh(QObject *parent)
     : QObject(parent)
     , mSelected(false)
     , mSelectedVertexIndex(-1)
+    , mVertexModelScale(0.025f)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
@@ -95,7 +96,8 @@ bool Mesh::create()
     mVAO->release();
 
     // Vertex Rendering for Node Selector Setup
-    mVertexModelTransformation.scale(0.05f, 0.05f, 0.05f);
+    mVertexModelTransformation.setToIdentity();
+    mVertexModelTransformation.scale(mVertexModelScale, mVertexModelScale, mVertexModelScale);
 
     mVerticesVAO = new QOpenGLVertexArrayObject;
     mVerticesVAO->create();
@@ -163,6 +165,9 @@ void Mesh::render(Model *model, const RenderSettings &settings)
     {
         if (mSelected && mNodeManager->vertexSelectionEnabled())
         {
+            mVertexModelTransformation.setToIdentity();
+            mVertexModelTransformation.scale(mVertexModelScale, mVertexModelScale, mVertexModelScale);
+
             // Render vertices as small cubes
             mShaderManager->bind(ShaderManager::ShaderType::VertexRendererShader);
             mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
@@ -396,6 +401,9 @@ void Mesh::drawGUI()
 
 void Mesh::drawGUIForVertex()
 {
+    if (mNodeManager->vertexSelectionEnabled())
+        ImGui::SliderFloat("Vertex Model Size", &mVertexModelScale, 0.001, 0.1);
+
     if (mSelectedVertexIndex != -1 && mSelectedVertexIndex < mIndices.size())
     {
         ImGui::TextColored(ImVec4(1, 1, 0, 1), "Vertex Info");

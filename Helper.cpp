@@ -155,6 +155,27 @@ float Helper::angleBetween(const QVector3D &v1, const QVector3D &v2, const QVect
     }
 }
 
+float Helper::angleBetween(const QVector3D &v1, const QVector3D &v2)
+{
+    QVector3D u1 = v1.normalized();
+    QVector3D u2 = v2.normalized();
+
+    float dot = QVector3D::dotProduct(u1, u2);
+
+    if (qFuzzyCompare(dot, 1.0f))
+    {
+        return 0.0f;
+
+    } else if (qFuzzyCompare(dot, -1.0f))
+    {
+        return 180.0f;
+
+    } else
+    {
+        return qRadiansToDegrees(acos(dot));
+    }
+}
+
 void Helper::getEulerDegrees(const QQuaternion &rotation, float &yaw, float &pitch, float &roll)
 {
     QVector3D zAxis = rotation * QVector3D(0, 0, -1);
