@@ -2,8 +2,11 @@
 #define MESH_H
 
 #include "Common.h"
+#include "DirectionalLight.h"
 #include "Model.h"
-#include "ShaderManager.h"
+#include "PerspectiveCamera.h"
+#include "PointLight.h"
+#include "SpotLight.h"
 
 #include <QObject>
 #include <QOpenGLBuffer>
@@ -14,6 +17,11 @@
 #include <QVector3D>
 
 class ModelData;
+class ShaderManager;
+class CameraManager;
+class LightManager;
+class Haze;
+class Water;
 
 class Mesh : public QObject, protected QOpenGLFunctions
 {
@@ -46,9 +54,7 @@ public:
     void setMaterialIndex(int newMaterialIndex);
 
     bool create();
-    void render(Model *model);
-    void render(Primitive primitive);
-    void renderForNodeSelector(Model *model);
+    void render(Model *model, const RenderSettings &settings);
 
     const QString &name() const;
     void setName(const QString &newName);
@@ -71,25 +77,37 @@ public:
     void drawGUI();
 
 private:
-    QVector<Vertex> mVertices;
-    QVector<unsigned int> mIndices;
+    void pointLights();
+    void spotLights();
+    void materials();
+
+private:
+    ShaderManager *mShaderManager;
+    CameraManager *mCameraManager;
+    LightManager *mLightManager;
+    PerspectiveCamera *mCamera;
+    DirectionalLight *mSun;
+    Haze *mHaze;
+    Water *mWater;
+    ModelData *mData;
 
     QString mName;
     int mMaterialIndex;
     unsigned int mIndex;
 
+    AABB mAABB;
+    bool mSelected;
+    int mSelectedVertex;
+
+    QVector<Vertex> mVertices;
+    QVector<unsigned int> mIndices;
+
     QOpenGLVertexArrayObject mVertexArray;
     unsigned int mEBO;
     unsigned int mVBO;
 
-    ModelData *mData;
-    ShaderManager *mShaderManager;
-
-    AABB mAABB;
-
-    bool mSelected;
-
-    int mSelectedVertex;
+    QVector<PointLight *> mClosePointLights;
+    QVector<SpotLight *> mCloseSpotLights;
 };
 
 #endif // MESH_H

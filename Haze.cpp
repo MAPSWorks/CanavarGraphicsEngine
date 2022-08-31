@@ -6,6 +6,12 @@ Haze::Haze(QObject *parent)
     reset();
 }
 
+Haze *Haze::instance()
+{
+    static Haze instance;
+    return &instance;
+}
+
 float Haze::gradient() const
 {
     return mGradient;

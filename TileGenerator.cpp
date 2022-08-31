@@ -5,9 +5,6 @@ TileGenerator::TileGenerator(int resolution, int tiles, float width, QObject *pa
     , mResolution(resolution)
     , mTiles(tiles)
     , mWidth(width)
-{}
-
-void TileGenerator::generate()
 {
     const int n = mResolution;
 
@@ -115,9 +112,9 @@ void TileGenerator::translateTiles(const QVector2D &translation)
     glBufferSubData(GL_ARRAY_BUFFER, 0, mTilePositions.size() * sizeof(QVector2D), mTilePositions.constData());
 }
 
-void TileGenerator::render(Primitive primitive)
+void TileGenerator::render(GLenum primitive)
 {
     mVAO->bind();
-    glDrawElementsInstanced((unsigned int) primitive, (mResolution - 1) * (mResolution - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mTilePositions.size());
+    glDrawElementsInstanced(primitive, (mResolution - 1) * (mResolution - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mTilePositions.size());
     mVAO->release();
 }

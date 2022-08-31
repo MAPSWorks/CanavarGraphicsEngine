@@ -37,14 +37,13 @@ private:
     };
 
 public:
-    static Sky *instance();
+    void render(const RenderSettings &settings);
+    void renderWeather(const RenderSettings &settings);
     void resize(int width, int height);
-    void renderWeather(float ifps);
-    void render(float ifps);
     void drawGUI();
     void reset();
 
-    void setHaze(Haze *newHaze);
+    static Sky *instance();
 
 private:
     void generateMaps();
@@ -57,6 +56,7 @@ private:
     DirectionalLight *mSun;
     PerspectiveCamera *mCamera;
     Quad *mQuad;
+    Haze *mHaze;
 
     QVector3D mSkyColorTop;
     QVector3D mSkyColorBottom;
@@ -88,8 +88,6 @@ private:
 
     int mWidth;
     int mHeight;
-
-    Haze *mHaze;
 };
 
 #endif // SKY_H

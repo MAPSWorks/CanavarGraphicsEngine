@@ -1,5 +1,6 @@
 #include "NodeSelector.h"
-#include "CameraManager.h"
+#include "NodeManager.h"
+#include "RendererManager.h"
 
 NodeSelector::NodeSelector(QObject *parent)
     : QObject{parent}
@@ -7,8 +8,6 @@ NodeSelector::NodeSelector(QObject *parent)
     , mResizeFlag(false)
 {
     mNodeManager = NodeManager::instance();
-    mShaderManager = ShaderManager::instance();
-    mCameraManager = CameraManager::instance();
     mRendererManager = RendererManager::instance();
 
     mFramebufferFormat.setSamples(0);
@@ -19,6 +18,8 @@ NodeSelector::NodeSelector(QObject *parent)
                                           FramebufferFormat::TextureInternalFormat::RGBA32UI,
                                           FramebufferFormat::TexturePixelFormat::RGBA_INTEGER,
                                           FramebufferFormat::TextureDataType::UNSIGNED_INT);
+
+    mRenderSettings.renderFor = RenderFor::NodeSelector;
 }
 
 void NodeSelector::init()
@@ -82,13 +83,7 @@ void NodeSelector::render()
             auto data = mRendererManager->getModelData(model->modelName());
 
             if (data)
-            {
-                mShaderManager->bind(ShaderManager::ShaderType::NodeSelectionShader);
-                mShaderManager->setUniformValue("VP", mCameraManager->activeCamera()->getVP());
-                mShaderManager->setUniformValue("nodeIndex", model->index());
-                data->renderForNodeSelector(model);
-                mShaderManager->release();
-            }
+                data->render(model, mRenderSettings);
         }
     }
 }

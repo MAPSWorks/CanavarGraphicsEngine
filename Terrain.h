@@ -1,9 +1,10 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "CameraManager.h"
+#include "Common.h"
+#include "DirectionalLight.h"
 #include "Model.h"
-#include "ShaderManager.h"
+#include "PerspectiveCamera.h"
 #include "Texture.h"
 #include "TileGenerator.h"
 
@@ -15,6 +16,12 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
+
+class ShaderManager;
+class CameraManager;
+class LightManager;
+class Haze;
+class Water;
 
 class Terrain : public QObject, protected QOpenGLExtraFunctions
 {
@@ -34,28 +41,25 @@ public:
         float grassCoverage;
     };
 
-    void create();
-    void render();
+    void render(const RenderSettings &settings);
     void reset();
     void drawGUI();
 
-    QMatrix4x4 transformation() const;
-
     static Terrain *instance();
 
-    const Properties &properties() const;
-    void setProperties(const Properties &newProperties);
-
-    const Model::Material &material() const;
-    void setMaterial(const Model::Material &newMaterial);
-
 private:
-    TileGenerator *mTileGenerator;
-    Properties mProperties;
-    Model::Material mMaterial;
-
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
+    LightManager *mLightManager;
+    Haze *mHaze;
+    Water *mWater;
+    TileGenerator *mTileGenerator;
+
+    DirectionalLight *mSun;
+    PerspectiveCamera *mCamera;
+
+    Properties mProperties;
+    Model::Material mMaterial;
 
     Texture *mTextureSand;
     Texture *mTextureGrass;
@@ -65,6 +69,8 @@ private:
     Texture *mTextureTerrain;
 
     QVector2D mPreviousTilePosition;
+
+    QMatrix4x4 mTransformation;
 };
 
 #endif // TERRAIN_H

@@ -27,13 +27,8 @@ Sky::Sky(QObject *parent)
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
-
-    mQuad = new Quad;
-    mQuad->create();
-
-    initializeOpenGLFunctions();
-
-    generateMaps();
+    mHaze = Haze::instance();
+    mQuad = Quad::instance();
 
     mOutputTextures.fragColor = new Texture(1600, 900);
     mOutputTextures.bloom = new Texture(1600, 900);
@@ -50,6 +45,9 @@ Sky::Sky(QObject *parent)
     mSkyFramebufferFormat.setHeight(900);
 
     mSkyFramebuffer = new Framebuffer(mSkyFramebufferFormat);
+
+    initializeOpenGLFunctions();
+    generateMaps();
 }
 
 Sky *Sky::instance()
@@ -88,12 +86,24 @@ void Sky::resize(int width, int height)
     mSkyFramebuffer = new Framebuffer(mSkyFramebufferFormat);
 }
 
-void Sky::renderWeather(float ifps)
+void Sky::render(const RenderSettings &settings)
+{
+    glDepthFunc(GL_LEQUAL);
+    mShaderManager->bind(ShaderManager::ShaderType::SkyPostProcessingShader);
+    mShaderManager->setSampler("skyTexture", 0, mOutputTextures.fragColor->id());
+    mShaderManager->setUniformValue("width", mWidth);
+    mShaderManager->setUniformValue("height", mHeight);
+    mQuad->render();
+    mShaderManager->release();
+    glDepthFunc(GL_LESS);
+}
+
+void Sky::renderWeather(const RenderSettings &settings)
 {
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
 
-    mTimeElapsed += ifps;
+    mTimeElapsed += settings.ifps;
 
     glDisable(GL_MULTISAMPLE);
 
@@ -160,18 +170,6 @@ void Sky::renderWeather(float ifps)
     mShaderManager->release();
 
     glEnable(GL_MULTISAMPLE);
-}
-
-void Sky::render(float)
-{
-    glDepthFunc(GL_LEQUAL);
-    mShaderManager->bind(ShaderManager::ShaderType::SkyPostProcessingShader);
-    mShaderManager->setSampler("skyTexture", 0, mOutputTextures.fragColor->id());
-    mShaderManager->setUniformValue("width", mWidth);
-    mShaderManager->setUniformValue("height", mHeight);
-    mQuad->render();
-    mShaderManager->release();
-    glDepthFunc(GL_LESS);
 }
 
 void Sky::drawGUI()
@@ -277,9 +275,4 @@ void Sky::generateMaps()
     glDispatchCompute(INT_CEIL(1024, 8), INT_CEIL(1024, 8), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     qInfo() << "Weather 2D Texture 1024x1024 is generated.";
-}
-
-void Sky::setHaze(Haze *newHaze)
-{
-    mHaze = newHaze;
 }

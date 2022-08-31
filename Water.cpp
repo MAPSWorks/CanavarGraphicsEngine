@@ -9,9 +9,14 @@ Water::Water(QObject *parent)
     , mReflectionFramebuffer(nullptr)
     , mRefractionFramebuffer(nullptr)
 {
+    initializeOpenGLFunctions();
+
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
+    mHaze = Haze::instance();
+
+    mTileGenerator = new TileGenerator(3, 128, 1024.0f);
 
     mFramebufferFormat.setSamples(0);
     mFramebufferFormat.addColorAttachment(0, //
@@ -22,7 +27,6 @@ Water::Water(QObject *parent)
     mFramebufferFormat.setWidth(1600);
     mFramebufferFormat.setHeight(900);
 
-    initializeOpenGLFunctions();
     createFramebuffers();
 }
 
@@ -32,13 +36,7 @@ Water *Water::instance()
     return &water;
 }
 
-void Water::create()
-{
-    mTileGenerator = new TileGenerator(3, 128, 1024.0f);
-    mTileGenerator->generate();
-}
-
-void Water::render(float ifps)
+void Water::render(const RenderSettings &settings)
 {
     QVector2D currentTilePosition = mTileGenerator->whichTile(mCameraManager->activeCamera()->worldPosition());
 
@@ -48,7 +46,7 @@ void Water::render(float ifps)
         mPreviousTilePosition = currentTilePosition;
     }
 
-    mTimeElapsed += ifps;
+    mTimeElapsed += settings.ifps;
 
     mTransformation.setColumn(3, QVector4D(0, mWaterHeight, 0, 1));
 
@@ -63,13 +61,9 @@ void Water::render(float ifps)
     mShaderManager->setUniformValue("lightColor", mLightManager->directionalLight()->color().toVector3D());
     mShaderManager->setUniformValue("lightDirection", mLightManager->directionalLight()->direction());
     mShaderManager->setUniformValue("moveFactor", mWaveSpeed * mTimeElapsed);
-    mShaderManager->setUniformValue("haze.enabled", false);
-    mShaderManager->setUniformValue("haze.color", mHaze->color());
-    mShaderManager->setUniformValue("haze.density", mHaze->density());
-    mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
     mShaderManager->setSampler("reflectionTex", 0, mReflectionFramebuffer->texture());
     mShaderManager->setSampler("refractionTex", 1, mRefractionFramebuffer->texture());
-    mTileGenerator->render(Primitive::Triangles);
+    mTileGenerator->render(GL_TRIANGLES);
     mShaderManager->release();
 
     glDisable(GL_BLEND);
@@ -121,9 +115,4 @@ Framebuffer *Water::reflectionFramebuffer() const
 float Water::waterHeight() const
 {
     return mWaterHeight;
-}
-
-void Water::setHaze(Haze *newHaze)
-{
-    mHaze = newHaze;
 }

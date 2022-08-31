@@ -27,19 +27,9 @@ const QString &ModelData::modelName() const
     return mModelName;
 }
 
-void ModelData::render(Model *model)
+void ModelData::render(Model *model, const RenderSettings &settings)
 {
-    mRootNode->render(model);
-}
-
-void ModelData::render(Primitive primitive)
-{
-    mRootNode->render(primitive);
-}
-
-void ModelData::renderForNodeSelector(Model *model)
-{
-    mRootNode->renderForNodeSelector(model);
+    mRootNode->render(model, settings);
 }
 
 Mesh *ModelData::getMesh(const QString &meshName)

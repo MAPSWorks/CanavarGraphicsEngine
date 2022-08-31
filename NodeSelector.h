@@ -1,13 +1,14 @@
 #ifndef NODESELECTOR_H
 #define NODESELECTOR_H
 
+#include "Common.h"
 #include "Framebuffer.h"
-#include "NodeManager.h"
-#include "RendererManager.h"
-#include "ShaderManager.h"
 
 #include <QMouseEvent>
 #include <QObject>
+
+class RendererManager;
+class NodeManager;
 
 class NodeSelector : public QObject, protected QOpenGLExtraFunctions
 {
@@ -33,8 +34,6 @@ private:
 
 private:
     NodeManager *mNodeManager;
-    ShaderManager *mShaderManager;
-    CameraManager *mCameraManager;
     RendererManager *mRendererManager;
 
     Framebuffer *mSelectionFramebuffer;
@@ -42,6 +41,7 @@ private:
     bool mResizeFlag;
 
     SelectionInfo mSelectionInfo;
+    RenderSettings mRenderSettings;
 };
 
 #endif // NODESELECTOR_H

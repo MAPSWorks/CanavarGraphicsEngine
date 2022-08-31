@@ -2,13 +2,14 @@
 #define LIGHTMANAGER_H
 
 #include "DirectionalLight.h"
+#include "Manager.h"
 #include "NodeManager.h"
 #include "PointLight.h"
 #include "SpotLight.h"
 
 #include <QObject>
 
-class LightManager : public QObject
+class LightManager : public Manager
 {
     Q_OBJECT
 
@@ -22,6 +23,8 @@ private:
     void setDirectionalLight(DirectionalLight *newDirectionalLight);
 
 public:
+    bool init() override;
+
     DirectionalLight *directionalLight() const;
     const QList<PointLight *> &pointLights() const;
     const QList<SpotLight *> &spotLights() const;

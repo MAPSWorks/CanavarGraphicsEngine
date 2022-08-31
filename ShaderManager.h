@@ -1,6 +1,8 @@
 #ifndef SHADERMANAGER_H
 #define SHADERMANAGER_H
 
+#include "Manager.h"
+
 #include <QMatrix4x4>
 #include <QObject>
 #include <QOpenGLFunctions>
@@ -8,7 +10,7 @@
 
 class Shader;
 
-class ShaderManager : public QObject
+class ShaderManager : public Manager
 {
     Q_OBJECT
 public:
@@ -37,7 +39,7 @@ public:
 
     Shader *getShader(ShaderType shader);
 
-    bool init();
+    bool init() override;
     bool bind(ShaderType shader);
     void release();
 

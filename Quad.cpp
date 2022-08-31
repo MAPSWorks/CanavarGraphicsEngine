@@ -2,9 +2,6 @@
 
 Quad::Quad(QObject *parent)
     : QObject(parent)
-{}
-
-void Quad::create()
 {
     initializeOpenGLFunctions();
     glGenVertexArrays(1, &mVAO);
@@ -25,6 +22,12 @@ void Quad::render()
     glBindVertexArray(mVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+}
+
+Quad *Quad::instance()
+{
+    static Quad instance;
+    return &instance;
 }
 
 const float Quad::VERTICES[24] = {-1.0f, 1.0f,  0.0f, 1.0f, //

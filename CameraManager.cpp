@@ -2,7 +2,7 @@
 #include <QtMath>
 
 CameraManager::CameraManager(QObject *parent)
-    : QObject(parent)
+    : Manager(parent)
     , mActiveCamera(nullptr)
 {}
 
@@ -20,6 +20,11 @@ void CameraManager::removeCamera(Camera *camera)
 
         mCameras.removeAll(camera);
     }
+}
+
+bool CameraManager::init()
+{
+    return true;
 }
 
 PerspectiveCamera *CameraManager::activeCamera() const

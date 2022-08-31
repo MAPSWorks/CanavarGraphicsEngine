@@ -1,5 +1,11 @@
 #include "Mesh.h"
+#include "CameraManager.h"
+#include "Haze.h"
+#include "Helper.h"
+#include "LightManager.h"
 #include "ModelData.h"
+#include "ShaderManager.h"
+#include "Water.h"
 
 Mesh::Mesh(QObject *parent)
     : QObject(parent)
@@ -7,6 +13,10 @@ Mesh::Mesh(QObject *parent)
     , mSelectedVertex(-1)
 {
     mShaderManager = ShaderManager::instance();
+    mCameraManager = CameraManager::instance();
+    mLightManager = LightManager::instance();
+    mHaze = Haze::instance();
+    mWater = Water::instance();
 }
 
 Mesh::~Mesh()
@@ -91,88 +101,91 @@ bool Mesh::create()
     return true;
 }
 
-void Mesh::render(Model *model)
+void Mesh::render(Model *model, const RenderSettings &settings)
 {
-    mShaderManager->setUniformValue("meshSelected", mSelected);
-    mShaderManager->setUniformValue("node.transformation", model->worldTransformation() * model->getMeshTransformation(mName));
-    mShaderManager->setUniformValue("node.normalMatrix", model->normalMatrix());
-    mShaderManager->setUniformValue("node.color", model->material().color);
-    mShaderManager->setUniformValue("node.ambient", model->material().ambient);
-    mShaderManager->setUniformValue("node.diffuse", model->material().diffuse);
-    mShaderManager->setUniformValue("node.specular", model->material().specular);
-    mShaderManager->setUniformValue("node.shininess", model->material().shininess);
+    mCamera = mCameraManager->activeCamera();
+    mSun = mLightManager->directionalLight();
+    mClosePointLights = Helper::getClosePointLights(mLightManager->pointLights(), model);
+    mCloseSpotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), model);
 
-    auto materials = mData->materials();
-    auto ambientTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Ambient);
-    auto diffuseTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Diffuse);
-    auto specularTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Specular);
-    auto normalTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Normal);
-
-    mShaderManager->setUniformValue("useTexture", false);
-    mShaderManager->setUniformValue("useTextureAmbient", false);
-    mShaderManager->setUniformValue("useTextureDiffuse", false);
-    mShaderManager->setUniformValue("useTextureSpecular", false);
-    mShaderManager->setUniformValue("useTextureNormal", false);
-    mShaderManager->setUniformValue("useTexture", materials[mMaterialIndex]->textures().size() != 0);
-
-    if (ambientTexture)
+    if (settings.renderFor == RenderFor::NodeSelector)
     {
-        mShaderManager->setSampler("textureAmbient", 1, ambientTexture->id());
-        mShaderManager->setUniformValue("useTextureAmbient", true);
+        mShaderManager->bind(ShaderManager::ShaderType::NodeSelectionShader);
+        mShaderManager->setUniformValue("VP", mCameraManager->activeCamera()->getVP());
+        mShaderManager->setUniformValue("nodeIndex", model->index());
+        mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation() * model->getMeshTransformation(mName));
+        mShaderManager->setUniformValue("meshIndex", mIndex);
+        mVertexArray.bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVertexArray.release();
+        mShaderManager->release();
 
     } else
     {
-        if (diffuseTexture)
+        if (settings.renderModels)
         {
-            mShaderManager->setSampler("textureAmbient", 2, diffuseTexture->id());
-            mShaderManager->setUniformValue("useTextureAmbient", true);
+            if ((int) settings.renderFor <= 1)
+                glEnable(GL_CLIP_DISTANCE0);
+
+            mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
+            mShaderManager->setUniformValue("modelSelected", model->selected());
+            mShaderManager->setUniformValue("meshSelected", mSelected);
+            mShaderManager->setUniformValue("node.transformation", model->worldTransformation() * model->getMeshTransformation(mName));
+            mShaderManager->setUniformValue("node.normalMatrix", model->normalMatrix());
+            mShaderManager->setUniformValue("node.color", model->material().color);
+            mShaderManager->setUniformValue("node.ambient", model->material().ambient);
+            mShaderManager->setUniformValue("node.diffuse", model->material().diffuse);
+            mShaderManager->setUniformValue("node.specular", model->material().specular);
+            mShaderManager->setUniformValue("node.shininess", model->material().shininess);
+            mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * (int) settings.renderFor);
+            mShaderManager->setUniformValue("useBlinnShading", settings.useBlinnShading);
+            mShaderManager->setUniformValue("VP", mCamera->getVP());
+            mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
+            mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
+            mShaderManager->setUniformValue("directionalLight.color", mSun->color());
+            mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
+            mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
+            mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
+            mShaderManager->setUniformValue("haze.enabled", mHaze->enabled());
+            mShaderManager->setUniformValue("haze.color", mHaze->color());
+            mShaderManager->setUniformValue("haze.density", mHaze->density());
+            mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
+            pointLights();
+            spotLights();
+            materials();
+
+            mVertexArray.bind();
+            glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+            mVertexArray.release();
+            mShaderManager->release();
+
+            glDisable(GL_CLIP_DISTANCE0);
+        }
+
+        if (settings.renderWireframe)
+        {
+            mShaderManager->bind(ShaderManager::ShaderType::WireframeShader);
+            mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+            mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+            mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
+            mVertexArray.bind();
+            glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+            mVertexArray.release();
+            mShaderManager->release();
+        }
+
+        if (settings.renderNormals)
+        {
+            mShaderManager->bind(ShaderManager::ShaderType::NormalsShader);
+            mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
+            mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
+            mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
+            mVertexArray.bind();
+            glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+            mVertexArray.release();
+            mShaderManager->release();
         }
     }
-
-    if (diffuseTexture)
-    {
-        mShaderManager->setSampler("textureDiffuse", 3, diffuseTexture->id());
-        mShaderManager->setUniformValue("useTextureDiffuse", true);
-    }
-
-    if (specularTexture)
-    {
-        mShaderManager->setSampler("textureSpecular", 4, specularTexture->id());
-        mShaderManager->setUniformValue("useTextureSepcular", true);
-    }
-
-    if (normalTexture)
-    {
-        mShaderManager->setSampler("textureNormal", 5, normalTexture->id());
-        mShaderManager->setUniformValue("useTextureNormal", true);
-    }
-
-    mVertexArray.bind();
-    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-    mVertexArray.release();
-
-    if (mSelected)
-    {
-        mVertexArray.bind();
-        glDrawElements(GL_POINTS, mIndices.size(), GL_UNSIGNED_INT, 0);
-        mVertexArray.release();
-    }
-}
-
-void Mesh::renderForNodeSelector(Model *model)
-{
-    mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation() * model->getMeshTransformation(mName));
-    mShaderManager->setUniformValue("meshIndex", mIndex);
-    mVertexArray.bind();
-    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-    mVertexArray.release();
-}
-
-void Mesh::render(Primitive primitive)
-{
-    mVertexArray.bind();
-    glDrawElements((unsigned int) primitive, mIndices.size(), GL_UNSIGNED_INT, 0);
-    mVertexArray.release();
 }
 
 const QString &Mesh::name() const
@@ -248,5 +261,90 @@ void Mesh::drawGUI()
                     mVertices[mSelectedVertex].position[0],
                     mVertices[mSelectedVertex].position[1],
                     mVertices[mSelectedVertex].position[2]);
+    }
+}
+
+void Mesh::pointLights()
+{
+    mShaderManager->setUniformValue("numberOfPointLights", mClosePointLights.size());
+
+    for (int i = 0; i < mClosePointLights.size(); i++)
+    {
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].color", mClosePointLights[i]->color());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].position", mClosePointLights[i]->position());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].ambient", mClosePointLights[i]->ambient());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].diffuse", mClosePointLights[i]->diffuse());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].specular", mClosePointLights[i]->specular());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].constant", mClosePointLights[i]->constant());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].linear", mClosePointLights[i]->linear());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].quadratic", mClosePointLights[i]->quadratic());
+    }
+}
+
+void Mesh::spotLights()
+{
+    mShaderManager->setUniformValue("numberOfSpotLights", mCloseSpotLights.size());
+
+    for (int i = 0; i < mCloseSpotLights.size(); i++)
+    {
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].color", mCloseSpotLights[i]->color());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].position", mCloseSpotLights[i]->position());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].ambient", mCloseSpotLights[i]->ambient());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].diffuse", mCloseSpotLights[i]->diffuse());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].specular", mCloseSpotLights[i]->specular());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].constant", mCloseSpotLights[i]->constant());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].linear", mCloseSpotLights[i]->linear());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].quadratic", mCloseSpotLights[i]->quadratic());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].direction", mCloseSpotLights[i]->direction());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].cutOffAngle", mCloseSpotLights[i]->cutOffAngle());
+        mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].outerCutOffAngle", mCloseSpotLights[i]->outerCutOffAngle());
+    }
+}
+
+void Mesh::materials()
+{
+    auto materials = mData->materials();
+    auto ambientTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Ambient);
+    auto diffuseTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Diffuse);
+    auto specularTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Specular);
+    auto normalTexture = materials[mMaterialIndex]->getFirstTexture(Texture::Type::Normal);
+
+    mShaderManager->setUniformValue("useTexture", false);
+    mShaderManager->setUniformValue("useTextureAmbient", false);
+    mShaderManager->setUniformValue("useTextureDiffuse", false);
+    mShaderManager->setUniformValue("useTextureSpecular", false);
+    mShaderManager->setUniformValue("useTextureNormal", false);
+    mShaderManager->setUniformValue("useTexture", materials[mMaterialIndex]->textures().size() != 0);
+
+    if (ambientTexture)
+    {
+        mShaderManager->setSampler("textureAmbient", 1, ambientTexture->id());
+        mShaderManager->setUniformValue("useTextureAmbient", true);
+
+    } else
+    {
+        if (diffuseTexture)
+        {
+            mShaderManager->setSampler("textureAmbient", 2, diffuseTexture->id());
+            mShaderManager->setUniformValue("useTextureAmbient", true);
+        }
+    }
+
+    if (diffuseTexture)
+    {
+        mShaderManager->setSampler("textureDiffuse", 3, diffuseTexture->id());
+        mShaderManager->setUniformValue("useTextureDiffuse", true);
+    }
+
+    if (specularTexture)
+    {
+        mShaderManager->setSampler("textureSpecular", 4, specularTexture->id());
+        mShaderManager->setUniformValue("useTextureSepcular", true);
+    }
+
+    if (normalTexture)
+    {
+        mShaderManager->setSampler("textureNormal", 5, normalTexture->id());
+        mShaderManager->setUniformValue("useTextureNormal", true);
     }
 }

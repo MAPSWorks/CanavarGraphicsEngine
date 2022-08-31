@@ -11,11 +11,6 @@ Controller::Controller(QApplication *app, QObject *parent)
     , mMouseCaptured(false)
     , mImGuiWantsMouseCapture(false)
 {
-    mRendererManager = RendererManager::instance();
-    mCameraManager = CameraManager::instance();
-    mLightManager = LightManager::instance();
-    mNodeManager = NodeManager::instance();
-    mNodeSelector = NodeSelector::instance();
     mWindow = new Window;
 
     connect(mWindow, &Window::wheelMoved, this, &Controller::onWheelMoved);
@@ -40,8 +35,19 @@ void Controller::init()
 {
     initializeOpenGLFunctions();
 
-    mRendererManager->init();
+    mShaderManager = ShaderManager::instance();
+    mCameraManager = CameraManager::instance();
+    mLightManager = LightManager::instance();
+    mNodeManager = NodeManager::instance();
+    mNodeSelector = NodeSelector::instance();
+    mRendererManager = RendererManager::instance();
+
+    mShaderManager->init();
+    mCameraManager->init();
+    mLightManager->init();
+    mNodeManager->init();
     mNodeSelector->init();
+    mRendererManager->init();
 
     mJet = dynamic_cast<Model *>(mNodeManager->create(Model::NodeType::Model, "f16c"));
 

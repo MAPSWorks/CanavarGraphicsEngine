@@ -8,17 +8,22 @@
 #include "RendererManager.h"
 
 NodeManager::NodeManager(QObject *parent)
-    : QObject(parent)
+    : Manager(parent)
     , mNumberOfNodes(0)
     , mSelectedNode(nullptr)
     , mSelectedMesh(nullptr)
     , mSelectedModel(nullptr)
     , mMeshSelectionEnabled(false)
     , mSelectedVertex(-1)
+{}
+
+bool NodeManager::init()
 {
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mRendererManager = RendererManager::instance();
+
+    return true;
 }
 
 Node *NodeManager::create(Node::NodeType type, const QString &name)

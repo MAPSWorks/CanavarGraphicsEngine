@@ -1,11 +1,9 @@
 #include "LightManager.h"
 
 LightManager::LightManager(QObject *parent)
-    : QObject(parent)
+    : Manager(parent)
     , mDirectionalLight(nullptr)
-{
-    ;
-}
+{}
 
 void LightManager::addLight(Light *light)
 {
@@ -79,4 +77,9 @@ DirectionalLight *LightManager::directionalLight() const
 void LightManager::setDirectionalLight(DirectionalLight *newDirectionalLight)
 {
     mDirectionalLight = newDirectionalLight;
+}
+
+bool LightManager::init()
+{
+    return true;
 }

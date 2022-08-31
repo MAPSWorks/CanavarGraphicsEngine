@@ -1,22 +1,16 @@
 ﻿#include "RendererManager.h"
-#include "Camera.h"
 #include "Helper.h"
-#include "Light.h"
 #include "Model.h"
 #include "NozzleParticles.h"
 #include <QDir>
 #include <QtMath>
 
 RendererManager::RendererManager(QObject *parent)
-    : QObject(parent)
-    , mRenderObjects(true)
-    , mRenderWireframe(false)
-    , mRenderNormals(false)
-    , mUseBlinnShading(true)
+    : Manager(parent)
     , mWidth(1600)
     , mHeight(900)
     , mFlag(false)
-    , mIfps(0.0f)
+
 {
     mFramebufferFormat.setSamples(4);
     mFramebufferFormat.addColorAttachment(0, //
@@ -26,6 +20,13 @@ RendererManager::RendererManager(QObject *parent)
                                           FramebufferFormat::TextureDataType::UNSIGNED_BYTE);
     mFramebufferFormat.setWidth(1600);
     mFramebufferFormat.setHeight(900);
+
+    mRenderSettings.ifps = 0;
+    mRenderSettings.renderFor = RenderFor::Default;
+    mRenderSettings.useBlinnShading = false;
+    mRenderSettings.renderModels = true;
+    mRenderSettings.renderWireframe = false;
+    mRenderSettings.renderNormals = false;
 }
 
 RendererManager *RendererManager::instance()
@@ -40,62 +41,20 @@ bool RendererManager::init()
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
+    mHaze = Haze::instance();
+    mTerrain = Terrain::instance();
+    mWater = Water::instance();
+    mSky = Sky::instance();
+    mQuad = Quad::instance();
 
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
 
-    //    glEnable(GL_CULL_FACE);
-    //    glCullFace(GL_BACK);
-
-    qInfo() << "Initializing ShaderManager...";
-
-    if (!mShaderManager->init())
-    {
-        qWarning() << Q_FUNC_INFO << "ShaderManager could not be initialized.";
-        return false;
-    }
-
     loadModels();
 
-    //    mSkyBox = new SkyBox;
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_X, "Resources/Sky/1/right.png");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, "Resources/Sky/1/left.png");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, "Resources/Sky/1/top.png");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, "Resources/Sky/1/bottom.png");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, "Resources/Sky/1/front.png");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/1/back.png");
-    //    mSkyBox->create();
-
-    //    mSkyBox = new SkyBox;
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_X, "Resources/Sky/2/right.bmp");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, "Resources/Sky/2/left.bmp");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, "Resources/Sky/2/top.bmp");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, "Resources/Sky/2/bottom.bmp");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, "Resources/Sky/2/front.bmp");
-    //    mSkyBox->setPath(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "Resources/Sky/2/back.bmp");
-    //    mSkyBox->create();
-
-    mHaze = new Haze;
-
-    mTerrain = Terrain::instance();
-    mTerrain->create();
-
-    mWater = Water::instance();
-    mWater->create();
-    mWater->setHaze(mHaze);
-
-    mQuad = new Quad;
-    mQuad->create();
-
     mSun = dynamic_cast<DirectionalLight *>(mNodeManager->create(Node::NodeType::DirectionalLight));
     mSun->setDirection(QVector3D(1, -1, 1));
-
-    mSun = dynamic_cast<DirectionalLight *>(mNodeManager->create(Node::NodeType::DirectionalLight));
-    mSun->setDirection(QVector3D(1, -1, 1));
-
-    mSky = Sky::instance();
-    mSky->setHaze(mHaze);
 
     createFramebuffers();
 
@@ -123,9 +82,10 @@ void RendererManager::resize(int w, int h)
 
 void RendererManager::render(float ifps)
 {
-    mIfps = ifps;
     mCamera = mCameraManager->activeCamera();
     mSun = mLightManager->directionalLight();
+
+    mRenderSettings.ifps = ifps;
 
     // For Water
     {
@@ -142,43 +102,47 @@ void RendererManager::render(float ifps)
         mCamera->setWorldPosition(QVector3D(x, y, z));
 
         // Render Weather
-        mSky->renderWeather(ifps);
+        mSky->renderWeather(mRenderSettings);
 
-        // Render objects and sky
+        // Reflection
+        mRenderSettings.renderFor = RenderFor::Reflection;
         mWater->reflectionFramebuffer()->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderNodes(RenderFor::Reflection);
-        renderTerrain(RenderFor::Reflection);
-        mSky->render(ifps);
+        renderNodes();
+        mTerrain->render(mRenderSettings);
+        mSky->render(mRenderSettings);
 
         mCamera->setWorldPosition(originalPosition);
         mCamera->setWorldRotation(originalRotation);
 
         // Refraction
+        mRenderSettings.renderFor = RenderFor::Refraction;
         mWater->refractionFramebuffer()->bind();
         glClearColor(0, 0, 0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderNodes(RenderFor::Refraction);
-        renderTerrain(RenderFor::Refraction);
+        renderNodes();
+        mTerrain->render(mRenderSettings);
 
         glEnable(GL_MULTISAMPLE);
     }
 
+    mRenderSettings.renderFor = RenderFor::Default;
+
     // Scene
     {
         // Render Weather
-        mSky->renderWeather(ifps);
+        mSky->renderWeather(mRenderSettings);
 
         // Render objects and sky
         mFramebuffers[0]->bind();
         glEnable(GL_DEPTH_TEST);
         glClearColor(mHaze->color().x(), mHaze->color().y(), mHaze->color().z(), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        renderNodes(RenderFor::Default);
-        renderTerrain(RenderFor::Default);
-        mWater->render(ifps);
-        mSky->render(ifps);
+        renderNodes();
+        mTerrain->render(mRenderSettings);
+        mWater->render(mRenderSettings);
+        mSky->render(mRenderSettings);
 
         // Render to default framebuffer now
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -286,7 +250,7 @@ void RendererManager::fillFramebufferMultisampled(Framebuffer *source, Framebuff
     glEnable(GL_DEPTH_TEST);
 }
 
-void RendererManager::renderNodes(RenderFor renderFor)
+void RendererManager::renderNodes()
 {
     auto nodes = mNodeManager->nodes();
 
@@ -302,137 +266,15 @@ void RendererManager::renderNodes(RenderFor renderFor)
         NozzleParticles *particles = dynamic_cast<NozzleParticles *>(node);
 
         if (model)
-            renderModel(model, renderFor);
+        {
+            ModelData *data = mModelsData.value(model->modelName(), nullptr);
+            if (data)
+                data->render(model, mRenderSettings);
+        }
 
         if (particles)
-            particles->render(mIfps);
+            particles->render(mRenderSettings);
     }
-}
-
-void RendererManager::renderTerrain(RenderFor renderFor)
-{
-    if ((int) renderFor != 0)
-        glEnable(GL_CLIP_DISTANCE0);
-
-    mShaderManager->bind(ShaderManager::ShaderType::TerrainShader);
-
-    mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * (int) renderFor);
-    mShaderManager->setUniformValue("VP", mCamera->getVP());
-    mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
-    mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
-    mShaderManager->setUniformValue("directionalLight.color", mSun->color());
-    mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
-    mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
-    mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
-    mShaderManager->setUniformValue("nodeMatrix", mTerrain->transformation());
-    mShaderManager->setUniformValue("terrain.amplitude", mTerrain->properties().amplitude);
-    mShaderManager->setUniformValue("terrain.seed", mTerrain->properties().seed);
-    mShaderManager->setUniformValue("terrain.octaves", mTerrain->properties().octaves);
-    mShaderManager->setUniformValue("terrain.frequency", mTerrain->properties().frequency);
-    mShaderManager->setUniformValue("terrain.tessellationMultiplier", mTerrain->properties().tessellationMultiplier);
-    mShaderManager->setUniformValue("terrain.power", mTerrain->properties().power);
-    mShaderManager->setUniformValue("terrain.grassCoverage", mTerrain->properties().grassCoverage);
-    mShaderManager->setUniformValue("terrain.ambient", mTerrain->material().ambient);
-    mShaderManager->setUniformValue("terrain.diffuse", mTerrain->material().diffuse);
-    mShaderManager->setUniformValue("terrain.shininess", mTerrain->material().shininess);
-    mShaderManager->setUniformValue("terrain.specular", mTerrain->material().specular);
-    mShaderManager->setUniformValue("haze.enabled", renderFor == RenderFor::Refraction ? false : mHaze->enabled());
-    mShaderManager->setUniformValue("haze.color", mHaze->color());
-    mShaderManager->setUniformValue("haze.density", mHaze->density());
-    mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
-    mShaderManager->setUniformValue("waterHeight", mWater->waterHeight());
-    mTerrain->render();
-    mShaderManager->release();
-
-    glDisable(GL_CLIP_DISTANCE0);
-}
-
-void RendererManager::renderModel(Model *model, RenderFor renderFor)
-{
-    if ((int) renderFor != 0)
-        glEnable(GL_CLIP_DISTANCE0);
-
-    ModelData *data = mModelsData.value(model->modelName(), nullptr);
-
-    if (data)
-    {
-        if (mRenderObjects)
-        {
-            mShaderManager->bind(ShaderManager::ShaderType::ModelShader);
-            mShaderManager->setUniformValue("modelSelected", model->selected());
-            mShaderManager->setUniformValue("clipPlane", QVector4D(0, 1, 0, -mWater->waterHeight()) * (int) renderFor);
-            mShaderManager->setUniformValue("useBlinnShading", mUseBlinnShading);
-            mShaderManager->setUniformValue("VP", mCamera->getVP());
-            mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
-            mShaderManager->setUniformValue("directionalLight.direction", mSun->direction());
-            mShaderManager->setUniformValue("directionalLight.color", mSun->color());
-            mShaderManager->setUniformValue("directionalLight.ambient", mSun->ambient());
-            mShaderManager->setUniformValue("directionalLight.diffuse", mSun->diffuse());
-            mShaderManager->setUniformValue("directionalLight.specular", mSun->specular());
-            mShaderManager->setUniformValue("haze.enabled", mHaze->enabled());
-            mShaderManager->setUniformValue("haze.color", mHaze->color());
-            mShaderManager->setUniformValue("haze.density", mHaze->density());
-            mShaderManager->setUniformValue("haze.gradient", mHaze->gradient());
-
-            QVector<PointLight *> pointLights = Helper::getClosePointLights(mLightManager->pointLights(), model);
-            mShaderManager->setUniformValue("numberOfPointLights", pointLights.size());
-
-            for (int i = 0; i < pointLights.size(); i++)
-            {
-                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].color", pointLights[i]->color());
-                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].position", pointLights[i]->position());
-                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].ambient", pointLights[i]->ambient());
-                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].diffuse", pointLights[i]->diffuse());
-                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].specular", pointLights[i]->specular());
-                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].constant", pointLights[i]->constant());
-                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].linear", pointLights[i]->linear());
-                mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].quadratic", pointLights[i]->quadratic());
-            }
-
-            QVector<SpotLight *> spotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), model);
-            mShaderManager->setUniformValue("numberOfSpotLights", spotLights.size());
-
-            for (int i = 0; i < spotLights.size(); i++)
-            {
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].color", spotLights[i]->color());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].position", spotLights[i]->position());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].ambient", spotLights[i]->ambient());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].diffuse", spotLights[i]->diffuse());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].specular", spotLights[i]->specular());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].constant", spotLights[i]->constant());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].linear", spotLights[i]->linear());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].quadratic", spotLights[i]->quadratic());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].direction", spotLights[i]->direction());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].cutOffAngle", spotLights[i]->cutOffAngle());
-                mShaderManager->setUniformValue("spotLights[" + QString::number(i) + "].outerCutOffAngle", spotLights[i]->outerCutOffAngle());
-            }
-
-            data->render(model);
-            mShaderManager->release();
-        }
-
-        if (mRenderWireframe)
-        {
-            mShaderManager->bind(ShaderManager::ShaderType::WireframeShader);
-            mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-            mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-            mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-            data->render(Primitive::Triangles);
-            mShaderManager->release();
-        }
-
-        if (mRenderNormals)
-        {
-            mShaderManager->bind(ShaderManager::ShaderType::NormalsShader);
-            mShaderManager->setUniformValue("projectionMatrix", mCamera->projection());
-            mShaderManager->setUniformValue("viewMatrix", mCamera->worldTransformation());
-            mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation());
-            data->render(Primitive::Triangles);
-            mShaderManager->release();
-        }
-    }
-
-    glDisable(GL_CLIP_DISTANCE0);
 }
 
 void RendererManager::createFramebuffers()
@@ -515,10 +357,10 @@ void RendererManager::drawGUI()
     // Render Settings
     if (!ImGui::CollapsingHeader("Render Settings"))
     {
-        ImGui::Checkbox("Render Objects", &mRenderObjects);
-        ImGui::Checkbox("Wireframe", &mRenderWireframe);
-        ImGui::Checkbox("Render Normals", &mRenderNormals);
-        ImGui::Checkbox("Use Blinn Shading", &mUseBlinnShading);
+        ImGui::Checkbox("Render Models", &mRenderSettings.renderModels);
+        ImGui::Checkbox("Render Wireframe", &mRenderSettings.renderWireframe);
+        ImGui::Checkbox("Render Normals", &mRenderSettings.renderNormals);
+        ImGui::Checkbox("Use Blinn Shading", &mRenderSettings.useBlinnShading);
     }
 
     mSun->drawGUI();

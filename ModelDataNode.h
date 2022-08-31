@@ -27,9 +27,7 @@ public:
     const QMatrix4x4 &transformation() const;
     void setTransformation(const QMatrix4x4 &newTransformation);
 
-    void render(Model *model);
-    void render(Primitive primitive);
-    void renderForNodeSelector(Model *model);
+    void render(Model *model, const RenderSettings &settings);
 
     QMatrix4x4 getWorldTransformation() const;
     ModelDataNode *getChildNode(const QString &meshName);

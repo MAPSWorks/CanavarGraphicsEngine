@@ -36,10 +36,12 @@ private slots:
     void render(float ifps);
 
 private:
+    ShaderManager *mShaderManager;
     RendererManager *mRendererManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
     NodeManager *mNodeManager;
+
     Window *mWindow;
     NodeSelector *mNodeSelector;
 

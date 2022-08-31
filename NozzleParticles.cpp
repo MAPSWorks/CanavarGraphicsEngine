@@ -57,12 +57,12 @@ void NozzleParticles::create()
     mVAO->release();
 }
 
-void NozzleParticles::render(float ifps)
+void NozzleParticles::render(const RenderSettings &settings)
 {
     for (int i = 0; i < mParticles.size(); i++)
     {
         float r = mParticles[i].initialPosition.length();
-        mParticles[i].life += ifps;
+        mParticles[i].life += settings.ifps;
         if (mParticles[i].life >= mMaxLife + RandomGenerator::getRandomFloat(mMaxLife * (mRadius - r)))
             mParticles[i] = generateParticle();
     }

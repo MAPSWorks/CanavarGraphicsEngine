@@ -1,6 +1,7 @@
 #ifndef NODEMANAGER_H
 #define NODEMANAGER_H
 
+#include "Manager.h"
 #include "Mesh.h"
 #include "Node.h"
 
@@ -9,7 +10,7 @@
 class CameraManager;
 class LightManager;
 class RendererManager;
-class NodeManager : public QObject
+class NodeManager : public Manager
 {
     Q_OBJECT
 
@@ -17,6 +18,8 @@ private:
     explicit NodeManager(QObject *parent = nullptr);
 
 public:
+    bool init() override;
+
     Node *create(Node::NodeType type, const QString &name = QString());
     void removeNode(Node *node);
     void setSelectedNode(Node *node);

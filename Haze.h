@@ -10,8 +10,11 @@
 class Haze : public QObject
 {
     Q_OBJECT
-public:
+private:
     explicit Haze(QObject *parent = nullptr);
+
+public:
+    static Haze *instance();
 
     float gradient() const;
     void setGradient(float newGradient);

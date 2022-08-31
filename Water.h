@@ -27,11 +27,9 @@ private:
 
 public:
     static Water *instance();
-    void create();
-    void render(float ifps);
+    void render(const RenderSettings &settings);
     void resize(int width, int height);
     void drawGUI();
-    void setHaze(Haze *newHaze);
 
     float waterHeight() const;
 

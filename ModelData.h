@@ -24,9 +24,7 @@ public:
     const QString &modelName() const;
     const QVector<TextureMaterial *> &materials() const;
 
-    void render(Model *model);
-    void render(Primitive primitive);
-    void renderForNodeSelector(Model *model);
+    void render(Model *model, const RenderSettings &settings);
     Mesh *getMesh(const QString &meshName);
 
 private:

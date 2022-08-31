@@ -1,8 +1,6 @@
 #ifndef TILEGENERATOR_H
 #define TILEGENERATOR_H
 
-#include "Common.h"
-
 #include <QObject>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLVertexArrayObject>
@@ -21,8 +19,7 @@ public:
 
     explicit TileGenerator(int resolution, int tiles, float width, QObject *parent = nullptr);
 
-    void generate();
-    void render(Primitive primitive);
+    void render(GLenum primitive);
 
     QVector2D whichTile(const QVector3D &subject) const;
     void translateTiles(const QVector2D &translation);

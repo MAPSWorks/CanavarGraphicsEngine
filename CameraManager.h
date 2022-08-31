@@ -2,12 +2,13 @@
 #define CAMERAMANAGER_H
 
 #include "Camera.h"
+#include "Manager.h"
 #include "NodeManager.h"
 #include "PerspectiveCamera.h"
 
 #include <QObject>
 
-class CameraManager : public QObject
+class CameraManager : public Manager
 {
     Q_OBJECT
 
@@ -20,6 +21,8 @@ private:
     void removeCamera(Camera *camera);
 
 public:
+    bool init() override;
+
     void onMouseDoubleClicked(QMouseEvent *event);
     void onMousePressed(QMouseEvent *event);
     void onMouseReleased(QMouseEvent *event);

@@ -2,7 +2,7 @@
 #include "Shader.h"
 
 ShaderManager::ShaderManager(QObject *parent)
-    : QObject{parent}
+    : Manager(parent)
     , mActiveShader(ShaderType::None)
 {}
 
@@ -382,10 +382,6 @@ bool ShaderManager::init()
         shader->addUniform("lightDirection");
         shader->addUniform("reflectionTex");
         shader->addUniform("refractionTex");
-        shader->addUniform("haze.enabled");
-        shader->addUniform("haze.color");
-        shader->addUniform("haze.density");
-        shader->addUniform("haze.gradient");
 
         shader->addAttribute("position");
         shader->addAttribute("normal");

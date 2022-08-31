@@ -20,7 +20,7 @@
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObject>
 
-class RendererManager : public QObject, protected QOpenGLExtraFunctions
+class RendererManager : public Manager, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 
@@ -30,7 +30,7 @@ private:
 public:
     static RendererManager *instance();
 
-    bool init();
+    bool init() override;
     void render(float ifps);
     void resize(int w, int h);
 
@@ -38,11 +38,7 @@ public:
     void drawGUI();
 
 private:
-    enum class RenderFor { Default = 0, Reflection = 1, Refraction = -1 };
-
-    void renderNodes(RenderFor renderFor);
-    void renderTerrain(RenderFor renderFor);
-    void renderModel(Model *model, RenderFor renderFor);
+    void renderNodes();
     void fillFramebuffer(Framebuffer *source, Framebuffer *target);
     void fillFramebufferMultisampled(Framebuffer *source, Framebuffer *target);
     void createFramebuffers();
@@ -68,19 +64,15 @@ private:
     Quad *mQuad;
     Water *mWater;
 
-    bool mRenderObjects;
-    bool mRenderWireframe;
-    bool mRenderNormals;
-    bool mUseBlinnShading;
-
     Framebuffer *mFramebuffers[2];
     FramebufferFormat mFramebufferFormat;
+
+    RenderSettings mRenderSettings;
 
     int mWidth;
     int mHeight;
 
     bool mFlag;
-    float mIfps;
 };
 
 #endif // RENDERERMANAGER_H

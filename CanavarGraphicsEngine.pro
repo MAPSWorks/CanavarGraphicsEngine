@@ -24,6 +24,7 @@ HEADERS += \
     CameraManager.h \
     Common.h \
     Controller.h \
+    Cube.h \
     DirectionalLight.h \
     DummyCamera.h \
     Framebuffer.h \
@@ -33,6 +34,7 @@ HEADERS += \
     Helper.h \
     Light.h \
     LightManager.h \
+    Manager.h \
     Mesh.h \
     Model.h \
     ModelData.h \
@@ -66,6 +68,7 @@ SOURCES += \
     Camera.cpp \
     CameraManager.cpp \
     Controller.cpp \
+    Cube.cpp \
     DirectionalLight.cpp \
     DummyCamera.cpp \
     Framebuffer.cpp \
@@ -76,6 +79,7 @@ SOURCES += \
     Light.cpp \
     LightManager.cpp \
     Main.cpp \
+    Manager.cpp \
     Mesh.cpp \
     Model.cpp \
     ModelData.cpp \

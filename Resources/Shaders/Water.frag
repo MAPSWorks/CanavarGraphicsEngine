@@ -24,13 +24,6 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-struct Haze {
-    bool enabled;
-    vec3 color;
-    float density;
-    float gradient;
-};
-
 in vec3 fsNormal;
 in vec4 fsClipSpaceCoords;
 in vec2 fsTextureCoords;
@@ -43,8 +36,6 @@ uniform vec3 lightDirection;
 
 uniform sampler2D reflectionTex;
 uniform sampler2D refractionTex;
-
-uniform Haze haze;
 
 out vec4 outColor;
 
@@ -176,16 +167,6 @@ float worley(vec3 st)
     return color;
 }
 
-float getHazeFactor()
-{
-    if (haze.enabled)
-    {
-        float distance = length(cameraPosition - fsPosition.xyz);
-        float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
-        return clamp(factor, 0.0f, 1.0f);
-    } else
-        return 0.0f;
-}
 
 void main()
 {
@@ -233,9 +214,9 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 512.);
     vec3 specular = spec * lightColor * specularFactor;
 
-    float hazeFactor = getHazeFactor();
+
     vec4 color = vec4(0.2, 0.71, 0.85, 1.0);
-    outColor = mix(mix(refr_reflCol, color * 0.8, 0.1) * 0.8 + vec4(diffuse + specular, 1.0), vec4(haze.color, 1.0f), hazeFactor);
+    outColor = mix(refr_reflCol, color * 0.8, 0.1) * 0.8 + vec4(diffuse + specular, 1.0);
     float foam = perlin(fsPosition.x * 4.0, fsPosition.z * 4.0, moveFactor * 10.0) * 0.25;
     foam = mix(foam * pow((1.0 - waterDepth), 8.0), foam * 0.01, 0.0);
     outColor.rgb *= 0.95;

@@ -9,11 +9,13 @@
 class Quad : public QObject, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
-public:
+private:
     explicit Quad(QObject *parent = nullptr);
 
-    void create();
+public:
     void render();
+
+    static Quad *instance();
 
 private:
     unsigned int mVAO;

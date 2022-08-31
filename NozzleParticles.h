@@ -24,7 +24,7 @@ private:
 
 public:
     virtual void create();
-    virtual void render(float ifps);
+    virtual void render(const RenderSettings &settings);
     virtual void drawGUI() override;
 
 private:

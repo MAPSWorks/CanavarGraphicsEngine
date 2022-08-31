@@ -33,37 +33,15 @@ void ModelDataNode::setName(const QString &newName)
     mName = newName;
 }
 
-void ModelDataNode::render(Model *model)
+void ModelDataNode::render(Model *model, const RenderSettings &settings)
 {
     auto meshes = mData->meshes();
 
     for (auto index : qAsConst(mMeshIndices))
-        meshes[index]->render(model);
+        meshes[index]->render(model, settings);
 
     for (int i = 0; i < mChildren.size(); i++)
-        mChildren[i]->render(model);
-}
-
-void ModelDataNode::render(Primitive primitive)
-{
-    auto meshes = mData->meshes();
-
-    for (auto index : qAsConst(mMeshIndices))
-        meshes[index]->render(primitive);
-
-    for (int i = 0; i < mChildren.size(); i++)
-        mChildren[i]->render(primitive);
-}
-
-void ModelDataNode::renderForNodeSelector(Model *model)
-{
-    auto meshes = mData->meshes();
-
-    for (auto index : qAsConst(mMeshIndices))
-        meshes[index]->renderForNodeSelector(model);
-
-    for (int i = 0; i < mChildren.size(); i++)
-        mChildren[i]->renderForNodeSelector(model);
+        mChildren[i]->render(model, settings);
 }
 
 QMatrix4x4 ModelDataNode::getWorldTransformation() const
