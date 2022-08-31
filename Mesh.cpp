@@ -119,7 +119,6 @@ void Mesh::render(Model *model, const RenderSettings &settings)
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
         mVertexArray.release();
         mShaderManager->release();
-
     } else
     {
         if (settings.renderModels)

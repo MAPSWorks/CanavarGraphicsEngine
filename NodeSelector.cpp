@@ -18,8 +18,6 @@ NodeSelector::NodeSelector(QObject *parent)
                                           FramebufferFormat::TextureInternalFormat::RGBA32UI,
                                           FramebufferFormat::TexturePixelFormat::RGBA_INTEGER,
                                           FramebufferFormat::TextureDataType::UNSIGNED_INT);
-
-    mRenderSettings.renderFor = RenderFor::NodeSelector;
 }
 
 void NodeSelector::init()
@@ -32,6 +30,7 @@ void NodeSelector::onMousePressed(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
+        mRenderSettings.renderFor = RenderFor::NodeSelector;
         mSelectionFramebuffer->bind();
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
