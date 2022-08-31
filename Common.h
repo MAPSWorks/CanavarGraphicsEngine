@@ -2,10 +2,11 @@
 #define COMMON_H
 
 enum class RenderFor : int { //
-    Default = 2,
-    Reflection = 1,
     Refraction = -1,
-    NodeSelector = 3
+    Reflection = 1,
+    Default = 2,
+    NodeSelectorMeshes = 3,
+    NodeSelectorVertices = 4
 };
 
 struct RenderSettings {

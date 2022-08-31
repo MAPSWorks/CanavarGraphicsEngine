@@ -430,16 +430,15 @@ bool ShaderManager::init()
             return false;
     }
 
-    // Node Selection Shader
+    // Node Selection Meshes Shader
     {
-        Shader *shader = new Shader(ShaderType::NodeSelectionShader);
+        Shader *shader = new Shader(ShaderType::NodeSelectionMeshesShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NodeSelection.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NodeSelection.frag");
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NodeSelectionMeshes.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NodeSelectionMeshes.frag");
 
-        shader->addUniform("VP");
-        shader->addUniform("nodeMatrix");
+        shader->addUniform("MVP");
         shader->addUniform("nodeIndex");
         shader->addUniform("meshIndex");
 
@@ -455,6 +454,25 @@ bool ShaderManager::init()
             return false;
     }
 
+    // Node Selection Vertices Shader
+    {
+        Shader *shader = new Shader(ShaderType::NodeSelectionVerticesShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NodeSelectionVertices.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NodeSelectionVertices.frag");
+
+        shader->addUniform("MVP");
+        shader->addUniform("vertexModelTransformation");
+
+        shader->addAttribute("position");
+        shader->addAttribute("instancePosition");
+        shader->addAttribute("instanceNormal");
+
+        if (!shader->init())
+            return false;
+    }
+
     // Vertex Renderer Shader
     {
         Shader *shader = new Shader(ShaderType::VertexRendererShader);
@@ -464,6 +482,7 @@ bool ShaderManager::init()
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/VertexRenderer.frag");
         shader->addUniform("MVP");
         shader->addUniform("vertexModelTransformation");
+        shader->addUniform("selectedVertex");
         shader->addAttribute("position");
         shader->addAttribute("instancePosition");
         shader->addAttribute("instanceNormal");

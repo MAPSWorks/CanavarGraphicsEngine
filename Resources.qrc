@@ -32,9 +32,11 @@
         <file>Resources/Shaders/ScreenMultisampled.vert</file>
         <file>Resources/Shaders/BlurMultisampled.frag</file>
         <file>Resources/Shaders/BlurMultisampled.vert</file>
-        <file>Resources/Shaders/NodeSelection.frag</file>
-        <file>Resources/Shaders/NodeSelection.vert</file>
+        <file>Resources/Shaders/NodeSelectionMeshes.frag</file>
+        <file>Resources/Shaders/NodeSelectionMeshes.vert</file>
         <file>Resources/Shaders/VertexRenderer.frag</file>
         <file>Resources/Shaders/VertexRenderer.vert</file>
+        <file>Resources/Shaders/NodeSelectionVertices.frag</file>
+        <file>Resources/Shaders/NodeSelectionVertices.vert</file>
     </qresource>
 </RCC>

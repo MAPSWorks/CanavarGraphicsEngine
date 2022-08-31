@@ -26,12 +26,16 @@ public:
     void setSelectedNode(unsigned int nodeIndex);
     void setSelectedMesh(unsigned int meshIndex);
     void setSelectedMesh(Mesh *mesh);
-    void setSelecteVertex(int vertex);
+    void setSelectedVertex(int vertex);
 
     const QList<Node *> &nodes() const;
     static NodeManager *instance();
 
     void drawGUI();
+
+    Node *selectedNode() const;
+    Mesh *selectedMesh() const;
+    Model *selectedModel() const;
 
 private:
     void populateNodesComboBox(Node *node);

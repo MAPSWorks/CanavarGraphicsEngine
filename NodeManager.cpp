@@ -211,14 +211,12 @@ void NodeManager::setSelectedMesh(Mesh *mesh)
     mSelectedMesh = mesh;
 }
 
-void NodeManager::setSelecteVertex(int vertex)
+void NodeManager::setSelectedVertex(int vertex)
 {
     mSelectedVertex = vertex;
 
     if (mSelectedMesh)
-    {
         mSelectedMesh->setSelectedVertex(mSelectedVertex);
-    }
 }
 
 NodeManager *NodeManager::instance()
@@ -310,4 +308,19 @@ void NodeManager::populateMeshesComboBox(Mesh *mesh)
 {
     if (ImGui::Selectable(mesh->name().toStdString().c_str()))
         setSelectedMesh(mesh);
+}
+
+Model *NodeManager::selectedModel() const
+{
+    return mSelectedModel;
+}
+
+Mesh *NodeManager::selectedMesh() const
+{
+    return mSelectedMesh;
+}
+
+Node *NodeManager::selectedNode() const
+{
+    return mSelectedNode;
 }

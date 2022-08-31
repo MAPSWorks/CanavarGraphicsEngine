@@ -80,7 +80,6 @@ private:
     void pointLights();
     void spotLights();
     void materials();
-    void renderVertices(Model *model);
 
 private:
     ShaderManager *mShaderManager;

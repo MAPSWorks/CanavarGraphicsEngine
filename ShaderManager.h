@@ -34,7 +34,8 @@ public:
         WaterShader,
         BlurShader,
         BlurMultisampledShader,
-        NodeSelectionShader,
+        NodeSelectionMeshesShader,
+        NodeSelectionVerticesShader,
         VertexRendererShader
     };
 

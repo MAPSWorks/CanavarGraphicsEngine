@@ -94,7 +94,6 @@ bool Mesh::create()
     mVAO->release();
 
     // Vertex Rendering for Node Selector Setup
-
     mVertexModelTransformation.scale(0.025f, 0.025f, 0.025f);
 
     mVerticesVAO = new QOpenGLVertexArrayObject;
@@ -128,22 +127,49 @@ void Mesh::render(Model *model, const RenderSettings &settings)
     mClosePointLights = Helper::getClosePointLights(mLightManager->pointLights(), model);
     mCloseSpotLights = Helper::getCloseSpotLights(mLightManager->spotLights(), model);
 
-    if (settings.renderFor == RenderFor::NodeSelector)
+    if (settings.renderFor == RenderFor::NodeSelectorMeshes)
     {
-        mShaderManager->bind(ShaderManager::ShaderType::NodeSelectionShader);
-        mShaderManager->setUniformValue("VP", mCameraManager->activeCamera()->getVP());
+        mShaderManager->bind(ShaderManager::ShaderType::NodeSelectionMeshesShader);
+        mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
         mShaderManager->setUniformValue("nodeIndex", model->index());
-        mShaderManager->setUniformValue("nodeMatrix", model->worldTransformation() * model->getMeshTransformation(mName));
         mShaderManager->setUniformValue("meshIndex", mIndex);
         mVAO->bind();
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
         mVAO->release();
         mShaderManager->release();
 
+    } else if (settings.renderFor == RenderFor::NodeSelectorVertices)
+    {
+        // For depth info
+        mShaderManager->bind(ShaderManager::ShaderType::NodeSelectionMeshesShader);
+        mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
+        mShaderManager->setUniformValue("nodeIndex", model->index());
+        mShaderManager->setUniformValue("meshIndex", mIndex);
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+        mShaderManager->release();
+
+        mShaderManager->bind(ShaderManager::ShaderType::NodeSelectionVerticesShader);
+        mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
+        mShaderManager->setUniformValue("vertexModelTransformation", mVertexModelTransformation);
+        mVerticesVAO->bind();
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mVertices.size());
+        mVerticesVAO->release();
+        mShaderManager->release();
     } else
     {
         if (mSelected)
-            renderVertices(model);
+        {
+            mShaderManager->bind(ShaderManager::ShaderType::VertexRendererShader);
+            mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
+            mShaderManager->setUniformValue("vertexModelTransformation", mVertexModelTransformation);
+            mShaderManager->setUniformValue("selectedVertex", mSelectedVertex);
+            mVerticesVAO->bind();
+            glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mVertices.size());
+            mVerticesVAO->release();
+            mShaderManager->release();
+        }
 
         if ((int) settings.renderFor <= 1)
             glEnable(GL_CLIP_DISTANCE0);
@@ -296,18 +322,6 @@ void Mesh::materials()
     }
 }
 
-void Mesh::renderVertices(Model *model)
-{
-    mShaderManager->bind(ShaderManager::ShaderType::VertexRendererShader);
-    mShaderManager->setUniformValue("MVP", mCamera->getVP() * model->worldTransformation() * model->getMeshTransformation(mName));
-    mShaderManager->setUniformValue("vertexModelTransformation", mVertexModelTransformation);
-    mShaderManager->setUniformValue("selectedVertex", mSelectedVertex);
-    mVerticesVAO->bind();
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mVertices.size());
-    mVerticesVAO->release();
-    mShaderManager->release();
-}
-
 const QString &Mesh::name() const
 {
     return mName;
@@ -377,6 +391,7 @@ void Mesh::drawGUI()
 
     if (mSelectedVertex != -1 && mSelectedVertex < mIndices.size())
     {
+        ImGui::Text("Selected vertex index: %d", mSelectedVertex);
         ImGui::Text("Selected vertex position: (%.3f, %.3f, %.3f)", //
                     mVertices[mSelectedVertex].position[0],
                     mVertices[mSelectedVertex].position[1],

@@ -4,7 +4,7 @@
 
 NodeSelector::NodeSelector(QObject *parent)
     : Manager(parent)
-    , mSelectionFramebuffer(nullptr)
+    , mMeshSelectionFramebuffer(nullptr)
     , mResizeFlag(false)
 {
     mNodeManager = NodeManager::instance();
@@ -15,15 +15,16 @@ NodeSelector::NodeSelector(QObject *parent)
     mFramebufferFormat.setHeight(900);
     mFramebufferFormat.addColorAttachment(0, //
                                           FramebufferFormat::TextureTarget::TEXTURE_2D,
-                                          FramebufferFormat::TextureInternalFormat::RGBA32UI,
-                                          FramebufferFormat::TexturePixelFormat::RGBA_INTEGER,
+                                          FramebufferFormat::TextureInternalFormat::RGB32UI,
+                                          FramebufferFormat::TexturePixelFormat::RGB_INTEGER,
                                           FramebufferFormat::TextureDataType::UNSIGNED_INT);
 }
 
 bool NodeSelector::init()
 {
     initializeOpenGLFunctions();
-    mSelectionFramebuffer = new Framebuffer(mFramebufferFormat);
+    mMeshSelectionFramebuffer = new Framebuffer(mFramebufferFormat);
+    mVertexSelectionFramebuffer = new Framebuffer(mFramebufferFormat);
     return true;
 }
 
@@ -31,19 +32,37 @@ void NodeSelector::onMousePressed(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        mRenderSettings.renderFor = RenderFor::NodeSelector;
-        mSelectionFramebuffer->bind();
+        mRenderSettings.renderFor = RenderFor::NodeSelectorMeshes;
+        mMeshSelectionFramebuffer->bind();
         glEnable(GL_DEPTH_TEST);
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         render();
         glFinish();
 
-        glReadPixels(event->x(), mFramebufferFormat.height() - event->y(), 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, &mSelectionInfo);
+        unsigned int info[3];
+        glReadPixels(event->x(), mFramebufferFormat.height() - event->y(), 1, 1, GL_RGB_INTEGER, GL_UNSIGNED_INT, info);
 
-        mNodeManager->setSelectedNode(mSelectionInfo.nodeIndex);
-        mNodeManager->setSelectedMesh(mSelectionInfo.meshIndex);
-        mNodeManager->setSelecteVertex(mSelectionInfo.vertexIndex);
+        mNodeManager->setSelectedNode(info[0]);
+        mNodeManager->setSelectedMesh(info[1]);
+
+        if (mNodeManager->selectedMesh())
+        {
+            mRenderSettings.renderFor = RenderFor::NodeSelectorVertices;
+            mVertexSelectionFramebuffer->bind();
+            glEnable(GL_DEPTH_TEST);
+            glClearColor(0, 0, 0, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            render();
+            glFinish();
+
+            unsigned int info[3];
+            glReadPixels(event->x(), mFramebufferFormat.height() - event->y(), 1, 1, GL_RGB_INTEGER, GL_UNSIGNED_INT, info);
+            if (info[2] == 1)
+                mNodeManager->setSelectedVertex(info[0]);
+            else
+                mNodeManager->setSelectedVertex(-1);
+        }
     }
 }
 
@@ -57,10 +76,14 @@ void NodeSelector::resize(int width, int height)
         mResizeFlag = true;
 
         QTimer::singleShot(250, [=]() {
-            if (mSelectionFramebuffer)
-                mSelectionFramebuffer->deleteLater();
+            if (mMeshSelectionFramebuffer)
+                mMeshSelectionFramebuffer->deleteLater();
 
-            mSelectionFramebuffer = new Framebuffer(mFramebufferFormat);
+            if (mVertexSelectionFramebuffer)
+                mVertexSelectionFramebuffer->deleteLater();
+
+            mMeshSelectionFramebuffer = new Framebuffer(mFramebufferFormat);
+            mVertexSelectionFramebuffer = new Framebuffer(mFramebufferFormat);
             mResizeFlag = false;
         });
     }

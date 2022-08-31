@@ -7,10 +7,9 @@ layout(location = 4) in vec3 bitangent;
 layout(location = 5) in int[4] ids;
 layout(location = 6) in float[4] weights;
 
-uniform mat4 VP;
-uniform mat4 nodeMatrix;
+uniform mat4 MVP;
 
 void main()
 {
-    gl_Position = VP * nodeMatrix * vec4(position, 1.0);
+    gl_Position = MVP * vec4(position, 1.0);
 }

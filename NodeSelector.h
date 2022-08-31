@@ -18,12 +18,6 @@ private:
     explicit NodeSelector(QObject *parent = nullptr);
 
 public:
-    struct SelectionInfo {
-        unsigned int nodeIndex;
-        unsigned int meshIndex;
-        unsigned int vertexIndex;
-    };
-
     bool init() override;
     void onMousePressed(QMouseEvent *event);
     void resize(int width, int height);
@@ -37,11 +31,11 @@ private:
     NodeManager *mNodeManager;
     RendererManager *mRendererManager;
 
-    Framebuffer *mSelectionFramebuffer;
+    Framebuffer *mMeshSelectionFramebuffer;
+    Framebuffer *mVertexSelectionFramebuffer;
     FramebufferFormat mFramebufferFormat;
     bool mResizeFlag;
 
-    SelectionInfo mSelectionInfo;
     RenderSettings mRenderSettings;
 };
 
