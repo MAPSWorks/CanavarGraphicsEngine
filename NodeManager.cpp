@@ -11,11 +11,13 @@ NodeManager::NodeManager(QObject *parent)
     : Manager(parent)
     , mNumberOfNodes(0)
     , mSelectedNode(nullptr)
-    , mSelectedMesh(nullptr)
     , mSelectedModel(nullptr)
+    , mSelectedMesh(nullptr)
+    , mSelectedVertexIndex(-1)
     , mMeshSelectionEnabled(false)
     , mVertexSelectionEnabled(false)
-    , mSelectedVertexIndex(-1)
+    , mMeshLockEnabled(false)
+
 {}
 
 bool NodeManager::init()
@@ -162,6 +164,8 @@ void NodeManager::setSelectedNode(Node *node)
 
     setSelectedMesh(nullptr);
     mVertexSelectionEnabled = false;
+    mMeshSelectionEnabled = false;
+    mMeshLockEnabled = false;
 }
 
 void NodeManager::setSelectedNode(unsigned int nodeIndex)
@@ -277,6 +281,7 @@ void NodeManager::drawGUI()
                     mSelectedMesh->drawGUI();
 
                 ImGui::BeginDisabled(!mSelectedMesh);
+                ImGui::Checkbox("Lock mesh", &mMeshLockEnabled);
                 ImGui::Checkbox("Vertex selection", &mVertexSelectionEnabled);
                 ImGui::EndDisabled();
 
@@ -317,8 +322,14 @@ void NodeManager::populateMeshesComboBox(Mesh *mesh)
     if (ImGui::Selectable(mesh->name().toStdString().c_str()))
     {
         mMeshSelectionEnabled = true;
+        mMeshLockEnabled = false;
         setSelectedMesh(mesh);
     }
+}
+
+bool NodeManager::meshLockEnabled() const
+{
+    return mMeshLockEnabled;
 }
 
 bool NodeManager::meshSelectionEnabled() const

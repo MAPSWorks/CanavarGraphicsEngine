@@ -32,8 +32,7 @@ void NodeSelector::onMousePressed(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        // If vertex selection is enabled then DO NOT select mesh
-        if (!mNodeManager->vertexSelectionEnabled())
+        if (!mNodeManager->meshLockEnabled())
         {
             mRenderSettings.renderFor = RenderFor::NodeSelectorMeshes;
             mMeshSelectionFramebuffer->bind();
@@ -52,14 +51,14 @@ void NodeSelector::onMousePressed(QMouseEvent *event)
                 mNodeManager->setSelectedMesh(info[1]);
         }
 
-        if (mNodeManager->vertexSelectionEnabled())
+        if (mNodeManager->vertexSelectionEnabled() && mNodeManager->selectedMesh())
         {
             mRenderSettings.renderFor = RenderFor::NodeSelectorVertices;
             mVertexSelectionFramebuffer->bind();
             glEnable(GL_DEPTH_TEST);
             glClearColor(0, 0, 0, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-            render();
+            mNodeManager->selectedMesh()->render(mNodeManager->selectedModel(), mRenderSettings);
             glFinish();
 
             unsigned int info[3];

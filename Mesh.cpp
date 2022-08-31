@@ -95,7 +95,7 @@ bool Mesh::create()
     mVAO->release();
 
     // Vertex Rendering for Node Selector Setup
-    mVertexModelTransformation.scale(0.025f, 0.025f, 0.025f);
+    mVertexModelTransformation.scale(0.05f, 0.05f, 0.05f);
 
     mVerticesVAO = new QOpenGLVertexArrayObject;
     mVerticesVAO->create();

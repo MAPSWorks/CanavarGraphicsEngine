@@ -39,6 +39,7 @@ public:
 
     bool vertexSelectionEnabled() const;
     bool meshSelectionEnabled() const;
+    bool meshLockEnabled() const;
 
 private:
     void populateNodesComboBox(Node *node);
@@ -51,14 +52,16 @@ private:
     LightManager *mLightManager;
     RendererManager *mRendererManager;
 
-    // Gui
+    // GUI Stuff
     Node *mSelectedNode;
-    Mesh *mSelectedMesh;
     Model *mSelectedModel; // Casted from mSelectedNode
+    Mesh *mSelectedMesh;
+    int mSelectedVertexIndex;
     QVector<Mesh *> mSelectedModelMeshes;
+
     bool mMeshSelectionEnabled;
     bool mVertexSelectionEnabled;
-    int mSelectedVertexIndex;
+    bool mMeshLockEnabled;
 };
 
 #endif // NODEMANAGER_H
