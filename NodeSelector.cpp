@@ -41,6 +41,7 @@ void NodeSelector::onMousePressed(QMouseEvent *event)
 
         mNodeManager->setSelectedNode(mSelectionInfo.nodeIndex);
         mNodeManager->setSelectedMesh(mSelectionInfo.meshIndex);
+        mNodeManager->setSelecteVertex(mSelectionInfo.vertexIndex);
     }
 }
 

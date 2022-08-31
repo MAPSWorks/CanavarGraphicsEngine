@@ -14,6 +14,7 @@ NodeManager::NodeManager(QObject *parent)
     , mSelectedMesh(nullptr)
     , mSelectedModel(nullptr)
     , mMeshSelectionEnabled(false)
+    , mSelectedVertex(-1)
 {
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
@@ -203,6 +204,16 @@ void NodeManager::setSelectedMesh(Mesh *mesh)
         mSelectedMesh->setSelected(false);
 
     mSelectedMesh = mesh;
+}
+
+void NodeManager::setSelecteVertex(int vertex)
+{
+    mSelectedVertex = vertex;
+
+    if (mSelectedMesh)
+    {
+        mSelectedMesh->setSelectedVertex(mSelectedVertex);
+    }
 }
 
 NodeManager *NodeManager::instance()

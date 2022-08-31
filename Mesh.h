@@ -65,6 +65,9 @@ public:
     bool selected() const;
     void setSelected(bool newSelected);
 
+    int selectedVertex() const;
+    void setSelectedVertex(int newSelectedVertex);
+
     void drawGUI();
 
 private:
@@ -85,6 +88,8 @@ private:
     AABB mAABB;
 
     bool mSelected;
+
+    int mSelectedVertex;
 };
 
 #endif // MESH_H

@@ -4,6 +4,7 @@
 Mesh::Mesh(QObject *parent)
     : QObject(parent)
     , mSelected(false)
+    , mSelectedVertex(-1)
 {
     mShaderManager = ShaderManager::instance();
 }
@@ -149,6 +150,13 @@ void Mesh::render(Model *model)
     mVertexArray.bind();
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
     mVertexArray.release();
+
+    if (mSelected)
+    {
+        mVertexArray.bind();
+        glDrawElements(GL_POINTS, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVertexArray.release();
+    }
 }
 
 void Mesh::renderForNodeSelector(Model *model)
@@ -216,10 +224,29 @@ bool Mesh::selected() const
 void Mesh::setSelected(bool newSelected)
 {
     mSelected = newSelected;
+    mSelectedVertex = -1;
+}
+
+int Mesh::selectedVertex() const
+{
+    return mSelectedVertex;
+}
+
+void Mesh::setSelectedVertex(int newSelectedVertex)
+{
+    mSelectedVertex = newSelectedVertex;
 }
 
 void Mesh::drawGUI()
 {
     ImGui::Text("Index: %d", mIndex);
     ImGui::Text("Number of vertices: %d", mVertices.size());
+
+    if (mSelectedVertex != -1 && mSelectedVertex < mIndices.size())
+    {
+        ImGui::Text("Selected vertex position: (%.3f, %.3f, %.3f)", //
+                    mVertices[mSelectedVertex].position[0],
+                    mVertices[mSelectedVertex].position[1],
+                    mVertices[mSelectedVertex].position[2]);
+    }
 }
