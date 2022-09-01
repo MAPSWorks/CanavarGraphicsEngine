@@ -28,7 +28,7 @@ bool NodeSelector::init()
     return true;
 }
 
-void NodeSelector::onMousePressed(QMouseEvent *event)
+void NodeSelector::mousePressed(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {

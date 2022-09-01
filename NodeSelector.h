@@ -19,7 +19,7 @@ private:
 
 public:
     bool init() override;
-    void onMousePressed(QMouseEvent *event);
+    void mousePressed(QMouseEvent *event);
     void resize(int width, int height);
 
     static NodeSelector *instance();

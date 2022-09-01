@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Controller.h"
 
 #include <QDateTime>
 #include <QKeyEvent>
@@ -9,7 +10,7 @@ Window::Window(QWindow *parent)
     : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, parent)
 
 {
-    QSurfaceFormat format;
+    QSurfaceFormat format = QSurfaceFormat::defaultFormat();
     format.setMajorVersion(4);
     format.setMinorVersion(3);
     format.setProfile(QSurfaceFormat::CoreProfile);
@@ -24,19 +25,21 @@ void Window::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    QtImGui::initialize(this);
-
-    emit init();
-
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     mPreviousTime = mCurrentTime;
+
+    QtImGui::initialize(this);
+
+    mController = new Controller;
+    mController->setWindow(this);
+    mController->init();
 }
 
 void Window::resizeGL(int w, int h)
 {
     glViewport(0, 0, width(), height());
 
-    emit resized(w, h);
+    mController->resize(w, h);
 }
 
 void Window::paintGL()
@@ -45,40 +48,35 @@ void Window::paintGL()
     float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
     mPreviousTime = mCurrentTime;
 
-    emit render(ifps);
+    mController->render(ifps);
 }
 
 void Window::keyPressEvent(QKeyEvent *event)
 {
-    emit keyPressed(event);
+    mController->keyPressed(event);
 }
 
 void Window::keyReleaseEvent(QKeyEvent *event)
 {
-    emit keyReleased(event);
+    mController->keyReleased(event);
 }
 
 void Window::mousePressEvent(QMouseEvent *event)
 {
-    emit mousePressed(event);
+    mController->mousePressed(event);
 }
 
 void Window::mouseReleaseEvent(QMouseEvent *event)
 {
-    emit mouseReleased(event);
+    mController->mouseReleased(event);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)
 {
-    emit mouseMoved(event);
+    mController->mouseMoved(event);
 }
 
 void Window::wheelEvent(QWheelEvent *event)
 {
-    emit wheelMoved(event);
-}
-
-void Window::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    emit mouseDoubleClicked(event);
+    mController->wheelMoved(event);
 }

@@ -14,12 +14,12 @@ AircraftController::AircraftController(Aircraft *aircraft, QObject *parent)
     connect(&mTimer, &QTimer::timeout, this, &AircraftController::tick);
 }
 
-void AircraftController::onKeyPressed(QKeyEvent *event)
+void AircraftController::keyPressed(QKeyEvent *event)
 {
     mPressedKeys.insert((Qt::Key) event->key(), true);
 }
 
-void AircraftController::onKeyReleased(QKeyEvent *event)
+void AircraftController::keyReleased(QKeyEvent *event)
 {
     mPressedKeys.insert((Qt::Key) event->key(), false);
 }

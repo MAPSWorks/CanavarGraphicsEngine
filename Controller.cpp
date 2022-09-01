@@ -1,40 +1,18 @@
 #include "Controller.h"
 #include "FreeCamera.h"
 #include "Helper.h"
+#include "Window.h"
 
 #include <QApplication>
 #include <QDebug>
 
-Controller::Controller(QApplication *app, QObject *parent)
+Controller::Controller(QObject *parent)
     : QObject(parent)
     , mPressedButton(Qt::NoButton)
-    , mApp(app)
     , mMouseCaptured(false)
     , mImGuiWantsMouseCapture(false)
     , mSuccess(true)
-{
-    mWindow = new Window;
-
-    connect(mWindow, &Window::wheelMoved, this, &Controller::onWheelMoved);
-    connect(mWindow, &Window::mousePressed, this, &Controller::onMousePressed);
-    connect(mWindow, &Window::mouseReleased, this, &Controller::onMouseReleased);
-    connect(mWindow, &Window::mouseMoved, this, &Controller::onMouseMoved);
-    connect(mWindow, &Window::keyPressed, this, &Controller::onKeyPressed);
-    connect(mWindow, &Window::keyReleased, this, &Controller::onKeyReleased);
-    connect(mWindow, &Window::resized, this, &Controller::resize);
-    connect(mWindow, &Window::init, this, &Controller::init);
-    connect(mWindow, &Window::render, this, &Controller::render);
-    connect(mWindow, &Window::mouseDoubleClicked, this, &Controller::onMouseDoubleClicked);
-}
-
-Controller::~Controller()
-{
-    if (mSuccess)
-    {
-        qDebug() << thread() << "Controller is being deleted...";
-        mAircraft->stop();
-    }
-}
+{}
 
 void Controller::init()
 {
@@ -75,6 +53,14 @@ void Controller::init()
     mAircraftController->setJet(mJet);
     mAircraftController->setRootJetNode(mRootJetNode);
 
+    connect(mWindow, &Window::destroyed, this, [=]() {
+        if (mSuccess)
+        {
+            qDebug() << thread() << "Controller is being deleted...";
+            mAircraft->stop();
+        }
+    });
+
     connect(
         mAircraft, &Aircraft::pfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
 
@@ -84,15 +70,6 @@ void Controller::init()
     mFreeCamera->setZNear(2.0f);
     mFreeCamera->setZFar(100000.0f);
     mCameraManager->setActiveCamera(mFreeCamera);
-
-    connect(mFreeCamera, &FreeCamera::mouseGrabbed, this, [=](bool grabbed) {
-        mMouseCaptured = grabbed;
-
-        if (mMouseCaptured)
-            mApp->setOverrideCursor(QCursor(Qt::BlankCursor));
-        else
-            mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
-    });
 
     connect(mFreeCamera, &FreeCamera::setCursorPosition, this, [=](QPoint position) { //
         mWindow->cursor().setPos(mWindow->mapToGlobal(position));
@@ -151,15 +128,7 @@ void Controller::init()
     mRootJetNode->addChild(mNozzleParticles);
 }
 
-void Controller::run()
-{
-    //    mWindow->showMaximized();
-    //    mWindow->showFullScreen();
-    mWindow->resize(1600, 900);
-    mWindow->show();
-}
-
-void Controller::onWheelMoved(QWheelEvent *)
+void Controller::wheelMoved(QWheelEvent *)
 {
     if (!mSuccess)
         return;
@@ -168,7 +137,7 @@ void Controller::onWheelMoved(QWheelEvent *)
         return;
 }
 
-void Controller::onMousePressed(QMouseEvent *event)
+void Controller::mousePressed(QMouseEvent *event)
 {
     if (!mSuccess)
         return;
@@ -178,21 +147,21 @@ void Controller::onMousePressed(QMouseEvent *event)
 
     mPressedButton = event->button();
 
-    mCameraManager->onMousePressed(event);
-    mNodeSelector->onMousePressed(event);
+    mCameraManager->mousePressed(event);
+    mNodeSelector->mousePressed(event);
 }
 
-void Controller::onMouseReleased(QMouseEvent *event)
+void Controller::mouseReleased(QMouseEvent *event)
 {
     if (!mSuccess)
         return;
 
     mPressedButton = Qt::NoButton;
 
-    mCameraManager->onMouseReleased(event);
+    mCameraManager->mouseReleased(event);
 }
 
-void Controller::onMouseMoved(QMouseEvent *event)
+void Controller::mouseMoved(QMouseEvent *event)
 {
     if (!mSuccess)
         return;
@@ -200,10 +169,10 @@ void Controller::onMouseMoved(QMouseEvent *event)
     if (mImGuiWantsMouseCapture)
         return;
 
-    mCameraManager->onMouseMoved(event);
+    mCameraManager->mouseMoved(event);
 }
 
-void Controller::onKeyPressed(QKeyEvent *event)
+void Controller::keyPressed(QKeyEvent *event)
 {
     if (!mSuccess)
         return;
@@ -234,11 +203,6 @@ void Controller::onKeyPressed(QKeyEvent *event)
             animation.activeCameraAfterAnimation = mFreeCamera;
             mFreeCamera->animate(animation);
             mCameraManager->setActiveCamera(mFreeCamera);
-
-            if (mFreeCamera->getMouseGrabbed())
-                mApp->setOverrideCursor(QCursor(Qt::BlankCursor));
-            else
-                mApp->setOverrideCursor(QCursor(Qt::ArrowCursor));
         }
 
     } else if (event->key() == Qt::Key_2) // Dummy Camera
@@ -267,19 +231,19 @@ void Controller::onKeyPressed(QKeyEvent *event)
 
     } else
     {
-        mCameraManager->onKeyPressed(event);
+        mCameraManager->keyPressed(event);
     }
 
-    mAircraftController->onKeyPressed(event);
+    mAircraftController->keyPressed(event);
 }
 
-void Controller::onKeyReleased(QKeyEvent *event)
+void Controller::keyReleased(QKeyEvent *event)
 {
     if (!mSuccess)
         return;
 
-    mCameraManager->onKeyReleased(event);
-    mAircraftController->onKeyReleased(event);
+    mCameraManager->keyReleased(event);
+    mAircraftController->keyReleased(event);
 }
 
 void Controller::resize(int w, int h)
@@ -287,12 +251,14 @@ void Controller::resize(int w, int h)
     if (!mSuccess)
         return;
 
+    mWindow->makeCurrent();
     mCameraManager->resize(w, h);
     mRendererManager->resize(w, h);
     mNodeSelector->resize(w, h);
+    mWindow->doneCurrent();
 }
 
-void Controller::onMouseDoubleClicked(QMouseEvent *)
+void Controller::mouseDoubleClicked(QMouseEvent *)
 {
     if (!mSuccess)
         return;
@@ -320,4 +286,9 @@ void Controller::render(float ifps)
     glViewport(0, 0, mWindow->width(), mWindow->height());
     ImGui::Render();
     QtImGui::render();
+}
+
+void Controller::setWindow(Window *newWindow)
+{
+    mWindow = newWindow;
 }

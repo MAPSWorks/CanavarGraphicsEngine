@@ -15,13 +15,13 @@ private:
     virtual ~DummyCamera();
 
 public:
-    void onMouseDoubleClicked(QMouseEvent *) override;
-    void onMousePressed(QMouseEvent *) override;
-    void onMouseReleased(QMouseEvent *) override;
-    void onMouseMoved(QMouseEvent *) override;
-    void onWheelMoved(QWheelEvent *) override;
-    void onKeyPressed(QKeyEvent *) override;
-    void onKeyReleased(QKeyEvent *) override;
+    void mouseDoubleClicked(QMouseEvent *) override;
+    void mousePressed(QMouseEvent *) override;
+    void mouseReleased(QMouseEvent *) override;
+    void mouseMoved(QMouseEvent *) override;
+    void wheelMoved(QWheelEvent *) override;
+    void keyPressed(QKeyEvent *) override;
+    void keyReleased(QKeyEvent *) override;
     void update(float) override;
     void reset() override;
     void animate(const Animation &animation) override;

@@ -23,13 +23,13 @@ private:
 public:
     bool init() override;
 
-    void onMouseDoubleClicked(QMouseEvent *event);
-    void onMousePressed(QMouseEvent *event);
-    void onMouseReleased(QMouseEvent *event);
-    void onMouseMoved(QMouseEvent *event);
-    void onWheelMoved(QWheelEvent *event);
-    void onKeyPressed(QKeyEvent *event);
-    void onKeyReleased(QKeyEvent *event);
+    void mouseDoubleClicked(QMouseEvent *event);
+    void mousePressed(QMouseEvent *event);
+    void mouseReleased(QMouseEvent *event);
+    void mouseMoved(QMouseEvent *event);
+    void wheelMoved(QWheelEvent *event);
+    void keyPressed(QKeyEvent *event);
+    void keyReleased(QKeyEvent *event);
     void resize(int width, int height);
     void update(float ifps);
     void reset();

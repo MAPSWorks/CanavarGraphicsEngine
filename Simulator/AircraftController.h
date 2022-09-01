@@ -18,8 +18,8 @@ class AircraftController : public Manager
 public:
     explicit AircraftController(Aircraft *aircraft, QObject *parent = nullptr);
 
-    void onKeyPressed(QKeyEvent *);
-    void onKeyReleased(QKeyEvent *);
+    void keyPressed(QKeyEvent *);
+    void keyReleased(QKeyEvent *);
 
     void drawGUI();
     void setJet(Model *newJet);

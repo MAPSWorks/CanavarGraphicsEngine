@@ -12,9 +12,9 @@ OrthographicCamera::OrthographicCamera(QObject *parent)
     Node::mRotation = QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), -90);
 }
 
-void OrthographicCamera::onMouseDoubleClicked(QMouseEvent *) {}
+void OrthographicCamera::mouseDoubleClicked(QMouseEvent *) {}
 
-void OrthographicCamera::onMousePressed(QMouseEvent *event)
+void OrthographicCamera::mousePressed(QMouseEvent *event)
 {
     if (event->button() == Qt::MiddleButton)
     {
@@ -24,12 +24,12 @@ void OrthographicCamera::onMousePressed(QMouseEvent *event)
     }
 }
 
-void OrthographicCamera::onMouseReleased(QMouseEvent *event)
+void OrthographicCamera::mouseReleased(QMouseEvent *event)
 {
     mMouse.pressed = false;
 }
 
-void OrthographicCamera::onMouseMoved(QMouseEvent *event)
+void OrthographicCamera::mouseMoved(QMouseEvent *event)
 {
     if (mMouse.pressed)
     {
@@ -42,7 +42,7 @@ void OrthographicCamera::onMouseMoved(QMouseEvent *event)
     }
 }
 
-void OrthographicCamera::onWheelMoved(QWheelEvent *event)
+void OrthographicCamera::wheelMoved(QWheelEvent *event)
 {
     if (event->angleDelta().y() < 0)
         mZoom = 1.1f * mZoom;
@@ -52,9 +52,9 @@ void OrthographicCamera::onWheelMoved(QWheelEvent *event)
     mZoom = qMax(1.0f, qMin(100.0f, mZoom));
 }
 
-void OrthographicCamera::onKeyPressed(QKeyEvent *) {}
+void OrthographicCamera::keyPressed(QKeyEvent *) {}
 
-void OrthographicCamera::onKeyReleased(QKeyEvent *) {}
+void OrthographicCamera::keyReleased(QKeyEvent *) {}
 
 void OrthographicCamera::update(float ifps)
 {

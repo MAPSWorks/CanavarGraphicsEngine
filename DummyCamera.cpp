@@ -8,19 +8,19 @@ DummyCamera::DummyCamera(QObject *parent)
 
 DummyCamera::~DummyCamera() {}
 
-void DummyCamera::onMouseDoubleClicked(QMouseEvent *) {}
+void DummyCamera::mouseDoubleClicked(QMouseEvent *) {}
 
-void DummyCamera::onMousePressed(QMouseEvent *) {}
+void DummyCamera::mousePressed(QMouseEvent *) {}
 
-void DummyCamera::onMouseReleased(QMouseEvent *) {}
+void DummyCamera::mouseReleased(QMouseEvent *) {}
 
-void DummyCamera::onMouseMoved(QMouseEvent *) {}
+void DummyCamera::mouseMoved(QMouseEvent *) {}
 
-void DummyCamera::onWheelMoved(QWheelEvent *) {}
+void DummyCamera::wheelMoved(QWheelEvent *) {}
 
-void DummyCamera::onKeyPressed(QKeyEvent *) {}
+void DummyCamera::keyPressed(QKeyEvent *) {}
 
-void DummyCamera::onKeyReleased(QKeyEvent *) {}
+void DummyCamera::keyReleased(QKeyEvent *) {}
 
 void DummyCamera::update(float) {}
 

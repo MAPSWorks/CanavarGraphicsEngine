@@ -11,13 +11,13 @@ class OrthographicCamera : public Camera
 public:
     explicit OrthographicCamera(QObject *parent = nullptr);
 
-    virtual void onMouseDoubleClicked(QMouseEvent *) override;
-    virtual void onMousePressed(QMouseEvent *event) override;
-    virtual void onMouseReleased(QMouseEvent *event) override;
-    virtual void onMouseMoved(QMouseEvent *event) override;
-    virtual void onWheelMoved(QWheelEvent *event) override;
-    virtual void onKeyPressed(QKeyEvent *) override;
-    virtual void onKeyReleased(QKeyEvent *) override;
+    virtual void mouseDoubleClicked(QMouseEvent *) override;
+    virtual void mousePressed(QMouseEvent *event) override;
+    virtual void mouseReleased(QMouseEvent *event) override;
+    virtual void mouseMoved(QMouseEvent *event) override;
+    virtual void wheelMoved(QWheelEvent *event) override;
+    virtual void keyPressed(QKeyEvent *) override;
+    virtual void keyReleased(QKeyEvent *) override;
     virtual void update(float) override;
     virtual void reset() override;
     virtual void drawGUI() override;

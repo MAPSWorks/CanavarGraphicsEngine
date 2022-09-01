@@ -32,13 +32,13 @@ private:
     };
 
 public:
-    void onMouseDoubleClicked(QMouseEvent *) override;
-    void onMousePressed(QMouseEvent *event) override;
-    void onMouseReleased(QMouseEvent *event) override;
-    void onMouseMoved(QMouseEvent *event) override;
-    void onKeyPressed(QKeyEvent *event) override;
-    void onKeyReleased(QKeyEvent *event) override;
-    void onWheelMoved(QWheelEvent *) override;
+    void mouseDoubleClicked(QMouseEvent *) override;
+    void mousePressed(QMouseEvent *event) override;
+    void mouseReleased(QMouseEvent *event) override;
+    void mouseMoved(QMouseEvent *event) override;
+    void keyPressed(QKeyEvent *event) override;
+    void keyReleased(QKeyEvent *event) override;
+    void wheelMoved(QWheelEvent *) override;
     void update(float ifps) override;
     void reset() override;
     void animate(const Animation &animation) override;

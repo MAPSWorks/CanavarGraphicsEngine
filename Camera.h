@@ -23,13 +23,13 @@ public:
     virtual QMatrix4x4 getVP();
     virtual QMatrix4x4 projection() = 0;
 
-    virtual void onMouseDoubleClicked(QMouseEvent *) = 0;
-    virtual void onMousePressed(QMouseEvent *) = 0;
-    virtual void onMouseReleased(QMouseEvent *) = 0;
-    virtual void onMouseMoved(QMouseEvent *) = 0;
-    virtual void onWheelMoved(QWheelEvent *) = 0;
-    virtual void onKeyPressed(QKeyEvent *) = 0;
-    virtual void onKeyReleased(QKeyEvent *) = 0;
+    virtual void mouseDoubleClicked(QMouseEvent *) = 0;
+    virtual void mousePressed(QMouseEvent *) = 0;
+    virtual void mouseReleased(QMouseEvent *) = 0;
+    virtual void mouseMoved(QMouseEvent *) = 0;
+    virtual void wheelMoved(QWheelEvent *) = 0;
+    virtual void keyPressed(QKeyEvent *) = 0;
+    virtual void keyReleased(QKeyEvent *) = 0;
     virtual void update(float) = 0;
     virtual void reset() = 0;
 

@@ -6,7 +6,7 @@
 
 FreeCamera::FreeCamera(QObject *parent)
     : PerspectiveCamera(parent)
-    , mMode(Mode::RotateWhileMouseIsMoving)
+    , mMode(Mode::RotateWhileMouseIsPressing)
     , mUpdateRotation(true)
     , mUpdatePosition(true)
 
@@ -21,19 +21,19 @@ FreeCamera::FreeCamera(QObject *parent)
 
 FreeCamera::~FreeCamera() {}
 
-void FreeCamera::onMouseDoubleClicked(QMouseEvent *)
+void FreeCamera::mouseDoubleClicked(QMouseEvent *)
 {
     if (mAnimation.animating)
         return;
 }
 
-void FreeCamera::onWheelMoved(QWheelEvent *)
+void FreeCamera::wheelMoved(QWheelEvent *)
 {
     if (mAnimation.animating)
         return;
 }
 
-void FreeCamera::onMousePressed(QMouseEvent *event)
+void FreeCamera::mousePressed(QMouseEvent *event)
 {
     if (mAnimation.animating)
         return;
@@ -58,12 +58,12 @@ void FreeCamera::onMousePressed(QMouseEvent *event)
     }
 }
 
-void FreeCamera::onMouseReleased(QMouseEvent *)
+void FreeCamera::mouseReleased(QMouseEvent *)
 {
     mMouse.pressed = false;
 }
 
-void FreeCamera::onMouseMoved(QMouseEvent *event)
+void FreeCamera::mouseMoved(QMouseEvent *event)
 {
     if (mAnimation.animating)
         return;
@@ -100,7 +100,7 @@ void FreeCamera::onMouseMoved(QMouseEvent *event)
     }
 }
 
-void FreeCamera::onKeyPressed(QKeyEvent *event)
+void FreeCamera::keyPressed(QKeyEvent *event)
 {
     if (mAnimation.animating)
         return;
@@ -109,7 +109,7 @@ void FreeCamera::onKeyPressed(QKeyEvent *event)
     mUpdatePosition = true;
 }
 
-void FreeCamera::onKeyReleased(QKeyEvent *event)
+void FreeCamera::keyReleased(QKeyEvent *event)
 {
     if (mAnimation.animating)
         return;
