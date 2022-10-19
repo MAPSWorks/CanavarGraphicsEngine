@@ -43,6 +43,11 @@ void Canavar::Engine::Node::setRotation(const QQuaternion &newRotation)
     updateTransformation();
 }
 
+const QVector3D &Canavar::Engine::Node::position() const
+{
+    return mPosition;
+}
+
 void Canavar::Engine::Node::setPosition(const QVector3D &newPosition)
 {
     mPosition = newPosition;

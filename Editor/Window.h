@@ -15,6 +15,8 @@ class Camera;
 class Node;
 class NodeManager;
 class Sun;
+class Model;
+class PerspectiveCamera;
 
 } // namespace Engine
 } // namespace Canavar
@@ -37,6 +39,11 @@ private:
     void mouseMoveEvent(QMouseEvent *) override;
     void wheelEvent(QWheelEvent *) override;
 
+    void drawGui(Canavar::Engine::Node *node);
+    void drawGui(Canavar::Engine::Model *model);
+    void drawGui(Canavar::Engine::PerspectiveCamera *camera);
+    void drawGui(Canavar::Engine::Sun *sun);
+
 private:
     long long mPreviousTime;
     long long mCurrentTime;
@@ -46,5 +53,7 @@ private:
     Canavar::Engine::Camera *mCamera;
     Canavar::Engine::Node *mJet;
     Canavar::Engine::Node *mPlane;
+
+    Canavar::Engine::Node *mSelectedNode;
 };
 #endif // WINDOW_H
