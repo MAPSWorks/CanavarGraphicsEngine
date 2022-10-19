@@ -110,7 +110,7 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
 {
     auto camera = mCameraManager->activeCamera();
     auto sun = mLightManager->sun();
-    auto model = dynamic_cast<Model *>(parameters.node);
+    auto model = parameters.model;
 
     bool useTexture = mMaterial->getNumberOfTextures() != 0;
 

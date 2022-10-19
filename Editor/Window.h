@@ -40,9 +40,6 @@ private:
     void wheelEvent(QWheelEvent *) override;
 
     void drawGui(Canavar::Engine::Node *node);
-    void drawGui(Canavar::Engine::Model *model);
-    void drawGui(Canavar::Engine::PerspectiveCamera *camera);
-    void drawGui(Canavar::Engine::Sun *sun);
 
 private:
     long long mPreviousTime;

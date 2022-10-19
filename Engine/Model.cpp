@@ -2,6 +2,7 @@
 
 Canavar::Engine::Model::Model(const QString &name, Node *parent)
     : Node(parent)
+    , mModelName(name)
     , mColor(1, 1, 1, 1)
     , mAmbient(0.5f)
     , mDiffuse(0.75)
@@ -76,4 +77,14 @@ QMatrix4x4 Canavar::Engine::Model::getMeshTransformation(const QString &meshName
 void Canavar::Engine::Model::setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation)
 {
     mMeshTransformations.insert(meshName, transformation);
+}
+
+const QString &Canavar::Engine::Model::modelName() const
+{
+    return mModelName;
+}
+
+void Canavar::Engine::Model::setModelName(const QString &newModelName)
+{
+    mModelName = newModelName;
 }

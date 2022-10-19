@@ -36,6 +36,8 @@ private:
     CameraManager *mCameraManager;
     LightManager *mLightManager;
     QMap<Node::NodeType, QString> mTypeToName;
+
+    QMap<QString, int> mNames;
 };
 
 } // namespace Engine

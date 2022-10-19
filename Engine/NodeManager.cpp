@@ -63,10 +63,19 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
     {
         mNumberOfNodes++;
 
-        if (name.isEmpty())
-            node->setName(QString("%1 #%2").arg(mTypeToName.value(node->mType)).arg(mNumberOfNodes));
+        QString newName = name;
+
+        if (newName.isEmpty())
+            newName = mTypeToName.value(node->mType);
+
+        int count = mNames.value(newName, 0);
+
+        if (count == 0)
+            node->setName(newName);
         else
-            node->setName(name);
+            node->setName(newName + " " + QString::number(count));
+
+        mNames.insert(newName, ++count);
 
         mNodes << node;
     }

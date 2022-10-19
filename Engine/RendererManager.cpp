@@ -56,11 +56,11 @@ void Canavar::Engine::RendererManager::render(float ifps)
         if (!node->renderable())
             continue;
 
-        if (node)
+        if (Model *model = dynamic_cast<Model *>(node))
         {
-            mRenderParameters.node = node;
+            mRenderParameters.model = model;
 
-            ModelData *data = mModelsData.value(node->name(), nullptr);
+            ModelData *data = mModelsData.value(model->modelName(), nullptr);
             if (data)
                 data->render(mRenderParameters);
         }

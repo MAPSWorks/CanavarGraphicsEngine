@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "Node.h"
+#include "Model.h"
 
 namespace Canavar {
 namespace Engine {
@@ -14,7 +14,7 @@ enum class ShaderType { //
 
 struct RenderParameters {
     float ifps;
-    Node *node;
+    Model *model;
 };
 
 } // namespace Engine

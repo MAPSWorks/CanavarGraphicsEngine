@@ -32,8 +32,13 @@ public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);
     void setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation);
 
+    const QString &modelName() const;
+    void setModelName(const QString &newModelName);
+
 protected:
     QMap<QString, QMatrix4x4> mMeshTransformations;
+
+    QString mModelName;
 
     QVector4D mColor;
     float mAmbient;
