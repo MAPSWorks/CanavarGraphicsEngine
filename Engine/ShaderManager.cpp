@@ -13,25 +13,71 @@ Canavar::Engine::Shader *Canavar::Engine::ShaderManager::getShader(ShaderType sh
 
 bool Canavar::Engine::ShaderManager::init()
 {
-    // Model Shader
+    // Model Colored Shader
     {
-        Shader *shader = new Shader(ShaderType::ModelShader);
+        Shader *shader = new Shader(ShaderType::ModelColoredShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Model.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Model.frag");
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/ModelColored.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ModelColored.frag");
 
         QStringList uniforms;
         uniforms << "M"
                  << "N"
                  << "VP"
-                 << "color"
-                 << "ambient"
-                 << "diffuse"
-                 << "specular"
+                 << "sun.color"
+                 << "sun.ambient"
+                 << "sun.diffuse"
+                 << "sun.specular"
+                 << "sun.direction"
+                 << "model.color"
+                 << "model.ambient"
+                 << "model.diffuse"
+                 << "model.specular"
+                 << "model.shininess"
+                 << "cameraPos";
+
+        shader->addUniforms(uniforms);
+
+        shader->addAttribute("position");
+        shader->addAttribute("normal");
+        shader->addAttribute("textureCoords");
+        shader->addAttribute("tangent");
+        shader->addAttribute("bitangent");
+        shader->addAttribute("ids");
+        shader->addAttribute("weights");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Model Textured Shader
+    {
+        Shader *shader = new Shader(ShaderType::ModelTexturedShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/ModelTextured.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ModelTextured.frag");
+
+        QStringList uniforms;
+        uniforms << "M"
+                 << "N"
+                 << "VP"
+                 << "sun.color"
+                 << "sun.ambient"
+                 << "sun.diffuse"
+                 << "sun.specular"
+                 << "sun.direction"
                  << "shininess"
                  << "cameraPos"
-                 << "sunDir";
+                 << "useTextureNormal"
+                 << "useTextureSpecular"
+                 << "useTextureDiffuse"
+                 << "useTextureAmbient"
+                 << "textureNormal"
+                 << "textureSpecular"
+                 << "textureDiffuse"
+                 << "textureAmbient";
 
         shader->addUniforms(uniforms);
 

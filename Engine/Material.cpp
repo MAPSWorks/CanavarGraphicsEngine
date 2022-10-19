@@ -18,3 +18,8 @@ QOpenGLTexture *Canavar::Engine::Material::get(TextureType type)
 {
     return mTextures.value(type, nullptr);
 }
+
+int Canavar::Engine::Material::getNumberOfTextures()
+{
+    return mTextures.size();
+}

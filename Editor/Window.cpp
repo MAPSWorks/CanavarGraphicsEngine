@@ -40,14 +40,22 @@ void Window::initializeGL()
 
     mController = new Canavar::Engine::Controller;
     mController->setWindow(this);
-    mController->init();
 
-    mPlane = NodeManager::instance()->createNode(Node::NodeType::Model, "Plane");
-    mJet = NodeManager::instance()->createNode(Node::NodeType::Model, "f16");
-    mCamera = dynamic_cast<Camera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera));
-    mSun = dynamic_cast<Sun *>(NodeManager::instance()->createNode(Node::NodeType::Sun));
+    if (mController->init())
+    {
+        //mPlane = NodeManager::instance()->createNode(Node::NodeType::Model, "Plane");
+        mJet = NodeManager::instance()->createNode(Node::NodeType::Model, "f16c");
+        mCamera = dynamic_cast<Camera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera));
+        mSun = dynamic_cast<Sun *>(NodeManager::instance()->createNode(Node::NodeType::Sun));
 
-    CameraManager::instance()->setActiveCamera(mCamera);
+        NodeManager::instance()->createNode(Node::NodeType::Model, "Nanosuit")->setWorldPosition(QVector3D(0, 10, 0));
+        NodeManager::instance()->createNode(Node::NodeType::Model, "Cyborg")->setWorldPosition(QVector3D(0, 30, 0));
+        NodeManager::instance()->createNode(Node::NodeType::Model, "Planet")->setWorldPosition(QVector3D(0, 40, 0));
+        NodeManager::instance()->createNode(Node::NodeType::Model, "Suzanne")->setWorldPosition(QVector3D(0, 50, 0));
+        NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 60, 0));
+
+        CameraManager::instance()->setActiveCamera(mCamera);
+    }
 }
 
 void Window::resizeGL(int w, int h)

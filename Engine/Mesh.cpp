@@ -110,21 +110,76 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
 {
     auto camera = mCameraManager->activeCamera();
     auto sun = mLightManager->sun();
+    auto model = dynamic_cast<Model *>(parameters.node);
 
-    if (auto model = dynamic_cast<Model *>(parameters.node))
+    bool useTexture = mMaterial->getNumberOfTextures() != 0;
+
+    if (useTexture)
     {
-        mShaderManager->bind(ShaderType::ModelShader);
+        auto textureAmbient = mMaterial->get(Material::TextureType::Ambient);
+        auto textureDiffuse = mMaterial->get(Material::TextureType::Diffuse);
+        auto textureSpecular = mMaterial->get(Material::TextureType::Specular);
+        auto textureNormal = mMaterial->get(Material::TextureType::Normal);
+
+        mShaderManager->bind(ShaderType::ModelTexturedShader);
 
         mShaderManager->setUniformValue("M", model->worldTransformation() * model->getMeshTransformation(mName));
         mShaderManager->setUniformValue("N", model->worldTransformation().normalMatrix());
         mShaderManager->setUniformValue("VP", camera->getViewProjectionMatrix());
-        mShaderManager->setUniformValue("color", model->color() * sun->color());
-        mShaderManager->setUniformValue("ambient", model->ambient() * sun->ambient());
-        mShaderManager->setUniformValue("diffuse", model->diffuse() * sun->diffuse());
-        mShaderManager->setUniformValue("specular", model->specular() * sun->specular());
+
+        mShaderManager->setUniformValue("useTextureAmbient", textureAmbient != nullptr);
+        mShaderManager->setUniformValue("useTextureDiffuse", textureDiffuse != nullptr);
+        mShaderManager->setUniformValue("useTextureSpecular", textureSpecular != nullptr);
+        mShaderManager->setUniformValue("useTextureNormal", textureNormal != nullptr);
+
         mShaderManager->setUniformValue("shininess", model->shininess());
+        mShaderManager->setUniformValue("sun.direction", -sun->direction().normalized());
+        mShaderManager->setUniformValue("sun.color", sun->color());
+        mShaderManager->setUniformValue("sun.ambient", sun->ambient());
+        mShaderManager->setUniformValue("sun.diffuse", sun->diffuse());
+        mShaderManager->setUniformValue("sun.specular", sun->specular());
+
         mShaderManager->setUniformValue("cameraPos", camera->worldPosition());
-        mShaderManager->setUniformValue("sunDir", -sun->direction().normalized());
+
+        if (textureAmbient)
+            mShaderManager->setSampler("textureAmbient", 0, textureAmbient->textureId());
+
+        if (textureDiffuse)
+            mShaderManager->setSampler("textureDiffuse", 1, textureDiffuse->textureId());
+
+        if (textureSpecular)
+            mShaderManager->setSampler("textureSpecular", 2, textureSpecular->textureId());
+
+        if (textureNormal)
+            mShaderManager->setSampler("textureNormal", 3, textureNormal->textureId());
+
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+
+        mShaderManager->release();
+
+    } else
+    {
+        mShaderManager->bind(ShaderType::ModelColoredShader);
+
+        mShaderManager->setUniformValue("M", model->worldTransformation() * model->getMeshTransformation(mName));
+        mShaderManager->setUniformValue("N", model->worldTransformation().normalMatrix());
+        mShaderManager->setUniformValue("VP", camera->getViewProjectionMatrix());
+
+        mShaderManager->setUniformValue("model.color", model->color());
+        mShaderManager->setUniformValue("model.ambient", model->ambient());
+        mShaderManager->setUniformValue("model.diffuse", model->diffuse());
+        mShaderManager->setUniformValue("model.specular", model->specular());
+        mShaderManager->setUniformValue("model.shininess", model->shininess());
+
+        mShaderManager->setUniformValue("sun.direction", -sun->direction().normalized());
+        mShaderManager->setUniformValue("sun.color", sun->color());
+        mShaderManager->setUniformValue("sun.ambient", sun->ambient());
+        mShaderManager->setUniformValue("sun.diffuse", sun->diffuse());
+        mShaderManager->setUniformValue("sun.specular", sun->specular());
+
+        mShaderManager->setUniformValue("cameraPos", camera->worldPosition());
 
         mVAO->bind();
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);

@@ -5,7 +5,8 @@ Canavar::Engine::Sun::Sun(QObject *parent)
     , mDirection(0, -1, 0)
 {
     mAmbient = 1.0f;
-    mDiffuse = 0.75f;
+    mDiffuse = 1.0f;
+    mSpecular = 1.0f;
     mType = Node::NodeType::Sun;
 
     float inf = std::numeric_limits<float>::infinity();

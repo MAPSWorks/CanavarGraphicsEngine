@@ -191,8 +191,6 @@ QString Canavar::Engine::Shader::getShaderTypeString()
 {
     switch (mType)
     {
-    case ShaderType::ModelShader:
-        return "Model Shader";
     default:
         return "Unknown Shader";
     }

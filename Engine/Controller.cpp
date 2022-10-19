@@ -11,7 +11,7 @@ Canavar::Engine::Controller::Controller(QObject *parent)
     , mSuccess(true)
 {}
 
-void Canavar::Engine::Controller::init()
+bool Canavar::Engine::Controller::init()
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
@@ -26,13 +26,13 @@ void Canavar::Engine::Controller::init()
     mManagers << mRendererManager;
 
     for (const auto &manager : qAsConst(mManagers))
-    {
         if (!manager->init())
         {
             mSuccess = false;
-            return;
+            break;
         }
-    }
+
+    return mSuccess;
 }
 
 void Canavar::Engine::Controller::render(float ifps)

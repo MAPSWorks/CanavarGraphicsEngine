@@ -25,6 +25,7 @@ public:
 
     void insert(TextureType type, QOpenGLTexture *texture);
     QOpenGLTexture *get(TextureType type);
+    int getNumberOfTextures();
 
 private:
     QMap<TextureType, QOpenGLTexture *> mTextures;

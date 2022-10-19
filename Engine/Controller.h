@@ -22,7 +22,7 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = nullptr);
 
-    void init();
+    bool init();
     void mouseDoubleClicked(QMouseEvent *event);
     void mousePressed(QMouseEvent *event);
     void mouseReleased(QMouseEvent *event);

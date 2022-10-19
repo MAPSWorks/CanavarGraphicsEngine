@@ -8,7 +8,8 @@ namespace Engine {
 
 enum class ShaderType { //
     None,
-    ModelShader,
+    ModelColoredShader,
+    ModelTexturedShader,
 };
 
 struct RenderParameters {

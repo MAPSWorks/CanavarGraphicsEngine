@@ -275,7 +275,9 @@ void Canavar::Engine::Helper::processTexture(Material *material, aiMaterial *aiM
         }
 
         QOpenGLTexture *texture = new QOpenGLTexture(image, QOpenGLTexture::GenerateMipMaps);
-        qInfo() << "Texture at " + path + " has been created with id " + QString::number(texture->textureId());
+        texture->setWrapMode(QOpenGLTexture::WrapMode::Repeat);
+        texture->setMinMagFilters(QOpenGLTexture::Filter::LinearMipMapLinear, QOpenGLTexture::Filter::Linear);
+        // qInfo() << "Texture at " + path + " has been created with id " + QString::number(texture->textureId());
         material->insert(type, texture);
     }
 }
