@@ -9,9 +9,17 @@ struct Sun
     float specular;
 };
 
+struct Model
+{
+    float ambient;
+    float diffuse;
+    float specular;
+    float shininess;
+};
+
 uniform Sun sun;
+uniform Model model;
 uniform vec3 cameraPos;
-uniform float shininess;
 
 uniform bool useTextureAmbient;
 uniform bool useTextureDiffuse;
@@ -54,13 +62,13 @@ void main()
     // Ambient
     if (useTextureAmbient)
     {
-        ambientColor = texture(textureAmbient, fsTextureCoords) * sun.ambient;
+        ambientColor = texture(textureAmbient, fsTextureCoords) * sun.ambient * model.ambient;
     }
 
     // Diffuse
     if (useTextureDiffuse)
     {
-        float diffuseFactor = max(dot(normal, sun.direction), 0.0) * sun.diffuse;
+        float diffuseFactor = max(dot(normal, sun.direction), 0.0) * sun.diffuse * model.diffuse;
         diffuseColor = texture(textureDiffuse, fsTextureCoords) * diffuseFactor;
     }
 
@@ -69,7 +77,7 @@ void main()
         // Specular
         vec3 reflectDir = reflect(-sun.direction, normal);
         vec3 halfwayDir = normalize(sun.direction + viewDir);
-        float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), shininess) * sun.specular;
+        float specularFactor = pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * sun.specular * model.specular;
         specularColor = texture(textureSpecular, fsTextureCoords) * specularFactor;
     }
 

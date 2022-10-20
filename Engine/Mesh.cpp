@@ -127,12 +127,16 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
         mShaderManager->setUniformValue("N", model->worldTransformation().normalMatrix());
         mShaderManager->setUniformValue("VP", camera->getViewProjectionMatrix());
 
-        mShaderManager->setUniformValue("useTextureAmbient", textureAmbient != nullptr);
+        mShaderManager->setUniformValue("useTextureAmbient", textureAmbient != nullptr || textureDiffuse != nullptr);
         mShaderManager->setUniformValue("useTextureDiffuse", textureDiffuse != nullptr);
         mShaderManager->setUniformValue("useTextureSpecular", textureSpecular != nullptr);
         mShaderManager->setUniformValue("useTextureNormal", textureNormal != nullptr);
 
-        mShaderManager->setUniformValue("shininess", model->shininess());
+        mShaderManager->setUniformValue("model.shininess", model->shininess());
+        mShaderManager->setUniformValue("model.ambient", model->ambient());
+        mShaderManager->setUniformValue("model.diffuse", model->diffuse());
+        mShaderManager->setUniformValue("model.specular", model->specular());
+
         mShaderManager->setUniformValue("sun.direction", -sun->direction().normalized());
         mShaderManager->setUniformValue("sun.color", sun->color());
         mShaderManager->setUniformValue("sun.ambient", sun->ambient());
@@ -143,6 +147,8 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
 
         if (textureAmbient)
             mShaderManager->setSampler("textureAmbient", 0, textureAmbient->textureId());
+        else if (textureDiffuse)
+            mShaderManager->setSampler("textureAmbient", 0, textureDiffuse->textureId()); // Use diffuse texture if there is no ambient texture
 
         if (textureDiffuse)
             mShaderManager->setSampler("textureDiffuse", 1, textureDiffuse->textureId());
