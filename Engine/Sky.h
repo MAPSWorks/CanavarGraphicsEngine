@@ -24,14 +24,23 @@ private:
 public:
     void render();
 
+    float mAlbedo;
+    float mTurbidity;
+    float mNormalizedSunY;
+
 private:
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
 
+    // OpenGL Stuff
     QVector<unsigned int> mVertices;
     unsigned int mVAO;
     unsigned int mVBO;
+
+    // Model
+    QVector3D A, B, C, D, E, F, G, H, I;
+    QVector3D Z;
 };
 
 } // namespace Engine

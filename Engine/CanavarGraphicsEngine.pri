@@ -6,6 +6,8 @@ HEADERS += \
     $$PWD/DummyCamera.h \
     $$PWD/FreeCamera.h \
     $$PWD/Helper.h \
+    $$PWD/HosekData.h \
+    $$PWD/HosekFunctions.h \
     $$PWD/Light.h \
     $$PWD/LightManager.h \
     $$PWD/Manager.h \

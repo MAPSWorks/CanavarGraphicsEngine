@@ -18,6 +18,7 @@ protected:
 public:
     virtual QMatrix4x4 getViewProjectionMatrix();
     virtual QMatrix4x4 getViewMatrix();
+    virtual QMatrix4x4 getRotationMatrix();
     virtual QMatrix4x4 getProjectionMatrix() = 0;
 
     virtual void mouseDoubleClicked(QMouseEvent *) = 0;

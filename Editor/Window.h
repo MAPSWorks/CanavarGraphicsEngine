@@ -11,12 +11,7 @@ namespace Canavar {
 namespace Engine {
 
 class Controller;
-class Camera;
 class Node;
-class NodeManager;
-class Sun;
-class Model;
-class PerspectiveCamera;
 
 } // namespace Engine
 } // namespace Canavar
@@ -45,11 +40,6 @@ private:
     long long mPreviousTime;
     long long mCurrentTime;
     Canavar::Engine::Controller *mController;
-
-    Canavar::Engine::Sun *mSun;
-    Canavar::Engine::Camera *mCamera;
-    Canavar::Engine::Node *mJet;
-    Canavar::Engine::Node *mPlane;
 
     Canavar::Engine::Node *mSelectedNode;
 };

@@ -7,6 +7,7 @@
 #include "../Engine/Node.h"
 #include "../Engine/NodeManager.h"
 #include "../Engine/PerspectiveCamera.h"
+#include "../Engine/Sky.h"
 #include "../Engine/Sun.h"
 
 #include <QDateTime>
@@ -47,10 +48,9 @@ void Window::initializeGL()
 
     if (mController->init())
     {
-        //mPlane = NodeManager::instance()->createNode(Node::NodeType::Model, "Plane");
-        mJet = NodeManager::instance()->createNode(Node::NodeType::Model, "f16c");
-        mCamera = dynamic_cast<Camera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera));
-        mSun = dynamic_cast<Sun *>(NodeManager::instance()->createNode(Node::NodeType::Sun));
+        NodeManager::instance()->createNode(Node::NodeType::Model, "Plane")->setScale(QVector3D(1, 1, 1));
+        NodeManager::instance()->createNode(Node::NodeType::Model, "f16c")->setWorldPosition(QVector3D(0, 100, 0));
+        NodeManager::instance()->createNode(Node::NodeType::Sun);
 
         NodeManager::instance()->createNode(Node::NodeType::Model, "Nanosuit")->setWorldPosition(QVector3D(0, 10, 0));
         NodeManager::instance()->createNode(Node::NodeType::Model, "Cyborg")->setWorldPosition(QVector3D(0, 30, 0));
@@ -63,7 +63,7 @@ void Window::initializeGL()
 
         NodeManager::instance()->createNode(Node::NodeType::Sky);
 
-        CameraManager::instance()->setActiveCamera(mCamera);
+        CameraManager::instance()->setActiveCamera(dynamic_cast<Camera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera)));
     }
 }
 
@@ -209,6 +209,18 @@ void Window::drawGui(Canavar::Engine::Node *node)
                 sun->setSpecular(specular);
             if (ImGui::ColorEdit4("Color##Sun", (float *) &color))
                 sun->setColor(color);
+        }
+
+        return;
+    }
+
+    if (auto sky = dynamic_cast<Canavar::Engine::Sky *>(node))
+    {
+        if (!ImGui::CollapsingHeader("Sky"))
+        {
+            ImGui::SliderFloat("Albedo##Sky", &sky->mAlbedo, 0.0f, 1.0f, "%.3f");
+            ImGui::SliderFloat("Turbidity##Sky", &sky->mTurbidity, 0.0f, 10.0f, "%.3f");
+            ImGui::SliderFloat("Normalized Sun Y##Sun", &sky->mNormalizedSunY, 0.0f, 10.0f, "%.3f");
         }
 
         return;
