@@ -21,6 +21,7 @@ HEADERS += \
     $$PWD/RendererManager.h \
     $$PWD/Shader.h \
     $$PWD/ShaderManager.h \
+    $$PWD/Sky.h \
     $$PWD/Speed.h \
     $$PWD/Sun.h
 
@@ -46,6 +47,7 @@ SOURCES += \
     $$PWD/RendererManager.cpp \
     $$PWD/Shader.cpp \
     $$PWD/ShaderManager.cpp \
+    $$PWD/Sky.cpp \
     $$PWD/Speed.cpp \
     $$PWD/Sun.cpp
 

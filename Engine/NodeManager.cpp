@@ -4,6 +4,7 @@
 #include "FreeCamera.h"
 #include "LightManager.h"
 #include "Model.h"
+#include "Sky.h"
 
 Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     : Manager(parent)
@@ -15,6 +16,7 @@ Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     mTypeToName.insert(Node::NodeType::FreeCamera, "Free Camera");
     mTypeToName.insert(Node::NodeType::Model, "Model");
     mTypeToName.insert(Node::NodeType::Sun, "Sun");
+    mTypeToName.insert(Node::NodeType::Sky, "Sky");
 }
 
 bool Canavar::Engine::NodeManager::init()
@@ -49,8 +51,22 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
         break;
     }
     case Node::NodeType::Sun: {
-        node = new Sun;
-        mLightManager->setSun(dynamic_cast<Sun *>(node));
+        if (mTypeToCount.value(Node::NodeType::Sun, 0) == 0)
+        {
+            node = new Sun;
+            mLightManager->setSun(dynamic_cast<Sun *>(node));
+        } else
+            qWarning() << Q_FUNC_INFO << "Cannot create multiple suns";
+        break;
+    }
+    case Node::NodeType::Sky: {
+        if (mTypeToCount.value(Node::NodeType::Sky, 0) == 0)
+        {
+            Sky *sky = new Sky;
+            sky->create();
+            node = sky;
+        } else
+            qWarning() << Q_FUNC_INFO << "Cannot create multiple skies";
         break;
     }
     default: {
@@ -61,22 +77,9 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
 
     if (node)
     {
+        mTypeToCount.insert(type, mTypeToCount.value(type, 0) + 1);
         mNumberOfNodes++;
-
-        QString newName = name;
-
-        if (newName.isEmpty())
-            newName = mTypeToName.value(node->mType);
-
-        int count = mNames.value(newName, 0);
-
-        if (count == 0)
-            node->setName(newName);
-        else
-            node->setName(newName + " " + QString::number(count));
-
-        mNames.insert(newName, ++count);
-
+        assignName(node, name);
         mNodes << node;
     }
 
@@ -131,4 +134,21 @@ Canavar::Engine::NodeManager *Canavar::Engine::NodeManager::instance()
 const QList<Canavar::Engine::Node *> &Canavar::Engine::NodeManager::nodes() const
 {
     return mNodes;
+}
+
+void Canavar::Engine::NodeManager::assignName(Node *node, const QString &name)
+{
+    QString newName = name;
+
+    if (newName.isEmpty())
+        newName = mTypeToName.value(node->mType);
+
+    int count = mNames.value(newName, 0);
+
+    if (mNames.value(newName, 0) == 0)
+        node->setName(newName);
+    else
+        node->setName(newName + " " + QString::number(count));
+
+    mNames.insert(newName, ++count);
 }

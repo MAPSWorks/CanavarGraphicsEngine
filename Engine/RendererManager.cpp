@@ -4,6 +4,7 @@
 #include "LightManager.h"
 #include "NodeManager.h"
 #include "ShaderManager.h"
+#include "Sky.h"
 
 #include <QDir>
 
@@ -48,6 +49,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
     auto nodes = mNodeManager->nodes();
 
+    // Render Models
     for (const auto &node : nodes)
     {
         if (!node->visible())
@@ -63,6 +65,18 @@ void Canavar::Engine::RendererManager::render(float ifps)
             ModelData *data = mModelsData.value(model->modelName(), nullptr);
             if (data)
                 data->render(mRenderParameters);
+        }
+    }
+
+    // Render Sky
+    for (const auto &node : nodes)
+    {
+        if (Sky *sky = dynamic_cast<Sky *>(node))
+        {
+            if (!sky->visible())
+                continue;
+
+            sky->render();
         }
     }
 }

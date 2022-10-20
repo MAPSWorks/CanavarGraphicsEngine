@@ -4,5 +4,7 @@
         <file>Resources/Shaders/ModelColored.vert</file>
         <file>Resources/Shaders/ModelTextured.frag</file>
         <file>Resources/Shaders/ModelTextured.vert</file>
+        <file>Resources/Shaders/Sky.frag</file>
+        <file>Resources/Shaders/Sky.vert</file>
     </qresource>
 </RCC>

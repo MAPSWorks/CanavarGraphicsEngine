@@ -25,6 +25,7 @@ public:
         FreeCamera,
         DummyCamera,
         Sun,
+        Sky
     };
 
     const QMatrix4x4 &worldTransformation() const;

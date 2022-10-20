@@ -96,6 +96,20 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
+    // Sky Quad Shader
+    {
+        Shader *shader = new Shader(ShaderType::SkyShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Sky.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
+
+        shader->addUniform("IVP"); // Inverse view-projection matrix
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

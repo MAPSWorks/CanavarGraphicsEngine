@@ -61,6 +61,8 @@ void Window::initializeGL()
         NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 80, 0));
         NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 90, 0));
 
+        NodeManager::instance()->createNode(Node::NodeType::Sky);
+
         CameraManager::instance()->setActiveCamera(mCamera);
     }
 }

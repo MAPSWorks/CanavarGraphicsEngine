@@ -31,11 +31,15 @@ public:
     const QList<Node *> &nodes() const;
 
 private:
+    void assignName(Node *node, const QString &name);
+
+private:
     QList<Node *> mNodes;
     int mNumberOfNodes;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
     QMap<Node::NodeType, QString> mTypeToName;
+    QMap<Node::NodeType, unsigned int> mTypeToCount;
 
     QMap<QString, int> mNames;
 };
