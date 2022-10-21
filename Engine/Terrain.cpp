@@ -74,7 +74,7 @@ void Canavar::Engine::Terrain::render(const RenderParameters &parameters)
     mShaderManager->setUniformValue("haze.color", Haze::instance()->mColor);
     mShaderManager->setUniformValue("haze.density", Haze::instance()->mDensity);
     mShaderManager->setUniformValue("haze.gradient", Haze::instance()->mGradient);
-    mShaderManager->setUniformValue("waterHeight", 0.0f);
+    mShaderManager->setUniformValue("waterHeight", -1000.0f);
     mShaderManager->setSampler("sand", 1, mTextures.value("Sand")->textureId());
     mShaderManager->setSampler("grass", 2, mTextures.value("Grass")->textureId());
     mShaderManager->setSampler("terrainTexture", 3, mTextures.value("Terrain")->textureId());

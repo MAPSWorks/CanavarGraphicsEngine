@@ -8,6 +8,7 @@
 #include "Haze.h"
 #include "Sky.h"
 #include "Sun.h"
+#include "Terrain.h"
 
 Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     : Manager(parent)
@@ -32,6 +33,9 @@ bool Canavar::Engine::NodeManager::init()
     mNumberOfNodes++;
 
     mNodes << Haze::instance();
+    mNumberOfNodes++;
+
+    mNodes << Terrain::instance();
     mNumberOfNodes++;
 
     return true;

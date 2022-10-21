@@ -15,9 +15,9 @@ vec3 hosek_wilkie_sky_rgb(vec3 v, vec3 sun_dir)
 {
     float cos_theta = clamp(v.y, 0, 1);
     float cos_gamma = clamp(dot(v, sun_dir), 0, 1);
-    float gamma_ = acos(cos_gamma);
+    float gamma = acos(cos_gamma);
 
-    vec3 R = Z * hosek_wilkie(cos_theta, gamma_, cos_gamma);
+    vec3 R = Z * hosek_wilkie(cos_theta, gamma, cos_gamma);
     return R;
 }
 

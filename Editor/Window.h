@@ -16,6 +16,7 @@ class Model;
 class Sky;
 class Sun;
 class PerspectiveCamera;
+class Terrain;
 
 } // namespace Engine
 } // namespace Canavar
@@ -43,6 +44,7 @@ private:
     void drawGui(Canavar::Engine::Sky *node);
     void drawGui(Canavar::Engine::Sun *node);
     void drawGui(Canavar::Engine::PerspectiveCamera *node);
+    void drawGui(Canavar::Engine::Terrain *node);
 
 private:
     long long mPreviousTime;

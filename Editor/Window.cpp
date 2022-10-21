@@ -9,6 +9,7 @@
 #include "../Engine/PerspectiveCamera.h"
 #include "../Engine/Sky.h"
 #include "../Engine/Sun.h"
+#include "../Engine/Terrain.h"
 
 #include <QDateTime>
 #include <QKeyEvent>
@@ -129,11 +130,15 @@ void Window::paintGL()
             drawGui(mSelectedNode);
             drawGui(dynamic_cast<Model *>(mSelectedNode));
             break;
+        case Canavar::Engine::Node::NodeType::Terrain:
+            drawGui(dynamic_cast<Terrain *>(mSelectedNode));
+            break;
         default:
             break;
         }
     }
 
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 
     glViewport(0, 0, width(), height());
@@ -363,5 +368,27 @@ void Window::drawGui(Canavar::Engine::PerspectiveCamera *camera)
             camera->setZNear(zNear);
         if (ImGui::SliderFloat("Z-Far##PerspectiveCamera", &zFar, 1000.0f, 1000000.0f))
             camera->setZFar(zFar);
+    }
+}
+
+void Window::drawGui(Canavar::Engine::Terrain *node)
+{
+    if (!ImGui::CollapsingHeader("Terrain"))
+    {
+        ImGui::SliderFloat("Amplitude##Terrain", &node->mAmplitude, 0.0f, 50.0f, "%.3f");
+        ImGui::SliderInt("Octaves##Terrain", &node->mOctaves, 1, 20);
+        ImGui::SliderFloat("Power##Terrain", &node->mPower, 0.1f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Tessellation Multiplier##Terrain", &node->mTessellationMultiplier, 0.1f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Grass Coverage##Terrain", &node->mGrassCoverage, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Ambient##Terrain", &node->mAmbient, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Diffuse##Terrain", &node->mDiffuse, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Specular##Terrain", &node->mSpecular, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Shininess##Terrain", &node->mShininess, 0.1f, 128.0f, "%.3f");
+
+        if (ImGui::Button("Generate Seed##Terrain"))
+            node->mSeed = Canavar::Engine::Helper::generateVec3(1, 1, 1);
+
+        if (ImGui::Button("Reset##Terrain"))
+            node->reset();
     }
 }
