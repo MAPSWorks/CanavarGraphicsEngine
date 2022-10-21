@@ -18,6 +18,15 @@ struct Model
     float shininess;
 };
 
+struct Haze
+{
+    bool enabled;
+    vec3 color;
+    float density;
+    float gradient;
+};
+
+uniform Haze haze;
 uniform Sun sun;
 uniform Model model;
 uniform vec3 cameraPos;
@@ -26,6 +35,13 @@ in vec4 fsPosition;
 in vec3 fsNormal;
 
 out vec4 outColor;
+
+float getHazeFactor()
+{
+    float distance = length(cameraPos - fsPosition.xyz);
+    float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
+    return clamp(factor, 0.0f, 1.0f);
+}
 
 void main()
 {
@@ -42,5 +58,14 @@ void main()
     vec3 halfwayDir = normalize(sun.direction + viewDir);
     float specular = pow(max(dot(fsNormal, halfwayDir), 0.0), model.shininess) * model.specular * sun.specular;
 
-    outColor = (ambient + diffuse + specular) * model.color * sun.color;
+    vec4 color = (ambient + diffuse + specular) * model.color * sun.color;
+
+    if (haze.enabled)
+    {
+        float hazeFactor = getHazeFactor();
+        outColor = mix(vec4(haze.color, 1), color, hazeFactor);
+    } else
+    {
+        outColor = color;
+    }
 }

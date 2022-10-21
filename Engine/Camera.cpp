@@ -5,8 +5,8 @@ Canavar::Engine::Camera::Camera(QObject *parent)
     , mActive(false)
     , mWidth(1600)
     , mHeight(900)
-    , mZNear(0.1f)
-    , mZFar(100000.0f)
+    , mZNear(1.0f)
+    , mZFar(10000.0f)
 {
     mRenderable = false;
 }

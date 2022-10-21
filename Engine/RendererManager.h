@@ -2,6 +2,7 @@
 #define RENDERERMANAGER_H
 
 #include "Camera.h"
+#include "Haze.h"
 #include "Manager.h"
 #include "ModelData.h"
 #include "Sky.h"
@@ -44,6 +45,7 @@ private:
     Camera *mCamera;
     Sun *mSun;
     Sky *mSky;
+    Haze *mHaze;
 
     RenderParameters mRenderParameters;
 };

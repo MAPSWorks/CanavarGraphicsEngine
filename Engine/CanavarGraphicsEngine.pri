@@ -5,6 +5,7 @@ HEADERS += \
     $$PWD/Controller.h \
     $$PWD/DummyCamera.h \
     $$PWD/FreeCamera.h \
+    $$PWD/Haze.h \
     $$PWD/Helper.h \
     $$PWD/HosekData.h \
     $$PWD/HosekFunctions.h \
@@ -33,6 +34,7 @@ SOURCES += \
     $$PWD/Controller.cpp \
     $$PWD/DummyCamera.cpp \
     $$PWD/FreeCamera.cpp \
+    $$PWD/Haze.cpp \
     $$PWD/Helper.cpp \
     $$PWD/Light.cpp \
     $$PWD/LightManager.cpp \

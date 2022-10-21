@@ -28,6 +28,7 @@ bool Canavar::Engine::RendererManager::init()
 
     mSky = Sky::instance();
     mSun = Sun::instance();
+    mHaze = Haze::instance();
 
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);

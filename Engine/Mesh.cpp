@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "CameraManager.h"
 #include "Common.h"
+#include "Haze.h"
 #include "LightManager.h"
 #include "Model.h"
 #include "ShaderManager.h"
@@ -144,6 +145,11 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
         mShaderManager->setUniformValue("sun.diffuse", sun->diffuse());
         mShaderManager->setUniformValue("sun.specular", sun->specular());
 
+        mShaderManager->setUniformValue("haze.enabled", Haze::instance()->mEnabled);
+        mShaderManager->setUniformValue("haze.color", Haze::instance()->mColor);
+        mShaderManager->setUniformValue("haze.density", Haze::instance()->mDensity);
+        mShaderManager->setUniformValue("haze.gradient", Haze::instance()->mGradient);
+
         mShaderManager->setUniformValue("cameraPos", camera->worldPosition());
 
         if (textureAmbient)
@@ -185,6 +191,11 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
         mShaderManager->setUniformValue("sun.ambient", sun->ambient());
         mShaderManager->setUniformValue("sun.diffuse", sun->diffuse());
         mShaderManager->setUniformValue("sun.specular", sun->specular());
+
+        mShaderManager->setUniformValue("haze.enabled", Haze::instance()->mEnabled);
+        mShaderManager->setUniformValue("haze.color", Haze::instance()->mColor);
+        mShaderManager->setUniformValue("haze.density", Haze::instance()->mDensity);
+        mShaderManager->setUniformValue("haze.gradient", Haze::instance()->mGradient);
 
         mShaderManager->setUniformValue("cameraPos", camera->worldPosition());
 

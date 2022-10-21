@@ -17,6 +17,15 @@ struct Model
     float shininess;
 };
 
+struct Haze
+{
+    bool enabled;
+    vec3 color;
+    float density;
+    float gradient;
+};
+
+uniform Haze haze;
 uniform Sun sun;
 uniform Model model;
 uniform vec3 cameraPos;
@@ -50,6 +59,13 @@ vec3 getNormal()
         return fsNormal;
 }
 
+float getHazeFactor()
+{
+    float distance = length(cameraPos - fsPosition.xyz);
+    float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
+    return clamp(factor, 0.0f, 1.0f);
+}
+
 void main()
 {
     vec3 normal = getNormal();
@@ -81,5 +97,14 @@ void main()
         specularColor = texture(textureSpecular, fsTextureCoords) * specularFactor;
     }
 
-    outColor = (ambientColor + diffuseColor + specularColor) * sun.color;
+    vec4 color = (ambientColor + diffuseColor + specularColor) * sun.color;
+
+    if (haze.enabled)
+    {
+        float hazeFactor = getHazeFactor();
+        outColor = mix(vec4(haze.color, 1), color, hazeFactor);
+    } else
+    {
+        outColor = color;
+    }
 }

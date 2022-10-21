@@ -35,6 +35,10 @@ bool Canavar::Engine::ShaderManager::init()
                  << "model.diffuse"
                  << "model.specular"
                  << "model.shininess"
+                 << "haze.enabled"
+                 << "haze.color"
+                 << "haze.density"
+                 << "haze.gradient"
                  << "cameraPos";
 
         shader->addUniforms(uniforms);
@@ -80,7 +84,11 @@ bool Canavar::Engine::ShaderManager::init()
                  << "textureNormal"
                  << "textureSpecular"
                  << "textureDiffuse"
-                 << "textureAmbient";
+                 << "textureAmbient"
+                 << "haze.enabled"
+                 << "haze.color"
+                 << "haze.density"
+                 << "haze.gradient";
 
         shader->addUniforms(uniforms);
 

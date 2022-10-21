@@ -5,6 +5,7 @@
 #include "LightManager.h"
 #include "Model.h"
 
+#include "Haze.h"
 #include "Sky.h"
 #include "Sun.h"
 
@@ -28,6 +29,9 @@ bool Canavar::Engine::NodeManager::init()
     mNumberOfNodes++;
 
     mNodes << Sky::instance();
+    mNumberOfNodes++;
+
+    mNodes << Haze::instance();
     mNumberOfNodes++;
 
     return true;
