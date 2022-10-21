@@ -23,12 +23,12 @@ public:
     static void draw();
 
 private:
-    static void drawGui(Canavar::Engine::Node *node);
-    static void drawGui(Canavar::Engine::Model *node);
-    static void drawGui(Canavar::Engine::Sky *node);
-    static void drawGui(Canavar::Engine::Sun *node);
-    static void drawGui(Canavar::Engine::PerspectiveCamera *node);
-    static void drawGui(Canavar::Engine::Terrain *node);
+    static void draw(Canavar::Engine::Node *node);
+    static void draw(Canavar::Engine::Model *node);
+    static void draw(Canavar::Engine::Sky *node);
+    static void draw(Canavar::Engine::Sun *node);
+    static void draw(Canavar::Engine::PerspectiveCamera *node);
+    static void draw(Canavar::Engine::Terrain *node);
 
 private:
     static Canavar::Engine::Node *mSelectedNode;

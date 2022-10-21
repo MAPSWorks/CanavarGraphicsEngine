@@ -33,25 +33,25 @@ void Canavar::Engine::Gui::draw()
         switch (mSelectedNode->type())
         {
         case Canavar::Engine::Node::NodeType::DummyNode:
-            drawGui(mSelectedNode);
+            draw(mSelectedNode);
             break;
         case Canavar::Engine::Node::NodeType::FreeCamera:
         case Canavar::Engine::Node::NodeType::DummyCamera:
-            drawGui(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
-            drawGui(mSelectedNode);
+            draw(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
+            draw(mSelectedNode);
             break;
         case Canavar::Engine::Node::NodeType::Sky:
-            drawGui(dynamic_cast<Sky *>(mSelectedNode));
+            draw(dynamic_cast<Sky *>(mSelectedNode));
             break;
         case Canavar::Engine::Node::NodeType::Sun:
-            drawGui(dynamic_cast<Sun *>(mSelectedNode));
+            draw(dynamic_cast<Sun *>(mSelectedNode));
             break;
         case Canavar::Engine::Node::NodeType::Model:
-            drawGui(mSelectedNode);
-            drawGui(dynamic_cast<Model *>(mSelectedNode));
+            draw(mSelectedNode);
+            draw(dynamic_cast<Model *>(mSelectedNode));
             break;
         case Canavar::Engine::Node::NodeType::Terrain:
-            drawGui(dynamic_cast<Terrain *>(mSelectedNode));
+            draw(dynamic_cast<Terrain *>(mSelectedNode));
             break;
         default:
             break;
@@ -62,7 +62,7 @@ void Canavar::Engine::Gui::draw()
     ImGui::End();
 }
 
-void Canavar::Engine::Gui::drawGui(Node *node)
+void Canavar::Engine::Gui::draw(Node *node)
 {
     // Position
     if (!ImGui::CollapsingHeader("Position##Node"))
@@ -146,7 +146,7 @@ void Canavar::Engine::Gui::drawGui(Node *node)
     }
 }
 
-void Canavar::Engine::Gui::drawGui(Model *node)
+void Canavar::Engine::Gui::draw(Model *node)
 {
     if (!ImGui::CollapsingHeader("Shading Parameters##Model"))
     {
@@ -169,7 +169,7 @@ void Canavar::Engine::Gui::drawGui(Model *node)
     }
 }
 
-void Canavar::Engine::Gui::drawGui(Sky *node)
+void Canavar::Engine::Gui::draw(Sky *node)
 {
     if (!ImGui::CollapsingHeader("Sky"))
     {
@@ -179,7 +179,7 @@ void Canavar::Engine::Gui::drawGui(Sky *node)
     }
 }
 
-void Canavar::Engine::Gui::drawGui(Sun *sun)
+void Canavar::Engine::Gui::draw(Sun *sun)
 {
     if (!ImGui::CollapsingHeader("Sun"))
     {
@@ -228,7 +228,7 @@ void Canavar::Engine::Gui::drawGui(Sun *sun)
     }
 }
 
-void Canavar::Engine::Gui::drawGui(PerspectiveCamera *camera)
+void Canavar::Engine::Gui::draw(PerspectiveCamera *camera)
 {
     if (!ImGui::CollapsingHeader("Parameters##PerspectiveCamera"))
     {
@@ -245,7 +245,7 @@ void Canavar::Engine::Gui::drawGui(PerspectiveCamera *camera)
     }
 }
 
-void Canavar::Engine::Gui::drawGui(Terrain *node)
+void Canavar::Engine::Gui::draw(Terrain *node)
 {
     if (!ImGui::CollapsingHeader("Terrain"))
     {
