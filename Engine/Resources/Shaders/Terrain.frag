@@ -342,7 +342,7 @@ void main()
     if (haze.enabled)
     {
         float hazeFactor = getHazeFactor();
-        outColor = mix(vec4(haze.color, 1), color, hazeFactor);
+        outColor = mix(vec4(haze.color, 1) * clamp(-sun.direction.y, 0.0f, 1.0f), color, hazeFactor);
 
     } else
     {

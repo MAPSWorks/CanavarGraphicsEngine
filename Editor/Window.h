@@ -49,6 +49,7 @@ private:
     long long mCurrentTime;
     Canavar::Engine::Controller *mController;
 
+    Canavar::Engine::PerspectiveCamera *mCamera;
     Canavar::Engine::Node *mSelectedNode;
 };
 #endif // WINDOW_H

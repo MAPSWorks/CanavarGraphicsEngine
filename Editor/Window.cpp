@@ -60,7 +60,10 @@ void Window::initializeGL()
         NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 80, 0));
         NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 90, 0));
 
-        CameraManager::instance()->setActiveCamera(dynamic_cast<Camera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera)));
+        mCamera = dynamic_cast<PerspectiveCamera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera));
+        CameraManager::instance()->setActiveCamera(mCamera);
+
+        mCamera->setWorldPosition(QVector3D(0, 5, 0));
     }
 }
 
