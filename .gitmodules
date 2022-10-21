@@ -1,6 +1,0 @@
-[submodule "Editor/Dependencies/qtimgui"]
-	path = Editor/Dependencies/qtimgui
-	url = https://github.com/seanchas116/qtimgui
-[submodule "Simulator/Dependencies/qtimgui"]
-	path = Simulator/Dependencies/qtimgui
-	url = https://github.com/seanchas116/qtimgui
