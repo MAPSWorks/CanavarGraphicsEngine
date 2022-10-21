@@ -61,7 +61,7 @@ void Canavar::Engine::FreeCamera::update(float ifps)
     // Rotation
     if (mUpdateRotation)
     {
-        auto newRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mSpeed.mAngularMultiplier * mSpeed.mAngular * mMouse.mDx * ifps) * mWorldRotation;
+        auto newRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mSpeed.mAngularMultiplier * mSpeed.mAngular * mMouse.mDx * ifps) * worldRotation();
         newRotation = newRotation * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mSpeed.mAngularMultiplier * mSpeed.mAngular * mMouse.mDy * ifps);
         setWorldRotation(newRotation);
 
@@ -84,7 +84,7 @@ void Canavar::Engine::FreeCamera::update(float ifps)
 
         for (auto key : keys)
             if (mPressedKeys.value(key, false))
-                setWorldPosition(mWorldPosition + mSpeed.mLinear * mSpeed.mLinearMultiplier * ifps * mRotation.rotatedVector(KEY_BINDINGS.value(key, QVector3D(0, 0, 0))));
+                setWorldPosition(worldPosition() + mSpeed.mLinear * mSpeed.mLinearMultiplier * ifps * mRotation.rotatedVector(KEY_BINDINGS.value(key, QVector3D(0, 0, 0))));
     }
 
     if (mPressedKeys.empty())

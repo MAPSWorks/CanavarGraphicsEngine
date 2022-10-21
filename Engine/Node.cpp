@@ -14,16 +14,43 @@ Canavar::Engine::Node::Node(QObject *parent)
 
 Canavar::Engine::Node::~Node() {}
 
-const QMatrix4x4 &Canavar::Engine::Node::transformation() const
+Canavar::Engine::Node::NodeType Canavar::Engine::Node::type() const
 {
-    return mTransformation;
+    return mType;
 }
 
-void Canavar::Engine::Node::setTransformation(const QMatrix4x4 &newTransformation)
+const QMatrix4x4 Canavar::Engine::Node::worldTransformation() const
 {
-    mTransformation = newTransformation;
-    mPosition = mTransformation.column(3).toVector3D();
-    mRotation = QQuaternion::fromRotationMatrix(mTransformation.normalMatrix());
+    // TODO: Scaling issue
+
+    if (mParent)
+        return mParent->worldTransformation() * mTransformation;
+    else
+        return mTransformation;
+}
+
+void Canavar::Engine::Node::setWorldTransformation(const QMatrix4x4 &newTransformation)
+{
+    setWorldPosition(mTransformation.column(3).toVector3D());
+    setWorldRotation(QQuaternion::fromRotationMatrix(mTransformation.normalMatrix()));
+}
+
+QQuaternion Canavar::Engine::Node::worldRotation() const
+{
+    if (mParent)
+        return mParent->worldRotation() * mRotation;
+    else
+        return mRotation;
+}
+
+void Canavar::Engine::Node::setWorldRotation(const QQuaternion &newWorldRotation)
+{
+    if (mParent)
+        mRotation = mParent->worldRotation().inverted() * newWorldRotation;
+    else
+        mRotation = newWorldRotation;
+
+    updateTransformation();
 }
 
 const QQuaternion &Canavar::Engine::Node::rotation() const
@@ -35,10 +62,23 @@ void Canavar::Engine::Node::setRotation(const QQuaternion &newRotation)
 {
     mRotation = newRotation;
 
+    updateTransformation();
+}
+
+QVector3D Canavar::Engine::Node::worldPosition() const
+{
     if (mParent)
-        mWorldRotation = mParent->worldRotation() * mRotation;
+        return mParent->worldPosition() + mParent->worldRotation() * mPosition;
     else
-        mWorldRotation = mRotation;
+        return mPosition;
+}
+
+void Canavar::Engine::Node::setWorldPosition(const QVector3D &newWorldPosition)
+{
+    if (mParent)
+        mPosition = mParent->worldRotation().inverted() * (newWorldPosition - mParent->worldPosition());
+    else
+        mPosition = newWorldPosition;
 
     updateTransformation();
 }
@@ -52,11 +92,6 @@ void Canavar::Engine::Node::setPosition(const QVector3D &newPosition)
 {
     mPosition = newPosition;
 
-    if (mParent)
-        mWorldPosition = mParent->worldPosition() + mParent->worldRotation() * mPosition;
-    else
-        mWorldPosition = mPosition;
-
     updateTransformation();
 }
 
@@ -68,7 +103,19 @@ const QVector3D &Canavar::Engine::Node::scale() const
 void Canavar::Engine::Node::setScale(const QVector3D &newScale)
 {
     mScale = newScale;
-    updateTransformation();
+}
+
+const QMatrix4x4 &Canavar::Engine::Node::transformation() const
+{
+    return mTransformation;
+}
+
+void Canavar::Engine::Node::setTransformation(const QMatrix4x4 &newTransformation)
+{
+    mTransformation = newTransformation;
+
+    mPosition = mTransformation.column(3).toVector3D();
+    mRotation = QQuaternion::fromRotationMatrix(mTransformation.normalMatrix());
 }
 
 void Canavar::Engine::Node::updateTransformation()
@@ -77,61 +124,6 @@ void Canavar::Engine::Node::updateTransformation()
     mTransformation.scale(mScale);
     mTransformation.rotate(mRotation);
     mTransformation.setColumn(3, QVector4D(mPosition, 1.0f));
-
-    mWorldTransformation.setToIdentity();
-    mWorldTransformation.scale(mScale);
-    mWorldTransformation.rotate(mWorldRotation);
-    mWorldTransformation.setColumn(3, QVector4D(mWorldPosition, 1.0f));
-}
-
-Canavar::Engine::Node::NodeType Canavar::Engine::Node::type() const
-{
-    return mType;
-}
-
-const QVector3D &Canavar::Engine::Node::worldPosition() const
-{
-    return mWorldPosition;
-}
-
-void Canavar::Engine::Node::setWorldPosition(const QVector3D &newWorldPosition)
-{
-    mWorldPosition = newWorldPosition;
-
-    if (mParent)
-        mPosition = mParent->worldRotation().inverted() * (newWorldPosition - mParent->worldPosition());
-    else
-        mPosition = newWorldPosition;
-
-    updateTransformation();
-}
-
-const QQuaternion &Canavar::Engine::Node::worldRotation() const
-{
-    return mWorldRotation;
-}
-
-void Canavar::Engine::Node::setWorldRotation(const QQuaternion &newWorldRotation)
-{
-    mWorldRotation = newWorldRotation;
-
-    if (mParent)
-        mRotation = mParent->worldRotation().inverted() * newWorldRotation;
-    else
-        mRotation = newWorldRotation;
-}
-
-const QMatrix4x4 &Canavar::Engine::Node::worldTransformation() const
-{
-    return mWorldTransformation;
-}
-
-void Canavar::Engine::Node::setWorldTransformation(const QMatrix4x4 &newWorldTransformation)
-{
-    mWorldTransformation = newWorldTransformation;
-
-    setWorldPosition(mWorldTransformation.column(3).toVector3D());
-    setWorldRotation(QQuaternion::fromRotationMatrix(mWorldTransformation.normalMatrix()));
 }
 
 Canavar::Engine::Node *Canavar::Engine::Node::parent() const
@@ -141,6 +133,7 @@ Canavar::Engine::Node *Canavar::Engine::Node::parent() const
 
 void Canavar::Engine::Node::setParent(Node *newParent)
 {
+    // TODO: Do we need to update transformation?
     mParent = newParent;
 }
 

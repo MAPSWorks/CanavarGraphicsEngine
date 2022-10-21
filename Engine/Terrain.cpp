@@ -58,7 +58,7 @@ void Canavar::Engine::Terrain::render(const RenderParameters &)
     mShaderManager->setUniformValue("sun.ambient", mSun->ambient());
     mShaderManager->setUniformValue("sun.diffuse", mSun->diffuse());
     mShaderManager->setUniformValue("sun.specular", mSun->specular());
-    mShaderManager->setUniformValue("M", mWorldTransformation);
+    mShaderManager->setUniformValue("M", worldTransformation());
     mShaderManager->setUniformValue("terrain.amplitude", mAmplitude);
     mShaderManager->setUniformValue("terrain.seed", mSeed);
     mShaderManager->setUniformValue("terrain.octaves", mOctaves);

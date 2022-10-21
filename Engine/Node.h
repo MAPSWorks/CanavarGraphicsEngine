@@ -30,19 +30,19 @@ public:
         Terrain
     };
 
-    const QMatrix4x4 &worldTransformation() const;
-    void setWorldTransformation(const QMatrix4x4 &newWorldTransformation);
+    const QMatrix4x4 worldTransformation() const;
+    void setWorldTransformation(const QMatrix4x4 &newTransformation);
 
     const QMatrix4x4 &transformation() const;
     void setTransformation(const QMatrix4x4 &newTransformation);
 
-    const QQuaternion &worldRotation() const;
+    QQuaternion worldRotation() const;
     void setWorldRotation(const QQuaternion &newWorldRotation);
 
     const QQuaternion &rotation() const;
     void setRotation(const QQuaternion &newRotation);
 
-    const QVector3D &worldPosition() const;
+    QVector3D worldPosition() const;
     void setWorldPosition(const QVector3D &newWorldPosition);
 
     const QVector3D &position() const;
@@ -72,11 +72,8 @@ private:
     virtual void updateTransformation();
 
 protected:
-    QMatrix4x4 mWorldTransformation;
     QMatrix4x4 mTransformation;
-    QQuaternion mWorldRotation;
     QQuaternion mRotation;
-    QVector3D mWorldPosition;
     QVector3D mPosition;
     QVector3D mScale;
     QString mName;
