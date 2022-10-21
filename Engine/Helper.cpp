@@ -267,18 +267,8 @@ void Canavar::Engine::Helper::processTexture(Material *material, aiMaterial *aiM
         QString filename = QString(str.C_Str());
         auto path = directory + "/" + filename;
 
-        QImage image(path);
-        if (image.isNull())
-        {
-            qWarning() << "An image at " + path + " is null.";
-            return;
-        }
-
-        QOpenGLTexture *texture = new QOpenGLTexture(image, QOpenGLTexture::GenerateMipMaps);
-        texture->setWrapMode(QOpenGLTexture::WrapMode::Repeat);
-        texture->setMinMagFilters(QOpenGLTexture::Filter::LinearMipMapLinear, QOpenGLTexture::Filter::Linear);
-        // qInfo() << "Texture at " + path + " has been created with id " + QString::number(texture->textureId());
-        material->insert(type, texture);
+        if (auto texture = createTexture(path))
+            material->insert(type, texture);
     }
 }
 
@@ -301,3 +291,31 @@ QMatrix4x4 Canavar::Engine::Helper::toQMatrix(const aiMatrix4x4 &matrix)
 
     return transformation;
 }
+
+float Canavar::Engine::Helper::generateFloat(float bound)
+{
+    return mGenerator.bounded(bound);
+}
+
+QVector3D Canavar::Engine::Helper::generateVec3(float x, float y, float z)
+{
+    return QVector3D(generateFloat(x), generateFloat(y), generateFloat(z));
+}
+
+QOpenGLTexture *Canavar::Engine::Helper::createTexture(const QString &path)
+{
+    QImage image(path);
+    if (image.isNull())
+    {
+        qWarning() << "An image at " + path + " is null.";
+        return nullptr;
+    }
+
+    QOpenGLTexture *texture = new QOpenGLTexture(image, QOpenGLTexture::GenerateMipMaps);
+    texture->setWrapMode(QOpenGLTexture::WrapMode::Repeat);
+    texture->setMinMagFilters(QOpenGLTexture::Filter::LinearMipMapLinear, QOpenGLTexture::Filter::Linear);
+
+    return texture;
+}
+
+QRandomGenerator Canavar::Engine::Helper::mGenerator = QRandomGenerator::securelySeeded();

@@ -5,6 +5,7 @@
 
 #include <QByteArray>
 #include <QQuaternion>
+#include <QRandomGenerator>
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -31,6 +32,9 @@ public:
     static QQuaternion constructFromEulerDegrees(float yaw, float pitch, float roll);
     static QQuaternion invert(const QQuaternion &rotation);
     static ModelData *loadModel(const QString &name, const QString &path);
+    static float generateFloat(float bound);
+    static QVector3D generateVec3(float x, float y, float z);
+    static QOpenGLTexture *createTexture(const QString &path);
 
 private:
     static Mesh *processMesh(aiMesh *aiMesh);
@@ -38,6 +42,8 @@ private:
     static Material *processMaterial(aiMaterial *aiMaterial, const QString &directory);
     static void processTexture(Material *material, aiMaterial *aiMaterial, aiTextureType aiType, Material::TextureType type, const QString &directory);
     static QMatrix4x4 toQMatrix(const aiMatrix4x4 &matrix);
+
+    static QRandomGenerator mGenerator;
 };
 
 } // namespace Engine

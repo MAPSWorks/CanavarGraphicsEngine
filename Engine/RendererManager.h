@@ -2,10 +2,8 @@
 #define RENDERERMANAGER_H
 
 #include "Camera.h"
-#include "Haze.h"
 #include "Manager.h"
 #include "ModelData.h"
-#include "Sky.h"
 
 namespace Canavar {
 namespace Engine {
@@ -14,6 +12,9 @@ class NodeManager;
 class CameraManager;
 class LightManager;
 class ShaderManager;
+class Haze;
+class Sky;
+class Terrain;
 
 class RendererManager : public Manager, protected QOpenGLExtraFunctions
 {
@@ -46,6 +47,7 @@ private:
     Sun *mSun;
     Sky *mSky;
     Haze *mHaze;
+    Terrain *mTerrain;
 
     RenderParameters mRenderParameters;
 };

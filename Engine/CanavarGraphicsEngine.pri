@@ -27,6 +27,7 @@ HEADERS += \
     $$PWD/Sky.h \
     $$PWD/Speed.h \
     $$PWD/Sun.h \
+    $$PWD/Terrain.h \
     $$PWD/TileGenerator.h
 
 SOURCES += \
@@ -55,6 +56,7 @@ SOURCES += \
     $$PWD/Sky.cpp \
     $$PWD/Speed.cpp \
     $$PWD/Sun.cpp \
+    $$PWD/Terrain.cpp \
     $$PWD/TileGenerator.cpp
 
 INCLUDEPATH += $$PWD/Dependencies/Assimp/include

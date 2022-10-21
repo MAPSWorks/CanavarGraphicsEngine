@@ -131,6 +131,59 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
+    // Terrain Shader
+    {
+        Shader *shader = new Shader(ShaderType::TerrainShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Terrain.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Terrain.frag");
+        shader->addPath(QOpenGLShader::TessellationControl, ":/Resources/Shaders/Terrain.tcs");
+        shader->addPath(QOpenGLShader::TessellationEvaluation, ":/Resources/Shaders/Terrain.tes");
+
+        QStringList uniforms;
+        uniforms << "terrain.amplitude"
+                 << "terrain.frequency"
+                 << "terrain.octaves"
+                 << "terrain.power"
+                 << "terrain.seed"
+                 << "terrain.tessellationMultiplier"
+                 << "terrain.grassCoverage"
+                 << "terrain.ambient"
+                 << "terrain.diffuse"
+                 << "terrain.shininess"
+                 << "terrain.specular"
+                 << "haze.enabled"
+                 << "haze.color"
+                 << "haze.density"
+                 << "haze.gradient"
+                 << "sun.color"
+                 << "sun.direction"
+                 << "sun.ambient"
+                 << "sun.diffuse"
+                 << "sun.specular"
+                 << "waterHeight"
+                 << "cameraPosition"
+                 << "M"
+                 << "VP"
+                 << "sand"
+                 << "grass"
+                 << "terrainTexture"
+                 << "snow"
+                 << "rock"
+                 << "rockNormal";
+
+        shader->addUniforms(uniforms);
+
+        shader->addAttribute("position");
+        shader->addAttribute("normal");
+        shader->addAttribute("textureCoord");
+        shader->addAttribute("offsetPosition");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

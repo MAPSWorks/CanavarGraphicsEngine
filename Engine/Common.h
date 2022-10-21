@@ -10,7 +10,8 @@ enum class ShaderType { //
     None,
     ModelColoredShader,
     ModelTexturedShader,
-    SkyShader
+    SkyShader,
+    TerrainShader
 };
 
 struct RenderParameters {

@@ -1,11 +1,13 @@
 #include "RendererManager.h"
 #include "CameraManager.h"
+#include "Haze.h"
 #include "Helper.h"
 #include "LightManager.h"
 #include "NodeManager.h"
 #include "ShaderManager.h"
 #include "Sky.h"
 #include "Sun.h"
+#include "Terrain.h"
 
 #include <QDir>
 
@@ -29,6 +31,7 @@ bool Canavar::Engine::RendererManager::init()
     mSky = Sky::instance();
     mSun = Sun::instance();
     mHaze = Haze::instance();
+    mTerrain = Terrain::instance();
 
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
@@ -71,6 +74,8 @@ void Canavar::Engine::RendererManager::render(float ifps)
                 data->render(mRenderParameters);
         }
     }
+
+    mTerrain->render(mRenderParameters);
 
     // Render Sky
     if (mSky->enabled())
