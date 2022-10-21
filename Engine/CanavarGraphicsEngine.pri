@@ -26,7 +26,8 @@ HEADERS += \
     $$PWD/ShaderManager.h \
     $$PWD/Sky.h \
     $$PWD/Speed.h \
-    $$PWD/Sun.h
+    $$PWD/Sun.h \
+    $$PWD/TileGenerator.h
 
 SOURCES += \
     $$PWD/Camera.cpp \
@@ -53,7 +54,8 @@ SOURCES += \
     $$PWD/ShaderManager.cpp \
     $$PWD/Sky.cpp \
     $$PWD/Speed.cpp \
-    $$PWD/Sun.cpp
+    $$PWD/Sun.cpp \
+    $$PWD/TileGenerator.cpp
 
 INCLUDEPATH += $$PWD/Dependencies/Assimp/include
 DEPENDPATH += $$PWD/Dependencies/Assimp/include
