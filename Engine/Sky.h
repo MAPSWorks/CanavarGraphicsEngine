@@ -3,7 +3,6 @@
 
 #include "CameraManager.h"
 #include "LightManager.h"
-#include "Node.h"
 #include "ShaderManager.h"
 
 #include <QOpenGLExtraFunctions>
@@ -14,16 +13,17 @@ namespace Engine {
 class Sky : public Node, protected QOpenGLExtraFunctions
 {
 private:
-    friend class Canavar::Engine::NodeManager;
-
     explicit Sky(QObject *parent = nullptr);
-    virtual ~Sky();
-
-    void create();
 
 public:
+    static Sky *instance();
+
     void render();
 
+    bool enabled() const;
+    void setEnabled(bool newEnabled);
+
+public:
     float mAlbedo;
     float mTurbidity;
     float mNormalizedSunY;
@@ -41,6 +41,8 @@ private:
     // Model
     QVector3D A, B, C, D, E, F, G, H, I;
     QVector3D Z;
+
+    bool mEnabled;
 };
 
 } // namespace Engine

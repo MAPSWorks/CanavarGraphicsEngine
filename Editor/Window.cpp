@@ -48,9 +48,8 @@ void Window::initializeGL()
 
     if (mController->init())
     {
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Plane")->setScale(QVector3D(1, 1, 1));
+        //NodeManager::instance()->createNode(Node::NodeType::Model, "Plane")->setScale(QVector3D(1, 1, 1));
         NodeManager::instance()->createNode(Node::NodeType::Model, "f16c")->setWorldPosition(QVector3D(0, 100, 0));
-        NodeManager::instance()->createNode(Node::NodeType::Sun);
 
         NodeManager::instance()->createNode(Node::NodeType::Model, "Nanosuit")->setWorldPosition(QVector3D(0, 10, 0));
         NodeManager::instance()->createNode(Node::NodeType::Model, "Cyborg")->setWorldPosition(QVector3D(0, 30, 0));
@@ -60,8 +59,6 @@ void Window::initializeGL()
         NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 70, 0));
         NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 80, 0));
         NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 90, 0));
-
-        NodeManager::instance()->createNode(Node::NodeType::Sky);
 
         CameraManager::instance()->setActiveCamera(dynamic_cast<Camera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera)));
     }
@@ -109,7 +106,29 @@ void Window::paintGL()
         if (mSelectedNode->parent())
             ImGui::Text("Parent Name: %s", mSelectedNode->parent()->name().toStdString().c_str());
 
-        drawGui(mSelectedNode);
+        switch (mSelectedNode->type())
+        {
+        case Canavar::Engine::Node::NodeType::DummyNode:
+            drawGui(mSelectedNode);
+            break;
+        case Canavar::Engine::Node::NodeType::FreeCamera:
+        case Canavar::Engine::Node::NodeType::DummyCamera:
+            drawGui(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
+            drawGui(mSelectedNode);
+            break;
+        case Canavar::Engine::Node::NodeType::Sky:
+            drawGui(dynamic_cast<Sky *>(mSelectedNode));
+            break;
+        case Canavar::Engine::Node::NodeType::Sun:
+            drawGui(dynamic_cast<Sun *>(mSelectedNode));
+            break;
+        case Canavar::Engine::Node::NodeType::Model:
+            drawGui(mSelectedNode);
+            drawGui(dynamic_cast<Model *>(mSelectedNode));
+            break;
+        default:
+            break;
+        }
     }
 
     ImGui::End();
@@ -163,69 +182,6 @@ void Window::wheelEvent(QWheelEvent *event)
 
 void Window::drawGui(Canavar::Engine::Node *node)
 {
-    if (auto sun = dynamic_cast<Canavar::Engine::Sun *>(node))
-    {
-        if (!ImGui::CollapsingHeader("Sun"))
-        {
-            ImGui::Text("Direction:");
-            float x = sun->direction().x();
-            float y = sun->direction().y();
-            float z = sun->direction().z();
-            float r = sun->direction().length();
-            float theta = qRadiansToDegrees(atan2(z, x));
-            float phi = qRadiansToDegrees(atan2(y, sqrt(z * z + x * x)));
-
-            if (qFuzzyCompare(abs(phi), 90.0f))
-                theta = 0.0f;
-
-            bool updated = false;
-
-            if (ImGui::SliderFloat("Theta##DirectionalLight", &theta, -180.0f, 180.0f, "%.1f"))
-                updated = true;
-
-            if (ImGui::SliderFloat("Phi##DirectionalLight", &phi, -90.0f, 90.0f, "%.1f"))
-                updated = true;
-
-            if (updated)
-            {
-                x = r * cos(qDegreesToRadians(phi)) * cos(qDegreesToRadians(theta));
-                y = r * sin(qDegreesToRadians(phi));
-                z = r * cos(qDegreesToRadians(phi)) * sin(qDegreesToRadians(theta));
-
-                sun->setDirection(QVector3D(x, y, z));
-            }
-
-            ImGui::Text("Shading Parameters:");
-            float ambient = sun->ambient();
-            float diffuse = sun->diffuse();
-            float specular = sun->specular();
-            auto color = sun->color();
-
-            if (ImGui::SliderFloat("Ambient##Sun", &ambient, 0.0f, 1.0f, "%.3f"))
-                sun->setAmbient(ambient);
-            if (ImGui::SliderFloat("Diffuse##Sun", &diffuse, 0.0f, 1.0f, "%.3f"))
-                sun->setDiffuse(diffuse);
-            if (ImGui::SliderFloat("Specular##Sun", &specular, 0.0f, 1.0f, "%.3f"))
-                sun->setSpecular(specular);
-            if (ImGui::ColorEdit4("Color##Sun", (float *) &color))
-                sun->setColor(color);
-        }
-
-        return;
-    }
-
-    if (auto sky = dynamic_cast<Canavar::Engine::Sky *>(node))
-    {
-        if (!ImGui::CollapsingHeader("Sky"))
-        {
-            ImGui::SliderFloat("Albedo##Sky", &sky->mAlbedo, 0.0f, 1.0f, "%.3f");
-            ImGui::SliderFloat("Turbidity##Sky", &sky->mTurbidity, 0.0f, 10.0f, "%.3f");
-            ImGui::SliderFloat("Normalized Sun Y##Sun", &sky->mNormalizedSunY, 0.0f, 10.0f, "%.3f");
-        }
-
-        return;
-    }
-
     // Position
     if (!ImGui::CollapsingHeader("Position##Node"))
     {
@@ -306,40 +262,103 @@ void Window::drawGui(Canavar::Engine::Node *node)
         if (ImGui::DragFloat("z##NodeScale", &z, 0.01f, 0.0001f, 100.0f, "%.3f"))
             node->setScale(QVector3D(x, y, z));
     }
+}
 
-    if (auto model = dynamic_cast<Canavar::Engine::Model *>(node))
-        if (!ImGui::CollapsingHeader("Shading Parameters##Model"))
+void Window::drawGui(Canavar::Engine::Model *node)
+{
+    if (!ImGui::CollapsingHeader("Shading Parameters##Model"))
+    {
+        float ambient = node->ambient();
+        float diffuse = node->diffuse();
+        float specular = node->specular();
+        float shininess = node->shininess();
+        auto color = node->color();
+
+        if (ImGui::SliderFloat("Ambient##Model", &ambient, 0.0f, 1.0f, "%.3f"))
+            node->setAmbient(ambient);
+        if (ImGui::SliderFloat("Diffuse##Model", &diffuse, 0.0f, 1.0f, "%.3f"))
+            node->setDiffuse(diffuse);
+        if (ImGui::SliderFloat("Specular##Model", &specular, 0.0f, 1.0f, "%.3f"))
+            node->setSpecular(specular);
+        if (ImGui::SliderFloat("Shininess##Model", &shininess, 1.0f, 128.0f, "%.3f"))
+            node->setShininess(shininess);
+        if (ImGui::ColorEdit4("Color##Model", (float *) &color))
+            node->setColor(color);
+    }
+}
+
+void Window::drawGui(Canavar::Engine::Sky *node)
+{
+    if (!ImGui::CollapsingHeader("Sky"))
+    {
+        ImGui::SliderFloat("Albedo##Sky", &node->mAlbedo, 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Turbidity##Sky", &node->mTurbidity, 0.0f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Normalized Sun Y##Sun", &node->mNormalizedSunY, 0.0f, 10.0f, "%.3f");
+    }
+}
+
+void Window::drawGui(Canavar::Engine::Sun *sun)
+{
+    if (!ImGui::CollapsingHeader("Sun"))
+    {
+        ImGui::Text("Direction:");
+        float x = sun->direction().x();
+        float y = sun->direction().y();
+        float z = sun->direction().z();
+        float r = sun->direction().length();
+        float theta = qRadiansToDegrees(atan2(z, x));
+        float phi = qRadiansToDegrees(atan2(y, sqrt(z * z + x * x)));
+
+        if (qFuzzyCompare(abs(phi), 90.0f))
+            theta = 0.0f;
+
+        bool updated = false;
+
+        if (ImGui::SliderFloat("Theta##DirectionalLight", &theta, -180.0f, 180.0f, "%.1f"))
+            updated = true;
+
+        if (ImGui::SliderFloat("Phi##DirectionalLight", &phi, -90.0f, 90.0f, "%.1f"))
+            updated = true;
+
+        if (updated)
         {
-            float ambient = model->ambient();
-            float diffuse = model->diffuse();
-            float specular = model->specular();
-            float shininess = model->shininess();
-            auto color = model->color();
+            x = r * cos(qDegreesToRadians(phi)) * cos(qDegreesToRadians(theta));
+            y = r * sin(qDegreesToRadians(phi));
+            z = r * cos(qDegreesToRadians(phi)) * sin(qDegreesToRadians(theta));
 
-            if (ImGui::SliderFloat("Ambient##Model", &ambient, 0.0f, 1.0f, "%.3f"))
-                model->setAmbient(ambient);
-            if (ImGui::SliderFloat("Diffuse##Model", &diffuse, 0.0f, 1.0f, "%.3f"))
-                model->setDiffuse(diffuse);
-            if (ImGui::SliderFloat("Specular##Model", &specular, 0.0f, 1.0f, "%.3f"))
-                model->setSpecular(specular);
-            if (ImGui::SliderFloat("Shininess##Model", &shininess, 1.0f, 128.0f, "%.3f"))
-                model->setShininess(shininess);
-            if (ImGui::ColorEdit4("Color##Model", (float *) &color))
-                model->setColor(color);
+            sun->setDirection(QVector3D(x, y, z));
         }
 
-    if (auto camera = dynamic_cast<Canavar::Engine::PerspectiveCamera *>(node))
-        if (!ImGui::CollapsingHeader("Parameters##PerspectiveCamera"))
-        {
-            auto fov = camera->verticalFov();
-            auto zNear = camera->zNear();
-            auto zFar = camera->zFar();
+        ImGui::Text("Shading Parameters:");
+        float ambient = sun->ambient();
+        float diffuse = sun->diffuse();
+        float specular = sun->specular();
+        auto color = sun->color();
 
-            if (ImGui::SliderFloat("FOV##PerspectiveCamera", &fov, 1.0f, 120.0))
-                camera->setVerticalFov(fov);
-            if (ImGui::SliderFloat("Z-Near##PerspectiveCamera", &zNear, 0.1f, 100.0f))
-                camera->setZNear(zNear);
-            if (ImGui::SliderFloat("Z-Far##PerspectiveCamera", &zFar, 1000.0f, 1000000.0f))
-                camera->setZFar(zFar);
-        }
+        if (ImGui::SliderFloat("Ambient##Sun", &ambient, 0.0f, 1.0f, "%.3f"))
+            sun->setAmbient(ambient);
+        if (ImGui::SliderFloat("Diffuse##Sun", &diffuse, 0.0f, 1.0f, "%.3f"))
+            sun->setDiffuse(diffuse);
+        if (ImGui::SliderFloat("Specular##Sun", &specular, 0.0f, 1.0f, "%.3f"))
+            sun->setSpecular(specular);
+        if (ImGui::ColorEdit4("Color##Sun", (float *) &color))
+            sun->setColor(color);
+    }
+}
+
+void Window::drawGui(Canavar::Engine::PerspectiveCamera *camera)
+{
+    if (!ImGui::CollapsingHeader("Parameters##PerspectiveCamera"))
+    {
+        auto fov = camera->verticalFov();
+        auto zNear = camera->zNear();
+        auto zFar = camera->zFar();
+
+        if (ImGui::SliderFloat("FOV##PerspectiveCamera", &fov, 1.0f, 120.0))
+            camera->setVerticalFov(fov);
+        if (ImGui::SliderFloat("Z-Near##PerspectiveCamera", &zNear, 0.1f, 100.0f))
+            camera->setZNear(zNear);
+        if (ImGui::SliderFloat("Z-Far##PerspectiveCamera", &zFar, 1000.0f, 1000000.0f))
+            camera->setZFar(zFar);
+    }
 }

@@ -8,16 +8,21 @@ namespace Engine {
 
 class Sun : public Light
 {
-protected:
-    friend class NodeManager;
+private:
     explicit Sun(QObject *parent = nullptr);
 
 public:
+    static Sun *instance();
+
     const QVector3D &direction() const;
     void setDirection(const QVector3D &newDirection);
 
+    bool enabled() const;
+    void setEnabled(bool newEnabled);
+
 protected:
     QVector3D mDirection;
+    bool mEnabled;
 };
 
 } // namespace Engine

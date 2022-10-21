@@ -2,7 +2,7 @@
 #define LIGHTMANAGER_H
 
 #include "Manager.h"
-#include "Sun.h"
+#include "NodeManager.h"
 
 #include <QObject>
 
@@ -18,17 +18,9 @@ private:
 
     explicit LightManager(QObject *parent = nullptr);
 
-    void setSun(Sun *sun);
-
 public:
     static LightManager *instance();
-
     bool init() override;
-
-    Sun *sun() const;
-
-private:
-    Sun *mSun;
 };
 
 } // namespace Engine

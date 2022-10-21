@@ -5,6 +5,7 @@
 #include "NodeManager.h"
 #include "ShaderManager.h"
 #include "Sky.h"
+#include "Sun.h"
 
 #include <QDir>
 
@@ -25,6 +26,9 @@ bool Canavar::Engine::RendererManager::init()
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
 
+    mSky = Sky::instance();
+    mSun = Sun::instance();
+
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
@@ -41,7 +45,6 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mRenderParameters.ifps = ifps;
 
     mCamera = mCameraManager->activeCamera();
-    mSun = mLightManager->sun();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -69,16 +72,8 @@ void Canavar::Engine::RendererManager::render(float ifps)
     }
 
     // Render Sky
-    for (const auto &node : nodes)
-    {
-        if (Sky *sky = dynamic_cast<Sky *>(node))
-        {
-            if (!sky->visible())
-                continue;
-
-            sky->render();
-        }
-    }
+    if (mSky->enabled())
+        mSky->render();
 }
 
 void Canavar::Engine::RendererManager::loadModels()

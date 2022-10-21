@@ -1,6 +1,7 @@
 #include "Sky.h"
 #include "HosekData.h"
 #include "HosekFunctions.h"
+#include "Sun.h"
 
 // Sky model belongs to Hosek-Wilkie - An Analytic Model for Full Spectral Sky-Dome Radiance
 // Code is taken from https://github.com/diharaw/sky-models and adopted
@@ -10,25 +11,14 @@ Canavar::Engine::Sky::Sky(QObject *parent)
     , mAlbedo(0.1f)
     , mTurbidity(4.0f)
     , mNormalizedSunY(1.15f)
+    , mEnabled(true)
 {
-    mRenderable = true;
-    mVisible = true;
-    mType = Node::NodeType::Sky;
-
     mVertices << 0 << 0 << 0 << 0;
 
     mShaderManager = Canavar::Engine::ShaderManager::instance();
     mCameraManager = Canavar::Engine::CameraManager::instance();
     mLightManager = Canavar::Engine::LightManager::instance();
-}
 
-Canavar::Engine::Sky::~Sky()
-{
-    // TODO
-}
-
-void Canavar::Engine::Sky::create()
-{
     initializeOpenGLFunctions();
     glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);
@@ -39,11 +29,20 @@ void Canavar::Engine::Sky::create()
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(unsigned int), (void *) 0);
+
+    mType = Node::NodeType::Sky;
+    mName = "Sky";
+}
+
+Canavar::Engine::Sky *Canavar::Engine::Sky::instance()
+{
+    static Sky instance;
+    return &instance;
 }
 
 void Canavar::Engine::Sky::render()
 {
-    const auto sunDir = -mLightManager->instance()->sun()->direction().normalized();
+    const auto sunDir = -Sun::instance()->direction().normalized();
     const auto sunTheta = acos(qBound(0.f, sunDir.y(), 1.f));
 
     for (int i = 0; i < 3; ++i)
@@ -92,4 +91,14 @@ void Canavar::Engine::Sky::render()
     mShaderManager->release();
 
     glDepthFunc(GL_LESS);
+}
+
+bool Canavar::Engine::Sky::enabled() const
+{
+    return mEnabled;
+}
+
+void Canavar::Engine::Sky::setEnabled(bool newEnabled)
+{
+    mEnabled = newEnabled;
 }

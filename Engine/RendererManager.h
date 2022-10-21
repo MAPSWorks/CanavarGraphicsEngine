@@ -4,7 +4,7 @@
 #include "Camera.h"
 #include "Manager.h"
 #include "ModelData.h"
-#include "Sun.h"
+#include "Sky.h"
 
 namespace Canavar {
 namespace Engine {
@@ -43,6 +43,7 @@ private:
 
     Camera *mCamera;
     Sun *mSun;
+    Sky *mSky;
 
     RenderParameters mRenderParameters;
 };

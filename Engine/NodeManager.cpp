@@ -4,7 +4,9 @@
 #include "FreeCamera.h"
 #include "LightManager.h"
 #include "Model.h"
+
 #include "Sky.h"
+#include "Sun.h"
 
 Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     : Manager(parent)
@@ -15,14 +17,18 @@ Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     mTypeToName.insert(Node::NodeType::DummyNode, "Dummy Node");
     mTypeToName.insert(Node::NodeType::FreeCamera, "Free Camera");
     mTypeToName.insert(Node::NodeType::Model, "Model");
-    mTypeToName.insert(Node::NodeType::Sun, "Sun");
-    mTypeToName.insert(Node::NodeType::Sky, "Sky");
 }
 
 bool Canavar::Engine::NodeManager::init()
 {
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
+
+    mNodes << Sun::instance();
+    mNumberOfNodes++;
+
+    mNodes << Sky::instance();
+    mNumberOfNodes++;
 
     return true;
 }
@@ -48,25 +54,6 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
     case Node::NodeType::DummyCamera: {
         node = new DummyCamera;
         mCameraManager->addCamera(dynamic_cast<DummyCamera *>(node));
-        break;
-    }
-    case Node::NodeType::Sun: {
-        if (mTypeToCount.value(Node::NodeType::Sun, 0) == 0)
-        {
-            node = new Sun;
-            mLightManager->setSun(dynamic_cast<Sun *>(node));
-        } else
-            qWarning() << Q_FUNC_INFO << "Cannot create multiple suns";
-        break;
-    }
-    case Node::NodeType::Sky: {
-        if (mTypeToCount.value(Node::NodeType::Sky, 0) == 0)
-        {
-            Sky *sky = new Sky;
-            sky->create();
-            node = sky;
-        } else
-            qWarning() << Q_FUNC_INFO << "Cannot create multiple skies";
         break;
     }
     default: {
@@ -110,17 +97,8 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
         node->deleteLater();
         break;
     }
-    case Node::NodeType::Sun: {
-        if (parent)
-            parent->removeChild(node);
-        Sun *light = dynamic_cast<Sun *>(node);
-        if (mLightManager->sun() == light)
-            mLightManager->setSun(nullptr);
-        mNodes.removeAll(node);
-        light->deleteLater();
-    }
     default: {
-        qWarning() << Q_FUNC_INFO << "Unkown Node. Implement deletion algorithm for this Node";
+        qWarning() << Q_FUNC_INFO << "Unkown Node. Implement deletion algorithm for this NodeType:" << (int) node->type();
     }
     }
 }

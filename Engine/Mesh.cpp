@@ -4,6 +4,7 @@
 #include "LightManager.h"
 #include "Model.h"
 #include "ShaderManager.h"
+#include "Sun.h"
 
 Canavar::Engine::Mesh::Mesh(QObject *parent)
     : QObject(parent)
@@ -109,8 +110,8 @@ void Canavar::Engine::Mesh::setId(unsigned int newId)
 void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
 {
     auto camera = mCameraManager->activeCamera();
-    auto sun = mLightManager->sun();
     auto model = parameters.model;
+    auto sun = Canavar::Engine::Sun::instance();
 
     bool useTexture = mMaterial->getNumberOfTextures() != 0;
 
