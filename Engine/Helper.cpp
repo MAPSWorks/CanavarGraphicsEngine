@@ -260,7 +260,7 @@ Canavar::Engine::Material *Canavar::Engine::Helper::processMaterial(aiMaterial *
 
 void Canavar::Engine::Helper::processTexture(Material *material, aiMaterial *aiMaterial, aiTextureType aiType, Material::TextureType type, const QString &directory)
 {
-    for (unsigned int i = 0; i < qMin(1, int(aiMaterial->GetTextureCount(aiType))); i++)
+    for (int i = 0; i < qMin(1, int(aiMaterial->GetTextureCount(aiType))); i++)
     {
         aiString str;
         aiMaterial->GetTexture(aiType, i, &str);

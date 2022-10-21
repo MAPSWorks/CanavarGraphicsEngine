@@ -38,7 +38,7 @@ Canavar::Engine::Terrain::Terrain(QObject *parent)
     mSun = Sun::instance();
 }
 
-void Canavar::Engine::Terrain::render(const RenderParameters &parameters)
+void Canavar::Engine::Terrain::render(const RenderParameters &)
 {
     mCamera = mCameraManager->activeCamera();
 

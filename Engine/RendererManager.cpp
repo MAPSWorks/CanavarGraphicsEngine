@@ -42,7 +42,7 @@ bool Canavar::Engine::RendererManager::init()
     return true;
 }
 
-void Canavar::Engine::RendererManager::resize(int width, int height) {}
+void Canavar::Engine::RendererManager::resize(int, int) {}
 
 void Canavar::Engine::RendererManager::render(float ifps)
 {
