@@ -58,7 +58,6 @@ Now you can set `camera` as the active camera:
 ```
 CameraManager::instance()->setActiveCamera(camera);
 ```
-## UML Diagram
-![](UML.png)
+
 ## Acknowledgements
 I thank Federico Vaccaro for his amazing shaders and Joey de Vries for his OpenGL tutorials.
