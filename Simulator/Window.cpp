@@ -100,9 +100,6 @@ void Window::paintGL()
     mController->render(ifps);
 
     QtImGui::newFrame();
-    //ImGui::ShowDemoWindow();
-
-    qDebug() << mJet->parent();
 
     mAircraftController->drawGUI();
 
