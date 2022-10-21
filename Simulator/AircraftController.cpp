@@ -1,7 +1,7 @@
 #include "AircraftController.h"
 
 AircraftController::AircraftController(Aircraft *aircraft, QObject *parent)
-    : Manager(parent)
+    : QObject(parent)
     , mAircraft(aircraft)
     , mAileron(0)
     , mElevator(0)
@@ -9,9 +9,9 @@ AircraftController::AircraftController(Aircraft *aircraft, QObject *parent)
     , mThrottle(0)
 {
     connect(this, &AircraftController::command, mAircraft, &Aircraft::onCommand, Qt::QueuedConnection);
+    connect(&mTimer, &QTimer::timeout, this, &AircraftController::tick);
     connect(
         mAircraft, &Aircraft::pfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
-    connect(&mTimer, &QTimer::timeout, this, &AircraftController::tick);
 }
 
 void AircraftController::keyPressed(QKeyEvent *event)
@@ -156,12 +156,12 @@ void AircraftController::update(float)
     }
 }
 
-void AircraftController::setRootJetNode(Node *newRootJetNode)
+void AircraftController::setRootJetNode(Canavar::Engine::Node *newRootJetNode)
 {
     mRootJetNode = newRootJetNode;
 }
 
-void AircraftController::setJet(Model *newJet)
+void AircraftController::setJet(Canavar::Engine::Model *newJet)
 {
     mJet = newJet;
 }
@@ -194,6 +194,7 @@ void AircraftController::drawGUI()
     ImGui::Text("Roll:        %.1f °", mPfd.roll);
     ImGui::Text("Pitch:       %.1f °", mPfd.pitch);
     ImGui::Text("Heading:     %.1f °", mPfd.heading);
-
+    ImGui::Spacing();
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 }

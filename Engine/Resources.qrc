@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/Shaders/ModelColored.frag</file>
+        <file>Resources/Shaders/ModelColored.vert</file>
+        <file>Resources/Shaders/ModelTextured.frag</file>
+        <file>Resources/Shaders/ModelTextured.vert</file>
+        <file>Resources/Shaders/Sky.frag</file>
+        <file>Resources/Shaders/Sky.vert</file>
+        <file>Resources/Shaders/Terrain.frag</file>
+        <file>Resources/Shaders/Terrain.tcs</file>
+        <file>Resources/Shaders/Terrain.tes</file>
+        <file>Resources/Shaders/Terrain.vert</file>
+    </qresource>
+</RCC>

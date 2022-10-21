@@ -1,10 +1,9 @@
 #ifndef AIRCRAFTCONTROLLER_H
 #define AIRCRAFTCONTROLLER_H
 
+#include "../Engine/Model.h"
 #include "Aircraft.h"
-#include "Model.h"
 
-#include <Manager.h>
 #include <QKeyEvent>
 #include <QObject>
 #include <QTimer>
@@ -12,7 +11,7 @@
 #include <imgui.h>
 #include <QtImGui.h>
 
-class AircraftController : public Manager
+class AircraftController : public QObject
 {
     Q_OBJECT
 public:
@@ -22,14 +21,14 @@ public:
     void keyReleased(QKeyEvent *);
 
     void drawGUI();
-    void setJet(Model *newJet);
-    void setRootJetNode(Node *newRootJetNode);
+    void setJet(Canavar::Engine::Model *newJet);
+    void setRootJetNode(Canavar::Engine::Node *newRootJetNode);
 
 signals:
     void command(Aircraft::Command command, QVariant variant = QVariant());
 
 public slots:
-    bool init() override;
+    bool init();
     void tick();
     void update(float ifps);
 
@@ -45,8 +44,8 @@ private:
 
     Aircraft::PrimaryFlightData mPfd;
 
-    Model *mJet;
-    Node *mRootJetNode;
+    Canavar::Engine::Model *mJet;
+    Canavar::Engine::Node *mRootJetNode;
 };
 
 #endif // AIRCRAFTCONTROLLER_H
