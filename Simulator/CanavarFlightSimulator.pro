@@ -24,6 +24,7 @@ HEADERS += \
     Converter.h \
     Window.h \
 
+
 LIBS += -L$$PWD/Dependencies/JSBSim/lib/ -lJSBSim
 LIBS += -lws2_32
 

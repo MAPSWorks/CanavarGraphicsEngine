@@ -15,10 +15,7 @@ namespace Engine {
 class Controller;
 class Node;
 class Model;
-class Sky;
-class Sun;
 class PerspectiveCamera;
-class Terrain;
 
 } // namespace Engine
 } // namespace Canavar

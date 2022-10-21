@@ -1,12 +1,12 @@
 #include "Window.h"
 
-#include "../Engine/CameraManager.h"
-#include "../Engine/Controller.h"
-
-#include "../Engine/Model.h"
-#include "../Engine/Node.h"
-#include "../Engine/NodeManager.h"
-#include "../Engine/PerspectiveCamera.h"
+#include <CameraManager.h>
+#include <Controller.h>
+#include <Gui.h>
+#include <Model.h>
+#include <Node.h>
+#include <NodeManager.h>
+#include <PerspectiveCamera.h>
 
 #include <QDateTime>
 #include <QKeyEvent>
@@ -100,6 +100,8 @@ void Window::paintGL()
     mController->render(ifps);
 
     QtImGui::newFrame();
+
+    Gui::draw();
 
     mAircraftController->drawGUI();
 

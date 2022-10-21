@@ -1,8 +1,9 @@
 #ifndef AIRCRAFTCONTROLLER_H
 #define AIRCRAFTCONTROLLER_H
 
-#include "../Engine/Model.h"
 #include "Aircraft.h"
+
+#include <Model.h>
 
 #include <QKeyEvent>
 #include <QObject>

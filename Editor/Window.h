@@ -11,12 +11,7 @@ namespace Canavar {
 namespace Engine {
 
 class Controller;
-class Node;
-class Model;
-class Sky;
-class Sun;
 class PerspectiveCamera;
-class Terrain;
 
 } // namespace Engine
 } // namespace Canavar
@@ -39,19 +34,11 @@ private:
     void mouseMoveEvent(QMouseEvent *) override;
     void wheelEvent(QWheelEvent *) override;
 
-    void drawGui(Canavar::Engine::Node *node);
-    void drawGui(Canavar::Engine::Model *node);
-    void drawGui(Canavar::Engine::Sky *node);
-    void drawGui(Canavar::Engine::Sun *node);
-    void drawGui(Canavar::Engine::PerspectiveCamera *node);
-    void drawGui(Canavar::Engine::Terrain *node);
-
 private:
     long long mPreviousTime;
     long long mCurrentTime;
     Canavar::Engine::Controller *mController;
 
     Canavar::Engine::PerspectiveCamera *mCamera;
-    Canavar::Engine::Node *mSelectedNode;
 };
 #endif // WINDOW_H

@@ -5,6 +5,7 @@ HEADERS += \
     $$PWD/Controller.h \
     $$PWD/DummyCamera.h \
     $$PWD/FreeCamera.h \
+    $$PWD/Gui.h \
     $$PWD/Haze.h \
     $$PWD/Helper.h \
     $$PWD/HosekData.h \
@@ -36,6 +37,7 @@ SOURCES += \
     $$PWD/Controller.cpp \
     $$PWD/DummyCamera.cpp \
     $$PWD/FreeCamera.cpp \
+    $$PWD/Gui.cpp \
     $$PWD/Haze.cpp \
     $$PWD/Helper.cpp \
     $$PWD/Light.cpp \
@@ -58,6 +60,8 @@ SOURCES += \
     $$PWD/Sun.cpp \
     $$PWD/Terrain.cpp \
     $$PWD/TileGenerator.cpp
+
+INCLUDEPATH += $$PWD
 
 INCLUDEPATH += $$PWD/Dependencies/Assimp/include
 DEPENDPATH += $$PWD/Dependencies/Assimp/include
