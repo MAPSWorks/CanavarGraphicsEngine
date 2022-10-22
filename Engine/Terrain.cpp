@@ -42,7 +42,7 @@ void Canavar::Engine::Terrain::render(const RenderParameters &)
 {
     mCamera = mCameraManager->activeCamera();
 
-    QVector2D currentTilePosition = mTileGenerator->whichTile(mCameraManager->activeCamera()->worldPosition());
+    QVector2D currentTilePosition = mTileGenerator->whichTile(mCamera->worldPosition());
 
     if (currentTilePosition != mPreviousTilePosition)
     {
@@ -95,7 +95,7 @@ void Canavar::Engine::Terrain::reset()
     mGrassCoverage = 0.45f;
     mSeed = QVector3D(1, 1, 1);
 
-    mAmbient = 0.55f;
+    mAmbient = 0.75f;
     mDiffuse = 0.75f;
     mShininess = 4.0f;
     mSpecular = 0.05f;

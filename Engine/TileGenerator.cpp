@@ -90,17 +90,10 @@ Canavar::Engine::TileGenerator::TileGenerator(int resolution, int tiles, float w
 
 QVector2D Canavar::Engine::TileGenerator::whichTile(const QVector3D &subject) const
 {
-    for (const auto &position : qAsConst(mTilePositions))
-    {
-        if (subject.x() > position.x() - mWidth / 2 && //
-            subject.x() < position.x() + mWidth / 2 && //
-            subject.z() > position.y() - mWidth / 2 && //
-            subject.z() < position.y() + mWidth / 2)
+    int i = int(subject.x()) / mWidth;
+    int j = int(subject.z()) / mWidth;
 
-            return position;
-    }
-
-    return QVector2D(0, 0);
+    return QVector2D(i * mWidth, j * mWidth);
 }
 
 void Canavar::Engine::TileGenerator::translateTiles(const QVector2D &translation)
