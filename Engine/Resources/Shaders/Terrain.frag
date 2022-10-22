@@ -243,7 +243,7 @@ vec4 ambient()
 vec4 diffuse(vec3 normal)
 {
     float diffuseFactor = max(dot(normal, sun.direction), 0.0);
-    vec4 diffuse = diffuseFactor * sun.diffuse * sun.diffuse * sun.color;
+    vec4 diffuse = diffuseFactor * sun.diffuse * terrain.diffuse * sun.color;
     return diffuse;
 }
 
@@ -342,7 +342,7 @@ void main()
     if (haze.enabled)
     {
         float hazeFactor = getHazeFactor();
-        outColor = mix(vec4(haze.color, 1) * clamp(-sun.direction.y, 0.0f, 1.0f), color, hazeFactor);
+        outColor = mix(vec4(haze.color, 1) * clamp(sun.direction.y, 0.0f, 1.0f), color, hazeFactor);
 
     } else
     {

@@ -95,7 +95,7 @@ void Canavar::Engine::Terrain::reset()
     mGrassCoverage = 0.45f;
     mSeed = QVector3D(1, 1, 1);
 
-    mAmbient = 0.75f;
+    mAmbient = 0.5f;
     mDiffuse = 0.75f;
     mShininess = 4.0f;
     mSpecular = 0.05f;
