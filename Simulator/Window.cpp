@@ -70,16 +70,16 @@ void Window::initializeGL()
         mFreeCamera->setPosition(QVector3D(0, 200, 0));
         mFreeCamera->setVerticalFov(60.0f);
         mFreeCamera->setZNear(2.0f);
-        mFreeCamera->setZFar(100000.0f);
+        mFreeCamera->setZFar(1000000.0f);
         CameraManager::instance()->setActiveCamera(mFreeCamera);
 
         mDummyCamera = dynamic_cast<Canavar::Engine::PerspectiveCamera *>(NodeManager::instance()->createNode(Node::NodeType::DummyCamera));
 
         mJetRoot->addChild(mDummyCamera);
-        mDummyCamera->setPosition(QVector3D(0, 5, 30));
+        mDummyCamera->setPosition(QVector3D(0, 5, 40));
         mDummyCamera->setVerticalFov(75.0f);
-        mDummyCamera->setZNear(2.0f);
-        mDummyCamera->setZFar(100000.0f);
+        mDummyCamera->setZNear(5.0f);
+        mDummyCamera->setZFar(1000000.0f);
     }
 }
 

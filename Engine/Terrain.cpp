@@ -96,8 +96,8 @@ void Canavar::Engine::Terrain::reset()
     mSeed = QVector3D(1, 1, 1);
 
     mAmbient = 0.5f;
-    mDiffuse = 0.75f;
-    mShininess = 4.0f;
+    mDiffuse = 0.6f;
+    mShininess = 8.0f;
     mSpecular = 0.05f;
 }
 
