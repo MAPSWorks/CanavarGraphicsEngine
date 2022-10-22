@@ -33,19 +33,6 @@ public:
     void render(const RenderParameters &parameters);
     void reset();
 
-    float mAmplitude;
-    float mFrequency;
-    int mOctaves;
-    float mPower;
-    QVector3D mSeed;
-    float mTessellationMultiplier;
-    float mGrassCoverage;
-
-    float mAmbient;
-    float mDiffuse;
-    float mSpecular;
-    float mShininess;
-
 private:
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
@@ -58,6 +45,19 @@ private:
     QMap<QString, QOpenGLTexture *> mTextures;
 
     QVector2D mPreviousTilePosition;
+
+    DECLARE_MEMBER(float, Amplitude)
+    DECLARE_MEMBER(float, Frequency)
+    DECLARE_MEMBER(int, Octaves)
+    DECLARE_MEMBER(float, Power)
+    DECLARE_MEMBER(QVector3D, Seed)
+    DECLARE_MEMBER(float, TessellationMultiplier)
+
+    DECLARE_MEMBER(float, GrassCoverage)
+    DECLARE_MEMBER(float, Ambient)
+    DECLARE_MEMBER(float, Diffuse)
+    DECLARE_MEMBER(float, Specular)
+    DECLARE_MEMBER(float, Shininess)
 };
 
 } // namespace Engine

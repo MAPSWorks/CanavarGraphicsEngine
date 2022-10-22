@@ -83,31 +83,6 @@ void Canavar::Engine::Mesh::create()
     mVAO->release();
 }
 
-const Canavar::Engine::Mesh::AABB &Canavar::Engine::Mesh::aABB() const
-{
-    return mAABB;
-}
-
-void Canavar::Engine::Mesh::setAABB(const AABB &newAABB)
-{
-    mAABB = newAABB;
-}
-
-void Canavar::Engine::Mesh::setName(const QString &newName)
-{
-    mName = newName;
-}
-
-unsigned int Canavar::Engine::Mesh::id() const
-{
-    return mId;
-}
-
-void Canavar::Engine::Mesh::setId(unsigned int newId)
-{
-    mId = newId;
-}
-
 void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
 {
     auto camera = mCameraManager->activeCamera();
@@ -134,21 +109,21 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
         mShaderManager->setUniformValue("useTextureSpecular", textureSpecular != nullptr);
         mShaderManager->setUniformValue("useTextureNormal", textureNormal != nullptr);
 
-        mShaderManager->setUniformValue("model.shininess", model->shininess());
-        mShaderManager->setUniformValue("model.ambient", model->ambient());
-        mShaderManager->setUniformValue("model.diffuse", model->diffuse());
-        mShaderManager->setUniformValue("model.specular", model->specular());
+        mShaderManager->setUniformValue("model.shininess", model->getShininess());
+        mShaderManager->setUniformValue("model.ambient", model->getAmbient());
+        mShaderManager->setUniformValue("model.diffuse", model->getDiffuse());
+        mShaderManager->setUniformValue("model.specular", model->getSpecular());
 
-        mShaderManager->setUniformValue("sun.direction", -sun->direction().normalized());
-        mShaderManager->setUniformValue("sun.color", sun->color());
-        mShaderManager->setUniformValue("sun.ambient", sun->ambient());
-        mShaderManager->setUniformValue("sun.diffuse", sun->diffuse());
-        mShaderManager->setUniformValue("sun.specular", sun->specular());
+        mShaderManager->setUniformValue("sun.direction", -sun->getDirection().normalized());
+        mShaderManager->setUniformValue("sun.color", sun->getColor());
+        mShaderManager->setUniformValue("sun.ambient", sun->getAmbient());
+        mShaderManager->setUniformValue("sun.diffuse", sun->getDiffuse());
+        mShaderManager->setUniformValue("sun.specular", sun->getSpecular());
 
-        mShaderManager->setUniformValue("haze.enabled", Haze::instance()->mEnabled);
-        mShaderManager->setUniformValue("haze.color", Haze::instance()->mColor);
-        mShaderManager->setUniformValue("haze.density", Haze::instance()->mDensity);
-        mShaderManager->setUniformValue("haze.gradient", Haze::instance()->mGradient);
+        mShaderManager->setUniformValue("haze.enabled", Haze::instance()->getEnabled());
+        mShaderManager->setUniformValue("haze.color", Haze::instance()->getColor());
+        mShaderManager->setUniformValue("haze.density", Haze::instance()->getDensity());
+        mShaderManager->setUniformValue("haze.gradient", Haze::instance()->getGradient());
 
         mShaderManager->setUniformValue("cameraPos", camera->worldPosition());
 
@@ -180,22 +155,22 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
         mShaderManager->setUniformValue("N", model->worldTransformation().normalMatrix());
         mShaderManager->setUniformValue("VP", camera->getViewProjectionMatrix());
 
-        mShaderManager->setUniformValue("model.color", model->color());
-        mShaderManager->setUniformValue("model.ambient", model->ambient());
-        mShaderManager->setUniformValue("model.diffuse", model->diffuse());
-        mShaderManager->setUniformValue("model.specular", model->specular());
-        mShaderManager->setUniformValue("model.shininess", model->shininess());
+        mShaderManager->setUniformValue("model.color", model->getColor());
+        mShaderManager->setUniformValue("model.shininess", model->getShininess());
+        mShaderManager->setUniformValue("model.ambient", model->getAmbient());
+        mShaderManager->setUniformValue("model.diffuse", model->getDiffuse());
+        mShaderManager->setUniformValue("model.specular", model->getSpecular());
 
-        mShaderManager->setUniformValue("sun.direction", -sun->direction().normalized());
-        mShaderManager->setUniformValue("sun.color", sun->color());
-        mShaderManager->setUniformValue("sun.ambient", sun->ambient());
-        mShaderManager->setUniformValue("sun.diffuse", sun->diffuse());
-        mShaderManager->setUniformValue("sun.specular", sun->specular());
+        mShaderManager->setUniformValue("sun.direction", -sun->getDirection().normalized());
+        mShaderManager->setUniformValue("sun.color", sun->getColor());
+        mShaderManager->setUniformValue("sun.ambient", sun->getAmbient());
+        mShaderManager->setUniformValue("sun.diffuse", sun->getDiffuse());
+        mShaderManager->setUniformValue("sun.specular", sun->getSpecular());
 
-        mShaderManager->setUniformValue("haze.enabled", Haze::instance()->mEnabled);
-        mShaderManager->setUniformValue("haze.color", Haze::instance()->mColor);
-        mShaderManager->setUniformValue("haze.density", Haze::instance()->mDensity);
-        mShaderManager->setUniformValue("haze.gradient", Haze::instance()->mGradient);
+        mShaderManager->setUniformValue("haze.enabled", Haze::instance()->getEnabled());
+        mShaderManager->setUniformValue("haze.color", Haze::instance()->getColor());
+        mShaderManager->setUniformValue("haze.density", Haze::instance()->getDensity());
+        mShaderManager->setUniformValue("haze.gradient", Haze::instance()->getGradient());
 
         mShaderManager->setUniformValue("cameraPos", camera->worldPosition());
 

@@ -178,7 +178,7 @@ Canavar::Engine::ModelData *Canavar::Engine::Helper::loadModel(const QString &na
     {
         aiMesh *aiMesh = aiScene->mMeshes[i];
         Mesh *mesh = processMesh(aiMesh);
-        mesh->setId(i);
+        mesh->setID(i);
         mesh->setMaterial(data->getMaterial(aiMesh->mMaterialIndex));
         data->addMesh(mesh);
     }

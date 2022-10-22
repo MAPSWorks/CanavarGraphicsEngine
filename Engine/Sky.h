@@ -20,14 +20,6 @@ public:
 
     void render();
 
-    bool enabled() const;
-    void setEnabled(bool newEnabled);
-
-public:
-    float mAlbedo;
-    float mTurbidity;
-    float mNormalizedSunY;
-
 private:
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
@@ -42,7 +34,10 @@ private:
     QVector3D A, B, C, D, E, F, G, H, I;
     QVector3D Z;
 
-    bool mEnabled;
+    DECLARE_MEMBER(bool, Enabled)
+    DECLARE_MEMBER(float, Albedo)
+    DECLARE_MEMBER(float, Turbidity)
+    DECLARE_MEMBER(float, NormalizedSunY)
 };
 
 } // namespace Engine

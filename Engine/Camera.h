@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "Common.h"
 #include "Node.h"
 
 #include <QKeyEvent>
@@ -36,27 +37,16 @@ public:
     bool active() const;
     void setActive(bool newActive);
 
-    int width() const;
-    void setWidth(int newWidth);
-
-    int height() const;
-    void setHeight(int newHeight);
-
-    float zNear() const;
-    void setZNear(float newZNear);
-
-    float zFar() const;
-    void setZFar(float newZFar);
-
 signals:
     void activeChanged();
 
 protected:
     bool mActive;
-    int mWidth;
-    int mHeight;
-    float mZNear;
-    float mZFar;
+
+    DECLARE_MEMBER(int, Width)
+    DECLARE_MEMBER(int, Height)
+    DECLARE_MEMBER(float, ZNear)
+    DECLARE_MEMBER(float, ZFar)
 };
 
 } // namespace Engine

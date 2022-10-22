@@ -16,10 +16,12 @@ protected:
 public:
     virtual QMatrix4x4 getProjectionMatrix() override;
 
-    float verticalFov() const;
+    const float &getVerticalFov() const;
+    float &getVerticalFov_nonConst();
     void setVerticalFov(float newVerticalFov);
 
-    float horizontalFov() const;
+    const float &getHorizontalFov() const;
+    float &getHorizontalFov_nonConst();
     void setHorizontalFov(float newHorizontalFov);
 
 protected:

@@ -14,10 +14,12 @@ private:
 public:
     static Sun *instance();
 
-    const QVector3D &direction() const;
+    const QVector3D &getDirection() const;
+    QVector3D &getDirection_nonConst();
+
     void setDirection(const QVector3D &newDirection);
 
-    bool enabled() const;
+    bool getEnabled() const;
     void setEnabled(bool newEnabled);
 
 protected:

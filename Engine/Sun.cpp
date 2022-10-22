@@ -23,7 +23,12 @@ Canavar::Engine::Sun *Canavar::Engine::Sun::instance()
     return &instance;
 }
 
-const QVector3D &Canavar::Engine::Sun::direction() const
+const QVector3D &Canavar::Engine::Sun::getDirection() const
+{
+    return mDirection;
+}
+
+QVector3D &Canavar::Engine::Sun::getDirection_nonConst()
 {
     return mDirection;
 }
@@ -40,7 +45,7 @@ void Canavar::Engine::Sun::setDirection(const QVector3D &newDirection)
     mSpecular = qBound(0.2f, -mDirection.y(), 1.f);
 }
 
-bool Canavar::Engine::Sun::enabled() const
+bool Canavar::Engine::Sun::getEnabled() const
 {
     return mEnabled;
 }

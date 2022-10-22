@@ -48,15 +48,6 @@ public:
     void setMaterial(Material *material);
     void create();
 
-    const AABB &aABB() const;
-    void setAABB(const AABB &newAABB);
-
-    const QString &name() const;
-    void setName(const QString &newName);
-
-    unsigned int id() const;
-    void setId(unsigned int newId);
-
     void render(const RenderParameters &parameters);
 
 private:
@@ -67,9 +58,10 @@ private:
     QVector<Vertex> mVertices;
     QVector<unsigned int> mIndices;
     Material *mMaterial;
-    AABB mAABB;
-    QString mName;
-    unsigned int mId;
+
+    DECLARE_MEMBER(AABB, AABB)
+    DECLARE_MEMBER(QString, Name)
+    DECLARE_MEMBER(unsigned int, ID)
 
     // For rendering
     ShaderManager *mShaderManager; // Might be static

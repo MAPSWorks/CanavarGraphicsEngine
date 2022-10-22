@@ -19,7 +19,12 @@ QMatrix4x4 Canavar::Engine::PerspectiveCamera::getProjectionMatrix()
     return projection;
 }
 
-float Canavar::Engine::PerspectiveCamera::horizontalFov() const
+const float &Canavar::Engine::PerspectiveCamera::getHorizontalFov() const
+{
+    return mHorizontalFov;
+}
+
+float &Canavar::Engine::PerspectiveCamera::getHorizontalFov_nonConst()
 {
     return mHorizontalFov;
 }
@@ -30,7 +35,12 @@ void Canavar::Engine::PerspectiveCamera::setHorizontalFov(float newHorizontalFov
     mVerticalFov = Helper::calculateVerticalFovForGivenHorizontalFov(mHorizontalFov, mWidth, mHeight);
 }
 
-float Canavar::Engine::PerspectiveCamera::verticalFov() const
+const float &Canavar::Engine::PerspectiveCamera::getVerticalFov() const
+{
+    return mVerticalFov;
+}
+
+float &Canavar::Engine::PerspectiveCamera::getVerticalFov_nonConst()
 {
     return mVerticalFov;
 }

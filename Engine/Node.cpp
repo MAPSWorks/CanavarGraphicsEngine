@@ -154,33 +154,3 @@ void Canavar::Engine::Node::removeChild(Node *node)
         mChildren.removeAll(node);
     }
 }
-
-bool Canavar::Engine::Node::renderable() const
-{
-    return mRenderable;
-}
-
-void Canavar::Engine::Node::setRenderable(bool newRenderable)
-{
-    mRenderable = newRenderable;
-}
-
-bool Canavar::Engine::Node::visible() const
-{
-    return mVisible;
-}
-
-void Canavar::Engine::Node::setVisible(bool newVisible)
-{
-    mVisible = newVisible;
-}
-
-const QString &Canavar::Engine::Node::name() const
-{
-    return mName;
-}
-
-void Canavar::Engine::Node::setName(const QString &newName)
-{
-    mName = newName;
-}

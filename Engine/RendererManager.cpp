@@ -3,6 +3,7 @@
 #include "Haze.h"
 #include "Helper.h"
 #include "LightManager.h"
+#include "Model.h"
 #include "NodeManager.h"
 #include "ShaderManager.h"
 #include "Sky.h"
@@ -59,17 +60,17 @@ void Canavar::Engine::RendererManager::render(float ifps)
     // Render Models
     for (const auto &node : nodes)
     {
-        if (!node->visible())
+        if (!node->getVisible())
             continue;
 
-        if (!node->renderable())
+        if (!node->getRenderable())
             continue;
 
         if (Model *model = dynamic_cast<Model *>(node))
         {
             mRenderParameters.model = model;
 
-            ModelData *data = mModelsData.value(model->modelName(), nullptr);
+            ModelData *data = mModelsData.value(model->getModelName(), nullptr);
             if (data)
                 data->render(mRenderParameters);
         }
@@ -78,7 +79,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mTerrain->render(mRenderParameters);
 
     // Render Sky
-    if (mSky->enabled())
+    if (mSky->getEnabled())
         mSky->render();
 }
 

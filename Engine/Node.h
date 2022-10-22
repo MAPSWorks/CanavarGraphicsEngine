@@ -1,6 +1,8 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "Common.h"
+
 #include <QMatrix4x4>
 #include <QObject>
 #include <QQuaternion>
@@ -51,15 +53,6 @@ public:
     const QVector3D &scale() const;
     void setScale(const QVector3D &newScale);
 
-    const QString &name() const;
-    void setName(const QString &newName);
-
-    bool visible() const;
-    void setVisible(bool newVisible);
-
-    bool renderable() const;
-    void setRenderable(bool newRenderable);
-
     Node *parent() const;
     void setParent(Node *newParent);
 
@@ -76,14 +69,14 @@ protected:
     QQuaternion mRotation;
     QVector3D mPosition;
     QVector3D mScale;
-    QString mName;
     NodeType mType;
-
-    bool mVisible;
-    bool mRenderable;
 
     Node *mParent;
     QList<Node *> mChildren;
+
+    DECLARE_MEMBER(bool, Visible)
+    DECLARE_MEMBER(bool, Renderable)
+    DECLARE_MEMBER(QString, Name)
 };
 
 } // namespace Engine

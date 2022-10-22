@@ -12,11 +12,11 @@ void Canavar::Engine::Gui::draw()
 
     auto &nodes = NodeManager::instance()->nodes();
 
-    QString preview = mSelectedNode ? mSelectedNode->name() : "-";
+    QString preview = mSelectedNode ? mSelectedNode->getName() : "-";
     if (ImGui::BeginCombo("Select a node", preview.toStdString().c_str()))
     {
         for (int i = 0; i < nodes.size(); ++i)
-            if (ImGui::Selectable(nodes[i]->name().toStdString().c_str()))
+            if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
                 mSelectedNode = nodes[i];
 
         ImGui::EndCombo();
@@ -28,7 +28,7 @@ void Canavar::Engine::Gui::draw()
         ImGui::Text("Parent: 0x%p", mSelectedNode->parent());
 
         if (mSelectedNode->parent())
-            ImGui::Text("Parent Name: %s", mSelectedNode->parent()->name().toStdString().c_str());
+            ImGui::Text("Parent Name: %s", mSelectedNode->parent()->getName().toStdString().c_str());
 
         switch (mSelectedNode->type())
         {
@@ -150,22 +150,11 @@ void Canavar::Engine::Gui::draw(Model *node)
 {
     if (!ImGui::CollapsingHeader("Shading Parameters##Model"))
     {
-        float ambient = node->ambient();
-        float diffuse = node->diffuse();
-        float specular = node->specular();
-        float shininess = node->shininess();
-        auto color = node->color();
-
-        if (ImGui::SliderFloat("Ambient##Model", &ambient, 0.0f, 1.0f, "%.3f"))
-            node->setAmbient(ambient);
-        if (ImGui::SliderFloat("Diffuse##Model", &diffuse, 0.0f, 1.0f, "%.3f"))
-            node->setDiffuse(diffuse);
-        if (ImGui::SliderFloat("Specular##Model", &specular, 0.0f, 1.0f, "%.3f"))
-            node->setSpecular(specular);
-        if (ImGui::SliderFloat("Shininess##Model", &shininess, 1.0f, 128.0f, "%.3f"))
-            node->setShininess(shininess);
-        if (ImGui::ColorEdit4("Color##Model", (float *) &color))
-            node->setColor(color);
+        ImGui::SliderFloat("Ambient##Model", &node->getAmbient_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Diffuse##Model", &node->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Specular##Model", &node->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Shininess##Model", &node->getShininess_nonConst(), 1.0f, 128.0f, "%.3f");
+        ImGui::ColorEdit4("Color##Model", (float *) &node->getDiffuse_nonConst());
     }
 }
 
@@ -173,9 +162,9 @@ void Canavar::Engine::Gui::draw(Sky *node)
 {
     if (!ImGui::CollapsingHeader("Sky"))
     {
-        ImGui::SliderFloat("Albedo##Sky", &node->mAlbedo, 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Turbidity##Sky", &node->mTurbidity, 0.0f, 10.0f, "%.3f");
-        ImGui::SliderFloat("Normalized Sun Y##Sun", &node->mNormalizedSunY, 0.0f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Albedo##Sky", &node->getAlbedo_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Turbidity##Sky", &node->getTurbidity_nonConst(), 0.0f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Normalized Sun Y##Sun", &node->getNormalizedSunY_nonConst(), 0.0f, 10.0f, "%.3f");
     }
 }
 
@@ -184,10 +173,10 @@ void Canavar::Engine::Gui::draw(Sun *sun)
     if (!ImGui::CollapsingHeader("Sun"))
     {
         ImGui::Text("Direction:");
-        float x = sun->direction().x();
-        float y = sun->direction().y();
-        float z = sun->direction().z();
-        float r = sun->direction().length();
+        float x = sun->getDirection().x();
+        float y = sun->getDirection().y();
+        float z = sun->getDirection().z();
+        float r = sun->getDirection().length();
         float theta = qRadiansToDegrees(atan2(z, x));
         float phi = qRadiansToDegrees(atan2(y, sqrt(z * z + x * x)));
 
@@ -212,19 +201,10 @@ void Canavar::Engine::Gui::draw(Sun *sun)
         }
 
         ImGui::Text("Shading Parameters:");
-        float ambient = sun->ambient();
-        float diffuse = sun->diffuse();
-        float specular = sun->specular();
-        auto color = sun->color();
-
-        if (ImGui::SliderFloat("Ambient##Sun", &ambient, 0.0f, 1.0f, "%.3f"))
-            sun->setAmbient(ambient);
-        if (ImGui::SliderFloat("Diffuse##Sun", &diffuse, 0.0f, 1.0f, "%.3f"))
-            sun->setDiffuse(diffuse);
-        if (ImGui::SliderFloat("Specular##Sun", &specular, 0.0f, 1.0f, "%.3f"))
-            sun->setSpecular(specular);
-        if (ImGui::ColorEdit4("Color##Sun", (float *) &color))
-            sun->setColor(color);
+        ImGui::SliderFloat("Ambient##Sun", &sun->getAmbient_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Diffuse##Sun", &sun->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Specular##Sun", &sun->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::ColorEdit4("Color##Sun", (float *) &sun->getColor_nonConst());
     }
 }
 
@@ -232,16 +212,9 @@ void Canavar::Engine::Gui::draw(PerspectiveCamera *camera)
 {
     if (!ImGui::CollapsingHeader("Parameters##PerspectiveCamera"))
     {
-        auto fov = camera->verticalFov();
-        auto zNear = camera->zNear();
-        auto zFar = camera->zFar();
-
-        if (ImGui::SliderFloat("FOV##PerspectiveCamera", &fov, 1.0f, 120.0))
-            camera->setVerticalFov(fov);
-        if (ImGui::SliderFloat("Z-Near##PerspectiveCamera", &zNear, 0.1f, 100.0f))
-            camera->setZNear(zNear);
-        if (ImGui::SliderFloat("Z-Far##PerspectiveCamera", &zFar, 1000.0f, 1000000.0f))
-            camera->setZFar(zFar);
+        ImGui::SliderFloat("FOV##PerspectiveCamera", &camera->getVerticalFov_nonConst(), 1.0f, 120.0);
+        ImGui::SliderFloat("Z-Near##PerspectiveCamera", &camera->getZNear_nonConst(), 0.1f, 100.0f);
+        ImGui::SliderFloat("Z-Far##PerspectiveCamera", &camera->getZFar_nonConst(), 1000.0f, 1000000.0f);
     }
 }
 
@@ -249,18 +222,18 @@ void Canavar::Engine::Gui::draw(Terrain *node)
 {
     if (!ImGui::CollapsingHeader("Terrain"))
     {
-        ImGui::SliderFloat("Amplitude##Terrain", &node->mAmplitude, 0.0f, 50.0f, "%.3f");
-        ImGui::SliderInt("Octaves##Terrain", &node->mOctaves, 1, 20);
-        ImGui::SliderFloat("Power##Terrain", &node->mPower, 0.1f, 10.0f, "%.3f");
-        ImGui::SliderFloat("Tessellation Multiplier##Terrain", &node->mTessellationMultiplier, 0.1f, 10.0f, "%.3f");
-        ImGui::SliderFloat("Grass Coverage##Terrain", &node->mGrassCoverage, 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Ambient##Terrain", &node->mAmbient, 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Diffuse##Terrain", &node->mDiffuse, 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Specular##Terrain", &node->mSpecular, 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Shininess##Terrain", &node->mShininess, 0.1f, 128.0f, "%.3f");
+        ImGui::SliderFloat("Amplitude##Terrain", &node->getAmplitude_nonConst(), 0.0f, 50.0f, "%.3f");
+        ImGui::SliderInt("Octaves##Terrain", &node->getOctaves_nonConst(), 1, 20);
+        ImGui::SliderFloat("Power##Terrain", &node->getPower_nonConst(), 0.1f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Tessellation Multiplier##Terrain", &node->getTessellationMultiplier_nonConst(), 0.1f, 10.0f, "%.3f");
+        ImGui::SliderFloat("Grass Coverage##Terrain", &node->getGrassCoverage_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Ambient##Terrain", &node->getAmbient_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Diffuse##Terrain", &node->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Specular##Terrain", &node->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Shininess##Terrain", &node->getShininess_nonConst(), 0.1f, 128.0f, "%.3f");
 
         if (ImGui::Button("Generate Seed##Terrain"))
-            node->mSeed = Canavar::Engine::Helper::generateVec3(1, 1, 1);
+            node->setSeed(Canavar::Engine::Helper::generateVec3(1, 1, 1));
 
         if (ImGui::Button("Reset##Terrain"))
             node->reset();

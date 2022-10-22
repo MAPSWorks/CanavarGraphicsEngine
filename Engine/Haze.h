@@ -1,6 +1,7 @@
 #ifndef HAZE_H
 #define HAZE_H
 
+#include "Common.h"
 #include "Node.h"
 
 namespace Canavar {
@@ -15,11 +16,10 @@ private:
 public:
     static Haze *instance();
 
-public:
-    QVector3D mColor;
-    bool mEnabled;
-    float mDensity;
-    float mGradient;
+    DECLARE_MEMBER(QVector3D, Color)
+    DECLARE_MEMBER(bool, Enabled)
+    DECLARE_MEMBER(float, Density)
+    DECLARE_MEMBER(float, Gradient)
 };
 
 } // namespace Engine

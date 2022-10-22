@@ -53,46 +53,6 @@ void Canavar::Engine::Camera::setActive(bool newActive)
     emit activeChanged();
 }
 
-int Canavar::Engine::Camera::width() const
-{
-    return mWidth;
-}
-
-void Canavar::Engine::Camera::setWidth(int newWidth)
-{
-    mWidth = newWidth;
-}
-
-int Canavar::Engine::Camera::height() const
-{
-    return mHeight;
-}
-
-void Canavar::Engine::Camera::setHeight(int newHeight)
-{
-    mHeight = newHeight;
-}
-
-float Canavar::Engine::Camera::zNear() const
-{
-    return mZNear;
-}
-
-void Canavar::Engine::Camera::setZNear(float newZNear)
-{
-    mZNear = newZNear;
-}
-
-float Canavar::Engine::Camera::zFar() const
-{
-    return mZFar;
-}
-
-void Canavar::Engine::Camera::setZFar(float newZFar)
-{
-    mZFar = newZFar;
-}
-
 void Canavar::Engine::Camera::resize(int width, int height)
 {
     mWidth = width;

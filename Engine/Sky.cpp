@@ -8,10 +8,10 @@
 
 Canavar::Engine::Sky::Sky(QObject *parent)
     : Node(parent)
+    , mEnabled(true)
     , mAlbedo(0.1f)
     , mTurbidity(4.0f)
     , mNormalizedSunY(1.15f)
-    , mEnabled(true)
 {
     mVertices << 0 << 0 << 0 << 0;
 
@@ -42,7 +42,7 @@ Canavar::Engine::Sky *Canavar::Engine::Sky::instance()
 
 void Canavar::Engine::Sky::render()
 {
-    const auto sunDir = -Sun::instance()->direction().normalized();
+    const auto sunDir = -Sun::instance()->getDirection().normalized();
     const auto sunTheta = acos(qBound(0.f, sunDir.y(), 1.f));
 
     for (int i = 0; i < 3; ++i)
@@ -91,14 +91,4 @@ void Canavar::Engine::Sky::render()
     mShaderManager->release();
 
     glDepthFunc(GL_LESS);
-}
-
-bool Canavar::Engine::Sky::enabled() const
-{
-    return mEnabled;
-}
-
-void Canavar::Engine::Sky::setEnabled(bool newEnabled)
-{
-    mEnabled = newEnabled;
 }
