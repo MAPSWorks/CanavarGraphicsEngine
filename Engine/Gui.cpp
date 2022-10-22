@@ -1,6 +1,7 @@
 #include "Gui.h"
 #include "Haze.h"
 #include "Helper.h"
+#include "RendererManager.h"
 
 Canavar::Engine::Gui::Gui() {}
 
@@ -8,6 +9,18 @@ Canavar::Engine::Node *Canavar::Engine::Gui::mSelectedNode = nullptr;
 
 void Canavar::Engine::Gui::draw()
 {
+    // Render Settings
+    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Render Settings");
+
+    ImGui::SliderFloat("Exposure##RenderSettings", &RendererManager::instance()->getExposure_nonConst(), 0.01f, 2.0f, "%.3f");
+    ImGui::SliderFloat("Gamma##RenderSettings", &RendererManager::instance()->getGamma_nonConst(), 0.01f, 4.0f, "%.3f");
+    ImGui::SliderInt("Bloom Blur Pass##RenderSettings", &RendererManager::instance()->getBlurPass_nonConst(), 0, 20);
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
+
+    // Nodes
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Nodes");
 
@@ -67,7 +80,6 @@ void Canavar::Engine::Gui::draw()
         }
     }
 
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 }
 
@@ -266,7 +278,7 @@ void Canavar::Engine::Gui::draw(PointLight *node)
     {
         ImGui::SliderFloat("Constant##PointLight", &node->getConstant_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Linear##PointLight", &node->getLinear_nonConst(), 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Quadratic##PointLight", &node->getQuadratic_nonConst(), 0.00001f, 0.001f, "%.6f");
+        ImGui::SliderFloat("Quadratic##PointLight", &node->getQuadratic_nonConst(), 0.00001f, 0.1f, "%.6f");
     }
 }
 

@@ -70,6 +70,10 @@ private:
 
     int mWidth;
     int mHeight;
+
+    DECLARE_MEMBER(int, BlurPass)
+    DECLARE_MEMBER(float, Exposure)
+    DECLARE_MEMBER(float, Gamma)
 };
 
 } // namespace Engine

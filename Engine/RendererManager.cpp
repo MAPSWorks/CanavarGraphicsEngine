@@ -17,6 +17,9 @@ Canavar::Engine::RendererManager::RendererManager(QObject *parent)
     : Manager(parent)
     , mWidth(1600)
     , mHeight(900)
+    , mBlurPass(4)
+    , mExposure(1.0f)
+    , mGamma(1.0f)
 {}
 
 Canavar::Engine::RendererManager *Canavar::Engine::RendererManager::instance()
@@ -184,7 +187,7 @@ void Canavar::Engine::RendererManager::render(float)
                                               1,
                                               0);
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < qMax(0, mBlurPass); i++)
     {
         mFBOs[i % 2 == 0 ? FramebufferType::Pong : FramebufferType::Ping]->bind();
         mShaderManager->bind(ShaderType::BlurShader);
@@ -206,14 +209,12 @@ void Canavar::Engine::RendererManager::render(float)
 
     mShaderManager->bind(ShaderType::PostProcessShader);
     mShaderManager->setSampler("sceneTexture", 0, mFBOs[FramebufferType::Temporary]->texture());
-    mShaderManager->setSampler("bloomBlurTexture", 1, mFBOs[FramebufferType::Ping]->texture());
-    mShaderManager->setUniformValue("exposure", 1.0f);
-    mShaderManager->setUniformValue("gamma", 1.0f);
+    mShaderManager->setSampler("bloomBlurTexture", 1, mFBOs[qMax(0, mBlurPass) % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
+    mShaderManager->setUniformValue("exposure", mExposure);
+    mShaderManager->setUniformValue("gamma", mGamma);
 
     mQuad->render();
     mShaderManager->release();
-
-    QOpenGLFramebufferObject::blitFramebuffer(mFBOs[FramebufferType::Temporary], mFBOs[FramebufferType::Default]);
 }
 
 void Canavar::Engine::RendererManager::loadModels(const QString &path, const QStringList &formats)
