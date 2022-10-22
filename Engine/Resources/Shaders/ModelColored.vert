@@ -9,7 +9,6 @@ layout(location = 6) in float[4] weights;
 
 
 uniform mat4 M; // Model matrix
-uniform mat3 N; // Normal matrix
 uniform mat4 VP; // View-Projection matrix
 
 out vec4 fsPosition;
@@ -18,6 +17,6 @@ out vec3 fsNormal;
 void main()
 {
     fsPosition = M * vec4(position, 1.0);
-    fsNormal = N * normal;
+    fsNormal = normal;
     gl_Position = VP * fsPosition;
 }

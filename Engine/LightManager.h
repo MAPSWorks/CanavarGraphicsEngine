@@ -3,6 +3,7 @@
 
 #include "Manager.h"
 #include "NodeManager.h"
+#include "PointLight.h"
 
 #include <QObject>
 
@@ -21,6 +22,13 @@ private:
 public:
     static LightManager *instance();
     bool init() override;
+
+    void addLight(Light *light);
+    void removeLight(Light *light);
+    const QList<PointLight *> &getPointLights() const;
+
+private:
+    QList<PointLight *> mPointLights;
 };
 
 } // namespace Engine

@@ -20,7 +20,6 @@ Canavar::Engine::Terrain::Terrain(QObject *parent)
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
-    mHaze = Haze::instance();
 
     reset();
 
@@ -34,16 +33,13 @@ Canavar::Engine::Terrain::Terrain(QObject *parent)
     mTextures.insert("Terrain", Helper::createTexture("Resources/Terrain/terrain.jpg"));
 
     setScale(QVector3D(1, 0, 1));
-
-    mSun = Sun::instance();
 }
 
 void Canavar::Engine::Terrain::render(const RenderParameters &)
 {
-    mCamera = mCameraManager->activeCamera();
+    auto camera = mCameraManager->activeCamera();
 
-    QVector2D currentTilePosition = mTileGenerator->whichTile(mCamera->worldPosition());
-
+    QVector2D currentTilePosition = mTileGenerator->whichTile(camera->worldPosition());
     if (currentTilePosition != mPreviousTilePosition)
     {
         mTileGenerator->translateTiles(currentTilePosition - mPreviousTilePosition);
@@ -51,13 +47,13 @@ void Canavar::Engine::Terrain::render(const RenderParameters &)
     }
 
     mShaderManager->bind(ShaderType::TerrainShader);
-    mShaderManager->setUniformValue("VP", mCamera->getViewProjectionMatrix());
-    mShaderManager->setUniformValue("cameraPosition", mCamera->worldPosition());
-    mShaderManager->setUniformValue("sun.direction", -mSun->getDirection().normalized());
-    mShaderManager->setUniformValue("sun.color", mSun->getColor());
-    mShaderManager->setUniformValue("sun.ambient", mSun->getAmbient());
-    mShaderManager->setUniformValue("sun.diffuse", mSun->getDiffuse());
-    mShaderManager->setUniformValue("sun.specular", mSun->getSpecular());
+    mShaderManager->setUniformValue("VP", camera->getViewProjectionMatrix());
+    mShaderManager->setUniformValue("cameraPosition", camera->worldPosition());
+    mShaderManager->setUniformValue("sun.direction", -Sun::instance()->getDirection().normalized());
+    mShaderManager->setUniformValue("sun.color", Sun::instance()->getColor());
+    mShaderManager->setUniformValue("sun.ambient", Sun::instance()->getAmbient());
+    mShaderManager->setUniformValue("sun.diffuse", Sun::instance()->getDiffuse());
+    mShaderManager->setUniformValue("sun.specular", Sun::instance()->getSpecular());
     mShaderManager->setUniformValue("M", worldTransformation());
     mShaderManager->setUniformValue("terrain.amplitude", mAmplitude);
     mShaderManager->setUniformValue("terrain.seed", mSeed);
@@ -81,6 +77,23 @@ void Canavar::Engine::Terrain::render(const RenderParameters &)
     mShaderManager->setSampler("snow", 4, mTextures.value("Snow")->textureId());
     mShaderManager->setSampler("rock", 5, mTextures.value("RockDiffuse")->textureId());
     mShaderManager->setSampler("rockNormal", 6, mTextures.value("RockNormal")->textureId());
+
+    auto closePointLights = Helper::getClosePointLights(mLightManager->getPointLights(), camera->worldPosition(), 8);
+
+    mShaderManager->setUniformValue("numberOfPointLights", (int) closePointLights.size());
+
+    for (int i = 0; i < closePointLights.size(); i++)
+    {
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].color", closePointLights[i]->getColor());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].position", closePointLights[i]->worldPosition());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].ambient", closePointLights[i]->getAmbient());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].diffuse", closePointLights[i]->getDiffuse());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].specular", closePointLights[i]->getSpecular());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].constant", closePointLights[i]->getConstant());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].linear", closePointLights[i]->getLinear());
+        mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].quadratic", closePointLights[i]->getQuadratic());
+    }
+
     mTileGenerator->render(GL_PATCHES);
     mShaderManager->release();
 }

@@ -1,4 +1,10 @@
-#version 330 core
+struct Model
+{
+    float ambient;
+    float diffuse;
+    float specular;
+    float shininess;
+};
 
 struct Sun
 {
@@ -7,23 +13,6 @@ struct Sun
     float ambient;
     float diffuse;
     float specular;
-};
-
-struct Model
-{
-    vec4 color;
-    float ambient;
-    float diffuse;
-    float specular;
-    float shininess;
-};
-
-struct Haze
-{
-    bool enabled;
-    vec3 color;
-    float density;
-    float gradient;
 };
 
 struct PointLight
@@ -38,6 +27,14 @@ struct PointLight
     float quadratic;
 };
 
+struct Haze
+{
+    bool enabled;
+    vec3 color;
+    float density;
+    float gradient;
+};
+
 uniform Haze haze;
 uniform Sun sun;
 uniform Model model;
@@ -45,42 +42,39 @@ uniform Model model;
 uniform PointLight pointLights[8];
 uniform int numberOfPointLights;
 
-uniform vec3 cameraPos;
-
-vec4 processSun(vec3 normal, vec3 viewDir)
+vec4 processSun(vec4 ambientColor, vec4 diffuseColor, vec4 specularColor, vec3 normal, vec3 viewDir)
 {
     // Ambient
-    float ambient = model.ambient * sun.ambient;
+    vec4 ambient = ambientColor * model.ambient * sun.ambient;
 
     // Diffuse
-    float diffuse = max(dot(normal, sun.direction), 0.0) * model.diffuse * sun.diffuse;
+    vec4 diffuse = diffuseColor * max(dot(normal, sun.direction), 0.0) * sun.diffuse * model.diffuse;
 
     // Specular
     vec3 reflectDir = reflect(-sun.direction, normal);
     vec3 halfwayDir = normalize(sun.direction + viewDir);
-    float specular = pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * model.specular * sun.specular;
+    vec4 specular = specularColor * pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * model.specular * sun.specular;
 
-    return (ambient + diffuse + specular) * model.color * sun.color;
+    return (ambient + diffuse + specular) * sun.color;
 }
 
-
-vec4 processPointLights(vec3 fragWorldPos, vec3 normal, vec3 viewDir)
+vec4 processPointLights(vec4 ambientColor, vec4 diffuseColor, vec4 specularColor, vec3 normal, vec3 viewDir, vec3 fragWorldPos)
 {
     vec4 result = vec4(0);
 
     for (int i = 0; i < numberOfPointLights; i++)
     {
         // Ambient
-        float ambient = pointLights[i].ambient * model.ambient;
+        vec4 ambient = ambientColor * pointLights[i].ambient * pointLights[i].ambient;
 
         // Diffuse
         vec3 lightDir = normalize(pointLights[i].position - fragWorldPos);
-        float diffuse =  max(dot(normal, lightDir), 0.0) * pointLights[i].diffuse * model.diffuse;
+        vec4 diffuse =  diffuseColor * max(dot(normal, lightDir), 0.0) * pointLights[i].diffuse * model.diffuse;
 
         // Specular
         vec3 reflectDir = reflect(-lightDir, normal);
         vec3 halfwayDir = normalize(lightDir + viewDir);
-        float specular = pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * pointLights[i].specular * model.specular;
+        vec4 specular = specularColor * pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * pointLights[i].specular * model.specular;
 
         // Attenuation
         float distance = length(pointLights[i].position - fragWorldPos);
@@ -94,7 +88,6 @@ vec4 processPointLights(vec3 fragWorldPos, vec3 normal, vec3 viewDir)
     }
 
     return result;
-
 }
 
 vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
@@ -109,21 +102,4 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
     }
 
     return result;
-}
-
-in vec4 fsPosition;
-in vec3 fsNormal;
-
-out vec4 outColor;
-
-void main()
-{
-    // Common
-    vec3 viewDir = normalize(cameraPos - fsPosition.xyz);
-    float distance = length(cameraPos - fsPosition.xyz);
-
-    vec4 result = vec4(0);
-    result += processSun(fsNormal, viewDir);
-    result += processPointLights(fsPosition.xyz, fsNormal, viewDir);
-    outColor = processHaze(distance, fsPosition.xyz, result);
 }

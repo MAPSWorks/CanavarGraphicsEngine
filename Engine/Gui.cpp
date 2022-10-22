@@ -154,7 +154,7 @@ void Canavar::Engine::Gui::draw(Model *node)
         ImGui::SliderFloat("Diffuse##Model", &node->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Specular##Model", &node->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Shininess##Model", &node->getShininess_nonConst(), 1.0f, 128.0f, "%.3f");
-        ImGui::ColorEdit4("Color##Model", (float *) &node->getDiffuse_nonConst());
+        ImGui::ColorEdit4("Color##Model", (float *) &node->getColor_nonConst());
     }
 }
 

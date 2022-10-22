@@ -10,5 +10,6 @@
         <file>Resources/Shaders/Terrain.tcs</file>
         <file>Resources/Shaders/Terrain.tes</file>
         <file>Resources/Shaders/Terrain.vert</file>
+        <file>Resources/Shaders/Common.glsl</file>
     </qresource>
 </RCC>

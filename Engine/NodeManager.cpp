@@ -19,6 +19,7 @@ Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     mTypeToName.insert(Node::NodeType::DummyNode, "Dummy Node");
     mTypeToName.insert(Node::NodeType::FreeCamera, "Free Camera");
     mTypeToName.insert(Node::NodeType::Model, "Model");
+    mTypeToName.insert(Node::NodeType::PointLight, "Point Light");
 }
 
 bool Canavar::Engine::NodeManager::init()
@@ -64,6 +65,11 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
         mCameraManager->addCamera(dynamic_cast<DummyCamera *>(node));
         break;
     }
+    case Node::NodeType::PointLight: {
+        node = new PointLight;
+        mLightManager->addLight(dynamic_cast<Light *>(node));
+        break;
+    }
     default: {
         qWarning() << Q_FUNC_INFO << "Implement construction algorithm for this NodeType:" << (int) type;
         return nullptr;
@@ -84,23 +90,29 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
 void Canavar::Engine::NodeManager::removeNode(Node *node)
 {
     // FIXME: If a node is removed, remove also its all children
-    Node *parent = dynamic_cast<Node *>(node->parent());
-
     switch (node->type())
     {
     case Node::NodeType::Model:
     case Node::NodeType::DummyNode: {
-        if (parent)
-            parent->removeChild(node);
+        if (node->mParent)
+            node->mParent->removeChild(node);
         mNodes.removeAll(node);
         node->deleteLater();
         break;
     }
     case Node::NodeType::DummyCamera:
     case Node::NodeType::FreeCamera: {
-        if (parent)
-            parent->removeChild(node);
+        if (node->mParent)
+            node->mParent->removeChild(node);
         mCameraManager->removeCamera(dynamic_cast<Camera *>(node));
+        mNodes.removeAll(node);
+        node->deleteLater();
+        break;
+    }
+    case Node::NodeType::PointLight: {
+        if (node->mParent)
+            node->mParent->removeChild(node);
+        mLightManager->removeLight(dynamic_cast<Light *>(node));
         mNodes.removeAll(node);
         node->deleteLater();
         break;

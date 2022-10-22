@@ -3,6 +3,7 @@
 
 #include "ModelData.h"
 
+#include <PointLight.h>
 #include <QByteArray>
 #include <QQuaternion>
 #include <QRandomGenerator>
@@ -35,6 +36,8 @@ public:
     static float generateFloat(float bound);
     static QVector3D generateVec3(float x, float y, float z);
     static QOpenGLTexture *createTexture(const QString &path);
+
+    static QVector<PointLight *> getClosePointLights(const QList<PointLight *> &nodes, const QVector3D &position, int maxCount);
 
 private:
     static Mesh *processMesh(aiMesh *aiMesh);

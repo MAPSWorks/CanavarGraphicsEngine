@@ -23,7 +23,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         QStringList uniforms;
         uniforms << "M"
-                 << "N"
                  << "VP"
                  << "sun.color"
                  << "sun.ambient"
@@ -39,9 +38,19 @@ bool Canavar::Engine::ShaderManager::init()
                  << "haze.color"
                  << "haze.density"
                  << "haze.gradient"
-                 << "cameraPos";
+                 << "cameraPos"
+                 << "numberOfPointLights";
 
         shader->addUniforms(uniforms);
+
+        shader->setUniformArray("pointLights[%1].color", 8);
+        shader->setUniformArray("pointLights[%1].position", 8);
+        shader->setUniformArray("pointLights[%1].ambient", 8);
+        shader->setUniformArray("pointLights[%1].diffuse", 8);
+        shader->setUniformArray("pointLights[%1].specular", 8);
+        shader->setUniformArray("pointLights[%1].constant", 8);
+        shader->setUniformArray("pointLights[%1].linear", 8);
+        shader->setUniformArray("pointLights[%1].quadratic", 8);
 
         shader->addAttribute("position");
         shader->addAttribute("normal");
@@ -88,9 +97,19 @@ bool Canavar::Engine::ShaderManager::init()
                  << "haze.enabled"
                  << "haze.color"
                  << "haze.density"
-                 << "haze.gradient";
+                 << "haze.gradient"
+                 << "numberOfPointLights";
 
         shader->addUniforms(uniforms);
+
+        shader->setUniformArray("pointLights[%1].color", 8);
+        shader->setUniformArray("pointLights[%1].position", 8);
+        shader->setUniformArray("pointLights[%1].ambient", 8);
+        shader->setUniformArray("pointLights[%1].diffuse", 8);
+        shader->setUniformArray("pointLights[%1].specular", 8);
+        shader->setUniformArray("pointLights[%1].constant", 8);
+        shader->setUniformArray("pointLights[%1].linear", 8);
+        shader->setUniformArray("pointLights[%1].quadratic", 8);
 
         shader->addAttribute("position");
         shader->addAttribute("normal");
@@ -112,8 +131,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Sky.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
 
-        //        shader->addUniform("V");
-        //        shader->addUniform("VP");
         shader->addUniform("IVP"); // Inverse view-projection matrix
         shader->addUniform("A");
         shader->addUniform("B");
@@ -171,9 +188,19 @@ bool Canavar::Engine::ShaderManager::init()
                  << "terrainTexture"
                  << "snow"
                  << "rock"
-                 << "rockNormal";
+                 << "rockNormal"
+                 << "numberOfPointLights";
 
         shader->addUniforms(uniforms);
+
+        shader->setUniformArray("pointLights[%1].color", 8);
+        shader->setUniformArray("pointLights[%1].position", 8);
+        shader->setUniformArray("pointLights[%1].ambient", 8);
+        shader->setUniformArray("pointLights[%1].diffuse", 8);
+        shader->setUniformArray("pointLights[%1].specular", 8);
+        shader->setUniformArray("pointLights[%1].constant", 8);
+        shader->setUniformArray("pointLights[%1].linear", 8);
+        shader->setUniformArray("pointLights[%1].quadratic", 8);
 
         shader->addAttribute("position");
         shader->addAttribute("normal");

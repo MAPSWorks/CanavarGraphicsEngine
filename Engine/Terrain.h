@@ -37,10 +37,8 @@ private:
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
-    Haze *mHaze;
+
     TileGenerator *mTileGenerator;
-    Camera *mCamera;
-    Sun *mSun;
 
     QMap<QString, QOpenGLTexture *> mTextures;
 

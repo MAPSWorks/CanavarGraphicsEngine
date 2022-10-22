@@ -4,7 +4,7 @@
 #include "Sun.h"
 
 // Sky model belongs to Hosek-Wilkie - An Analytic Model for Full Spectral Sky-Dome Radiance
-// Code is taken from https://github.com/diharaw/sky-models and adopted
+// Code is taken from https://github.com/diharaw/sky-models
 
 Canavar::Engine::Sky::Sky(QObject *parent)
     : Node(parent)

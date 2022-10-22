@@ -37,6 +37,18 @@ struct Sun
     float specular;
 };
 
+struct PointLight
+{
+    vec4 color;
+    vec3 position;
+    float ambient;
+    float diffuse;
+    float specular;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
 struct Terrain
 {
     vec3 seed;
@@ -63,6 +75,9 @@ struct Haze
 uniform Sun sun;
 uniform Terrain terrain;
 uniform Haze haze;
+uniform PointLight pointLights[8];
+
+uniform int numberOfPointLights;
 uniform vec3 cameraPosition;
 uniform float waterHeight;
 uniform sampler2D sand, grass, terrainTexture, snow, rock, rockNormal;
@@ -235,28 +250,6 @@ vec3 computeNormals(vec2 gradient)
     return n;
 }
 
-vec4 ambient()
-{
-    return terrain.ambient * sun.ambient * sun.color;
-}
-
-vec4 diffuse(vec3 normal)
-{
-    float diffuseFactor = max(dot(normal, sun.direction), 0.0);
-    vec4 diffuse = diffuseFactor * sun.diffuse * terrain.diffuse * sun.color;
-    return diffuse;
-}
-
-vec4 specular(vec3 normal)
-{
-
-    vec3 viewDir = normalize(cameraPosition - fsWorldPosition);
-    vec3 reflectDir = reflect(-sun.direction, normal);
-    float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), terrain.shininess);
-    vec4 specular = specularFactor * sun.color * sun.specular * terrain.specular;
-    return specular;
-}
-
 float perlin(float x, float y, int oct)
 {
     vec2 distances = vec2(500.0, 2000.0);
@@ -318,35 +311,82 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
     return heightColor;
 }
 
-float getHazeFactor()
+vec4 processSun(vec4 color, vec3 normal, vec3 viewDir)
 {
-    float distance = length(cameraPosition - fsWorldPosition);
-    float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
-    return clamp(factor, 0.0f, 1.0f);
+    // Ambient
+    vec4 ambient = color * terrain.ambient * sun.ambient;
+
+    // Diffuse
+    vec4 diffuse = color * max(dot(normal, sun.direction), 0.0) * sun.diffuse * terrain.diffuse;
+
+    // Specular
+    vec3 reflectDir = reflect(-sun.direction, normal);
+    vec3 halfwayDir = normalize(sun.direction + viewDir);
+    vec4 specular = color * pow(max(dot(normal, halfwayDir), 0.0), terrain.shininess) * terrain.specular * sun.specular;
+
+    return (ambient + diffuse + specular) * sun.color;
 }
 
+
+vec4 processPointLights(vec4 color, vec3 normal, vec3 viewDir, vec3 fragWorldPos)
+{
+    vec4 result = vec4(0);
+
+    for (int i = 0; i < numberOfPointLights; i++)
+    {
+        // Ambient
+        vec4 ambient = color * pointLights[i].ambient * pointLights[i].ambient;
+
+        // Diffuse
+        vec3 lightDir = normalize(pointLights[i].position - fragWorldPos);
+        vec4 diffuse =  color * max(dot(normal, lightDir), 0.0) * pointLights[i].diffuse * terrain.diffuse;
+
+        // Specular
+        vec3 reflectDir = reflect(-lightDir, normal);
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        vec4 specular = color * pow(max(dot(normal, halfwayDir), 0.0), terrain.shininess) * pointLights[i].specular * terrain.specular;
+
+        // Attenuation
+        float distance = length(pointLights[i].position - fragWorldPos);
+        float attenuation = 1.0f / (pointLights[i].constant + pointLights[i].linear * distance + pointLights[i].quadratic * (distance * distance));
+
+        ambient *= attenuation;
+        diffuse *= attenuation;
+        specular *= attenuation;
+
+        result += (ambient + diffuse + specular) * pointLights[i].color;
+    }
+
+    return result;
+}
+
+vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
+{
+    vec4 result = subjectColor;
+
+    if(haze.enabled)
+    {
+        float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
+        factor = clamp(factor, 0.0f, 1.0f);
+        result =  mix(vec4(haze.color, 1) * clamp(sun.direction.y, 0.0f, 1.0f), subjectColor, factor);
+    }
+
+    return result;
+}
 void main()
 {
-    vec3 n;
+    vec3 viewDir = normalize(cameraPosition - fsWorldPosition);
+    float distance = length(cameraPosition - fsWorldPosition);
+
     mat3 TBN;
-    n = computeNormals(fsWorldPosition, TBN);
-    n = normalize(n);
+    vec3 normal = computeNormals(fsWorldPosition, TBN);
+    normal = normalize(normal);
 
-    vec4 heightColor = getTexture(n, TBN);
-    vec4 ambient = ambient();
-    vec4 diffuse = diffuse(n);
-    vec4 specular = specular(n);
+    vec4 heightColor = getTexture(normal, TBN);
 
-    vec4 color = heightColor * (ambient + specular + diffuse);
+    vec4 result = vec4(0);
+    result += processSun(heightColor, normal, viewDir);
+    result += processPointLights(heightColor, normal, viewDir, fsWorldPosition);
+    outColor = processHaze(distance, fsWorldPosition, result);
 
-    if (haze.enabled)
-    {
-        float hazeFactor = getHazeFactor();
-        outColor = mix(vec4(haze.color, 1) * clamp(sun.direction.y, 0.0f, 1.0f), color, hazeFactor);
-
-    } else
-    {
-        outColor = color;
-        outColor.a = fsWorldPosition.y / waterHeight;
-    }
 };

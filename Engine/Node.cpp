@@ -7,9 +7,9 @@ Canavar::Engine::Node::Node(QObject *parent)
     , mPosition(0, 0, 0)
     , mScale(1, 1, 1)
     , mType(NodeType::DummyNode)
+    , mParent(dynamic_cast<Node *>(parent))
     , mVisible(true)
     , mRenderable(false)
-    , mParent(dynamic_cast<Node *>(parent))
 {}
 
 Canavar::Engine::Node::~Node() {}
@@ -103,6 +103,8 @@ const QVector3D &Canavar::Engine::Node::scale() const
 void Canavar::Engine::Node::setScale(const QVector3D &newScale)
 {
     mScale = newScale;
+
+    updateTransformation();
 }
 
 const QMatrix4x4 &Canavar::Engine::Node::transformation() const

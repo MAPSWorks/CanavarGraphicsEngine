@@ -29,7 +29,8 @@ public:
         Sun,
         Sky,
         Haze,
-        Terrain
+        Terrain,
+        PointLight
     };
 
     const QMatrix4x4 worldTransformation() const;

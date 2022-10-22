@@ -318,4 +318,21 @@ QOpenGLTexture *Canavar::Engine::Helper::createTexture(const QString &path)
     return texture;
 }
 
+QVector<Canavar::Engine::PointLight *> Canavar::Engine::Helper::getClosePointLights(const QList<PointLight *> &nodes, const QVector3D &position, int maxCount)
+{
+    QMap<float, PointLight *> distances;
+
+    for (const auto &node : nodes)
+        distances.insert((node->worldPosition() - position).length(), node);
+
+    QList<PointLight *> nodesStorted = distances.values();
+
+    QVector<PointLight *> result;
+
+    for (int i = 0; i < qMin(maxCount, nodesStorted.size()); ++i)
+        result << nodesStorted[i];
+
+    return result;
+}
+
 QRandomGenerator Canavar::Engine::Helper::mGenerator = QRandomGenerator::securelySeeded();
