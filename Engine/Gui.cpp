@@ -1,4 +1,5 @@
 #include "Gui.h"
+#include "Haze.h"
 #include "Helper.h"
 
 Canavar::Engine::Gui::Gui() {}
@@ -52,6 +53,14 @@ void Canavar::Engine::Gui::draw()
             break;
         case Canavar::Engine::Node::NodeType::Terrain:
             draw(dynamic_cast<Terrain *>(mSelectedNode));
+            break;
+        case Canavar::Engine::Node::NodeType::Haze:
+            draw(dynamic_cast<Haze *>(mSelectedNode));
+            break;
+        case Canavar::Engine::Node::NodeType::PointLight:
+            draw(dynamic_cast<Light *>(mSelectedNode));
+            draw(dynamic_cast<PointLight *>(mSelectedNode));
+            draw(dynamic_cast<Node *>(mSelectedNode));
             break;
         default:
             break;
@@ -237,5 +246,36 @@ void Canavar::Engine::Gui::draw(Terrain *node)
 
         if (ImGui::Button("Reset##Terrain"))
             node->reset();
+    }
+}
+
+void Canavar::Engine::Gui::draw(Light *node)
+{
+    if (!ImGui::CollapsingHeader("Shading Parameters##Light"))
+    {
+        ImGui::SliderFloat("Ambient##Light", &node->getAmbient_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Diffuse##Light", &node->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Specular##Light", &node->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::ColorEdit4("Color##Light", (float *) &node->getColor_nonConst());
+    }
+}
+
+void Canavar::Engine::Gui::draw(PointLight *node)
+{
+    if (!ImGui::CollapsingHeader("Attenuation##PointLight"))
+    {
+        ImGui::SliderFloat("Constant##PointLight", &node->getConstant_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Linear##PointLight", &node->getLinear_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Quadratic##PointLight", &node->getQuadratic_nonConst(), 0.00001f, 0.001f, "%.6f");
+    }
+}
+
+void Canavar::Engine::Gui::draw(Haze *node)
+{
+    if (!ImGui::CollapsingHeader("Haze##Haze"))
+    {
+        ImGui::SliderFloat("Density##Haze", &node->getDensity_nonConst(), 0.0f, 4.0f, "%.3f");
+        ImGui::SliderFloat("Gradient##Haze", &node->getGradient_nonConst(), 0.0f, 4.0f, "%.3f");
+        ImGui::ColorEdit4("Color##Haze", (float *) &node->getColor_nonConst());
     }
 }

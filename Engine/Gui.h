@@ -29,6 +29,9 @@ private:
     static void draw(Canavar::Engine::Sun *node);
     static void draw(Canavar::Engine::PerspectiveCamera *node);
     static void draw(Canavar::Engine::Terrain *node);
+    static void draw(Canavar::Engine::Light *node);
+    static void draw(Canavar::Engine::PointLight *node);
+    static void draw(Canavar::Engine::Haze *node);
 
 private:
     static Canavar::Engine::Node *mSelectedNode;
