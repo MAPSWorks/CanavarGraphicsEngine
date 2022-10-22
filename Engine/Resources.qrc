@@ -12,6 +12,7 @@
         <file>Resources/Shaders/Terrain.vert</file>
         <file>Resources/Shaders/Common.glsl</file>
         <file>Resources/Shaders/Quad.vert</file>
-        <file>Resources/Shaders/ScreenMultisampled.frag</file>
+        <file>Resources/Shaders/Blur.frag</file>
+        <file>Resources/Shaders/PostProcess.frag</file>
     </qresource>
 </RCC>

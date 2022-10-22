@@ -32,7 +32,7 @@ public:
 
     enum class FramebufferType { //
         Default,
-        Bloom,
+        Temporary,
         Ping,
         Pong
     };

@@ -211,16 +211,58 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
-    // Screen Multisampled Shader
+    // Blur Shader
     {
-        Shader *shader = new Shader(ShaderType::ScreenMultisampled);
+        Shader *shader = new Shader(ShaderType::BlurShader);
         mShaders.insert(shader->type(), shader);
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ScreenMultisampled.frag");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
 
         shader->addUniform("screenTexture");
-        shader->addUniform("samples");
+        shader->addUniform("horizontal");
+        shader->addUniform("width");
+        shader->addUniform("height");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Blur Shader
+    {
+        Shader *shader = new Shader(ShaderType::BlurShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
+
+        shader->addUniform("screenTexture");
+        shader->addUniform("horizontal");
+        shader->addUniform("width");
+        shader->addUniform("height");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Post Process Shader
+    {
+        Shader *shader = new Shader(ShaderType::PostProcessShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcess.frag");
+
+        shader->addUniform("sceneTexture");
+        shader->addUniform("bloomBlurTexture");
+        shader->addUniform("exposure");
+        shader->addUniform("gamma");
 
         shader->addAttribute("position");
         shader->addAttribute("textureCoords");

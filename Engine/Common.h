@@ -25,7 +25,8 @@ enum class ShaderType { //
     ModelTexturedShader,
     SkyShader,
     TerrainShader,
-    ScreenMultisampled
+    BlurShader,
+    PostProcessShader
 };
 
 enum class RenderPass { //

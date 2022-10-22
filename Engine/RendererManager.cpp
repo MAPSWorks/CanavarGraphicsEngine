@@ -52,20 +52,38 @@ bool Canavar::Engine::RendererManager::init()
 
     loadModels("Resources/Models", QStringList() << "*.fbx");
 
+    // Default FBO format
     mFBOFormats.insert(FramebufferType::Default, new QOpenGLFramebufferObjectFormat);
     mFBOFormats[FramebufferType::Default]->setSamples(4);
     mFBOFormats[FramebufferType::Default]->setAttachment(QOpenGLFramebufferObject::Depth);
 
-    mFBOs.insert(FramebufferType::Default, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Default]));
-    mFBOs[FramebufferType::Default]->addColorAttachment(mWidth, mHeight);
+    // Temporary FBO format
+    mFBOFormats.insert(FramebufferType::Temporary, new QOpenGLFramebufferObjectFormat);
 
+    // Ping FBO format
+    mFBOFormats.insert(FramebufferType::Ping, new QOpenGLFramebufferObjectFormat);
+
+    // Pong FBO format
+    mFBOFormats.insert(FramebufferType::Pong, new QOpenGLFramebufferObjectFormat);
+
+    // Default FBO
+    mFBOs.insert(FramebufferType::Default, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Default]));
+    mFBOs[FramebufferType::Default]->addColorAttachment(mWidth, mHeight, GL_RGBA16F);
     mColorAttachments = new GLuint[2];
     mColorAttachments[0] = GL_COLOR_ATTACHMENT0;
     mColorAttachments[1] = GL_COLOR_ATTACHMENT1;
-
     mFBOs[FramebufferType::Default]->bind();
     glDrawBuffers(2, mColorAttachments);
     mFBOs[FramebufferType::Default]->release();
+
+    // Temporary FBO
+    mFBOs.insert(FramebufferType::Temporary, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Temporary]));
+
+    // Ping FBO
+    mFBOs.insert(FramebufferType::Ping, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Ping]));
+
+    // Pong FBO
+    mFBOs.insert(FramebufferType::Pong, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Pong]));
 
     return true;
 }
@@ -79,14 +97,28 @@ void Canavar::Engine::RendererManager::resize(int w, int h)
     {
         delete fbo;
         mFBOs[FramebufferType::Default] = new QOpenGLFramebufferObject(w, h, *mFBOFormats[FramebufferType::Default]);
-        mFBOs[FramebufferType::Default]->addColorAttachment(w, w);
+        mFBOs[FramebufferType::Default]->addColorAttachment(w, h, GL_RGBA16F);
         mFBOs[FramebufferType::Default]->bind();
         glDrawBuffers(2, mColorAttachments);
         mFBOs[FramebufferType::Default]->release();
     }
+
+    auto keys = mFBOs.keys();
+
+    for (auto type : keys)
+    {
+        if (type == FramebufferType::Default)
+            continue;
+
+        if (mFBOs[type])
+        {
+            delete mFBOs[type];
+            mFBOs[type] = new QOpenGLFramebufferObject(w, h, *mFBOFormats[type]);
+        }
+    }
 }
 
-void Canavar::Engine::RendererManager::render(float ifps)
+void Canavar::Engine::RendererManager::render(float)
 {
     mCamera = mCameraManager->activeCamera();
     mClosePointLights = Helper::getClosePointLights(mLightManager->getPointLights(), mCamera->worldPosition(), 8);
@@ -142,14 +174,46 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
     mFBOs[FramebufferType::Default]->release();
 
-    QOpenGLFramebufferObject::blitFramebuffer(nullptr, //
+    // Blur
+    QOpenGLFramebufferObject::blitFramebuffer(mFBOs[FramebufferType::Ping], //
                                               QRect(0, 0, mWidth, mHeight),
                                               mFBOs[FramebufferType::Default],
                                               QRect(0, 0, mWidth, mHeight),
-                                              GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
+                                              GL_COLOR_BUFFER_BIT,
                                               GL_NEAREST,
-                                              0,
+                                              1,
                                               0);
+
+    for (int i = 0; i < 10; i++)
+    {
+        mFBOs[i % 2 == 0 ? FramebufferType::Pong : FramebufferType::Ping]->bind();
+        mShaderManager->bind(ShaderType::BlurShader);
+        mShaderManager->setUniformValue("width", mWidth);
+        mShaderManager->setUniformValue("height", mHeight);
+        mShaderManager->setUniformValue("horizontal", i % 2 == 0);
+        mShaderManager->setSampler("screenTexture", 0, mFBOs[i % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
+
+        mQuad->render();
+        mShaderManager->release();
+    }
+
+    // Post process (combine blur and scene)
+    QOpenGLFramebufferObject::blitFramebuffer(mFBOs[FramebufferType::Temporary], mFBOs[FramebufferType::Default]);
+
+    QOpenGLFramebufferObject::bindDefault();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0, 0, 0, 1);
+
+    mShaderManager->bind(ShaderType::PostProcessShader);
+    mShaderManager->setSampler("sceneTexture", 0, mFBOs[FramebufferType::Temporary]->texture());
+    mShaderManager->setSampler("bloomBlurTexture", 1, mFBOs[FramebufferType::Ping]->texture());
+    mShaderManager->setUniformValue("exposure", 1.0f);
+    mShaderManager->setUniformValue("gamma", 1.0f);
+
+    mQuad->render();
+    mShaderManager->release();
+
+    QOpenGLFramebufferObject::blitFramebuffer(mFBOs[FramebufferType::Temporary], mFBOs[FramebufferType::Default]);
 }
 
 void Canavar::Engine::RendererManager::loadModels(const QString &path, const QStringList &formats)
