@@ -57,11 +57,7 @@ void Window::initializeGL()
 
         mCamera->setWorldPosition(QVector3D(0, 5, 0));
 
-        auto sphere1 = NodeManager::instance()->createNode(Node::NodeType::Model, "Sphere");
-        sphere1->setScale(QVector3D(0.01, 0.01, 0.01));
-
-        auto light1 = NodeManager::instance()->createNode(Node::NodeType::PointLight);
-        sphere1->addChild(light1);
+        NodeManager::instance()->createNode(Node::NodeType::PointLight);
     }
 }
 

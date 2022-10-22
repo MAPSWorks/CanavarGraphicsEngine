@@ -21,6 +21,7 @@ public:
     };
 
     explicit TileGenerator(int resolution, int tiles, float width, QObject *parent = nullptr);
+    virtual ~TileGenerator();
 
     void render(GLenum primitive);
 

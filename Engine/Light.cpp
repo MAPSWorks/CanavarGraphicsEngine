@@ -9,8 +9,3 @@ Canavar::Engine::Light::Light(QObject *parent)
 {
     mRenderable = false;
 }
-
-Canavar::Engine::Light::~Light()
-{
-    // TODO
-}

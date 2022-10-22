@@ -11,7 +11,6 @@ class Model : public Node
 protected:
     friend class Canavar::Engine::NodeManager;
     explicit Model(const QString &name, Node *parent = nullptr);
-    virtual ~Model();
 
 public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);

@@ -11,11 +11,6 @@ Canavar::Engine::Camera::Camera(QObject *parent)
     mRenderable = false;
 }
 
-Canavar::Engine::Camera::~Camera()
-{
-    // TODO
-}
-
 QMatrix4x4 Canavar::Engine::Camera::getViewProjectionMatrix()
 {
     return getProjectionMatrix() * getViewMatrix();

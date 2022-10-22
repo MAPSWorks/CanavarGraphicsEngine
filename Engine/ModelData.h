@@ -1,7 +1,6 @@
 #ifndef MODELDATA_H
 #define MODELDATA_H
 
-#include "Common.h"
 #include "Mesh.h"
 #include "ModelDataNode.h"
 
@@ -26,7 +25,7 @@ public:
     const QString &name() const;
     const QVector<Mesh *> &meshes() const;
 
-    void render(const RenderParameters &parameters);
+    void render(Node *node);
 
 private:
     QString mName;

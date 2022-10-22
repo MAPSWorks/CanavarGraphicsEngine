@@ -13,8 +13,6 @@ Canavar::Engine::FreeCamera::FreeCamera(QObject *parent)
     });
 }
 
-Canavar::Engine::FreeCamera::~FreeCamera() {}
-
 void Canavar::Engine::FreeCamera::mouseDoubleClicked(QMouseEvent *) {}
 
 void Canavar::Engine::FreeCamera::wheelMoved(QWheelEvent *) {}

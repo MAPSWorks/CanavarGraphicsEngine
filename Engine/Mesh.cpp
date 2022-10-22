@@ -1,7 +1,5 @@
 #include "Mesh.h"
-#include "CameraManager.h"
 #include "Common.h"
-#include "Helper.h"
 #include "Model.h"
 #include "ShaderManager.h"
 
@@ -79,39 +77,54 @@ void Canavar::Engine::Mesh::create()
     mVAO->release();
 }
 
-void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
+void Canavar::Engine::Mesh::render(Node *node)
 {
-    auto model = parameters.model;
+    if (auto model = dynamic_cast<Model *>(node))
+        render(model);
+    if (auto light = dynamic_cast<PointLight *>(node))
+        render(light);
+}
 
+void Canavar::Engine::Mesh::render(Model *model)
+{
     bool useTexture = mMaterial->getNumberOfTextures() != 0;
 
     if (useTexture)
     {
-        auto textureAmbient = mMaterial->get(Material::TextureType::Ambient);
-        auto textureDiffuse = mMaterial->get(Material::TextureType::Diffuse);
-        auto textureSpecular = mMaterial->get(Material::TextureType::Specular);
-        auto textureNormal = mMaterial->get(Material::TextureType::Normal);
-
         mShaderManager->bind(ShaderType::ModelTexturedShader);
-        mShaderManager->setUniformValue("N", model->worldTransformation().normalMatrix());
-        mShaderManager->setUniformValue("useTextureAmbient", textureAmbient != nullptr || textureDiffuse != nullptr);
-        mShaderManager->setUniformValue("useTextureDiffuse", textureDiffuse != nullptr);
-        mShaderManager->setUniformValue("useTextureSpecular", textureSpecular != nullptr);
-        mShaderManager->setUniformValue("useTextureNormal", textureNormal != nullptr);
+        mShaderManager->setUniformValue("N", model->worldTransformation().normalMatrix() * model->getMeshTransformation(mName).normalMatrix());
+        mShaderManager->setUniformValue("useTextureAmbient", false);
+        mShaderManager->setUniformValue("useTextureDiffuse", false);
+        mShaderManager->setUniformValue("useTextureSpecular", false);
+        mShaderManager->setUniformValue("useTextureNormal", false);
 
-        if (textureAmbient)
-            mShaderManager->setSampler("textureAmbient", 0, textureAmbient->textureId());
-        else if (textureDiffuse)
-            mShaderManager->setSampler("textureAmbient", 0, textureDiffuse->textureId()); // Use diffuse texture if there is no ambient texture
+        if (auto texture = mMaterial->get(Material::TextureType::Ambient))
+        {
+            mShaderManager->setUniformValue("useTextureAmbient", true);
+            mShaderManager->setSampler("textureAmbient", 0, texture->textureId());
+        } else if (auto texture = mMaterial->get(Material::TextureType::Diffuse))
+        {
+            mShaderManager->setUniformValue("useTextureAmbient", true);
+            mShaderManager->setSampler("textureAmbient", 0, texture->textureId()); // Use diffuse texture if there is no ambient texture
+        }
 
-        if (textureDiffuse)
-            mShaderManager->setSampler("textureDiffuse", 1, textureDiffuse->textureId());
+        if (auto texture = mMaterial->get(Material::TextureType::Diffuse))
+        {
+            mShaderManager->setUniformValue("useTextureDiffuse", true);
+            mShaderManager->setSampler("textureDiffuse", 1, texture->textureId());
+        }
 
-        if (textureSpecular)
-            mShaderManager->setSampler("textureSpecular", 2, textureSpecular->textureId());
+        if (auto texture = mMaterial->get(Material::TextureType::Specular))
+        {
+            mShaderManager->setUniformValue("useTextureSpecular", true);
+            mShaderManager->setSampler("textureSpecular", 2, texture->textureId());
+        }
 
-        if (textureNormal)
-            mShaderManager->setSampler("textureNormal", 3, textureNormal->textureId());
+        if (auto texture = mMaterial->get(Material::TextureType::Normal))
+        {
+            mShaderManager->setUniformValue("useTextureNormal", true);
+            mShaderManager->setSampler("textureNormal", 3, texture->textureId());
+        }
 
     } else
     {
@@ -125,6 +138,23 @@ void Canavar::Engine::Mesh::render(const RenderParameters &parameters)
     mShaderManager->setUniformValue("model.ambient", model->getAmbient());
     mShaderManager->setUniformValue("model.diffuse", model->getDiffuse());
     mShaderManager->setUniformValue("model.specular", model->getSpecular());
+
+    mVAO->bind();
+    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+    mVAO->release();
+
+    mShaderManager->release();
+}
+
+void Canavar::Engine::Mesh::render(PointLight *light)
+{
+    mShaderManager->bind(ShaderType::ModelColoredShader);
+    mShaderManager->setUniformValue("M", light->worldTransformation());
+    mShaderManager->setUniformValue("model.color", light->getColor());
+    mShaderManager->setUniformValue("model.shininess", 32.0f);
+    mShaderManager->setUniformValue("model.ambient", light->getAmbient());
+    mShaderManager->setUniformValue("model.diffuse", light->getDiffuse());
+    mShaderManager->setUniformValue("model.specular", light->getSpecular());
 
     mVAO->bind();
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);

@@ -13,7 +13,6 @@ namespace Engine {
 class LightManager : public Manager
 {
     Q_OBJECT
-
 private:
     friend class Canavar::Engine::NodeManager;
 

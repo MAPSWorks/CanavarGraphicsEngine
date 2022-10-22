@@ -3,6 +3,8 @@
 
 #include "Common.h"
 #include "Material.h"
+#include "Node.h"
+#include "PointLight.h"
 
 #include <QObject>
 #include <QOpenGLExtraFunctions>
@@ -48,7 +50,11 @@ public:
     void setMaterial(Material *material);
     void create();
 
-    void render(const RenderParameters &parameters);
+    void render(Node *node);
+
+private:
+    void render(Model *model);
+    void render(PointLight *light);
 
 private:
     QOpenGLVertexArrayObject *mVAO;

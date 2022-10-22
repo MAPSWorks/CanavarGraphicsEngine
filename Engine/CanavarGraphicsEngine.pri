@@ -23,6 +23,7 @@ HEADERS += \
     $$PWD/NodeManager.h \
     $$PWD/PerspectiveCamera.h \
     $$PWD/PointLight.h \
+    $$PWD/Quad.h \
     $$PWD/RendererManager.h \
     $$PWD/Shader.h \
     $$PWD/ShaderManager.h \
@@ -54,6 +55,7 @@ SOURCES += \
     $$PWD/NodeManager.cpp \
     $$PWD/PerspectiveCamera.cpp \
     $$PWD/PointLight.cpp \
+    $$PWD/Quad.cpp \
     $$PWD/RendererManager.cpp \
     $$PWD/Shader.cpp \
     $$PWD/ShaderManager.cpp \

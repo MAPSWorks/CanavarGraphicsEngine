@@ -27,11 +27,6 @@ enum class ShaderType { //
     TerrainShader
 };
 
-struct RenderParameters {
-    float ifps;
-    Model *model;
-};
-
 } // namespace Engine
 } // namespace Canavar
 #endif // COMMON_H

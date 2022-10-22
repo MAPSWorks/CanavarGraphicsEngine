@@ -33,7 +33,7 @@ public:
     void render(float ifps);
 
 private:
-    void loadModels();
+    void loadModels(const QString &path, const QStringList &formats);
     void setCommonUniforms();
 
 private:
@@ -49,8 +49,6 @@ private:
     Sky *mSky;
     Haze *mHaze;
     Terrain *mTerrain;
-
-    RenderParameters mRenderParameters;
 
     QVector<PointLight *> mClosePointLights;
 };

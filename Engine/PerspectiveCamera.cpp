@@ -7,11 +7,6 @@ Canavar::Engine::PerspectiveCamera::PerspectiveCamera(QObject *parent)
     setVerticalFov(60);
 }
 
-Canavar::Engine::PerspectiveCamera::~PerspectiveCamera()
-{
-    // TODO
-}
-
 QMatrix4x4 Canavar::Engine::PerspectiveCamera::getProjectionMatrix()
 {
     QMatrix4x4 projection;

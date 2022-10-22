@@ -14,11 +14,6 @@ Canavar::Engine::Model::Model(const QString &name, Node *parent)
     mRenderable = true;
 }
 
-Canavar::Engine::Model::~Model()
-{
-    // TODO
-}
-
 QMatrix4x4 Canavar::Engine::Model::getMeshTransformation(const QString &meshName)
 {
     return mMeshTransformations.value(meshName, QMatrix4x4());

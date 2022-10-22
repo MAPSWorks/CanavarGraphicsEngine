@@ -88,6 +88,11 @@ Canavar::Engine::TileGenerator::TileGenerator(int resolution, int tiles, float w
     mVAO->release();
 }
 
+Canavar::Engine::TileGenerator::~TileGenerator()
+{
+    // TODO
+}
+
 QVector2D Canavar::Engine::TileGenerator::whichTile(const QVector3D &subject) const
 {
     int i = int(subject.x()) / mWidth;

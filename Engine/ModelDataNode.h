@@ -1,7 +1,6 @@
 #ifndef MODELDATANODE_H
 #define MODELDATANODE_H
 
-#include "Common.h"
 #include "Node.h"
 
 namespace Canavar {
@@ -13,11 +12,10 @@ class ModelDataNode : public Node
 {
 public:
     explicit ModelDataNode(ModelData *data, QObject *parent = nullptr);
-    virtual ~ModelDataNode();
 
     void addMeshIndex(int index);
 
-    void render(const RenderParameters &parameters);
+    void render(Node *node);
 
 private:
     ModelData *mModelData;

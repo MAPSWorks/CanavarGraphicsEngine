@@ -14,7 +14,6 @@ class Camera : public Node
     Q_OBJECT
 protected:
     explicit Camera(QObject *parent = nullptr);
-    virtual ~Camera();
 
 public:
     virtual QMatrix4x4 getViewProjectionMatrix();

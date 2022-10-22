@@ -6,8 +6,6 @@ Canavar::Engine::DummyCamera::DummyCamera(QObject *parent)
     mType = Canavar::Engine::Node::NodeType::DummyCamera;
 }
 
-Canavar::Engine::DummyCamera::~DummyCamera() {}
-
 void Canavar::Engine::DummyCamera::mouseDoubleClicked(QMouseEvent *) {}
 
 void Canavar::Engine::DummyCamera::mousePressed(QMouseEvent *) {}

@@ -14,7 +14,6 @@ class FreeCamera : public PerspectiveCamera
 protected:
     friend class NodeManager;
     explicit FreeCamera(QObject *parent = nullptr);
-    virtual ~FreeCamera();
 
 public:
     void mouseDoubleClicked(QMouseEvent *) override;

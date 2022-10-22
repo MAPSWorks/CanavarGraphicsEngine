@@ -1,9 +1,8 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "Camera.h"
 #include "Common.h"
-#include "Sun.h"
+#include "Node.h"
 #include "TileGenerator.h"
 
 #include <QObject>
@@ -30,7 +29,7 @@ private:
 public:
     static Terrain *instance();
 
-    void render(const RenderParameters &parameters);
+    void render();
     void reset();
 
 private:

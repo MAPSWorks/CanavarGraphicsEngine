@@ -39,7 +39,14 @@ bool Canavar::Engine::RendererManager::init()
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
 
-    loadModels();
+    loadModels("Resources/Models",
+               QStringList() << "*.obj"
+                             << "*.blend"
+                             << "*.dae"
+                             << "*.glb"
+                             << "*.gltf");
+
+    loadModels("Resources/Models", QStringList() << "*.fbx");
 
     return true;
 }
@@ -48,8 +55,6 @@ void Canavar::Engine::RendererManager::resize(int, int) {}
 
 void Canavar::Engine::RendererManager::render(float ifps)
 {
-    mRenderParameters.ifps = ifps;
-
     mCamera = mCameraManager->activeCamera();
     mClosePointLights = Helper::getClosePointLights(mLightManager->getPointLights(), mCamera->worldPosition(), 8);
 
@@ -81,41 +86,40 @@ void Canavar::Engine::RendererManager::render(float ifps)
         if (!node->getRenderable())
             continue;
 
-        if (Model *model = dynamic_cast<Model *>(node))
+        if (auto model = dynamic_cast<Model *>(node))
         {
-            mRenderParameters.model = model;
-
             ModelData *data = mModelsData.value(model->getModelName(), nullptr);
             if (data)
-                data->render(mRenderParameters);
+                data->render(model);
+        }
+
+        if (auto light = dynamic_cast<PointLight *>(node))
+        {
+            ModelData *data = mModelsData.value("SphereDense", nullptr);
+            if (data)
+                data->render(light);
         }
     }
 
-    mTerrain->render(mRenderParameters);
+    mTerrain->render();
 
     // Render Sky
     if (mSky->getEnabled())
         mSky->render();
 }
 
-void Canavar::Engine::RendererManager::loadModels()
+void Canavar::Engine::RendererManager::loadModels(const QString &path, const QStringList &formats)
 {
     // Models
-    qInfo() << "Loading and creating all models...";
+    qInfo() << "Loading and creating all models at" << path << "whose extensions are" << formats;
 
-    QDir dir("Resources/Models");
+    QDir dir(path);
     auto dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
-    QStringList extensions;
-    extensions << "*.obj"
-               << "*.blend"
-               << "*.dae"
-               << "*.glb"
-               << "*.gltf";
 
     for (const auto &dirName : qAsConst(dirs))
     {
         QDir childDir(dir.path() + "/" + dirName);
-        childDir.setNameFilters(extensions);
+        childDir.setNameFilters(formats);
         auto files = childDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
 
         for (const auto &file : qAsConst(files))
@@ -134,7 +138,7 @@ void Canavar::Engine::RendererManager::loadModels()
         }
     }
 
-    qInfo() << "All textured models are loaded.";
+    qInfo() << "All models are loaded at" << path;
 }
 
 void Canavar::Engine::RendererManager::setCommonUniforms()

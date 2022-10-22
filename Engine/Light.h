@@ -10,7 +10,6 @@ class Light : public Node
 {
 protected:
     explicit Light(QObject *parent = nullptr);
-    virtual ~Light();
 
     DECLARE_MEMBER(QVector4D, Color)
     DECLARE_MEMBER(float, Ambient)

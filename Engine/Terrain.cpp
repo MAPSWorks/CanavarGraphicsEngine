@@ -31,7 +31,7 @@ Canavar::Engine::Terrain::Terrain(QObject *parent)
     setScale(QVector3D(1, 0, 1));
 }
 
-void Canavar::Engine::Terrain::render(const RenderParameters &)
+void Canavar::Engine::Terrain::render()
 {
     QVector2D currentTilePosition = mTileGenerator->whichTile(mCameraManager->activeCamera()->worldPosition());
     if (currentTilePosition != mPreviousTilePosition)
