@@ -7,6 +7,7 @@ AircraftController::AircraftController(Aircraft *aircraft, QObject *parent)
     , mElevator(0)
     , mRudder(0)
     , mThrottle(0)
+    , mAutoPilotEnabled(false)
 {
     connect(this, &AircraftController::command, mAircraft, &Aircraft::onCommand, Qt::QueuedConnection);
     connect(&mTimer, &QTimer::timeout, this, &AircraftController::tick);
@@ -16,12 +17,12 @@ AircraftController::AircraftController(Aircraft *aircraft, QObject *parent)
 
 void AircraftController::keyPressed(QKeyEvent *event)
 {
-    mPressedKeys.insert((Qt::Key) event->key(), true);
+    mPressedKeys.insert((Qt::Key) event->key());
 }
 
 void AircraftController::keyReleased(QKeyEvent *event)
 {
-    mPressedKeys.insert((Qt::Key) event->key(), false);
+    mPressedKeys.remove((Qt::Key) event->key());
 }
 
 bool AircraftController::init()
@@ -35,9 +36,9 @@ bool AircraftController::init()
 
 void AircraftController::tick()
 {
-    if (mPressedKeys.value(Qt::Key_Up))
+    if (mPressedKeys.contains(Qt::Key_Up))
         mElevator += 0.025;
-    else if (mPressedKeys.value(Qt::Key_Down))
+    else if (mPressedKeys.contains(Qt::Key_Down))
         mElevator -= 0.025;
     else if (mElevator < -0.025)
         mElevator += 0.025;
@@ -46,9 +47,9 @@ void AircraftController::tick()
     else
         mElevator = 0.0;
 
-    if (mPressedKeys.value(Qt::Key_Left))
+    if (mPressedKeys.contains(Qt::Key_Left))
         mAileron -= 0.025;
-    else if (mPressedKeys.value(Qt::Key_Right))
+    else if (mPressedKeys.contains(Qt::Key_Right))
         mAileron += 0.025;
     else if (mAileron < -0.025)
         mAileron += 0.025;
@@ -57,9 +58,9 @@ void AircraftController::tick()
     else
         mAileron = 0.0;
 
-    if (mPressedKeys.value(Qt::Key_Z))
+    if (mPressedKeys.contains(Qt::Key_Z))
         mRudder += 0.025;
-    else if (mPressedKeys.value(Qt::Key_C))
+    else if (mPressedKeys.contains(Qt::Key_C))
         mRudder -= 0.025;
     else if (mRudder < -0.025)
         mRudder += 0.025;
@@ -68,11 +69,17 @@ void AircraftController::tick()
     else
         mRudder = 0.0;
 
-    if (mPressedKeys.value(Qt::Key_Plus))
+    if (mPressedKeys.contains(Qt::Key_Plus))
         mThrottle += 0.01;
 
-    if (mPressedKeys.value(Qt::Key_Minus))
+    if (mPressedKeys.contains(Qt::Key_Minus))
         mThrottle -= 0.01;
+
+    if (mAutoPilotEnabled && mPressedKeys.isEmpty())
+    {
+        mElevator = getCmd(Aircraft::Command::Elevator, 4.0).toDouble();
+        mAileron = getCmd(Aircraft::Command::Aileron, 0.0).toDouble();
+    }
 
     mElevator = qBound(-1.0f, mElevator, 1.0f);
     mAileron = qBound(-1.0f, mAileron, 1.0f);
@@ -83,6 +90,25 @@ void AircraftController::tick()
     emit command(Aircraft::Command::Aileron, mAileron);
     emit command(Aircraft::Command::Rudder, mRudder);
     emit command(Aircraft::Command::Throttle, mThrottle);
+}
+
+QVariant AircraftController::getCmd(Aircraft::Command command, QVariant value)
+{
+    switch (command)
+    {
+    case Aircraft::Command::Aileron: {
+        double cmd = (value.toDouble() - mPfd.roll) / 30.0;
+        return qMax(-1.0, qMin(cmd, 1.0));
+    }
+    case Aircraft::Command::Elevator: {
+        double cmd = (mPfd.pitch - value.toDouble()) / 20.0;
+        return qMax(-1.0, qMin(cmd, 1.0));
+    }
+    default:
+        break;
+    }
+
+    return QVariant();
 }
 
 void AircraftController::update(float)
@@ -156,16 +182,6 @@ void AircraftController::update(float)
     }
 }
 
-void AircraftController::setRootJetNode(Canavar::Engine::Node *newRootJetNode)
-{
-    mRootJetNode = newRootJetNode;
-}
-
-void AircraftController::setJet(Canavar::Engine::Model *newJet)
-{
-    mJet = newJet;
-}
-
 void AircraftController::drawGUI()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
@@ -187,6 +203,8 @@ void AircraftController::drawGUI()
     if (ImGui::Button("Resume"))
         emit command(Aircraft::Command::Resume);
 
+    ImGui::Checkbox("Auto Pilot", &mAutoPilotEnabled);
+
     ImGui::Text("Airspeed:    %.2f knots", mPfd.airspeed);
     ImGui::Text("Latitude:    %.6f °", mPfd.latitude);
     ImGui::Text("Longitude:   %.6f °", mPfd.longitude);
@@ -194,7 +212,18 @@ void AircraftController::drawGUI()
     ImGui::Text("Roll:        %.1f °", mPfd.roll);
     ImGui::Text("Pitch:       %.1f °", mPfd.pitch);
     ImGui::Text("Heading:     %.1f °", mPfd.heading);
+
     ImGui::Spacing();
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
+}
+
+void AircraftController::setRootJetNode(Canavar::Engine::Node *newRootJetNode)
+{
+    mRootJetNode = newRootJetNode;
+}
+
+void AircraftController::setJet(Canavar::Engine::Model *newJet)
+{
+    mJet = newJet;
 }

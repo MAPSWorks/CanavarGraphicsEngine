@@ -7,6 +7,7 @@
 
 #include <QKeyEvent>
 #include <QObject>
+#include <QSet>
 #include <QTimer>
 
 #include <imgui.h>
@@ -34,8 +35,11 @@ public slots:
     void update(float ifps);
 
 private:
+    QVariant getCmd(Aircraft::Command command, QVariant value);
+
+private:
     Aircraft *mAircraft;
-    QMap<Qt::Key, bool> mPressedKeys;
+    QSet<Qt::Key> mPressedKeys;
     QTimer mTimer;
 
     float mAileron;  // [-1, 1]
@@ -47,6 +51,8 @@ private:
 
     Canavar::Engine::Model *mJet;
     Canavar::Engine::Node *mRootJetNode;
+
+    bool mAutoPilotEnabled;
 };
 
 #endif // AIRCRAFTCONTROLLER_H
