@@ -4,6 +4,9 @@
 #include "Camera.h"
 #include "Manager.h"
 #include "ModelData.h"
+#include "Quad.h"
+
+#include <QOpenGLFramebufferObjectFormat>
 
 namespace Canavar {
 namespace Engine {
@@ -27,6 +30,13 @@ private:
 public:
     static RendererManager *instance();
 
+    enum class FramebufferType { //
+        Default,
+        Bloom,
+        Ping,
+        Pong
+    };
+
     bool init() override;
     void resize(int width, int height) override;
 
@@ -49,8 +59,17 @@ private:
     Sky *mSky;
     Haze *mHaze;
     Terrain *mTerrain;
+    Quad *mQuad;
 
     QVector<PointLight *> mClosePointLights;
+
+    QMap<FramebufferType, QOpenGLFramebufferObject *> mFBOs;
+    QMap<FramebufferType, QOpenGLFramebufferObjectFormat *> mFBOFormats;
+
+    GLuint *mColorAttachments;
+
+    int mWidth;
+    int mHeight;
 };
 
 } // namespace Engine

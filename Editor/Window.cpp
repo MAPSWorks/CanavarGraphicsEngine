@@ -20,7 +20,7 @@ Window::Window(QWindow *parent)
     format.setMajorVersion(4);
     format.setMinorVersion(3);
     format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setSamples(4);
+    format.setSamples(1);
     format.setSwapInterval(1);
     setFormat(format);
 
@@ -63,9 +63,9 @@ void Window::initializeGL()
 
 void Window::resizeGL(int w, int h)
 {
-    glViewport(0, 0, width(), height());
+    glViewport(0, 0, w * devicePixelRatioF(), h * devicePixelRatioF());
 
-    mController->resize(w, h);
+    mController->resize(w * devicePixelRatioF(), h * devicePixelRatioF());
 }
 
 void Window::paintGL()
@@ -80,7 +80,7 @@ void Window::paintGL()
 
     Gui::draw();
 
-    glViewport(0, 0, width(), height());
+    glViewport(0, 0, width() * devicePixelRatioF(), height() * devicePixelRatioF());
     ImGui::Render();
     QtImGui::render();
 }

@@ -15,6 +15,8 @@
 
 Canavar::Engine::RendererManager::RendererManager(QObject *parent)
     : Manager(parent)
+    , mWidth(1600)
+    , mHeight(900)
 {}
 
 Canavar::Engine::RendererManager *Canavar::Engine::RendererManager::instance()
@@ -35,6 +37,8 @@ bool Canavar::Engine::RendererManager::init()
     mHaze = Haze::instance();
     mTerrain = Terrain::instance();
 
+    mQuad = Quad::instance();
+
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
@@ -48,18 +52,47 @@ bool Canavar::Engine::RendererManager::init()
 
     loadModels("Resources/Models", QStringList() << "*.fbx");
 
+    mFBOFormats.insert(FramebufferType::Default, new QOpenGLFramebufferObjectFormat);
+    mFBOFormats[FramebufferType::Default]->setSamples(4);
+    mFBOFormats[FramebufferType::Default]->setAttachment(QOpenGLFramebufferObject::Depth);
+
+    mFBOs.insert(FramebufferType::Default, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Default]));
+    mFBOs[FramebufferType::Default]->addColorAttachment(mWidth, mHeight);
+
+    mColorAttachments = new GLuint[2];
+    mColorAttachments[0] = GL_COLOR_ATTACHMENT0;
+    mColorAttachments[1] = GL_COLOR_ATTACHMENT1;
+
+    mFBOs[FramebufferType::Default]->bind();
+    glDrawBuffers(2, mColorAttachments);
+    mFBOs[FramebufferType::Default]->release();
+
     return true;
 }
 
-void Canavar::Engine::RendererManager::resize(int, int) {}
+void Canavar::Engine::RendererManager::resize(int w, int h)
+{
+    mWidth = w;
+    mHeight = h;
+
+    if (auto fbo = mFBOs.value(FramebufferType::Default))
+    {
+        delete fbo;
+        mFBOs[FramebufferType::Default] = new QOpenGLFramebufferObject(w, h, *mFBOFormats[FramebufferType::Default]);
+        mFBOs[FramebufferType::Default]->addColorAttachment(w, w);
+        mFBOs[FramebufferType::Default]->bind();
+        glDrawBuffers(2, mColorAttachments);
+        mFBOs[FramebufferType::Default]->release();
+    }
+}
 
 void Canavar::Engine::RendererManager::render(float ifps)
 {
     mCamera = mCameraManager->activeCamera();
     mClosePointLights = Helper::getClosePointLights(mLightManager->getPointLights(), mCamera->worldPosition(), 8);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    mFBOs[FramebufferType::Default]->bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0, 0, 0, 1);
 
     auto nodes = mNodeManager->nodes();
@@ -90,22 +123,33 @@ void Canavar::Engine::RendererManager::render(float ifps)
         {
             ModelData *data = mModelsData.value(model->getModelName(), nullptr);
             if (data)
-                data->render(model);
+                data->render(RenderPass::Default, model);
         }
 
         if (auto light = dynamic_cast<PointLight *>(node))
         {
-            ModelData *data = mModelsData.value("SphereDense", nullptr);
+            ModelData *data = mModelsData.value(light->getModelName(), nullptr);
             if (data)
-                data->render(light);
+                data->render(RenderPass::Default, light);
         }
     }
 
-    mTerrain->render();
+    mTerrain->render(RenderPass::Default);
 
     // Render Sky
     if (mSky->getEnabled())
         mSky->render();
+
+    mFBOs[FramebufferType::Default]->release();
+
+    QOpenGLFramebufferObject::blitFramebuffer(nullptr, //
+                                              QRect(0, 0, mWidth, mHeight),
+                                              mFBOs[FramebufferType::Default],
+                                              QRect(0, 0, mWidth, mHeight),
+                                              GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
+                                              GL_NEAREST,
+                                              0,
+                                              0);
 }
 
 void Canavar::Engine::RendererManager::loadModels(const QString &path, const QStringList &formats)

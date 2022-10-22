@@ -50,11 +50,11 @@ public:
     void setMaterial(Material *material);
     void create();
 
-    void render(Node *node);
+    void render(RenderPass renderPass, Node *node);
 
 private:
-    void render(Model *model);
-    void render(PointLight *light);
+    void render(RenderPass renderPass, Model *model);
+    void render(RenderPass renderPass, PointLight *light);
 
 private:
     QOpenGLVertexArrayObject *mVAO;

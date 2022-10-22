@@ -77,15 +77,15 @@ void Canavar::Engine::Mesh::create()
     mVAO->release();
 }
 
-void Canavar::Engine::Mesh::render(Node *node)
+void Canavar::Engine::Mesh::render(RenderPass renderPass, Node *node)
 {
     if (auto model = dynamic_cast<Model *>(node))
-        render(model);
+        render(renderPass, model);
     if (auto light = dynamic_cast<PointLight *>(node))
-        render(light);
+        render(renderPass, light);
 }
 
-void Canavar::Engine::Mesh::render(Model *model)
+void Canavar::Engine::Mesh::render(RenderPass renderPass, Model *model)
 {
     bool useTexture = mMaterial->getNumberOfTextures() != 0;
 
@@ -146,7 +146,7 @@ void Canavar::Engine::Mesh::render(Model *model)
     mShaderManager->release();
 }
 
-void Canavar::Engine::Mesh::render(PointLight *light)
+void Canavar::Engine::Mesh::render(RenderPass renderPass, PointLight *light)
 {
     mShaderManager->bind(ShaderType::ModelColoredShader);
     mShaderManager->setUniformValue("M", light->worldTransformation());

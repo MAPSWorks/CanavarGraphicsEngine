@@ -211,6 +211,24 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
+    // Screen Multisampled Shader
+    {
+        Shader *shader = new Shader(ShaderType::ScreenMultisampled);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ScreenMultisampled.frag");
+
+        shader->addUniform("screenTexture");
+        shader->addUniform("samples");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

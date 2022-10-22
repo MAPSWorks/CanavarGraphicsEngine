@@ -24,7 +24,16 @@ enum class ShaderType { //
     ModelColoredShader,
     ModelTexturedShader,
     SkyShader,
-    TerrainShader
+    TerrainShader,
+    ScreenMultisampled
+};
+
+enum class RenderPass { //
+    Default,
+    Bloom,
+    MeshSelection, // TODO
+    NodeSelection, // TODO
+
 };
 
 } // namespace Engine

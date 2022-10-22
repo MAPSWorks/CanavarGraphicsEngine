@@ -61,7 +61,8 @@ in vec3 fsNormal;
 in vec2 fsTextureCoords;
 in mat3 fsTBN;
 
-out vec4 outColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 brightColor;
 
 vec3 getNormal()
 {
@@ -162,5 +163,13 @@ void main()
     vec4 result = vec4(0);
     result += processSun(ambientColor, diffuseColor, specularColor, normal, viewDir);
     result += processPointLights(ambientColor, diffuseColor, specularColor, normal, viewDir, fsPosition.xyz);
-    outColor = processHaze(distance, fsPosition.xyz, result);
+
+    // Final
+    fragColor = processHaze(distance, fsPosition.xyz, result);
+
+    float brightness = dot(fragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+    if(brightness > 1.0f)
+        brightColor = vec4(fragColor.rgb, 1.0f);
+    else
+        brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }

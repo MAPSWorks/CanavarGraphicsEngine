@@ -82,7 +82,8 @@ uniform vec3 cameraPos;
 uniform float waterHeight;
 uniform sampler2D sand, grass, terrainTexture, snow, rock, rockNormal;
 
-out vec4 outColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 brightColor;
 
 const mat2 m = mat2(0.8, -0.6, 0.6, 0.8);
 
@@ -388,5 +389,13 @@ void main()
     vec4 result = vec4(0);
     result += processSun(heightColor, normal, viewDir);
     result += processPointLights(heightColor, normal, viewDir, fsWorldPosition);
-    outColor = processHaze(distance, fsWorldPosition, result);
+
+    // Final
+    fragColor = processHaze(distance, fsWorldPosition, result);
+
+    float brightness = dot(fragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+    if(brightness > 1.0f)
+        brightColor = vec4(fragColor.rgb, 1.0f);
+    else
+        brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 };

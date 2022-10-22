@@ -15,7 +15,7 @@ public:
 
     void addMeshIndex(int index);
 
-    void render(Node *node);
+    void render(RenderPass renderPass, Node *node);
 
 private:
     ModelData *mModelData;

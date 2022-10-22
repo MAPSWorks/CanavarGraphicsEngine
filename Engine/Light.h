@@ -15,6 +15,7 @@ protected:
     DECLARE_MEMBER(float, Ambient)
     DECLARE_MEMBER(float, Diffuse)
     DECLARE_MEMBER(float, Specular)
+    DECLARE_MEMBER(QString, ModelName)
 };
 
 } // namespace Engine

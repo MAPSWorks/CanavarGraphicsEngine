@@ -12,14 +12,14 @@ void Canavar::Engine::ModelDataNode::addMeshIndex(int index)
     mMeshIndices << index;
 }
 
-void Canavar::Engine::ModelDataNode::render(Node *node)
+void Canavar::Engine::ModelDataNode::render(RenderPass renderPass, Node *node)
 {
     auto meshes = mModelData->meshes();
 
     for (auto index : qAsConst(mMeshIndices))
-        meshes[index]->render(node);
+        meshes[index]->render(renderPass, node);
 
     for (int i = 0; i < mChildren.size(); i++)
         if (auto child = dynamic_cast<ModelDataNode *>(mChildren[i]))
-            child->render(node);
+            child->render(renderPass, node);
 }

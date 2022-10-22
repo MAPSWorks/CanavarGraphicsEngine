@@ -29,7 +29,7 @@ private:
 public:
     static Terrain *instance();
 
-    void render();
+    void render(RenderPass renderPass);
     void reset();
 
 private:
