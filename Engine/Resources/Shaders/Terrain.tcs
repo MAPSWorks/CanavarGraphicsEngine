@@ -40,7 +40,7 @@ struct Terrain
     float specular;
 };
 
-uniform vec3 cameraPosition;
+uniform vec3 cameraPos;
 uniform Terrain terrain;
 
 in vec3 tcsPosition[];
@@ -162,9 +162,9 @@ void main()
     vec3 worldPos2 = vec3(tesPosition[1].x, perlin(tesPosition[1].xz), tesPosition[1].z);
     vec3 worldPos3 = vec3(tesPosition[2].x, perlin(tesPosition[2].xz), tesPosition[2].z);
 
-    float d0 = distance(cameraPosition, worldPos1);
-    float d1 = distance(cameraPosition, worldPos2);
-    float d2 = distance(cameraPosition, worldPos3);
+    float d0 = distance(cameraPos, worldPos1);
+    float d1 = distance(cameraPos, worldPos2);
+    float d2 = distance(cameraPos, worldPos3);
 
     // Calculate the tessellation levels
     gl_TessLevelOuter[0] = terrain.tessellationMultiplier * getTessellationLevel(d1, d2);

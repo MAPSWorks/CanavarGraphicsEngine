@@ -180,7 +180,7 @@ bool Canavar::Engine::ShaderManager::init()
                  << "sun.diffuse"
                  << "sun.specular"
                  << "waterHeight"
-                 << "cameraPosition"
+                 << "cameraPos"
                  << "M"
                  << "VP"
                  << "sand"

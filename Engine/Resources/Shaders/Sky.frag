@@ -9,8 +9,6 @@ vec3 hosek_wilkie(float cos_theta, float gamma, float cos_gamma)
     return (1 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * (cos_gamma * cos_gamma) + G * chi + I * sqrt(cos_theta));
 }
 
-// ------------------------------------------------------------------
-
 vec3 hosek_wilkie_sky_rgb(vec3 v, vec3 sun_dir)
 {
     float cos_theta = clamp(v.y, 0, 1);
@@ -21,7 +19,7 @@ vec3 hosek_wilkie_sky_rgb(vec3 v, vec3 sun_dir)
     return R;
 }
 
-smooth in vec3 fsDirection;
+in vec3 fsDirection;
 
 out vec4 outColor;
 

@@ -78,7 +78,7 @@ uniform Haze haze;
 uniform PointLight pointLights[8];
 
 uniform int numberOfPointLights;
-uniform vec3 cameraPosition;
+uniform vec3 cameraPos;
 uniform float waterHeight;
 uniform sampler2D sand, grass, terrainTexture, snow, rock, rockNormal;
 
@@ -373,10 +373,11 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
 
     return result;
 }
+
 void main()
 {
-    vec3 viewDir = normalize(cameraPosition - fsWorldPosition);
-    float distance = length(cameraPosition - fsWorldPosition);
+    vec3 viewDir = normalize(cameraPos - fsWorldPosition);
+    float distance = length(cameraPos - fsWorldPosition);
 
     mat3 TBN;
     vec3 normal = computeNormals(fsWorldPosition, TBN);
@@ -388,5 +389,4 @@ void main()
     result += processSun(heightColor, normal, viewDir);
     result += processPointLights(heightColor, normal, viewDir, fsWorldPosition);
     outColor = processHaze(distance, fsWorldPosition, result);
-
 };

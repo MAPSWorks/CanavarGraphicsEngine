@@ -15,6 +15,7 @@ class ShaderManager;
 class Haze;
 class Sky;
 class Terrain;
+class PointLight;
 
 class RendererManager : public Manager, protected QOpenGLExtraFunctions
 {
@@ -33,7 +34,7 @@ public:
 
 private:
     void loadModels();
-    void renderNodes();
+    void setCommonUniforms();
 
 private:
     QMap<QString, ModelData *> mModelsData;
@@ -50,6 +51,8 @@ private:
     Terrain *mTerrain;
 
     RenderParameters mRenderParameters;
+
+    QVector<PointLight *> mClosePointLights;
 };
 
 } // namespace Engine

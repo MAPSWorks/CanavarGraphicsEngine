@@ -64,9 +64,7 @@ private:
     DECLARE_MEMBER(unsigned int, ID)
 
     // For rendering
-    ShaderManager *mShaderManager; // Might be static
-    CameraManager *mCameraManager; // Might be static
-    LightManager *mLightManager;   // Might be static
+    ShaderManager *mShaderManager;
 };
 
 } // namespace Engine

@@ -47,6 +47,11 @@ uniform int numberOfPointLights;
 
 uniform vec3 cameraPos;
 
+in vec4 fsPosition;
+in vec3 fsNormal;
+
+out vec4 outColor;
+
 vec4 processSun(vec3 normal, vec3 viewDir)
 {
     // Ambient
@@ -110,11 +115,6 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
 
     return result;
 }
-
-in vec4 fsPosition;
-in vec3 fsNormal;
-
-out vec4 outColor;
 
 void main()
 {

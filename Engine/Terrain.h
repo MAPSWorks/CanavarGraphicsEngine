@@ -36,7 +36,6 @@ public:
 private:
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
-    LightManager *mLightManager;
 
     TileGenerator *mTileGenerator;
 

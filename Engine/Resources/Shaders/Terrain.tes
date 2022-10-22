@@ -40,7 +40,7 @@ struct Terrain
 };
 
 uniform mat4 VP;
-uniform vec3 cameraPosition;
+uniform vec3 cameraPos;
 uniform Terrain terrain;
 
 in vec3 tesPosition[];
@@ -193,7 +193,7 @@ void main()
     // Displace the vertex along the normal
     float displacement = perlin(fsWorldPosition.xz);
     fsWorldPosition += fsNormal * displacement;
-    fsDistanceFromPosition = distance(fsWorldPosition, cameraPosition);
+    fsDistanceFromPosition = distance(fsWorldPosition, cameraPos);
     fsHeight = fsWorldPosition.y;
 
 //    gl_ClipDistance[0] = dot(clipPlane, vec4(fsWorldPosition, 1.0));

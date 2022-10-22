@@ -7,7 +7,7 @@ const vec3 VERTICES[4] = vec3[4](vec3(-1.0f, -1.0f, 1.0f),
 
 uniform mat4 IVP; // Inverse view-projection matrix
 
-smooth out vec3 fsDirection;
+out vec3 fsDirection;
 
 void main()
 {
