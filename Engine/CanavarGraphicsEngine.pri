@@ -21,6 +21,7 @@ HEADERS += \
     $$PWD/Mouse.h \
     $$PWD/Node.h \
     $$PWD/NodeManager.h \
+    $$PWD/NozzleEffect.h \
     $$PWD/PerspectiveCamera.h \
     $$PWD/PointLight.h \
     $$PWD/Quad.h \
@@ -36,6 +37,7 @@ HEADERS += \
 SOURCES += \
     $$PWD/Camera.cpp \
     $$PWD/CameraManager.cpp \
+    $$PWD/Common.cpp \
     $$PWD/Controller.cpp \
     $$PWD/DummyCamera.cpp \
     $$PWD/FreeCamera.cpp \
@@ -53,6 +55,7 @@ SOURCES += \
     $$PWD/Mouse.cpp \
     $$PWD/Node.cpp \
     $$PWD/NodeManager.cpp \
+    $$PWD/NozzleEffect.cpp \
     $$PWD/PerspectiveCamera.cpp \
     $$PWD/PointLight.cpp \
     $$PWD/Quad.cpp \

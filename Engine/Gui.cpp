@@ -75,6 +75,10 @@ void Canavar::Engine::Gui::draw()
             draw(dynamic_cast<PointLight *>(mSelectedNode));
             draw(dynamic_cast<Node *>(mSelectedNode));
             break;
+        case Canavar::Engine::Node::NodeType::NozzleEffect:
+            draw(dynamic_cast<NozzleEffect *>(mSelectedNode));
+            draw(dynamic_cast<Node *>(mSelectedNode));
+            break;
         default:
             break;
         }
@@ -294,5 +298,16 @@ void Canavar::Engine::Gui::draw(Haze *node)
         ImGui::SliderFloat("Density##Haze", &node->getDensity_nonConst(), 0.0f, 4.0f, "%.3f");
         ImGui::SliderFloat("Gradient##Haze", &node->getGradient_nonConst(), 0.0f, 4.0f, "%.3f");
         ImGui::ColorEdit4("Color##Haze", (float *) &node->getColor_nonConst());
+    }
+}
+
+void Canavar::Engine::Gui::draw(NozzleEffect *node)
+{
+    if (!ImGui::CollapsingHeader("Nozzle Effect Parameters##NozzleEffect"))
+    {
+        ImGui::SliderFloat("Radius##NozzleEffect", &node->getRadius_nonConst(), 0.001f, 4.0f, "%.4f");
+        ImGui::SliderFloat("Max Life##NozzleEffect", &node->getMaxLife_nonConst(), 0.001f, 10.0f, "%.4f");
+        ImGui::SliderFloat("Velocity##NozzleEffect", &node->getVelocity_nonConst(), 0.0f, 50.0f, "%.3f");
+        ImGui::SliderFloat("Scale##NozzleEffect", &node->getScale_nonConst(), 0.001f, 0.1f, "%.4f");
     }
 }

@@ -80,6 +80,10 @@ void Window::initializeGL()
         mDummyCamera->setVerticalFov(75.0f);
         mDummyCamera->setZNear(5.0f);
         mDummyCamera->setZFar(1000000.0f);
+
+        auto effect = NodeManager::instance()->createNode(Node::NodeType::NozzleEffect);
+        effect->setPosition(QVector3D(0, 0.14f, 11.5f));
+        mJetRoot->addChild(effect);
     }
 }
 

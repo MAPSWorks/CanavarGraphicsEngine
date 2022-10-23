@@ -5,6 +5,7 @@
 #include "LightManager.h"
 #include "Model.h"
 #include "NodeManager.h"
+#include "NozzleEffect.h"
 #include "PointLight.h"
 #include "ShaderManager.h"
 #include "Sky.h"
@@ -121,7 +122,7 @@ void Canavar::Engine::RendererManager::resize(int w, int h)
     }
 }
 
-void Canavar::Engine::RendererManager::render(float)
+void Canavar::Engine::RendererManager::render(float ifps)
 {
     mCamera = mCameraManager->activeCamera();
     mClosePointLights = Helper::getClosePointLights(mLightManager->getPointLights(), mCamera->worldPosition(), 8);
@@ -167,6 +168,9 @@ void Canavar::Engine::RendererManager::render(float)
             if (data)
                 data->render(RenderPass::Default, light);
         }
+
+        if (auto nozzleEffect = dynamic_cast<NozzleEffect *>(node))
+            nozzleEffect->render(ifps);
     }
 
     mTerrain->render(RenderPass::Default);

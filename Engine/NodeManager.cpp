@@ -6,6 +6,7 @@
 #include "Model.h"
 
 #include "Haze.h"
+#include "NozzleEffect.h"
 #include "Sky.h"
 #include "Sun.h"
 #include "Terrain.h"
@@ -20,6 +21,7 @@ Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     mTypeToName.insert(Node::NodeType::FreeCamera, "Free Camera");
     mTypeToName.insert(Node::NodeType::Model, "Model");
     mTypeToName.insert(Node::NodeType::PointLight, "Point Light");
+    mTypeToName.insert(Node::NodeType::NozzleEffect, "Nozzle Effect");
 }
 
 bool Canavar::Engine::NodeManager::init()
@@ -70,6 +72,12 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
         mLightManager->addLight(dynamic_cast<Light *>(node));
         break;
     }
+    case Node::NodeType::NozzleEffect: {
+        auto effect = new NozzleEffect;
+        effect->create();
+        node = effect;
+        break;
+    }
     default: {
         qWarning() << Q_FUNC_INFO << "Implement construction algorithm for this NodeType:" << (int) type;
         return nullptr;
@@ -93,7 +101,8 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
     switch (node->type())
     {
     case Node::NodeType::Model:
-    case Node::NodeType::DummyNode: {
+    case Node::NodeType::DummyNode:
+    case Node::NodeType::NozzleEffect: {
         if (node->mParent)
             node->mParent->removeChild(node);
         mNodes.removeAll(node);

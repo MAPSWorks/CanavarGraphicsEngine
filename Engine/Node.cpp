@@ -9,7 +9,7 @@ Canavar::Engine::Node::Node(QObject *parent)
     , mType(NodeType::DummyNode)
     , mParent(dynamic_cast<Node *>(parent))
     , mVisible(true)
-    , mRenderable(false)
+    , mRenderable(true)
 {}
 
 Canavar::Engine::Node::~Node() {}

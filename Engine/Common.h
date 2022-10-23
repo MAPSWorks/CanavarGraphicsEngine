@@ -26,7 +26,8 @@ enum class ShaderType { //
     SkyShader,
     TerrainShader,
     BlurShader,
-    PostProcessShader
+    PostProcessShader,
+    NozzleEffectShader
 };
 
 enum class RenderPass { //
@@ -36,6 +37,8 @@ enum class RenderPass { //
     NodeSelection, // TODO
 
 };
+
+extern float CUBE[108];
 
 } // namespace Engine
 } // namespace Canavar
