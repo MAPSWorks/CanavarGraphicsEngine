@@ -35,18 +35,27 @@ public:
         Temporary,
         Ping,
         Pong,
-        MeshSelection,
-        VertexSelection
+    };
+
+    struct OpenGLFramebuffer {
+        unsigned int fbo = 0;
+        unsigned int rbo = 0;
+        unsigned int texture = 0;
     };
 
     bool init() override;
     void resize(int width, int height) override;
+
+    Node *getNodeByScreenPosition(int x, int y);
 
     void render(float ifps);
 
 private:
     void loadModels(const QString &path, const QStringList &formats);
     void setCommonUniforms();
+
+    void deleteFramebuffers();
+    void createFramebuffers(int width, int height);
 
 private:
     QMap<QString, ModelData *> mModelsData;
@@ -72,6 +81,8 @@ private:
 
     int mWidth;
     int mHeight;
+
+    OpenGLFramebuffer mMeshInfoFBO;
 
     DECLARE_MEMBER(int, BlurPass)
     DECLARE_MEMBER(float, Exposure)

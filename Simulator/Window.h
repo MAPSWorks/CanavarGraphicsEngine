@@ -51,5 +51,7 @@ private:
     Canavar::Engine::PerspectiveCamera *mDummyCamera;
     Canavar::Engine::Model *mJet;
     Canavar::Engine::Node *mJetRoot;
+
+    bool mSuccess;
 };
 #endif // WINDOW_H

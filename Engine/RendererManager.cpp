@@ -21,7 +21,7 @@ Canavar::Engine::RendererManager::RendererManager(QObject *parent)
     , mBlurPass(4)
     , mExposure(1.0f)
     , mGamma(1.0f)
-    , mNodeSelectionEnabled(false)
+    , mNodeSelectionEnabled(true)
 {}
 
 Canavar::Engine::RendererManager *Canavar::Engine::RendererManager::instance()
@@ -57,54 +57,21 @@ bool Canavar::Engine::RendererManager::init()
 
     loadModels("Resources/Models", QStringList() << "*.fbx");
 
+    mColorAttachments = new GLuint[2];
+    mColorAttachments[0] = GL_COLOR_ATTACHMENT0;
+    mColorAttachments[1] = GL_COLOR_ATTACHMENT1;
+
     // Default FBO format
     mFBOFormats.insert(FramebufferType::Default, new QOpenGLFramebufferObjectFormat);
     mFBOFormats[FramebufferType::Default]->setSamples(4);
     mFBOFormats[FramebufferType::Default]->setAttachment(QOpenGLFramebufferObject::Depth);
 
-    // Default FBO
-    mFBOs.insert(FramebufferType::Default, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Default]));
-    mFBOs[FramebufferType::Default]->addColorAttachment(mWidth, mHeight, GL_RGBA16F);
-    mColorAttachments = new GLuint[2];
-    mColorAttachments[0] = GL_COLOR_ATTACHMENT0;
-    mColorAttachments[1] = GL_COLOR_ATTACHMENT1;
-    mFBOs[FramebufferType::Default]->bind();
-    glDrawBuffers(2, mColorAttachments);
-    mFBOs[FramebufferType::Default]->release();
-
-    // Temporary FBO format
+    // Other formats
     mFBOFormats.insert(FramebufferType::Temporary, new QOpenGLFramebufferObjectFormat);
-
-    // Ping FBO format
     mFBOFormats.insert(FramebufferType::Ping, new QOpenGLFramebufferObjectFormat);
-
-    // Pong FBO format
     mFBOFormats.insert(FramebufferType::Pong, new QOpenGLFramebufferObjectFormat);
 
-    // Mesh Selection FBO format
-    mFBOFormats.insert(FramebufferType::MeshSelection, new QOpenGLFramebufferObjectFormat);
-    mFBOFormats[FramebufferType::MeshSelection]->setInternalTextureFormat(GL_RGB32F);
-    mFBOFormats[FramebufferType::MeshSelection]->setAttachment(QOpenGLFramebufferObject::Depth);
-
-    // Vertex Selection FBO format
-    mFBOFormats.insert(FramebufferType::VertexSelection, new QOpenGLFramebufferObjectFormat);
-    mFBOFormats[FramebufferType::VertexSelection]->setInternalTextureFormat(GL_RGB32F);
-    mFBOFormats[FramebufferType::VertexSelection]->setAttachment(QOpenGLFramebufferObject::Depth);
-
-    // Temporary FBO
-    mFBOs.insert(FramebufferType::Temporary, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Temporary]));
-
-    // Ping FBO
-    mFBOs.insert(FramebufferType::Ping, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Ping]));
-
-    // Pong FBO
-    mFBOs.insert(FramebufferType::Pong, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Pong]));
-
-    // Mesh Selection FBO
-    mFBOs.insert(FramebufferType::MeshSelection, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::MeshSelection]));
-
-    // Vertex Selection
-    mFBOs.insert(FramebufferType::VertexSelection, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::VertexSelection]));
+    createFramebuffers(mWidth, mHeight);
 
     return true;
 }
@@ -114,29 +81,20 @@ void Canavar::Engine::RendererManager::resize(int w, int h)
     mWidth = w;
     mHeight = h;
 
-    if (auto fbo = mFBOs.value(FramebufferType::Default))
-    {
-        delete fbo;
-        mFBOs[FramebufferType::Default] = new QOpenGLFramebufferObject(w, h, *mFBOFormats[FramebufferType::Default]);
-        mFBOs[FramebufferType::Default]->addColorAttachment(w, h, GL_RGBA16F);
-        mFBOs[FramebufferType::Default]->bind();
-        glDrawBuffers(2, mColorAttachments);
-        mFBOs[FramebufferType::Default]->release();
-    }
+    deleteFramebuffers();
+    createFramebuffers(mWidth, mHeight);
+}
 
-    auto keys = mFBOs.keys();
+Canavar::Engine::Node *Canavar::Engine::RendererManager::getNodeByScreenPosition(int x, int y)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);
+    int info[4];
+    glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, &info);
+    qDebug() << info[0] << info[1] << info[2] << info[2];
 
-    for (auto type : keys)
-    {
-        if (type == FramebufferType::Default)
-            continue;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        if (mFBOs[type])
-        {
-            delete mFBOs[type];
-            mFBOs[type] = new QOpenGLFramebufferObject(w, h, *mFBOFormats[type]);
-        }
-    }
+    return nullptr;
 }
 
 void Canavar::Engine::RendererManager::render(float ifps)
@@ -235,7 +193,9 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
     if (mNodeSelectionEnabled)
     {
-        mFBOs[FramebufferType::MeshSelection]->bind();
+        glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0, 0, 0, 1);
 
         for (const auto &node : nodes)
         {
@@ -246,22 +206,21 @@ void Canavar::Engine::RendererManager::render(float ifps)
             {
                 ModelData *data = mModelsData.value(model->getModelName(), nullptr);
                 if (data)
-                    data->render(RenderPass::MeshSelection, model);
+                    data->render(RenderPass::MeshInfo, model);
             }
 
             if (auto light = dynamic_cast<PointLight *>(node))
             {
                 ModelData *data = mModelsData.value(light->getModelName(), nullptr);
                 if (data)
-                    data->render(RenderPass::MeshSelection, light);
+                    data->render(RenderPass::MeshInfo, light);
             }
 
-            // TODO
             //            if (auto nozzleEffect = dynamic_cast<NozzleEffect *>(node))
-            //              nozzleEffect->render(ifps);
+            //                nozzleEffect->render(ifps);
         }
 
-        mFBOs[FramebufferType::MeshSelection]->release();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }
 
@@ -326,5 +285,57 @@ void Canavar::Engine::RendererManager::setCommonUniforms()
         mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].constant", mClosePointLights[i]->getConstant());
         mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].linear", mClosePointLights[i]->getLinear());
         mShaderManager->setUniformValue("pointLights[" + QString::number(i) + "].quadratic", mClosePointLights[i]->getQuadratic());
+    }
+}
+
+void Canavar::Engine::RendererManager::deleteFramebuffers()
+{
+    auto keys = mFBOs.keys();
+
+    for (auto type : keys)
+        if (mFBOs[type])
+            delete mFBOs[type];
+
+    if (mMeshInfoFBO.fbo)
+        glDeleteFramebuffers(1, &mMeshInfoFBO.fbo);
+
+    if (mMeshInfoFBO.rbo)
+        glDeleteBuffers(1, &mMeshInfoFBO.rbo);
+
+    if (mMeshInfoFBO.texture)
+        glDeleteTextures(1, &mMeshInfoFBO.texture);
+}
+
+void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
+{
+    mFBOs.insert(FramebufferType::Default, new QOpenGLFramebufferObject(width, height, *mFBOFormats[FramebufferType::Default]));
+    mFBOs[FramebufferType::Default]->addColorAttachment(width, height, GL_RGBA16F);
+
+    mFBOs[FramebufferType::Default]->bind();
+    glDrawBuffers(2, mColorAttachments);
+    mFBOs[FramebufferType::Default]->release();
+
+    mFBOs.insert(FramebufferType::Temporary, new QOpenGLFramebufferObject(width, height, *mFBOFormats[FramebufferType::Temporary]));
+    mFBOs.insert(FramebufferType::Ping, new QOpenGLFramebufferObject(width, height, *mFBOFormats[FramebufferType::Ping]));
+    mFBOs.insert(FramebufferType::Pong, new QOpenGLFramebufferObject(width, height, *mFBOFormats[FramebufferType::Pong]));
+
+    glGenFramebuffers(1, &mMeshInfoFBO.fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);
+
+    glGenTextures(1, &mMeshInfoFBO.texture);
+    glBindTexture(GL_TEXTURE_2D, mMeshInfoFBO.texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32UI, width, height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mMeshInfoFBO.texture, 0);
+
+    glGenRenderbuffers(1, &mMeshInfoFBO.rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, mMeshInfoFBO.rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mMeshInfoFBO.rbo);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        qCritical() << "Framebuffer is could not be created.";
     }
 }

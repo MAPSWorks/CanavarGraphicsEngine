@@ -31,16 +31,14 @@ enum class ShaderType { //
     PostProcessShader,
     NozzleEffectShader,
     ScreenShader,
-    MeshSelectionShader,
-    VertexSelectionShader
+    MeshInfoShader
 };
 
 enum class RenderPass { //
     Default = 0x00,
-    MeshSelection = 0x01,
-    VertexSelection = 0x02,
-
+    MeshInfo = 0x01,
 };
+
 Q_DECLARE_FLAGS(RenderPasses, RenderPass);
 
 extern float CUBE[108];

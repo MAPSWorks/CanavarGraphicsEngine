@@ -89,29 +89,6 @@ void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Node *node)
 
 void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Model *model)
 {
-    if (renderPasses.testFlag(RenderPass::MeshSelection))
-    {
-        mShaderManager->bind(ShaderType::MeshSelectionShader);
-        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation() * model->getMeshTransformation(mName));
-        mShaderManager->setUniformValue("nodeID", model->getID());
-        mShaderManager->setUniformValue("meshID", mID);
-        mVAO->bind();
-        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-        mVAO->release();
-        mShaderManager->release();
-    }
-
-    if (renderPasses.testFlag(RenderPass::VertexSelection))
-    {
-        //        mShaderManager->bind(ShaderType::VertexSelectionShader);
-        //        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation() * model->getMeshTransformation(mName));
-        //        mShaderManager->setUniformValue("VMT", mVertexModelTransformation);
-        //        mVerticesVAO->bind();
-        //        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mVertices.size());
-        //        mVerticesVAO->release();
-        //        mShaderManager->release();
-    }
-
     if (renderPasses.testFlag(RenderPass::Default))
     {
         if (bool useTexture = mMaterial->getNumberOfTextures())
@@ -174,22 +151,24 @@ void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Model *model)
 
         mShaderManager->release();
     }
+
+    if (renderPasses.testFlag(RenderPass::MeshInfo))
+    {
+        mShaderManager->bind(ShaderType::MeshInfoShader);
+        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation());
+        mShaderManager->setUniformValue("nodeID", model->getID());
+        mShaderManager->setUniformValue("meshID", mID);
+
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+
+        mShaderManager->release();
+    }
 }
 
 void Canavar::Engine::Mesh::render(RenderPasses renderPasses, PointLight *light)
 {
-    if (renderPasses.testFlag(RenderPass::MeshSelection))
-    {
-        mShaderManager->bind(ShaderType::MeshSelectionShader);
-        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * light->worldTransformation());
-        mShaderManager->setUniformValue("nodeID", light->getID());
-        mShaderManager->setUniformValue("meshID", mID);
-        mVAO->bind();
-        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-        mVAO->release();
-        mShaderManager->release();
-    }
-
     if (renderPasses.testFlag(RenderPass::Default))
     {
         mShaderManager->bind(ShaderType::ModelColoredShader);
@@ -199,6 +178,20 @@ void Canavar::Engine::Mesh::render(RenderPasses renderPasses, PointLight *light)
         mShaderManager->setUniformValue("model.ambient", light->getModelAmbient());
         mShaderManager->setUniformValue("model.diffuse", light->getModelDiffuse());
         mShaderManager->setUniformValue("model.specular", light->getModelSpecular());
+
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+
+        mShaderManager->release();
+    }
+
+    if (renderPasses.testFlag(RenderPass::MeshInfo))
+    {
+        mShaderManager->bind(ShaderType::MeshInfoShader);
+        mShaderManager->setUniformValue("MVP", light->worldTransformation() * mCameraManager->activeCamera()->getViewProjectionMatrix());
+        mShaderManager->setUniformValue("nodeID", light->getID());
+        mShaderManager->setUniformValue("meshID", mID);
 
         mVAO->bind();
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);

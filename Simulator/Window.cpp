@@ -7,6 +7,7 @@
 #include <Node.h>
 #include <NodeManager.h>
 #include <PerspectiveCamera.h>
+#include <RendererManager.h>
 
 #include <QDateTime>
 #include <QKeyEvent>
@@ -18,6 +19,7 @@ using namespace Canavar::Engine;
 
 Window::Window(QWindow *parent)
     : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, parent)
+    , mSuccess(false)
 
 {
     QSurfaceFormat format = QSurfaceFormat::defaultFormat();
@@ -43,7 +45,9 @@ void Window::initializeGL()
     mController = new Canavar::Engine::Controller;
     mController->setWindow(this);
 
-    if (mController->init())
+    mSuccess = mController->init();
+
+    if (mSuccess)
     {
         mJet = dynamic_cast<Canavar::Engine::Model *>(NodeManager::instance()->createNode(Node::NodeType::Model, "f16c"));
         mJetRoot = NodeManager::instance()->createNode(Node::NodeType::DummyNode, "JET_ROOT_NODE");
@@ -122,6 +126,9 @@ void Window::resizeGL(int w, int h)
 
 void Window::paintGL()
 {
+    if (!mSuccess)
+        return;
+
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
     mPreviousTime = mCurrentTime;
@@ -142,6 +149,9 @@ void Window::paintGL()
 
 void Window::keyPressEvent(QKeyEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     if (ImGui::GetIO().WantCaptureKeyboard)
         return;
 
@@ -156,25 +166,39 @@ void Window::keyPressEvent(QKeyEvent *event)
 
 void Window::keyReleaseEvent(QKeyEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     mController->keyReleased(event);
     mAircraftController->keyReleased(event);
 }
 
 void Window::mousePressEvent(QMouseEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     if (ImGui::GetIO().WantCaptureMouse)
         return;
 
     mController->mousePressed(event);
+
+    qDebug() << RendererManager::instance()->getNodeByScreenPosition(event->position().x(), event->position().y());
 }
 
 void Window::mouseReleaseEvent(QMouseEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     mController->mouseReleased(event);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     if (ImGui::GetIO().WantCaptureMouse)
         return;
 
@@ -183,6 +207,9 @@ void Window::mouseMoveEvent(QMouseEvent *event)
 
 void Window::wheelEvent(QWheelEvent *event)
 {
+    if (!mSuccess)
+        return;
+
     if (ImGui::GetIO().WantCaptureMouse)
         return;
 
