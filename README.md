@@ -21,6 +21,9 @@ I will add following features:
 - Albedo generation using satellite images
 - Post processing effects
 
+## Screenshot
+![](Screenshot_2022_10_23.png)
+
 ## Build
 All dependencies is under `Dependencies` folder. I already built the libraries which are needed to be dynamically linked. The compiler and kit I used for compiling those libraries and developing this engine is  `Qt 6.3.0 MSVC 2019 64bit`.
 I have a post build script `PostBuild.bat` that does all necessary tasks for running the project. 
