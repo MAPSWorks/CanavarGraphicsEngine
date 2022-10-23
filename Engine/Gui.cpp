@@ -308,8 +308,8 @@ void Canavar::Engine::Gui::draw(NozzleEffect *node)
     if (!ImGui::CollapsingHeader("Nozzle Effect Parameters##NozzleEffect"))
     {
         ImGui::SliderFloat("Radius##NozzleEffect", &node->getRadius_nonConst(), 0.001f, 4.0f, "%.4f");
-        ImGui::SliderFloat("Max Life##NozzleEffect", &node->getMaxLife_nonConst(), 0.001f, 10.0f, "%.4f");
-        ImGui::SliderFloat("Velocity##NozzleEffect", &node->getVelocity_nonConst(), 0.0f, 50.0f, "%.3f");
+        ImGui::SliderFloat("Max Life##NozzleEffect", &node->getMaxLife_nonConst(), 0.0001f, 2.0f, "%.5f");
+        ImGui::SliderFloat("Velocity##NozzleEffect", &node->getVelocity_nonConst(), 0.0f, 150.0f, "%.3f");
         ImGui::SliderFloat("Scale##NozzleEffect", &node->getScale_nonConst(), 0.001f, 0.1f, "%.4f");
     }
 }

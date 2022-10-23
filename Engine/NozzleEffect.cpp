@@ -97,7 +97,7 @@ Canavar::Engine::NozzleEffect::Particle Canavar::Engine::NozzleEffect::generateP
     float theta = Helper::generateFloat(2.0f * M_PI);
 
     p.initialPosition = QVector3D(r * cos(theta), r * sin(theta), 0);
-    p.velocityDirection = QVector3D(0, 0, 0.5 + Helper::generateFloat(0.5));
+    p.velocityDirection = QVector3D(0, 0, 1.5 + Helper::generateFloat(0.5));
     p.life = 0.0f;
 
     return p;

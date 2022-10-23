@@ -90,7 +90,7 @@ Canavar::Engine::Node *Canavar::Engine::RendererManager::getNodeByScreenPosition
     glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);
     int info[4];
     glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, &info);
-    qDebug() << info[0] << info[1] << info[2] << info[2];
+    qDebug() << info[0] << info[1] << info[2] << info[3];
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -195,7 +195,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0, 0, 0, 1);
+        glClearColor(0, 0, 0, 0);
 
         for (const auto &node : nodes)
         {
