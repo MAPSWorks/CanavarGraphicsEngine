@@ -1,7 +1,7 @@
 #include "Light.h"
 
 Canavar::Engine::Light::Light(QObject *parent)
-    : Node{parent}
+    : Node(parent)
     , mModelName("SphereDense")
     , mColor(1.0f, 1.0f, 1.0f, 1.0f)
     , mAmbient(1.0f)
@@ -12,6 +12,4 @@ Canavar::Engine::Light::Light(QObject *parent)
     , mModelDiffuse(1.0f)
     , mModelSpecular(1.0f)
     , mModelShininess(32.0f)
-{
-    mRenderable = false;
-}
+{}

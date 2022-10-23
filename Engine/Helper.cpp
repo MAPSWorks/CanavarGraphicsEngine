@@ -2,6 +2,7 @@
 #include "ModelData.h"
 
 #include <QFile>
+#include <QMultiMap>
 #include <QtMath>
 
 Canavar::Engine::Helper::Helper() {}
@@ -320,7 +321,7 @@ QOpenGLTexture *Canavar::Engine::Helper::createTexture(const QString &path)
 
 QVector<Canavar::Engine::PointLight *> Canavar::Engine::Helper::getClosePointLights(const QList<PointLight *> &nodes, const QVector3D &position, int maxCount)
 {
-    QMap<float, PointLight *> distances;
+    QMultiMap<float, PointLight *> distances;
 
     for (const auto &node : nodes)
         distances.insert((node->worldPosition() - position).length(), node);

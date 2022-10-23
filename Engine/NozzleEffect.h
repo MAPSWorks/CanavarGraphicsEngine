@@ -27,6 +27,11 @@ public:
     void create();
     void render(float ifps);
 
+    DECLARE_MEMBER(float, Radius)
+    DECLARE_MEMBER(float, MaxLife)
+    DECLARE_MEMBER(float, Velocity)
+    DECLARE_MEMBER(float, Scale)
+
 private:
     Particle generateParticle();
 
@@ -36,11 +41,6 @@ private:
 
     QVector<Particle> mParticles;
     int mNumberOfParticles;
-
-    DECLARE_MEMBER(float, Radius)
-    DECLARE_MEMBER(float, MaxLife)
-    DECLARE_MEMBER(float, Velocity)
-    DECLARE_MEMBER(float, Scale)
 
     // OpenGL stuff
     QVector<QVector3D> mVertices;
