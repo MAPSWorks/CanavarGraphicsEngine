@@ -127,12 +127,6 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mCamera = mCameraManager->activeCamera();
     mClosePointLights = Helper::getClosePointLights(mLightManager->getPointLights(), mCamera->worldPosition(), 8);
 
-    mFBOs[FramebufferType::Default]->bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0, 0, 0, 1);
-
-    auto nodes = mNodeManager->nodes();
-
     // Common uniforms
     mShaderManager->bind(ShaderType::ModelColoredShader);
     setCommonUniforms();
@@ -145,6 +139,12 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mShaderManager->bind(ShaderType::TerrainShader);
     setCommonUniforms();
     mShaderManager->release();
+
+    mFBOs[FramebufferType::Default]->bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0, 0, 0, 1);
+
+    auto nodes = mNodeManager->nodes();
 
     // Render Models
     for (const auto &node : nodes)
@@ -176,8 +176,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mTerrain->render(RenderPass::Default);
 
     // Render Sky
-    if (mSky->getEnabled())
-        mSky->render();
+    mSky->render();
 
     mFBOs[FramebufferType::Default]->release();
 

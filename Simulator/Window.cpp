@@ -106,7 +106,7 @@ void Window::initializeGL()
         greenLight->setQuadratic(0.1f);
         mJetRoot->addChild(greenLight);
 
-        Canavar::Engine::Sun::instance()->setDirection(QVector3D(0, 0, 1));
+        //        Canavar::Engine::Sun::instance()->setDirection(QVector3D(0, 0, 1));
 
         mAircraftController->init();
         mAircraft->init();

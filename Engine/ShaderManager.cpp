@@ -231,26 +231,6 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
-    // Blur Shader
-    {
-        Shader *shader = new Shader(ShaderType::BlurShader);
-        mShaders.insert(shader->type(), shader);
-
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
-
-        shader->addUniform("screenTexture");
-        shader->addUniform("horizontal");
-        shader->addUniform("width");
-        shader->addUniform("height");
-
-        shader->addAttribute("position");
-        shader->addAttribute("textureCoords");
-
-        if (!shader->init())
-            return false;
-    }
-
     // Post Process Shader
     {
         Shader *shader = new Shader(ShaderType::PostProcessShader);
@@ -288,6 +268,23 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addAttribute("initialPosition");
         shader->addAttribute("velocityDirection");
         shader->addAttribute("life");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Screen Shader
+    {
+        Shader *shader = new Shader(ShaderType::ScreenShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Screen.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Screen.frag");
+
+        shader->addUniform("screenTexture");
+
+        shader->addAttribute("position");
+        shader->addAttribute("textureCoords");
 
         if (!shader->init())
             return false;

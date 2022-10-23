@@ -27,7 +27,8 @@ enum class ShaderType { //
     TerrainShader,
     BlurShader,
     PostProcessShader,
-    NozzleEffectShader
+    NozzleEffectShader,
+    ScreenShader
 };
 
 enum class RenderPass { //
