@@ -19,6 +19,19 @@ Canavar::Engine::Node::NodeType Canavar::Engine::Node::type() const
     return mType;
 }
 
+Canavar::Engine::Node *Canavar::Engine::Node::findChildByNameRecursive(const QString &name)
+{
+    for (const auto &child : mChildren)
+        if (child->getName() == name)
+            return child;
+
+    for (const auto &child : mChildren)
+        if (Node *node = child->findChildByNameRecursive(name))
+            return node;
+
+    return nullptr;
+}
+
 const QMatrix4x4 Canavar::Engine::Node::worldTransformation() const
 {
     // TODO: Scaling issue

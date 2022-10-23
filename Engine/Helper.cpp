@@ -319,12 +319,15 @@ QOpenGLTexture *Canavar::Engine::Helper::createTexture(const QString &path)
     return texture;
 }
 
-QVector<Canavar::Engine::PointLight *> Canavar::Engine::Helper::getClosePointLights(const QList<PointLight *> &nodes, const QVector3D &position, int maxCount)
+QVector<Canavar::Engine::PointLight *> Canavar::Engine::Helper::getClosePointLights(const QList<PointLight *> &lights, const QVector3D &position, int maxCount)
 {
     QMultiMap<float, PointLight *> distances;
 
-    for (const auto &node : nodes)
-        distances.insert((node->worldPosition() - position).length(), node);
+    for (const auto &light : lights)
+    {
+        if (light->getVisible())
+            distances.insert((light->worldPosition() - position).length(), light);
+    }
 
     QList<PointLight *> nodesStorted = distances.values();
 

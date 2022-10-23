@@ -7,7 +7,10 @@ AircraftController::AircraftController(Aircraft *aircraft, QObject *parent)
     , mElevator(0)
     , mRudder(0)
     , mThrottle(0)
+    , mRedLight(nullptr)
+    , mGreenLight(nullptr)
     , mAutoPilotEnabled(false)
+    , mTimeElapsed(0.0f)
 {
     connect(this, &AircraftController::command, mAircraft, &Aircraft::onCommand, Qt::QueuedConnection);
     connect(&mTimer, &QTimer::timeout, this, &AircraftController::tick);
@@ -27,6 +30,9 @@ void AircraftController::keyReleased(QKeyEvent *event)
 
 bool AircraftController::init()
 {
+    mRedLight = dynamic_cast<Canavar::Engine::PointLight *>(mRootJetNode->findChildByNameRecursive("Red Light"));
+    mGreenLight = dynamic_cast<Canavar::Engine::PointLight *>(mRootJetNode->findChildByNameRecursive("Green Light"));
+
     emit command(Aircraft::Command::Hold);
 
     mTimer.start(10);
@@ -111,10 +117,45 @@ QVariant AircraftController::getCmd(Aircraft::Command command, QVariant value)
     return QVariant();
 }
 
-void AircraftController::update(float)
+void AircraftController::lights(bool lit)
 {
+    mRedLight->setVisible(lit);
+    mRedLight->setRenderable(lit);
+
+    mGreenLight->setVisible(lit);
+    mGreenLight->setRenderable(lit);
+}
+
+void AircraftController::update(float ifps)
+{
+    mTimeElapsed += ifps;
+
     mRootJetNode->setWorldRotation(mPfd.rotation);
     mRootJetNode->setWorldPosition(mPfd.position);
+
+    //    if (mRedLight && mGreenLight)
+    //    {
+    //        if (mTimeElapsed < 1.5)
+    //        {
+    //            lights(true);
+
+    //        } else if (mTimeElapsed < 1.75)
+    //        {
+    //            lights(false);
+
+    //        } else if (mTimeElapsed < 2)
+    //        {
+    //            lights(true);
+
+    //        } else if (mTimeElapsed < 2.25)
+    //        {
+    //            lights(false);
+
+    //        } else
+    //        {
+    //            mTimeElapsed = 0.0f;
+    //        }
+    //    }
 
     // Rudder
     {

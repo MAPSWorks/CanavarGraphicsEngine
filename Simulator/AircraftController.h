@@ -5,6 +5,7 @@
 
 #include <Model.h>
 
+#include <PointLight.h>
 #include <QKeyEvent>
 #include <QObject>
 #include <QSet>
@@ -37,6 +38,8 @@ public slots:
 private:
     QVariant getCmd(Aircraft::Command command, QVariant value);
 
+    void lights(bool lit);
+
 private:
     Aircraft *mAircraft;
     QSet<Qt::Key> mPressedKeys;
@@ -51,8 +54,12 @@ private:
 
     Canavar::Engine::Model *mJet;
     Canavar::Engine::Node *mRootJetNode;
+    Canavar::Engine::PointLight *mRedLight;
+    Canavar::Engine::PointLight *mGreenLight;
 
     bool mAutoPilotEnabled;
+
+    float mTimeElapsed;
 };
 
 #endif // AIRCRAFTCONTROLLER_H

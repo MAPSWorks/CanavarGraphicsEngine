@@ -52,9 +52,6 @@ void Window::initializeGL()
         mAircraft = new Aircraft;
         mAircraftController = new AircraftController(mAircraft);
 
-        mAircraftController->init();
-        mAircraft->init();
-
         mAircraftController->setJet(mJet);
         mAircraftController->setRootJetNode(mJetRoot);
 
@@ -86,6 +83,7 @@ void Window::initializeGL()
         mJetRoot->addChild(effect);
 
         auto redLight = dynamic_cast<Canavar::Engine::PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
+        redLight->setName("Red Light");
         redLight->setColor(QVector4D(1, 0, 0, 1));
         redLight->setModelDiffuse(0);
         redLight->setModelColor(QVector4D(1, 0, 0, 1));
@@ -97,6 +95,7 @@ void Window::initializeGL()
         mJetRoot->addChild(redLight);
 
         auto greenLight = dynamic_cast<Canavar::Engine::PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
+        greenLight->setName("Green Light");
         greenLight->setColor(QVector4D(0, 1, 0, 1));
         greenLight->setModelColor(QVector4D(0, 1, 0, 1));
         greenLight->setModelDiffuse(0);
@@ -106,6 +105,11 @@ void Window::initializeGL()
         greenLight->setLinear(0.25f);
         greenLight->setQuadratic(0.1f);
         mJetRoot->addChild(greenLight);
+
+        Canavar::Engine::Sun::instance()->setDirection(QVector3D(0, 0, 1));
+
+        mAircraftController->init();
+        mAircraft->init();
     }
 }
 

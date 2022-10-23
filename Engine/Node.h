@@ -63,6 +63,8 @@ public:
 
     NodeType type() const;
 
+    Node *findChildByNameRecursive(const QString &name);
+
 private:
     virtual void updateTransformation();
 
