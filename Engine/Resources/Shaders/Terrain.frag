@@ -391,7 +391,7 @@ void main()
     result += processPointLights(heightColor, normal, viewDir, fsWorldPosition);
 
     // Final
-    fragColor = processHaze(distance, fsWorldPosition, result);
+    fragColor = processHaze(distance, fsWorldPosition, vec4(result.rgb, 1));
 
     float brightness = dot(fragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)

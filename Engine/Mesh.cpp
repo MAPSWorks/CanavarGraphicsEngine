@@ -150,11 +150,11 @@ void Canavar::Engine::Mesh::render(RenderPass renderPass, PointLight *light)
 {
     mShaderManager->bind(ShaderType::ModelColoredShader);
     mShaderManager->setUniformValue("M", light->worldTransformation());
-    mShaderManager->setUniformValue("model.color", light->getColor());
-    mShaderManager->setUniformValue("model.shininess", 32.0f); // TODO
-    mShaderManager->setUniformValue("model.ambient", 1.0f);    // TODO
-    mShaderManager->setUniformValue("model.diffuse", 1.0f);    // TODO
-    mShaderManager->setUniformValue("model.specular", 1.0f);   // TODO
+    mShaderManager->setUniformValue("model.color", light->getModelColor());
+    mShaderManager->setUniformValue("model.shininess", light->getModelShininess());
+    mShaderManager->setUniformValue("model.ambient", light->getModelAmbient());
+    mShaderManager->setUniformValue("model.diffuse", light->getModelDiffuse());
+    mShaderManager->setUniformValue("model.specular", light->getModelSpecular());
 
     mVAO->bind();
     glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);

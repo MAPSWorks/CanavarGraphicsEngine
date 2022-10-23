@@ -57,7 +57,9 @@ void Window::initializeGL()
 
         mCamera->setWorldPosition(QVector3D(0, 5, 0));
 
-        NodeManager::instance()->createNode(Node::NodeType::PointLight);
+        auto *pointLight = dynamic_cast<PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
+        pointLight->setRenderable(true);
+        pointLight->setColor(QVector4D(1, 1, 1, 0.5));
     }
 }
 

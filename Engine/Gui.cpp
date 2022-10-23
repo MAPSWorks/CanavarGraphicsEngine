@@ -269,6 +269,11 @@ void Canavar::Engine::Gui::draw(Light *node)
         ImGui::SliderFloat("Diffuse##Light", &node->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Specular##Light", &node->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::ColorEdit4("Color##Light", (float *) &node->getColor_nonConst());
+
+        ImGui::SliderFloat("Model Ambient##Light", &node->getModelAmbient_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Model Diffuse##Light", &node->getModelDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Model Specular##Light", &node->getModelSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::ColorEdit4("Model Color##Light", (float *) &node->getModelColor_nonConst());
     }
 }
 
@@ -276,7 +281,7 @@ void Canavar::Engine::Gui::draw(PointLight *node)
 {
     if (!ImGui::CollapsingHeader("Attenuation##PointLight"))
     {
-        ImGui::SliderFloat("Constant##PointLight", &node->getConstant_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Constant##PointLight", &node->getConstant_nonConst(), 0.0f, 10.0f, "%.3f");
         ImGui::SliderFloat("Linear##PointLight", &node->getLinear_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Quadratic##PointLight", &node->getQuadratic_nonConst(), 0.00001f, 0.1f, "%.6f");
     }

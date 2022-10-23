@@ -1,7 +1,7 @@
 #include "PointLight.h"
 
 Canavar::Engine::PointLight::PointLight(QObject *parent)
-    : Light{parent}
+    : Light(parent)
     , mConstant(1.0f)
     , mLinear(0.09f)
     , mQuadratic(0.001f)
