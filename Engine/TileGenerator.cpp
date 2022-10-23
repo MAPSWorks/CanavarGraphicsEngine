@@ -50,22 +50,21 @@ Canavar::Engine::TileGenerator::TileGenerator(int resolution, int tiles, float w
     mTilePositions.resize(mTiles * mTiles);
 
     for (int i = 0; i < mTiles; i++)
-    {
         for (int j = 0; j < mTiles; j++)
-        {
             mTilePositions[j + i * mTiles] = (float) (j - mTiles / 2) * I + (float) (i - mTiles / 2) * J;
-        }
-    }
 
     // OpenGL Stuff
     initializeOpenGLFunctions();
-    mVAO = new QOpenGLVertexArrayObject;
-    mVAO->create();
-    mVAO->bind();
+    glGenVertexArrays(1, &mVAO);
+    glBindVertexArray(mVAO);
 
-    glGenBuffers(1, &mEBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(unsigned int), mIndices.constData(), GL_STATIC_DRAW);
+    glGenBuffers(1, &mPBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mPBO);
+    glBufferData(GL_ARRAY_BUFFER, mTilePositions.size() * sizeof(QVector2D), mTilePositions.constData(), GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(QVector2D), (void *) 0);
+    glEnableVertexAttribArray(3);
+    glVertexAttribDivisor(3, 1);
 
     glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
@@ -73,19 +72,18 @@ Canavar::Engine::TileGenerator::TileGenerator(int resolution, int tiles, float w
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
     glEnableVertexAttribArray(0);
+
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
     glEnableVertexAttribArray(1);
+
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
     glEnableVertexAttribArray(2);
 
-    glGenBuffers(1, &mPBO);
-    glBindBuffer(GL_ARRAY_BUFFER, mPBO);
-    glBufferData(GL_ARRAY_BUFFER, mTilePositions.size() * sizeof(QVector2D), mTilePositions.constData(), GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &mEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(unsigned int), mIndices.constData(), GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(QVector2D), (void *) 0);
-    glVertexAttribDivisor(3, 1);
-    mVAO->release();
+    glBindVertexArray(0);
 }
 
 Canavar::Engine::TileGenerator::~TileGenerator()
@@ -112,7 +110,7 @@ void Canavar::Engine::TileGenerator::translateTiles(const QVector2D &translation
 
 void Canavar::Engine::TileGenerator::render(GLenum primitive)
 {
-    mVAO->bind();
+    glBindVertexArray(mVAO);
     glDrawElementsInstanced(primitive, (mResolution - 1) * (mResolution - 1) * 2 * 3, GL_UNSIGNED_INT, 0, mTilePositions.size());
-    mVAO->release();
+    glBindVertexArray(0);
 }

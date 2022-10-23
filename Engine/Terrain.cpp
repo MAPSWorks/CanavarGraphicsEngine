@@ -34,9 +34,10 @@ Canavar::Engine::Terrain::Terrain(QObject *parent)
 void Canavar::Engine::Terrain::render(RenderPasses renderPasses)
 {
     QVector2D currentTilePosition = mTileGenerator->whichTile(mCameraManager->activeCamera()->worldPosition());
+
     if (currentTilePosition != mPreviousTilePosition)
     {
-        mTileGenerator->translateTiles(currentTilePosition - mPreviousTilePosition);
+        mTileGenerator->translateTiles((currentTilePosition - mPreviousTilePosition));
         mPreviousTilePosition = currentTilePosition;
     }
 

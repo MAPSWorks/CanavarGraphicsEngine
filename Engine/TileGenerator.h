@@ -38,7 +38,7 @@ private:
     float mWidth;
 
     // OpenGL Stuff
-    QOpenGLVertexArrayObject *mVAO;
+    unsigned int mVAO;
     unsigned int mVBO;
     unsigned int mEBO;
     unsigned int mPBO;
