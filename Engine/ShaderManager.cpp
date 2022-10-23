@@ -229,8 +229,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addUniform("screenTexture");
         shader->addUniform("horizontal");
-        shader->addUniform("width");
-        shader->addUniform("height");
 
         shader->addAttribute("position");
         shader->addAttribute("textureCoords");

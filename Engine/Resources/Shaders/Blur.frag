@@ -3,8 +3,7 @@ in vec2 fsTextureCoords;
 
 uniform sampler2D screenTexture;
 uniform bool horizontal;
-uniform int width;
-uniform int height;
+
 
 out vec4 outColor;
 
@@ -12,6 +11,9 @@ uniform float weight[5] = float[](0.227027, 0.1945946, 0.1216216, 0.054054, 0.01
 
 void main()
 {
+    int width =  textureSize(screenTexture, 0).x;
+    int height = textureSize(screenTexture, 0).y;
+
     vec2 coords = fsTextureCoords;
     vec4 totalColor = texture(screenTexture, coords) * weight[0];
 

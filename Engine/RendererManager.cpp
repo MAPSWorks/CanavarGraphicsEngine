@@ -166,11 +166,8 @@ void Canavar::Engine::RendererManager::render(float ifps)
     {
         mFBOs[i % 2 == 0 ? FramebufferType::Pong : FramebufferType::Ping]->bind();
         mShaderManager->bind(ShaderType::BlurShader);
-        mShaderManager->setUniformValue("width", mWidth);
-        mShaderManager->setUniformValue("height", mHeight);
         mShaderManager->setUniformValue("horizontal", i % 2 == 0);
         mShaderManager->setSampler("screenTexture", 0, mFBOs[i % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
-
         mQuad->render();
         mShaderManager->release();
     }
