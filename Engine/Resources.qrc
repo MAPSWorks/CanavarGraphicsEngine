@@ -18,5 +18,9 @@
         <file>Resources/Shaders/NozzleEffect.vert</file>
         <file>Resources/Shaders/Screen.frag</file>
         <file>Resources/Shaders/Screen.vert</file>
+        <file>Resources/Shaders/MeshSelection.frag</file>
+        <file>Resources/Shaders/MeshSelection.vert</file>
+        <file>Resources/Shaders/VertexSelection.frag</file>
+        <file>Resources/Shaders/VertexSelection.vert</file>
     </qresource>
 </RCC>

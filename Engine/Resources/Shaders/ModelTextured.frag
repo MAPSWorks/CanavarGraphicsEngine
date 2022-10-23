@@ -2,6 +2,10 @@
 
 struct Model
 {
+    vec4 overlayColor;
+    vec4 meshOverlayColor;
+    float overlayColorFactor;
+    float meshOverlayColorFactor;
     float ambient;
     float diffuse;
     float specular;
@@ -165,11 +169,13 @@ void main()
     result += processPointLights(ambientColor, diffuseColor, specularColor, normal, viewDir, fsPosition.xyz);
 
     // Final
-    fragColor = processHaze(distance, fsPosition.xyz, result);
+    result = processHaze(distance, fsPosition.xyz, result);
+    result = mix(result, model.overlayColor, model.overlayColorFactor);
+    fragColor = mix(result, model.meshOverlayColor, model.meshOverlayColorFactor);
 
-    float brightness = dot(fragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+    float brightness = dot(result.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)
-        brightColor = vec4(fragColor.rgb, 1.0f);
+        brightColor = vec4(result.rgb, 1.0f);
     else
         brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }

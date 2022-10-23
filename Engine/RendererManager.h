@@ -34,7 +34,9 @@ public:
         Default,
         Temporary,
         Ping,
-        Pong
+        Pong,
+        MeshSelection,
+        VertexSelection
     };
 
     bool init() override;
@@ -74,6 +76,7 @@ private:
     DECLARE_MEMBER(int, BlurPass)
     DECLARE_MEMBER(float, Exposure)
     DECLARE_MEMBER(float, Gamma)
+    DECLARE_MEMBER(bool, NodeSelectionEnabled)
 };
 
 } // namespace Engine

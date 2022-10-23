@@ -50,11 +50,11 @@ public:
     void setMaterial(Material *material);
     void create();
 
-    void render(RenderPass renderPass, Node *node);
+    void render(RenderPasses renderPasses, Node *node);
 
 private:
-    void render(RenderPass renderPass, Model *model);
-    void render(RenderPass renderPass, PointLight *light);
+    void render(RenderPasses renderPasses, Model *model);
+    void render(RenderPasses renderPasses, PointLight *light);
 
 private:
     QOpenGLVertexArrayObject *mVAO;
@@ -71,6 +71,7 @@ private:
 
     // For rendering
     ShaderManager *mShaderManager;
+    CameraManager *mCameraManager;
 };
 
 } // namespace Engine

@@ -16,11 +16,21 @@ public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);
     void setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation);
 
+    QVector4D getMeshOverlayColor(const QString &meshName);
+    void setMeshOverlayColor(const QString &meshName, const QVector4D &color);
+
+    float getMeshOverlayColorFactor(const QString &meshName);
+    void setMeshOverlayColorFactor(const QString &meshName, float factor);
+
 protected:
     QMap<QString, QMatrix4x4> mMeshTransformations;
+    QMap<QString, QVector4D> mMeshOverlayColors;
+    QMap<QString, float> mMeshOverlayColorFactors;
 
     DECLARE_MEMBER(QString, ModelName)
     DECLARE_MEMBER(QVector4D, Color)
+    DECLARE_MEMBER(QVector4D, OverlayColor)
+    DECLARE_MEMBER(float, OverlayColorFactor)
     DECLARE_MEMBER(float, Ambient)
     DECLARE_MEMBER(float, Diffuse)
     DECLARE_MEMBER(float, Specular)

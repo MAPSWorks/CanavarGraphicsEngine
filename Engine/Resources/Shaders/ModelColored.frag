@@ -12,10 +12,15 @@ struct Sun
 struct Model
 {
     vec4 color;
+    vec4 overlayColor;
+    vec4 meshOverlayColor;
+    float overlayColorFactor;
+    float meshOverlayColorFactor;
     float ambient;
     float diffuse;
     float specular;
     float shininess;
+
 };
 
 struct Haze
@@ -128,11 +133,13 @@ void main()
     result += processPointLights(fsPosition.xyz, fsNormal, viewDir);
 
     // Final
-    fragColor = processHaze(distance, fsPosition.xyz, result);
+    result = processHaze(distance, fsPosition.xyz, result);
+    result = mix(result, model.overlayColor, model.overlayColorFactor);
+    fragColor = mix(result, model.meshOverlayColor, model.meshOverlayColorFactor);
 
-    float brightness = dot(fragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+    float brightness = dot(result.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)
-        brightColor = vec4(fragColor.rgb, 1.0f);
+        brightColor = vec4(result.rgb, 1.0f);
     else
         brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }

@@ -30,6 +30,10 @@ bool Canavar::Engine::ShaderManager::init()
                  << "sun.specular"
                  << "sun.direction"
                  << "model.color"
+                 << "model.overlayColor"
+                 << "model.overlayColorFactor"
+                 << "model.meshOverlayColor"
+                 << "model.mesOverlayColorFactor"
                  << "model.ambient"
                  << "model.diffuse"
                  << "model.specular"
@@ -81,6 +85,10 @@ bool Canavar::Engine::ShaderManager::init()
                  << "sun.diffuse"
                  << "sun.specular"
                  << "sun.direction"
+                 << "model.overlayColor"
+                 << "model.overlayColorFactor"
+                 << "model.meshOverlayColor"
+                 << "model.mesOverlayColorFactor"
                  << "model.ambient"
                  << "model.diffuse"
                  << "model.specular"
@@ -285,6 +293,49 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addAttribute("position");
         shader->addAttribute("textureCoords");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Mesh Selection Shader
+    {
+        Shader *shader = new Shader(ShaderType::MeshSelectionShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MeshSelection.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MeshSelection.frag");
+
+        shader->addUniform("MVP");
+        shader->addUniform("nodeID");
+        shader->addUniform("meshID");
+
+        shader->addAttribute("position");
+        shader->addAttribute("normal");
+        shader->addAttribute("textureCoords");
+        shader->addAttribute("tangent");
+        shader->addAttribute("bitangent");
+        shader->addAttribute("ids");
+        shader->addAttribute("weights");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Vertex Selection Shader
+    {
+        Shader *shader = new Shader(ShaderType::VertexSelectionShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/VertexSelection.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/VertexSelection.frag");
+
+        shader->addUniform("MVP");
+        shader->addUniform("VMT"); // Vertex Model Transformation
+
+        shader->addAttribute("cubeVertexPosition");
+        shader->addAttribute("vertexPosition");
+        shader->addAttribute("vertexNormal");
 
         if (!shader->init())
             return false;

@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "CameraManager.h"
 #include "Common.h"
 #include "Model.h"
 #include "ShaderManager.h"
@@ -9,6 +10,7 @@ Canavar::Engine::Mesh::Mesh(QObject *parent)
     , mMaterial(nullptr)
 {
     mShaderManager = ShaderManager::instance();
+    mCameraManager = CameraManager::instance();
 }
 
 Canavar::Engine::Mesh::~Mesh()
@@ -77,88 +79,131 @@ void Canavar::Engine::Mesh::create()
     mVAO->release();
 }
 
-void Canavar::Engine::Mesh::render(RenderPass renderPass, Node *node)
+void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Node *node)
 {
     if (auto model = dynamic_cast<Model *>(node))
-        render(renderPass, model);
+        render(renderPasses, model);
     if (auto light = dynamic_cast<PointLight *>(node))
-        render(renderPass, light);
+        render(renderPasses, light);
 }
 
-void Canavar::Engine::Mesh::render(RenderPass renderPass, Model *model)
+void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Model *model)
 {
-    bool useTexture = mMaterial->getNumberOfTextures() != 0;
-
-    if (useTexture)
+    if (renderPasses.testFlag(RenderPass::MeshSelection))
     {
-        mShaderManager->bind(ShaderType::ModelTexturedShader);
-        mShaderManager->setUniformValue("N", model->worldTransformation().normalMatrix() * model->getMeshTransformation(mName).normalMatrix());
-        mShaderManager->setUniformValue("useTextureAmbient", false);
-        mShaderManager->setUniformValue("useTextureDiffuse", false);
-        mShaderManager->setUniformValue("useTextureSpecular", false);
-        mShaderManager->setUniformValue("useTextureNormal", false);
-
-        if (auto texture = mMaterial->get(Material::TextureType::Ambient))
-        {
-            mShaderManager->setUniformValue("useTextureAmbient", true);
-            mShaderManager->setSampler("textureAmbient", 0, texture->textureId());
-        } else if (auto texture = mMaterial->get(Material::TextureType::Diffuse))
-        {
-            mShaderManager->setUniformValue("useTextureAmbient", true);
-            mShaderManager->setSampler("textureAmbient", 0, texture->textureId()); // Use diffuse texture if there is no ambient texture
-        }
-
-        if (auto texture = mMaterial->get(Material::TextureType::Diffuse))
-        {
-            mShaderManager->setUniformValue("useTextureDiffuse", true);
-            mShaderManager->setSampler("textureDiffuse", 1, texture->textureId());
-        }
-
-        if (auto texture = mMaterial->get(Material::TextureType::Specular))
-        {
-            mShaderManager->setUniformValue("useTextureSpecular", true);
-            mShaderManager->setSampler("textureSpecular", 2, texture->textureId());
-        }
-
-        if (auto texture = mMaterial->get(Material::TextureType::Normal))
-        {
-            mShaderManager->setUniformValue("useTextureNormal", true);
-            mShaderManager->setSampler("textureNormal", 3, texture->textureId());
-        }
-
-    } else
-    {
-        mShaderManager->bind(ShaderType::ModelColoredShader);
-        mShaderManager->setUniformValue("model.color", model->getColor());
+        mShaderManager->bind(ShaderType::MeshSelectionShader);
+        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation() * model->getMeshTransformation(mName));
+        mShaderManager->setUniformValue("nodeID", model->getID());
+        mShaderManager->setUniformValue("meshID", mID);
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+        mShaderManager->release();
     }
 
-    // Common uniforms
-    mShaderManager->setUniformValue("M", model->worldTransformation() * model->getMeshTransformation(mName));
-    mShaderManager->setUniformValue("model.shininess", model->getShininess());
-    mShaderManager->setUniformValue("model.ambient", model->getAmbient());
-    mShaderManager->setUniformValue("model.diffuse", model->getDiffuse());
-    mShaderManager->setUniformValue("model.specular", model->getSpecular());
+    if (renderPasses.testFlag(RenderPass::VertexSelection))
+    {
+        //        mShaderManager->bind(ShaderType::VertexSelectionShader);
+        //        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation() * model->getMeshTransformation(mName));
+        //        mShaderManager->setUniformValue("VMT", mVertexModelTransformation);
+        //        mVerticesVAO->bind();
+        //        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, mVertices.size());
+        //        mVerticesVAO->release();
+        //        mShaderManager->release();
+    }
 
-    mVAO->bind();
-    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-    mVAO->release();
+    if (renderPasses.testFlag(RenderPass::Default))
+    {
+        if (bool useTexture = mMaterial->getNumberOfTextures())
+        {
+            mShaderManager->bind(ShaderType::ModelTexturedShader);
+            mShaderManager->setUniformValue("N", model->worldTransformation().normalMatrix() * model->getMeshTransformation(mName).normalMatrix());
+            mShaderManager->setUniformValue("useTextureAmbient", false);
+            mShaderManager->setUniformValue("useTextureDiffuse", false);
+            mShaderManager->setUniformValue("useTextureSpecular", false);
+            mShaderManager->setUniformValue("useTextureNormal", false);
 
-    mShaderManager->release();
+            if (auto texture = mMaterial->get(Material::TextureType::Ambient))
+            {
+                mShaderManager->setUniformValue("useTextureAmbient", true);
+                mShaderManager->setSampler("textureAmbient", 0, texture->textureId());
+            } else if (auto texture = mMaterial->get(Material::TextureType::Diffuse))
+            {
+                mShaderManager->setUniformValue("useTextureAmbient", true);
+                mShaderManager->setSampler("textureAmbient", 0, texture->textureId()); // Use diffuse texture if there is no ambient texture
+            }
+
+            if (auto texture = mMaterial->get(Material::TextureType::Diffuse))
+            {
+                mShaderManager->setUniformValue("useTextureDiffuse", true);
+                mShaderManager->setSampler("textureDiffuse", 1, texture->textureId());
+            }
+
+            if (auto texture = mMaterial->get(Material::TextureType::Specular))
+            {
+                mShaderManager->setUniformValue("useTextureSpecular", true);
+                mShaderManager->setSampler("textureSpecular", 2, texture->textureId());
+            }
+
+            if (auto texture = mMaterial->get(Material::TextureType::Normal))
+            {
+                mShaderManager->setUniformValue("useTextureNormal", true);
+                mShaderManager->setSampler("textureNormal", 3, texture->textureId());
+            }
+
+        } else
+        {
+            mShaderManager->bind(ShaderType::ModelColoredShader);
+            mShaderManager->setUniformValue("model.color", model->getColor());
+        }
+
+        // Common uniforms
+        mShaderManager->setUniformValue("M", model->worldTransformation() * model->getMeshTransformation(mName));
+        mShaderManager->setUniformValue("model.overlayColor", model->getOverlayColor());
+        mShaderManager->setUniformValue("model.overlayColorFactor", model->getOverlayColorFactor());
+        mShaderManager->setUniformValue("model.meshOverlayColor", model->getMeshOverlayColor(mName));
+        mShaderManager->setUniformValue("model.meshOverlayColorFactor", model->getMeshOverlayColorFactor(mName));
+        mShaderManager->setUniformValue("model.shininess", model->getShininess());
+        mShaderManager->setUniformValue("model.ambient", model->getAmbient());
+        mShaderManager->setUniformValue("model.diffuse", model->getDiffuse());
+        mShaderManager->setUniformValue("model.specular", model->getSpecular());
+
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+
+        mShaderManager->release();
+    }
 }
 
-void Canavar::Engine::Mesh::render(RenderPass renderPass, PointLight *light)
+void Canavar::Engine::Mesh::render(RenderPasses renderPasses, PointLight *light)
 {
-    mShaderManager->bind(ShaderType::ModelColoredShader);
-    mShaderManager->setUniformValue("M", light->worldTransformation());
-    mShaderManager->setUniformValue("model.color", light->getModelColor());
-    mShaderManager->setUniformValue("model.shininess", light->getModelShininess());
-    mShaderManager->setUniformValue("model.ambient", light->getModelAmbient());
-    mShaderManager->setUniformValue("model.diffuse", light->getModelDiffuse());
-    mShaderManager->setUniformValue("model.specular", light->getModelSpecular());
+    if (renderPasses.testFlag(RenderPass::MeshSelection))
+    {
+        mShaderManager->bind(ShaderType::MeshSelectionShader);
+        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * light->worldTransformation());
+        mShaderManager->setUniformValue("nodeID", light->getID());
+        mShaderManager->setUniformValue("meshID", mID);
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+        mShaderManager->release();
+    }
 
-    mVAO->bind();
-    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-    mVAO->release();
+    if (renderPasses.testFlag(RenderPass::Default))
+    {
+        mShaderManager->bind(ShaderType::ModelColoredShader);
+        mShaderManager->setUniformValue("M", light->worldTransformation());
+        mShaderManager->setUniformValue("model.color", light->getModelColor());
+        mShaderManager->setUniformValue("model.shininess", light->getModelShininess());
+        mShaderManager->setUniformValue("model.ambient", light->getModelAmbient());
+        mShaderManager->setUniformValue("model.diffuse", light->getModelDiffuse());
+        mShaderManager->setUniformValue("model.specular", light->getModelSpecular());
 
-    mShaderManager->release();
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+
+        mShaderManager->release();
+    }
 }

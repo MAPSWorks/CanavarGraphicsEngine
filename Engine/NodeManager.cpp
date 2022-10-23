@@ -30,15 +30,19 @@ bool Canavar::Engine::NodeManager::init()
     mLightManager = LightManager::instance();
 
     mNodes << Sun::instance();
+    Sun::instance()->mID = mNumberOfNodes;
     mNumberOfNodes++;
 
     mNodes << Sky::instance();
+    Sky::instance()->mID = mNumberOfNodes;
     mNumberOfNodes++;
 
     mNodes << Haze::instance();
+    Haze::instance()->mID = mNumberOfNodes;
     mNumberOfNodes++;
 
     mNodes << Terrain::instance();
+    Terrain::instance()->mID = mNumberOfNodes;
     mNumberOfNodes++;
 
     return true;
@@ -87,9 +91,10 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
     if (node)
     {
         mTypeToCount.insert(type, mTypeToCount.value(type, 0) + 1);
-        mNumberOfNodes++;
         assignName(node, name);
+        node->mID = mNumberOfNodes;
         mNodes << node;
+        mNumberOfNodes++;
     }
 
     return node;
@@ -130,6 +135,15 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
         qWarning() << Q_FUNC_INFO << "Unkown Node. Implement deletion algorithm for this NodeType:" << (int) node->type();
     }
     }
+}
+
+Canavar::Engine::Node *Canavar::Engine::NodeManager::findNodeByID(int ID)
+{
+    for (const auto &node : mNodes)
+        if (node->getID() == ID)
+            return node;
+
+    return nullptr;
 }
 
 Canavar::Engine::NodeManager *Canavar::Engine::NodeManager::instance()

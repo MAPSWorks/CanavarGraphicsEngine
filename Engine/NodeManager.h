@@ -28,6 +28,8 @@ public:
 
     void removeNode(Node *node);
 
+    Node *findNodeByID(int ID);
+
     const QList<Node *> &nodes() const;
 
 private:

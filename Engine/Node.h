@@ -65,6 +65,8 @@ public:
 
     Node *findChildByNameRecursive(const QString &name);
 
+    int getID() const;
+
 private:
     virtual void updateTransformation();
 
@@ -74,6 +76,7 @@ protected:
     QVector3D mPosition;
     QVector3D mScale;
     NodeType mType;
+    int mID;
 
     Node *mParent;
     QList<Node *> mChildren;

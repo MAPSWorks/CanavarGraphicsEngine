@@ -41,7 +41,7 @@ const QVector<Canavar::Engine::Mesh *> &Canavar::Engine::ModelData::meshes() con
     return mMeshes;
 }
 
-void Canavar::Engine::ModelData::render(RenderPass renderPass, Node *node)
+void Canavar::Engine::ModelData::render(RenderPasses renderPasses, Node *node)
 {
-    mRootNode->render(renderPass, node);
+    mRootNode->render(renderPasses, node);
 }

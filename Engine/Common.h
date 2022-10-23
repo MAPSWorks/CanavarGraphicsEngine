@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <QObject>
+
 #define DECLARE_MEMBER(type, name) \
 protected: \
     type m##name; \
@@ -28,19 +30,24 @@ enum class ShaderType { //
     BlurShader,
     PostProcessShader,
     NozzleEffectShader,
-    ScreenShader
+    ScreenShader,
+    MeshSelectionShader,
+    VertexSelectionShader
 };
 
 enum class RenderPass { //
-    Default,
-    Bloom,
-    MeshSelection, // TODO
-    NodeSelection, // TODO
+    Default = 0x00,
+    MeshSelection = 0x01,
+    VertexSelection = 0x02,
 
 };
+Q_DECLARE_FLAGS(RenderPasses, RenderPass);
 
 extern float CUBE[108];
 
 } // namespace Engine
 } // namespace Canavar
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Canavar::Engine::RenderPasses)
+
 #endif // COMMON_H

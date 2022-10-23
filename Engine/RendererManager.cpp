@@ -21,6 +21,7 @@ Canavar::Engine::RendererManager::RendererManager(QObject *parent)
     , mBlurPass(4)
     , mExposure(1.0f)
     , mGamma(1.0f)
+    , mNodeSelectionEnabled(false)
 {}
 
 Canavar::Engine::RendererManager *Canavar::Engine::RendererManager::instance()
@@ -61,15 +62,6 @@ bool Canavar::Engine::RendererManager::init()
     mFBOFormats[FramebufferType::Default]->setSamples(4);
     mFBOFormats[FramebufferType::Default]->setAttachment(QOpenGLFramebufferObject::Depth);
 
-    // Temporary FBO format
-    mFBOFormats.insert(FramebufferType::Temporary, new QOpenGLFramebufferObjectFormat);
-
-    // Ping FBO format
-    mFBOFormats.insert(FramebufferType::Ping, new QOpenGLFramebufferObjectFormat);
-
-    // Pong FBO format
-    mFBOFormats.insert(FramebufferType::Pong, new QOpenGLFramebufferObjectFormat);
-
     // Default FBO
     mFBOs.insert(FramebufferType::Default, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Default]));
     mFBOs[FramebufferType::Default]->addColorAttachment(mWidth, mHeight, GL_RGBA16F);
@@ -80,6 +72,25 @@ bool Canavar::Engine::RendererManager::init()
     glDrawBuffers(2, mColorAttachments);
     mFBOs[FramebufferType::Default]->release();
 
+    // Temporary FBO format
+    mFBOFormats.insert(FramebufferType::Temporary, new QOpenGLFramebufferObjectFormat);
+
+    // Ping FBO format
+    mFBOFormats.insert(FramebufferType::Ping, new QOpenGLFramebufferObjectFormat);
+
+    // Pong FBO format
+    mFBOFormats.insert(FramebufferType::Pong, new QOpenGLFramebufferObjectFormat);
+
+    // Mesh Selection FBO format
+    mFBOFormats.insert(FramebufferType::MeshSelection, new QOpenGLFramebufferObjectFormat);
+    mFBOFormats[FramebufferType::MeshSelection]->setInternalTextureFormat(GL_RGB32F);
+    mFBOFormats[FramebufferType::MeshSelection]->setAttachment(QOpenGLFramebufferObject::Depth);
+
+    // Vertex Selection FBO format
+    mFBOFormats.insert(FramebufferType::VertexSelection, new QOpenGLFramebufferObjectFormat);
+    mFBOFormats[FramebufferType::VertexSelection]->setInternalTextureFormat(GL_RGB32F);
+    mFBOFormats[FramebufferType::VertexSelection]->setAttachment(QOpenGLFramebufferObject::Depth);
+
     // Temporary FBO
     mFBOs.insert(FramebufferType::Temporary, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Temporary]));
 
@@ -88,6 +99,12 @@ bool Canavar::Engine::RendererManager::init()
 
     // Pong FBO
     mFBOs.insert(FramebufferType::Pong, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::Pong]));
+
+    // Mesh Selection FBO
+    mFBOs.insert(FramebufferType::MeshSelection, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::MeshSelection]));
+
+    // Vertex Selection
+    mFBOs.insert(FramebufferType::VertexSelection, new QOpenGLFramebufferObject(mWidth, mHeight, *mFBOFormats[FramebufferType::VertexSelection]));
 
     return true;
 }
@@ -149,10 +166,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     // Render Models
     for (const auto &node : nodes)
     {
-        if (!node->getVisible())
-            continue;
-
-        if (!node->getRenderable())
+        if (!node->getVisible() || !node->getRenderable())
             continue;
 
         if (auto model = dynamic_cast<Model *>(node))
@@ -218,6 +232,37 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
     mQuad->render();
     mShaderManager->release();
+
+    if (mNodeSelectionEnabled)
+    {
+        mFBOs[FramebufferType::MeshSelection]->bind();
+
+        for (const auto &node : nodes)
+        {
+            if (!node->getVisible() || !node->getRenderable())
+                continue;
+
+            if (auto model = dynamic_cast<Model *>(node))
+            {
+                ModelData *data = mModelsData.value(model->getModelName(), nullptr);
+                if (data)
+                    data->render(RenderPass::MeshSelection, model);
+            }
+
+            if (auto light = dynamic_cast<PointLight *>(node))
+            {
+                ModelData *data = mModelsData.value(light->getModelName(), nullptr);
+                if (data)
+                    data->render(RenderPass::MeshSelection, light);
+            }
+
+            // TODO
+            //            if (auto nozzleEffect = dynamic_cast<NozzleEffect *>(node))
+            //              nozzleEffect->render(ifps);
+        }
+
+        mFBOs[FramebufferType::MeshSelection]->release();
+    }
 }
 
 void Canavar::Engine::RendererManager::loadModels(const QString &path, const QStringList &formats)

@@ -7,6 +7,7 @@ Canavar::Engine::Node::Node(QObject *parent)
     , mPosition(0, 0, 0)
     , mScale(1, 1, 1)
     , mType(NodeType::DummyNode)
+    , mID(-1)
     , mParent(dynamic_cast<Node *>(parent))
     , mVisible(true)
     , mRenderable(true)
@@ -30,6 +31,11 @@ Canavar::Engine::Node *Canavar::Engine::Node::findChildByNameRecursive(const QSt
             return node;
 
     return nullptr;
+}
+
+int Canavar::Engine::Node::getID() const
+{
+    return mID;
 }
 
 const QMatrix4x4 Canavar::Engine::Node::worldTransformation() const

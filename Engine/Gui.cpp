@@ -16,6 +16,7 @@ void Canavar::Engine::Gui::draw()
     ImGui::SliderFloat("Exposure##RenderSettings", &RendererManager::instance()->getExposure_nonConst(), 0.01f, 2.0f, "%.3f");
     ImGui::SliderFloat("Gamma##RenderSettings", &RendererManager::instance()->getGamma_nonConst(), 0.01f, 4.0f, "%.3f");
     ImGui::SliderInt("Bloom Blur Pass##RenderSettings", &RendererManager::instance()->getBlurPass_nonConst(), 0, 20);
+    ImGui::Checkbox("Node Selection", &RendererManager::instance()->getNodeSelectionEnabled_nonConst());
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
@@ -171,15 +172,17 @@ void Canavar::Engine::Gui::draw(Node *node)
     }
 }
 
-void Canavar::Engine::Gui::draw(Model *node)
+void Canavar::Engine::Gui::draw(Model *model)
 {
     if (!ImGui::CollapsingHeader("Shading Parameters##Model"))
     {
-        ImGui::SliderFloat("Ambient##Model", &node->getAmbient_nonConst(), 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Diffuse##Model", &node->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Specular##Model", &node->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Shininess##Model", &node->getShininess_nonConst(), 1.0f, 128.0f, "%.3f");
-        ImGui::ColorEdit4("Color##Model", (float *) &node->getColor_nonConst());
+        ImGui::SliderFloat("Ambient##Model", &model->getAmbient_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Diffuse##Model", &model->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Specular##Model", &model->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Shininess##Model", &model->getShininess_nonConst(), 1.0f, 128.0f, "%.3f");
+        ImGui::ColorEdit4("Color##Model", (float *) &model->getColor_nonConst());
+        ImGui::SliderFloat("Overlay Color Factor##Model", &model->getOverlayColorFactor_nonConst(), 0.0f, 1.0f, "%.3f");
+        ImGui::ColorEdit4("Overlay Color##Model", (float *) &model->getOverlayColor_nonConst());
     }
 }
 
