@@ -68,7 +68,7 @@ void Window::initializeGL()
             mAircraft, &Aircraft::pfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
 
         mFreeCamera = dynamic_cast<Canavar::Engine::PerspectiveCamera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera));
-        mFreeCamera->setPosition(QVector3D(0, 200, 0));
+        mFreeCamera->setPosition(QVector3D(0, 100, 0));
         mFreeCamera->setVerticalFov(60.0f);
         mFreeCamera->setZNear(2.0f);
         mFreeCamera->setZFar(1000000.0f);

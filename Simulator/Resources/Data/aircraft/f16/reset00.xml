@@ -12,5 +12,5 @@
   <phi unit="DEG">         0.0  </phi>
   <theta unit="DEG">       0.0  </theta>
   <psi unit="DEG">         180.0  </psi>
-  <altitude unit="FT">     5000  </altitude>
+  <altitude unit="FT">     300  </altitude>
 </initialize>
