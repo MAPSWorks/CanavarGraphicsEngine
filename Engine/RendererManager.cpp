@@ -119,6 +119,12 @@ void Canavar::Engine::RendererManager::render(float ifps)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0, 0, 0, 1);
 
+    // Render Sky
+    mSky->render();
+
+    // Render terrain
+    mTerrain->render(RenderPass::Default);
+
     auto nodes = mNodeManager->nodes();
 
     // Render Models
@@ -140,15 +146,14 @@ void Canavar::Engine::RendererManager::render(float ifps)
             if (data)
                 data->render(RenderPass::Default, light);
         }
+    }
 
+    // Render effects
+    for (const auto &node : nodes)
+    {
         if (auto nozzleEffect = dynamic_cast<NozzleEffect *>(node))
             nozzleEffect->render(ifps);
     }
-
-    mTerrain->render(RenderPass::Default);
-
-    // Render Sky
-    mSky->render();
 
     mFBOs[FramebufferType::Default]->release();
 

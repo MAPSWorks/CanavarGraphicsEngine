@@ -15,7 +15,7 @@ void Canavar::Engine::Gui::draw()
 
     ImGui::SliderFloat("Exposure##RenderSettings", &RendererManager::instance()->getExposure_nonConst(), 0.01f, 2.0f, "%.3f");
     ImGui::SliderFloat("Gamma##RenderSettings", &RendererManager::instance()->getGamma_nonConst(), 0.01f, 4.0f, "%.3f");
-    ImGui::SliderInt("Bloom Blur Pass##RenderSettings", &RendererManager::instance()->getBlurPass_nonConst(), 0, 20);
+    ImGui::SliderInt("Bloom Blur Pass##RenderSettings", &RendererManager::instance()->getBlurPass_nonConst(), 0, 100);
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
@@ -307,8 +307,9 @@ void Canavar::Engine::Gui::draw(NozzleEffect *node)
 {
     if (!ImGui::CollapsingHeader("Nozzle Effect Parameters##NozzleEffect"))
     {
-        ImGui::SliderFloat("Radius##NozzleEffect", &node->getRadius_nonConst(), 0.001f, 4.0f, "%.4f");
+        ImGui::SliderFloat("Max Radius##NozzleEffect", &node->getMaxRadius_nonConst(), 0.001f, 4.0f, "%.4f");
         ImGui::SliderFloat("Max Life##NozzleEffect", &node->getMaxLife_nonConst(), 0.0001f, 2.0f, "%.5f");
+        ImGui::SliderFloat("Max Distance##NozzleEffect", &node->getMaxDistance_nonConst(), 1.0f, 30.0f, "%.3f");
         ImGui::SliderFloat("Velocity##NozzleEffect", &node->getVelocity_nonConst(), 0.0f, 150.0f, "%.3f");
         ImGui::SliderFloat("Scale##NozzleEffect", &node->getScale_nonConst(), 0.001f, 0.1f, "%.4f");
     }

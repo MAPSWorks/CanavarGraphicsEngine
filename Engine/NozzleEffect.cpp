@@ -4,11 +4,12 @@
 
 Canavar::Engine::NozzleEffect::NozzleEffect(QObject *parent)
     : Node(parent)
-    , mNumberOfParticles(10000)
-    , mRadius(0.8f)
+    , mMaxRadius(0.8f)
     , mMaxLife(0.1f)
+    , mMaxDistance(10.0f)
     , mVelocity(7.0f)
-    , mScale(0.015f)
+    , mScale(0.02f)
+    , mNumberOfParticles(10000)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
@@ -62,7 +63,7 @@ void Canavar::Engine::NozzleEffect::render(float ifps)
     {
         float r = mParticles[i].initialPosition.length();
         mParticles[i].life += ifps;
-        if (mParticles[i].life >= mMaxLife + Helper::generateFloat(mMaxLife * (mRadius - r)))
+        if (mParticles[i].life >= mMaxLife + Helper::generateFloat(mMaxLife * (mMaxRadius - r)))
             mParticles[i] = generateParticle();
     }
 
@@ -75,7 +76,8 @@ void Canavar::Engine::NozzleEffect::render(float ifps)
     mShaderManager->bind(ShaderType::NozzleEffectShader);
     mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * worldTransformation());
     mShaderManager->setUniformValue("scaling", scaling);
-    mShaderManager->setUniformValue("radius", mRadius);
+    mShaderManager->setUniformValue("maxRadius", mMaxRadius);
+    mShaderManager->setUniformValue("maxDistance", mMaxDistance);
     mShaderManager->setUniformValue("velocity", mVelocity);
 
     glBindVertexArray(mVAO);
@@ -93,11 +95,12 @@ Canavar::Engine::NozzleEffect::Particle Canavar::Engine::NozzleEffect::generateP
 {
     Particle p;
 
-    float r = Helper::generateFloat(mRadius);
+    float random = Helper::generateFloat(1);
+    float r = mMaxRadius * pow(random, 0.5f);
     float theta = Helper::generateFloat(2.0f * M_PI);
 
     p.initialPosition = QVector3D(r * cos(theta), r * sin(theta), 0);
-    p.velocityDirection = QVector3D(0, 0, 1.5 + Helper::generateFloat(0.5));
+    p.velocityDirection = QVector3D(Helper::generateFloat(0.5) * p.initialPosition.x(), Helper::generateFloat(0.5) * p.initialPosition.y(), Helper::generateFloat(mMaxDistance)) - p.initialPosition;
     p.life = 0.0f;
 
     return p;

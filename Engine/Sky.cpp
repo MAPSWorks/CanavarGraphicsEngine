@@ -69,7 +69,7 @@ void Canavar::Engine::Sky::render()
         Z *= mNormalizedSunY;
     }
 
-    glDepthFunc(GL_LEQUAL);
+    glDisable(GL_DEPTH_TEST);
 
     mShaderManager->bind(ShaderType::SkyShader);
     mShaderManager->setUniformValue("IVP", mCameraManager->activeCamera()->getRotationMatrix().inverted() * mCameraManager->activeCamera()->getProjectionMatrix().inverted());
@@ -87,8 +87,8 @@ void Canavar::Engine::Sky::render()
 
     glBindVertexArray(mVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
     mShaderManager->release();
 
-    glDepthFunc(GL_LESS);
+    glBindVertexArray(0);
+    glEnable(GL_DEPTH_TEST);
 }

@@ -27,8 +27,9 @@ public:
     void create();
     void render(float ifps);
 
-    DECLARE_MEMBER(float, Radius)
+    DECLARE_MEMBER(float, MaxRadius)
     DECLARE_MEMBER(float, MaxLife)
+    DECLARE_MEMBER(float, MaxDistance)
     DECLARE_MEMBER(float, Velocity)
     DECLARE_MEMBER(float, Scale)
 

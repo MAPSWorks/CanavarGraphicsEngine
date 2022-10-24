@@ -1,17 +1,27 @@
 #version 330 core
 
-uniform float radius;
+uniform float maxRadius;
+uniform float maxDistance;
 
 in float fsRadius;
+in float fsDistance;
 
-out vec4 outColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 brightColor;
 
 void main()
 {
-    if (fsRadius > 0.94 * radius)
-        outColor = vec4(1, 0, 0, 0.05);
-    else if (fsRadius < 0.1 * radius)
-        outColor = vec4(1, 1, 1, 1 - fsRadius / radius);
+    vec4 result;
+
+
+    if (fsRadius > 0.95 * maxRadius)
+        result = vec4(128, 0, 0, 1);
+    else if (fsRadius < 0.25)
+        result =  mix(vec4(1, 1, 1, 1), vec4(1, 0.75, 0, 1), pow(fsDistance / maxDistance, 4));
     else
-        outColor = mix(vec4(1, 0.5, 0, 0.3), vec4(1, 1, 0, 0.5), exp(-2 * fsRadius));
+        result = mix(vec4(1, 0.5, 0, 1), vec4(1, 1, 0, 1), fsRadius / maxRadius);
+    //result = mix(vec4(1, 0.5, 0, 0.76), vec4(1, 1, 0, 1), fsRadius / maxRadius);
+
+    fragColor = result;
+    brightColor = result;
 }

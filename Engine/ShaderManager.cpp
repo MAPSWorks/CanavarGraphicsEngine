@@ -268,7 +268,8 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addUniform("MVP");
         shader->addUniform("scaling");
         shader->addUniform("velocity");
-        shader->addUniform("radius");
+        shader->addUniform("maxRadius");
+        shader->addUniform("maxDistance");
 
         shader->addAttribute("vertexPosition");
         shader->addAttribute("initialPosition");

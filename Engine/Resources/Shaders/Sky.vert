@@ -14,5 +14,5 @@ void main()
     vec4 clipPos = vec4(VERTICES[gl_VertexID].xy, -1.0f, 1.0f);
     vec4 viewPos  = IVP * clipPos;
     fsDirection = normalize(vec3(viewPos));
-    gl_Position = vec4(VERTICES[gl_VertexID], 1.0f);
+    gl_Position = vec4(VERTICES[gl_VertexID].xy, -1, 1.0f);
 }
