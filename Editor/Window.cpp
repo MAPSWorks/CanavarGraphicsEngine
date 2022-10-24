@@ -65,9 +65,7 @@ void Window::initializeGL()
 
 void Window::resizeGL(int w, int h)
 {
-    glViewport(0, 0, w * devicePixelRatioF(), h * devicePixelRatioF());
-
-    mController->resize(w * devicePixelRatioF(), h * devicePixelRatioF());
+    mController->resize(w, h);
 }
 
 void Window::paintGL()

@@ -13,6 +13,8 @@ Canavar::Engine::Controller::Controller(QObject *parent)
 
 bool Canavar::Engine::Controller::init()
 {
+    initializeOpenGLFunctions();
+
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
@@ -124,8 +126,10 @@ void Canavar::Engine::Controller::resize(int w, int h)
 
     mWindow->makeCurrent();
 
+    glViewport(0, 0, w * mWindow->devicePixelRatioF(), h * mWindow->devicePixelRatioF());
+
     for (const auto &manager : qAsConst(mManagers))
-        manager->resize(w, h);
+        manager->resize(w * mWindow->devicePixelRatioF(), h * mWindow->devicePixelRatioF());
 
     mWindow->doneCurrent();
 }

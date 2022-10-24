@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include <QObject>
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions>
 #include <QOpenGLWindow>
 #include <QWheelEvent>
@@ -16,7 +17,7 @@ class CameraManager;
 class LightManager;
 class Manager;
 
-class Controller : public QObject
+class Controller : public QObject, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 public:
