@@ -18,5 +18,7 @@
         <file>Resources/Shaders/Screen.vert</file>
         <file>Resources/Shaders/MeshInfo.vert</file>
         <file>Resources/Shaders/MeshInfo.frag</file>
+        <file>Resources/Shaders/NozzleEffectFirstPass.vert</file>
+        <file>Resources/Shaders/NozzleEffectFirstPass.frag</file>
     </qresource>
 </RCC>

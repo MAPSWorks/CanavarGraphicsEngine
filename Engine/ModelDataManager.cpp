@@ -29,17 +29,26 @@ bool Canavar::Engine::ModelDataManager::init()
     loadModels("Resources/Models", QStringList() << "*.fbx");
 
     initializeOpenGLFunctions();
+
+    // Quad
     glGenVertexArrays(1, &mQuad.mVAO);
     glBindVertexArray(mQuad.mVAO);
-
     glGenBuffers(1, &mQuad.mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mQuad.mVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::QUAD), Canavar::Engine::QUAD, GL_STATIC_DRAW);
-
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) (2 * sizeof(float)));
+
+    // Cube
+    glGenVertexArrays(1, &mCube.mVAO);
+    glBindVertexArray(mCube.mVAO);
+    glGenBuffers(1, &mCube.mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mCube.mVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::CUBE), CUBE, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
 
     return true;
 }
@@ -51,6 +60,31 @@ void Canavar::Engine::ModelDataManager::render(InternalModel internalModel)
     case InternalModel::Quad:
         glBindVertexArray(mQuad.mVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
+        break;
+    case InternalModel::Cube:
+        glBindVertexArray(mCube.mVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        break;
+    default:
+        qCritical() << Q_FUNC_INFO << "Not implemented yet!";
+        break;
+    }
+}
+
+void Canavar::Engine::ModelDataManager::renderInstanced(InternalModel internalModel, int instanceCount)
+{
+    switch (internalModel)
+    {
+    case InternalModel::Quad:
+        glBindVertexArray(mQuad.mVAO);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, instanceCount);
+        glBindVertexArray(0);
+        break;
+    case InternalModel::Cube:
+        glBindVertexArray(mCube.mVAO);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, instanceCount);
         glBindVertexArray(0);
         break;
     default:

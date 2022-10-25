@@ -30,6 +30,7 @@ public:
         Haze,
         Terrain,
         PointLight,
+        NozzleEffect
     };
 
     const QMatrix4x4 worldTransformation() const;

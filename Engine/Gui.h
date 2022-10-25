@@ -3,6 +3,7 @@
 
 #include "Model.h"
 #include "Node.h"
+#include "NozzleEffect.h"
 #include "PerspectiveCamera.h"
 #include "Sky.h"
 #include "Sun.h"
@@ -32,6 +33,7 @@ private:
     static void draw(Canavar::Engine::Light *node);
     static void draw(Canavar::Engine::PointLight *node);
     static void draw(Canavar::Engine::Haze *node);
+    static void draw(Canavar::Engine::NozzleEffect *node);
 
 private:
     static Canavar::Engine::Node *mSelectedNode;

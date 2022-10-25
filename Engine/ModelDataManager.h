@@ -19,11 +19,13 @@ public:
     static ModelDataManager *instance();
 
     enum class InternalModel { //
-        Quad
+        Quad,
+        Cube
     };
 
     bool init();
-    void render(InternalModel);
+    void render(InternalModel internalModel);
+    void renderInstanced(InternalModel internalModel, int instanceCount);
 
     ModelData *getModelData(const QString &modelName);
 
@@ -33,6 +35,7 @@ private:
 private:
     QMap<QString, ModelData *> mModelsData;
     OpenGLVertexArrayObject mQuad;
+    OpenGLVertexArrayObject mCube;
 };
 
 } // namespace Engine

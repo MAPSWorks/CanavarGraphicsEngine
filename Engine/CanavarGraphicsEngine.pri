@@ -24,6 +24,7 @@ HEADERS += \
     $$PWD/Mouse.h \
     $$PWD/Node.h \
     $$PWD/NodeManager.h \
+    $$PWD/NozzleEffect.h \
     $$PWD/OpenGLFramebuffer.h \
     $$PWD/OpenGLVertexArrayObject.h \
     $$PWD/PerspectiveCamera.h \
@@ -62,6 +63,7 @@ SOURCES += \
     $$PWD/Mouse.cpp \
     $$PWD/Node.cpp \
     $$PWD/NodeManager.cpp \
+    $$PWD/NozzleEffect.cpp \
     $$PWD/OpenGLFramebuffer.cpp \
     $$PWD/OpenGLVertexArrayObject.cpp \
     $$PWD/PerspectiveCamera.cpp \

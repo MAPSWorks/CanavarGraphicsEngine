@@ -30,7 +30,8 @@ enum class ShaderType { //
     BlurShader,
     PostProcessShader,
     ScreenShader,
-    MeshInfoShader
+    MeshInfoShader,
+    NozzleEffectFirstPassShader
 };
 
 enum class RenderPass { //

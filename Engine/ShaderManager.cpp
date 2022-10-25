@@ -298,6 +298,29 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
+    // Nozzle Effect Shader
+    {
+        Shader *shader = new Shader(ShaderType::NozzleEffectFirstPassShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleEffectFirstPass.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffectFirstPass.frag");
+
+        shader->addUniform("MVP");
+        shader->addUniform("scale");
+        shader->addUniform("velocity");
+        shader->addUniform("maxRadius");
+        shader->addUniform("maxDistance");
+
+        shader->addAttribute("vertexPosition");
+        shader->addAttribute("initialPosition");
+        shader->addAttribute("direction");
+        shader->addAttribute("life");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

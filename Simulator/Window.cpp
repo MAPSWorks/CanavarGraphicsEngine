@@ -82,6 +82,10 @@ void Window::initializeGL()
         mDummyCamera->setZNear(5.0f);
         mDummyCamera->setZFar(1000000.0f);
 
+        auto effect = NodeManager::instance()->createNode(Node::NodeType::NozzleEffect);
+        effect->setPosition(QVector3D(0, 0.14f, 11.5f));
+        mJetRoot->addChild(effect);
+
         auto redLight = dynamic_cast<Canavar::Engine::PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
         redLight->setName("Red Light");
         redLight->setColor(QVector4D(1, 0, 0, 1));

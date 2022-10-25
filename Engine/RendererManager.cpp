@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "ModelDataManager.h"
 #include "NodeManager.h"
+#include "NozzleEffect.h"
 #include "PointLight.h"
 #include "ShaderManager.h"
 #include "Sky.h"
@@ -125,6 +126,16 @@ void Canavar::Engine::RendererManager::render(float ifps)
         if (auto model = dynamic_cast<Model *>(node))
             if (auto data = mModelDataManager->getModelData(model->getModelName()))
                 data->render(RenderPass::Default, model);
+    }
+
+    // Render Nozzle Effect
+    for (const auto &node : nodes)
+    {
+        if (!node->getVisible())
+            continue;
+
+        if (auto effect = dynamic_cast<NozzleEffect *>(node))
+            effect->render(ifps);
     }
 
     mFBOs[FramebufferType::Default]->release();
