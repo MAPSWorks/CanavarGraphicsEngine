@@ -85,24 +85,32 @@ void Window::initializeGL()
         auto redLight = dynamic_cast<Canavar::Engine::PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
         redLight->setName("Red Light");
         redLight->setColor(QVector4D(1, 0, 0, 1));
-        redLight->setPosition(QVector3D(-11.38f, 0.13f, -0.95f));
-        redLight->setScale(QVector3D(0.3f, 0.3f, 0.3f));
         redLight->setConstant(0.075f);
         redLight->setLinear(0.25f);
         redLight->setQuadratic(0.1f);
-        mJetRoot->addChild(redLight);
+
+        auto redLightContainer = NodeManager::instance()->createModel("Sphere");
+        redLightContainer->setColor(QVector4D(1, 0, 0, 1));
+        redLightContainer->setScale(QVector3D(0.5, 0.5, 0.5));
+        redLightContainer->addChild(redLight);
+        redLightContainer->setPosition(QVector3D(-11.42f, 0.16f, -0.83f));
+        mJetRoot->addChild(redLightContainer);
 
         auto greenLight = dynamic_cast<Canavar::Engine::PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
         greenLight->setName("Green Light");
         greenLight->setColor(QVector4D(0, 1, 0, 1));
-        greenLight->setScale(QVector3D(0.3f, 0.3f, 0.3f));
-        greenLight->setPosition(QVector3D(11.38f, 0.13f, -0.95f));
         greenLight->setConstant(0.075f);
         greenLight->setLinear(0.25f);
         greenLight->setQuadratic(0.1f);
-        mJetRoot->addChild(greenLight);
 
-        //        Canavar::Engine::Sun::instance()->setDirection(QVector3D(0, 0, 1));
+        auto greenLightContainer = NodeManager::instance()->createModel("Sphere");
+        greenLightContainer->setColor(QVector4D(0, 1, 0, 1));
+        greenLightContainer->setScale(QVector3D(0.5, 0.5, 0.5));
+        greenLightContainer->addChild(greenLight);
+        greenLightContainer->setPosition(QVector3D(11.42f, 0.16f, -0.83f));
+        mJetRoot->addChild(greenLightContainer);
+
+        Canavar::Engine::Sun::instance()->setDirection(QVector3D(1, -0.5, 1));
 
         mAircraftController->init();
         mAircraft->init();
