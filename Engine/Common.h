@@ -40,7 +40,8 @@ enum class RenderPass { //
 
 Q_DECLARE_FLAGS(RenderPasses, RenderPass);
 
-extern float CUBE[108];
+extern const float CUBE[108];
+extern const float QUAD[24];
 
 } // namespace Engine
 } // namespace Canavar

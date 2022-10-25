@@ -10,6 +10,7 @@
 namespace Canavar {
 namespace Engine {
 
+class ModelDataManager;
 class RendererManager;
 class ShaderManager;
 class NodeManager;
@@ -37,6 +38,7 @@ public:
     void setWindow(QOpenGLWindow *newWindow);
 
 private:
+    ModelDataManager *mModelDataManager;
     RendererManager *mRendererManager;
     ShaderManager *mShaderManager;
     NodeManager *mNodeManager;

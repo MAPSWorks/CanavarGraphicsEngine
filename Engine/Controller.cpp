@@ -1,6 +1,7 @@
 #include "Controller.h"
 #include "CameraManager.h"
 #include "LightManager.h"
+#include "ModelDataManager.h"
 #include "NodeManager.h"
 #include "RendererManager.h"
 #include "ShaderManager.h"
@@ -15,12 +16,14 @@ bool Canavar::Engine::Controller::init()
 {
     initializeOpenGLFunctions();
 
+    mModelDataManager = ModelDataManager::instance();
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mNodeManager = NodeManager::instance();
     mRendererManager = RendererManager::instance();
 
+    mManagers << mModelDataManager;
     mManagers << mShaderManager;
     mManagers << mCameraManager;
     mManagers << mLightManager;

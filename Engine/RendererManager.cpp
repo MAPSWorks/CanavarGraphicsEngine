@@ -4,6 +4,7 @@
 #include "Helper.h"
 #include "LightManager.h"
 #include "Model.h"
+#include "ModelDataManager.h"
 #include "NodeManager.h"
 #include "PointLight.h"
 #include "ShaderManager.h"
@@ -35,26 +36,16 @@ bool Canavar::Engine::RendererManager::init()
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
     mShaderManager = ShaderManager::instance();
+    mModelDataManager = ModelDataManager::instance();
 
     mSky = Sky::instance();
     mSun = Sun::instance();
     mHaze = Haze::instance();
     mTerrain = Terrain::instance();
 
-    mQuad = Quad::instance();
-
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-
-    loadModels("Resources/Models",
-               QStringList() << "*.obj"
-                             << "*.blend"
-                             << "*.dae"
-                             << "*.glb"
-                             << "*.gltf");
-
-    loadModels("Resources/Models", QStringList() << "*.fbx");
 
     mColorAttachments = new GLuint[2];
     mColorAttachments[0] = GL_COLOR_ATTACHMENT0;
@@ -133,11 +124,8 @@ void Canavar::Engine::RendererManager::render(float ifps)
             continue;
 
         if (auto model = dynamic_cast<Model *>(node))
-        {
-            ModelData *data = mModelsData.value(model->getModelName(), nullptr);
-            if (data)
+            if (auto data = mModelDataManager->getModelData(model->getModelName()))
                 data->render(RenderPass::Default, model);
-        }
     }
 
     mFBOs[FramebufferType::Default]->release();
@@ -158,7 +146,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
         mShaderManager->bind(ShaderType::BlurShader);
         mShaderManager->setUniformValue("horizontal", i % 2 == 0);
         mShaderManager->setSampler("screenTexture", 0, mFBOs[i % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
-        mQuad->render();
+        mModelDataManager->renderQuad();
         mShaderManager->release();
     }
 
@@ -175,7 +163,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mShaderManager->setUniformValue("exposure", mExposure);
     mShaderManager->setUniformValue("gamma", mGamma);
 
-    mQuad->render();
+    mModelDataManager->renderQuad();
     mShaderManager->release();
 
     if (mNodeSelectionEnabled)
@@ -190,48 +178,12 @@ void Canavar::Engine::RendererManager::render(float ifps)
                 continue;
 
             if (auto model = dynamic_cast<Model *>(node))
-            {
-                ModelData *data = mModelsData.value(model->getModelName(), nullptr);
-                if (data)
+                if (auto data = mModelDataManager->getModelData(model->getModelName()))
                     data->render(RenderPass::MeshInfo, model);
-            }
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-}
-
-void Canavar::Engine::RendererManager::loadModels(const QString &path, const QStringList &formats)
-{
-    // Models
-    qInfo() << "Loading and creating all models at" << path << "whose extensions are" << formats;
-
-    QDir dir(path);
-    auto dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
-
-    for (const auto &dirName : qAsConst(dirs))
-    {
-        QDir childDir(dir.path() + "/" + dirName);
-        childDir.setNameFilters(formats);
-        auto files = childDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
-
-        for (const auto &file : qAsConst(files))
-        {
-            ModelData *data = Canavar::Engine::Helper::loadModel(dirName, childDir.path() + "/" + file);
-
-            if (data)
-            {
-                auto meshes = data->meshes();
-
-                for (auto mesh : meshes)
-                    mesh->create();
-
-                mModelsData.insert(data->name(), data);
-            }
-        }
-    }
-
-    qInfo() << "All models are loaded at" << path;
 }
 
 void Canavar::Engine::RendererManager::setCommonUniforms()
@@ -285,16 +237,21 @@ void Canavar::Engine::RendererManager::deleteFramebuffers()
 
 void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
 {
-    mFBOs.insert(FramebufferType::Default, new QOpenGLFramebufferObject(width, height, *mFBOFormats[FramebufferType::Default]));
-    mFBOs[FramebufferType::Default]->addColorAttachment(width, height, GL_RGBA16F);
+    auto keys = mFBOFormats.keys();
 
-    mFBOs[FramebufferType::Default]->bind();
-    glDrawBuffers(2, mColorAttachments);
-    mFBOs[FramebufferType::Default]->release();
+    for (auto type : keys)
+    {
+        mFBOs.insert(type, new QOpenGLFramebufferObject(width, height, *mFBOFormats[type]));
 
-    mFBOs.insert(FramebufferType::Temporary, new QOpenGLFramebufferObject(width, height, *mFBOFormats[FramebufferType::Temporary]));
-    mFBOs.insert(FramebufferType::Ping, new QOpenGLFramebufferObject(width, height, *mFBOFormats[FramebufferType::Ping]));
-    mFBOs.insert(FramebufferType::Pong, new QOpenGLFramebufferObject(width, height, *mFBOFormats[FramebufferType::Pong]));
+        if (type == FramebufferType::Default)
+        {
+            mFBOs[FramebufferType::Default]->addColorAttachment(width, height, GL_RGBA16F);
+
+            mFBOs[FramebufferType::Default]->bind();
+            glDrawBuffers(2, mColorAttachments);
+            mFBOs[FramebufferType::Default]->release();
+        }
+    }
 
     glGenFramebuffers(1, &mMeshInfoFBO.fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);

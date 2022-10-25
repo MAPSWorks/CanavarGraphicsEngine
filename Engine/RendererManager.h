@@ -3,9 +3,8 @@
 
 #include "Camera.h"
 #include "Manager.h"
-#include "ModelData.h"
-#include "Quad.h"
 
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObjectFormat>
 
 namespace Canavar {
@@ -15,10 +14,12 @@ class NodeManager;
 class CameraManager;
 class LightManager;
 class ShaderManager;
+class ModelDataManager;
 class Haze;
 class Sky;
 class Terrain;
 class PointLight;
+class Sun;
 
 class RendererManager : public Manager, protected QOpenGLExtraFunctions
 {
@@ -51,26 +52,23 @@ public:
     void render(float ifps);
 
 private:
-    void loadModels(const QString &path, const QStringList &formats);
     void setCommonUniforms();
 
     void deleteFramebuffers();
     void createFramebuffers(int width, int height);
 
 private:
-    QMap<QString, ModelData *> mModelsData;
-
     NodeManager *mNodeManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
     ShaderManager *mShaderManager;
+    ModelDataManager *mModelDataManager;
 
     Camera *mCamera;
     Sun *mSun;
     Sky *mSky;
     Haze *mHaze;
     Terrain *mTerrain;
-    Quad *mQuad;
 
     QVector<PointLight *> mClosePointLights;
 

@@ -2,11 +2,12 @@
 #define MODEL_H
 
 #include "Node.h"
+#include "Selectable.h"
 
 namespace Canavar {
 namespace Engine {
 
-class Model : public Node
+class Model : public Node, public Selectable
 {
 protected:
     friend class Canavar::Engine::NodeManager;

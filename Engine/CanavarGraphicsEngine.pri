@@ -19,13 +19,13 @@ HEADERS += \
     $$PWD/Mesh.h \
     $$PWD/Model.h \
     $$PWD/ModelData.h \
+    $$PWD/ModelDataManager.h \
     $$PWD/ModelDataNode.h \
     $$PWD/Mouse.h \
     $$PWD/Node.h \
     $$PWD/NodeManager.h \
     $$PWD/PerspectiveCamera.h \
     $$PWD/PointLight.h \
-    $$PWD/Quad.h \
     $$PWD/RendererManager.h \
     $$PWD/Selectable.h \
     $$PWD/Shader.h \
@@ -55,13 +55,13 @@ SOURCES += \
     $$PWD/Mesh.cpp \
     $$PWD/Model.cpp \
     $$PWD/ModelData.cpp \
+    $$PWD/ModelDataManager.cpp \
     $$PWD/ModelDataNode.cpp \
     $$PWD/Mouse.cpp \
     $$PWD/Node.cpp \
     $$PWD/NodeManager.cpp \
     $$PWD/PerspectiveCamera.cpp \
     $$PWD/PointLight.cpp \
-    $$PWD/Quad.cpp \
     $$PWD/RendererManager.cpp \
     $$PWD/Selectable.cpp \
     $$PWD/Shader.cpp \
