@@ -7,9 +7,7 @@ Canavar::Engine::Camera::Camera(QObject *parent)
     , mHeight(900)
     , mZNear(1.0f)
     , mZFar(1000000.0f)
-{
-    mRenderable = false;
-}
+{}
 
 QMatrix4x4 Canavar::Engine::Camera::getViewProjectionMatrix()
 {

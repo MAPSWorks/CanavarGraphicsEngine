@@ -10,7 +10,6 @@ Canavar::Engine::Node::Node(QObject *parent)
     , mID(-1)
     , mParent(dynamic_cast<Node *>(parent))
     , mVisible(true)
-    , mRenderable(true)
 {}
 
 Canavar::Engine::Node::~Node() {}
@@ -160,6 +159,10 @@ void Canavar::Engine::Node::setParent(Node *newParent)
 
 void Canavar::Engine::Node::addChild(Node *node)
 {
+    // TODO: Check self assignment
+    // TODO: Check if "node" is already child of this node
+    // TOOD: Check if "node" has alread a parent
+
     if (node)
     {
         node->setParent(this);

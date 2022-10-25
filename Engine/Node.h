@@ -16,7 +16,6 @@ class Node : public QObject
     Q_OBJECT
 protected:
     friend class NodeManager;
-
     explicit Node(QObject *parent = nullptr);
     virtual ~Node();
 
@@ -31,7 +30,6 @@ public:
         Haze,
         Terrain,
         PointLight,
-        NozzleEffect
     };
 
     const QMatrix4x4 worldTransformation() const;
@@ -82,7 +80,6 @@ protected:
     QList<Node *> mChildren;
 
     DECLARE_MEMBER(bool, Visible)
-    DECLARE_MEMBER(bool, Renderable)
     DECLARE_MEMBER(QString, Name)
 };
 

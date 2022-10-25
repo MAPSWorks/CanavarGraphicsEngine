@@ -5,7 +5,6 @@
 #include "LightManager.h"
 #include "Model.h"
 #include "NodeManager.h"
-#include "NozzleEffect.h"
 #include "PointLight.h"
 #include "ShaderManager.h"
 #include "Sky.h"
@@ -130,7 +129,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     // Render Models
     for (const auto &node : nodes)
     {
-        if (!node->getVisible() || !node->getRenderable())
+        if (!node->getVisible())
             continue;
 
         if (auto model = dynamic_cast<Model *>(node))
@@ -139,20 +138,6 @@ void Canavar::Engine::RendererManager::render(float ifps)
             if (data)
                 data->render(RenderPass::Default, model);
         }
-
-        if (auto light = dynamic_cast<PointLight *>(node))
-        {
-            ModelData *data = mModelsData.value(light->getModelName(), nullptr);
-            if (data)
-                data->render(RenderPass::Default, light);
-        }
-    }
-
-    // Render effects
-    for (const auto &node : nodes)
-    {
-        if (auto nozzleEffect = dynamic_cast<NozzleEffect *>(node))
-            nozzleEffect->render(ifps);
     }
 
     mFBOs[FramebufferType::Default]->release();
@@ -201,7 +186,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
         for (const auto &node : nodes)
         {
-            if (!node->getVisible() || !node->getRenderable())
+            if (!node->getVisible())
                 continue;
 
             if (auto model = dynamic_cast<Model *>(node))
@@ -210,16 +195,6 @@ void Canavar::Engine::RendererManager::render(float ifps)
                 if (data)
                     data->render(RenderPass::MeshInfo, model);
             }
-
-            if (auto light = dynamic_cast<PointLight *>(node))
-            {
-                ModelData *data = mModelsData.value(light->getModelName(), nullptr);
-                if (data)
-                    data->render(RenderPass::MeshInfo, light);
-            }
-
-            //            if (auto nozzleEffect = dynamic_cast<NozzleEffect *>(node))
-            //                nozzleEffect->render(ifps);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

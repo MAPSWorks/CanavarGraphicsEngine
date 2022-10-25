@@ -120,10 +120,7 @@ QVariant AircraftController::getCmd(Aircraft::Command command, QVariant value)
 void AircraftController::lights(bool lit)
 {
     mRedLight->setVisible(lit);
-    mRedLight->setRenderable(lit);
-
     mGreenLight->setVisible(lit);
-    mGreenLight->setRenderable(lit);
 }
 
 void AircraftController::update(float ifps)

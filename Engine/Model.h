@@ -10,7 +10,7 @@ class Model : public Node
 {
 protected:
     friend class Canavar::Engine::NodeManager;
-    explicit Model(const QString &name, Node *parent = nullptr);
+    explicit Model(const QString &modelName, Node *parent = nullptr);
 
 public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);
@@ -22,12 +22,14 @@ public:
     float getMeshOverlayColorFactor(const QString &meshName);
     void setMeshOverlayColorFactor(const QString &meshName, float factor);
 
+    const QString &getModelName() const { return mModelName; }
+
 protected:
     QMap<QString, QMatrix4x4> mMeshTransformations;
     QMap<QString, QVector4D> mMeshOverlayColors;
     QMap<QString, float> mMeshOverlayColorFactors;
+    QString mModelName;
 
-    DECLARE_MEMBER(QString, ModelName)
     DECLARE_MEMBER(QVector4D, Color)
     DECLARE_MEMBER(QVector4D, OverlayColor)
     DECLARE_MEMBER(float, OverlayColorFactor)

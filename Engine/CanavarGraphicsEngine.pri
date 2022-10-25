@@ -1,9 +1,11 @@
 HEADERS += \
+    $$PWD/AABB.h \
     $$PWD/Camera.h \
     $$PWD/CameraManager.h \
     $$PWD/Common.h \
     $$PWD/Controller.h \
     $$PWD/DummyCamera.h \
+    $$PWD/DummyNode.h \
     $$PWD/FreeCamera.h \
     $$PWD/Gui.h \
     $$PWD/Haze.h \
@@ -21,11 +23,11 @@ HEADERS += \
     $$PWD/Mouse.h \
     $$PWD/Node.h \
     $$PWD/NodeManager.h \
-    $$PWD/NozzleEffect.h \
     $$PWD/PerspectiveCamera.h \
     $$PWD/PointLight.h \
     $$PWD/Quad.h \
     $$PWD/RendererManager.h \
+    $$PWD/Selectable.h \
     $$PWD/Shader.h \
     $$PWD/ShaderManager.h \
     $$PWD/Sky.h \
@@ -35,11 +37,13 @@ HEADERS += \
     $$PWD/TileGenerator.h
 
 SOURCES += \
+    $$PWD/AABB.cpp \
     $$PWD/Camera.cpp \
     $$PWD/CameraManager.cpp \
     $$PWD/Common.cpp \
     $$PWD/Controller.cpp \
     $$PWD/DummyCamera.cpp \
+    $$PWD/DummyNode.cpp \
     $$PWD/FreeCamera.cpp \
     $$PWD/Gui.cpp \
     $$PWD/Haze.cpp \
@@ -55,11 +59,11 @@ SOURCES += \
     $$PWD/Mouse.cpp \
     $$PWD/Node.cpp \
     $$PWD/NodeManager.cpp \
-    $$PWD/NozzleEffect.cpp \
     $$PWD/PerspectiveCamera.cpp \
     $$PWD/PointLight.cpp \
     $$PWD/Quad.cpp \
     $$PWD/RendererManager.cpp \
+    $$PWD/Selectable.cpp \
     $$PWD/Shader.cpp \
     $$PWD/ShaderManager.cpp \
     $$PWD/Sky.cpp \

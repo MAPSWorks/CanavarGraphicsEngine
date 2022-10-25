@@ -222,11 +222,11 @@ Canavar::Engine::Mesh *Canavar::Engine::Helper::processMesh(aiMesh *aiMesh)
 
     mesh->setName(aiMesh->mName.C_Str());
 
-    Mesh::AABB aabb;
+    AABB aabb;
     auto min = aiMesh->mAABB.mMin;
     auto max = aiMesh->mAABB.mMax;
-    aabb.min = QVector3D(min.x, min.y, min.z);
-    aabb.max = QVector3D(max.x, max.y, max.z);
+    aabb.setMin(QVector3D(min.x, min.y, min.z));
+    aabb.setMax(QVector3D(max.x, max.y, max.z));
     mesh->setAABB(aabb);
 
     return mesh;

@@ -35,13 +35,6 @@ public:
         float weights[4];
     };
 
-    struct AABB {
-        QVector3D min;
-        QVector3D max;
-
-        QVector3D getCenter() const { return (min + max) / 2.0f; }
-    };
-
     explicit Mesh(QObject *parent = nullptr);
     virtual ~Mesh();
 
@@ -54,7 +47,6 @@ public:
 
 private:
     void render(RenderPasses renderPasses, Model *model);
-    void render(RenderPasses renderPasses, PointLight *light);
 
 private:
     QOpenGLVertexArrayObject *mVAO;

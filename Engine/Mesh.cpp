@@ -166,37 +166,3 @@ void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Model *model)
         mShaderManager->release();
     }
 }
-
-void Canavar::Engine::Mesh::render(RenderPasses renderPasses, PointLight *light)
-{
-    if (renderPasses.testFlag(RenderPass::Default))
-    {
-        mShaderManager->bind(ShaderType::ModelColoredShader);
-        mShaderManager->setUniformValue("M", light->worldTransformation());
-        mShaderManager->setUniformValue("model.color", light->getModelColor());
-        mShaderManager->setUniformValue("model.shininess", light->getModelShininess());
-        mShaderManager->setUniformValue("model.ambient", light->getModelAmbient());
-        mShaderManager->setUniformValue("model.diffuse", light->getModelDiffuse());
-        mShaderManager->setUniformValue("model.specular", light->getModelSpecular());
-
-        mVAO->bind();
-        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-        mVAO->release();
-
-        mShaderManager->release();
-    }
-
-    if (renderPasses.testFlag(RenderPass::MeshInfo))
-    {
-        mShaderManager->bind(ShaderType::MeshInfoShader);
-        mShaderManager->setUniformValue("MVP", light->worldTransformation() * mCameraManager->activeCamera()->getViewProjectionMatrix());
-        mShaderManager->setUniformValue("nodeID", light->getID());
-        mShaderManager->setUniformValue("meshID", mID);
-
-        mVAO->bind();
-        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-        mVAO->release();
-
-        mShaderManager->release();
-    }
-}

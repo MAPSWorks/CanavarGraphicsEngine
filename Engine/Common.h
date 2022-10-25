@@ -29,7 +29,6 @@ enum class ShaderType { //
     TerrainShader,
     BlurShader,
     PostProcessShader,
-    NozzleEffectShader,
     ScreenShader,
     MeshInfoShader
 };

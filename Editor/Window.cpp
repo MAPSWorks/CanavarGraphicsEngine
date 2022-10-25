@@ -41,16 +41,16 @@ void Window::initializeGL()
 
     if (mController->init())
     {
-        NodeManager::instance()->createNode(Node::NodeType::Model, "f16c")->setWorldPosition(QVector3D(0, 100, 0));
+        NodeManager::instance()->createModel("f16c")->setWorldPosition(QVector3D(0, 100, 0));
 
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Nanosuit")->setWorldPosition(QVector3D(0, 10, 0));
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Cyborg")->setWorldPosition(QVector3D(0, 30, 0));
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Planet")->setWorldPosition(QVector3D(0, 40, 0));
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Suzanne")->setWorldPosition(QVector3D(0, 50, 0));
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 60, 0));
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 70, 0));
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 80, 0));
-        NodeManager::instance()->createNode(Node::NodeType::Model, "Backpack")->setWorldPosition(QVector3D(0, 90, 0));
+        NodeManager::instance()->createModel("Nanosuit")->setWorldPosition(QVector3D(0, 10, 0));
+        NodeManager::instance()->createModel("Cyborg")->setWorldPosition(QVector3D(0, 30, 0));
+        NodeManager::instance()->createModel("Planet")->setWorldPosition(QVector3D(0, 40, 0));
+        NodeManager::instance()->createModel("Suzanne")->setWorldPosition(QVector3D(0, 50, 0));
+        NodeManager::instance()->createModel("Backpack")->setWorldPosition(QVector3D(0, 60, 0));
+        NodeManager::instance()->createModel("Backpack")->setWorldPosition(QVector3D(0, 70, 0));
+        NodeManager::instance()->createModel("Backpack")->setWorldPosition(QVector3D(0, 80, 0));
+        NodeManager::instance()->createModel("Backpack")->setWorldPosition(QVector3D(0, 90, 0));
 
         mCamera = dynamic_cast<PerspectiveCamera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera));
         CameraManager::instance()->setActiveCamera(mCamera);
@@ -58,7 +58,6 @@ void Window::initializeGL()
         mCamera->setWorldPosition(QVector3D(0, 5, 0));
 
         auto *pointLight = dynamic_cast<PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
-        pointLight->setRenderable(true);
         pointLight->setColor(QVector4D(1, 1, 1, 0.5));
     }
 }

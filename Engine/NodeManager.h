@@ -25,10 +25,12 @@ public:
     bool init() override;
 
     Node *createNode(Node::NodeType type, const QString &name = QString());
+    Model *createModel(const QString &modelName, const QString &name = QString());
 
     void removeNode(Node *node);
 
     Node *findNodeByID(int ID);
+    // TODO:  Node* findNodeByName();
 
     const QList<Node *> &nodes() const;
 

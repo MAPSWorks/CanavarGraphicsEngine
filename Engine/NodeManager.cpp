@@ -5,8 +5,8 @@
 #include "LightManager.h"
 #include "Model.h"
 
+#include "DummyNode.h"
 #include "Haze.h"
-#include "NozzleEffect.h"
 #include "Sky.h"
 #include "Sun.h"
 #include "Terrain.h"
@@ -21,7 +21,6 @@ Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     mTypeToName.insert(Node::NodeType::FreeCamera, "Free Camera");
     mTypeToName.insert(Node::NodeType::Model, "Model");
     mTypeToName.insert(Node::NodeType::PointLight, "Point Light");
-    mTypeToName.insert(Node::NodeType::NozzleEffect, "Nozzle Effect");
 }
 
 bool Canavar::Engine::NodeManager::init()
@@ -54,11 +53,11 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
     switch (type)
     {
     case Node::NodeType::DummyNode: {
-        node = new Node;
+        node = new DummyNode;
         break;
     }
     case Node::NodeType::Model: {
-        node = new Model(name);
+        qWarning() << "Use createModel() method instead!";
         break;
     }
     case Node::NodeType::FreeCamera: {
@@ -74,12 +73,6 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
     case Node::NodeType::PointLight: {
         node = new PointLight;
         mLightManager->addLight(dynamic_cast<Light *>(node));
-        break;
-    }
-    case Node::NodeType::NozzleEffect: {
-        auto effect = new NozzleEffect;
-        effect->create();
-        node = effect;
         break;
     }
     default: {
@@ -100,14 +93,27 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
     return node;
 }
 
+Canavar::Engine::Model *Canavar::Engine::NodeManager::createModel(const QString &modelName, const QString &name)
+{
+    Model *model = new Model(modelName);
+
+    mTypeToCount.insert(Node::NodeType::Model, mTypeToCount.value(Node::NodeType::Model, 0) + 1);
+    assignName(model, name);
+    model->mID = mNumberOfNodes;
+    mNodes << model;
+    mNumberOfNodes++;
+
+    return model;
+}
+
 void Canavar::Engine::NodeManager::removeNode(Node *node)
 {
     // FIXME: If a node is removed, remove also its all children
     switch (node->type())
     {
     case Node::NodeType::Model:
-    case Node::NodeType::DummyNode:
-    case Node::NodeType::NozzleEffect: {
+    case Node::NodeType::DummyNode: {
+        // TODO: What will happen to node's children?
         if (node->mParent)
             node->mParent->removeChild(node);
         mNodes.removeAll(node);

@@ -1,8 +1,8 @@
 #include "Model.h"
 
-Canavar::Engine::Model::Model(const QString &name, Node *parent)
+Canavar::Engine::Model::Model(const QString &modelName, Node *parent)
     : Node(parent)
-    , mModelName(name)
+    , mModelName(modelName)
     , mColor(1, 1, 1, 1)
     , mOverlayColor(1, 1, 1, 1)
     , mOverlayColorFactor(0.0f)
@@ -11,9 +11,8 @@ Canavar::Engine::Model::Model(const QString &name, Node *parent)
     , mSpecular(0.25)
     , mShininess(32.0f)
 {
-    mName = name;
+    mName = modelName;
     mType = Node::NodeType::Model;
-    mRenderable = true;
 }
 
 QMatrix4x4 Canavar::Engine::Model::getMeshTransformation(const QString &meshName)

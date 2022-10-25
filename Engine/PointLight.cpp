@@ -7,6 +7,4 @@ Canavar::Engine::PointLight::PointLight(QObject *parent)
     , mQuadratic(0.001f)
 {
     mType = Canavar::Engine::Node::NodeType::PointLight;
-    mRenderable = true;
-    mVisible = true;
 }
