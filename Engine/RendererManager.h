@@ -3,6 +3,7 @@
 
 #include "Camera.h"
 #include "Manager.h"
+#include "OpenGLFramebuffer.h"
 
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObjectFormat>
@@ -36,12 +37,6 @@ public:
         Temporary,
         Ping,
         Pong,
-    };
-
-    struct OpenGLFramebuffer {
-        unsigned int fbo = 0;
-        unsigned int rbo = 0;
-        unsigned int texture = 0;
     };
 
     bool init() override;

@@ -29,11 +29,11 @@ bool Canavar::Engine::ModelDataManager::init()
     loadModels("Resources/Models", QStringList() << "*.fbx");
 
     initializeOpenGLFunctions();
-    glGenVertexArrays(1, &mQuadVAO);
-    glBindVertexArray(mQuadVAO);
+    glGenVertexArrays(1, &mQuad.mVAO);
+    glBindVertexArray(mQuad.mVAO);
 
-    glGenBuffers(1, &mQuadVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, mQuadVBO);
+    glGenBuffers(1, &mQuad.mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mQuad.mVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::QUAD), Canavar::Engine::QUAD, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
@@ -44,11 +44,19 @@ bool Canavar::Engine::ModelDataManager::init()
     return true;
 }
 
-void Canavar::Engine::ModelDataManager::renderQuad()
+void Canavar::Engine::ModelDataManager::render(InternalModel internalModel)
 {
-    glBindVertexArray(mQuadVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
+    switch (internalModel)
+    {
+    case InternalModel::Quad:
+        glBindVertexArray(mQuad.mVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
+        break;
+    default:
+        qCritical() << Q_FUNC_INFO << "Not implemented yet!";
+        break;
+    }
 }
 
 Canavar::Engine::ModelData *Canavar::Engine::ModelDataManager::getModelData(const QString &modelName)

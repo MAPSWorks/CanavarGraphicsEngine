@@ -3,6 +3,7 @@
 
 #include "Manager.h"
 #include "ModelData.h"
+#include "OpenGLVertexArrayObject.h"
 
 #include <QMap>
 
@@ -17,8 +18,12 @@ private:
 public:
     static ModelDataManager *instance();
 
+    enum class InternalModel { //
+        Quad
+    };
+
     bool init();
-    void renderQuad();
+    void render(InternalModel);
 
     ModelData *getModelData(const QString &modelName);
 
@@ -27,8 +32,7 @@ private:
 
 private:
     QMap<QString, ModelData *> mModelsData;
-    unsigned int mQuadVAO;
-    unsigned int mQuadVBO;
+    OpenGLVertexArrayObject mQuad;
 };
 
 } // namespace Engine

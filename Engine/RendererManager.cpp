@@ -77,12 +77,11 @@ void Canavar::Engine::RendererManager::resize(int w, int h)
 
 Canavar::Engine::Node *Canavar::Engine::RendererManager::getNodeByScreenPosition(int x, int y)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);
+    mMeshInfoFBO.bind();
     int info[4];
     glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, &info);
     qDebug() << info[0] << info[1] << info[2] << info[3];
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    mMeshInfoFBO.release();
 
     return nullptr;
 }
@@ -146,7 +145,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
         mShaderManager->bind(ShaderType::BlurShader);
         mShaderManager->setUniformValue("horizontal", i % 2 == 0);
         mShaderManager->setSampler("screenTexture", 0, mFBOs[i % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
-        mModelDataManager->renderQuad();
+        mModelDataManager->render(ModelDataManager::InternalModel::Quad);
         mShaderManager->release();
     }
 
@@ -162,13 +161,12 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mShaderManager->setSampler("bloomBlurTexture", 1, mFBOs[qMax(0, mBlurPass) % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
     mShaderManager->setUniformValue("exposure", mExposure);
     mShaderManager->setUniformValue("gamma", mGamma);
-
-    mModelDataManager->renderQuad();
+    mModelDataManager->render(ModelDataManager::InternalModel::Quad);
     mShaderManager->release();
 
     if (mNodeSelectionEnabled)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);
+        mMeshInfoFBO.bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0, 0, 0, 0);
 
@@ -182,7 +180,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
                     data->render(RenderPass::MeshInfo, model);
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        mMeshInfoFBO.release();
     }
 }
 
@@ -225,14 +223,7 @@ void Canavar::Engine::RendererManager::deleteFramebuffers()
         if (mFBOs[type])
             delete mFBOs[type];
 
-    if (mMeshInfoFBO.fbo)
-        glDeleteFramebuffers(1, &mMeshInfoFBO.fbo);
-
-    if (mMeshInfoFBO.rbo)
-        glDeleteBuffers(1, &mMeshInfoFBO.rbo);
-
-    if (mMeshInfoFBO.texture)
-        glDeleteTextures(1, &mMeshInfoFBO.texture);
+    mMeshInfoFBO.destroy();
 }
 
 void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
@@ -253,23 +244,5 @@ void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
         }
     }
 
-    glGenFramebuffers(1, &mMeshInfoFBO.fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, mMeshInfoFBO.fbo);
-
-    glGenTextures(1, &mMeshInfoFBO.texture);
-    glBindTexture(GL_TEXTURE_2D, mMeshInfoFBO.texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32UI, width, height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mMeshInfoFBO.texture, 0);
-
-    glGenRenderbuffers(1, &mMeshInfoFBO.rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, mMeshInfoFBO.rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mMeshInfoFBO.rbo);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        qCritical() << "Framebuffer is could not be created.";
-    }
+    mMeshInfoFBO.create(width, height);
 }
