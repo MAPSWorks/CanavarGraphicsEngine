@@ -31,12 +31,13 @@ enum class ShaderType { //
     PostProcessShader,
     ScreenShader,
     MeshInfoShader,
-    NozzleEffectFirstPassShader
+    NozzleEffectShader,
 };
 
 enum class RenderPass { //
     Default = 0x00,
     MeshInfo = 0x01,
+    Custom = 0x02,
 };
 
 Q_DECLARE_FLAGS(RenderPasses, RenderPass);

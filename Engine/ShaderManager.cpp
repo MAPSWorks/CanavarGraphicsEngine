@@ -300,15 +300,15 @@ bool Canavar::Engine::ShaderManager::init()
 
     // Nozzle Effect Shader
     {
-        Shader *shader = new Shader(ShaderType::NozzleEffectFirstPassShader);
+        Shader *shader = new Shader(ShaderType::NozzleEffectShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleEffectFirstPass.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffectFirstPass.frag");
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleEffect.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffect.frag");
 
         shader->addUniform("MVP");
         shader->addUniform("scale");
-        shader->addUniform("velocity");
+        shader->addUniform("speed");
         shader->addUniform("maxRadius");
         shader->addUniform("maxDistance");
 

@@ -81,10 +81,15 @@ void Canavar::Engine::Mesh::create()
 
 void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Node *node)
 {
+    if (renderPasses.testFlag(RenderPass::Custom))
+    {
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+    }
+
     if (auto model = dynamic_cast<Model *>(node))
         render(renderPasses, model);
-    if (auto light = dynamic_cast<PointLight *>(node))
-        render(renderPasses, light);
 }
 
 void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Model *model)

@@ -47,10 +47,9 @@ private:
 
     DECLARE_MEMBER(float, MaxRadius)
     DECLARE_MEMBER(float, MaxLife)
-    DECLARE_MEMBER(float, MinLife)
     DECLARE_MEMBER(float, MaxDistance)
     DECLARE_MEMBER(float, MinDistance)
-    DECLARE_MEMBER(float, Velocity)
+    DECLARE_MEMBER(float, Speed)
     DECLARE_MEMBER(float, Scale)
 };
 

@@ -4,13 +4,12 @@
 
 Canavar::Engine::NozzleEffect::NozzleEffect(QObject *parent)
     : Node(parent)
-    , mNumberOfParticles(10000)
-    , mMaxRadius(1.1f)
-    , mMaxLife(0.1f)
-    , mMinLife(0.01f)
+    , mNumberOfParticles(5000)
+    , mMaxRadius(0.8f)
+    , mMaxLife(0.0f)
     , mMaxDistance(10.0f)
-    , mMinDistance(5.0f)
-    , mVelocity(7.0f)
+    , mMinDistance(4.0f)
+    , mSpeed(7.0f)
     , mScale(0.02f)
 {
     mShaderManager = ShaderManager::instance();
@@ -70,15 +69,12 @@ void Canavar::Engine::NozzleEffect::render(float ifps)
             mParticles[i] = generateParticle();
     }
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    mShaderManager->bind(ShaderType::NozzleEffectFirstPassShader);
+    mShaderManager->bind(ShaderType::NozzleEffectShader);
     mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * worldTransformation());
     mShaderManager->setUniformValue("scale", mScale);
     mShaderManager->setUniformValue("maxRadius", mMaxRadius);
     mShaderManager->setUniformValue("maxDistance", mMaxDistance);
-    mShaderManager->setUniformValue("velocity", mVelocity);
+    mShaderManager->setUniformValue("speed", mSpeed);
 
     glBindVertexArray(mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
@@ -87,8 +83,6 @@ void Canavar::Engine::NozzleEffect::render(float ifps)
     glBindVertexArray(0);
 
     mShaderManager->release();
-
-    glDisable(GL_BLEND);
 }
 
 Canavar::Engine::NozzleEffect::Particle Canavar::Engine::NozzleEffect::generateParticle()
@@ -97,12 +91,12 @@ Canavar::Engine::NozzleEffect::Particle Canavar::Engine::NozzleEffect::generateP
 
     float r = Helper::generateFloat(mMaxRadius);
     float theta = Helper::generateFloat(2.0f * M_PI);
-    float distance = mMinDistance + Helper::generateFloat(qMax(0.0f, mMaxDistance - mMinDistance));
+    float distance = mMinDistance + Helper::generateFloat(mMaxDistance - mMinDistance);
     auto end = QVector3D(0, 0, distance);
 
     p.initialPosition = QVector3D(r * cos(theta), r * sin(theta), 0);
     p.direction = end - p.initialPosition;
     p.life = 0.0f;
-    p.deadAfter = mMinLife + Helper::generateFloat(qMax(0.0f, mMaxLife - mMinLife));
+    p.deadAfter = Helper::generateFloat(mMaxLife);
     return p;
 }
