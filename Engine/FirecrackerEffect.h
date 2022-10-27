@@ -54,8 +54,6 @@ private:
     DECLARE_MEMBER(bool, Loop)
     DECLARE_MEMBER(float, Scale)
     DECLARE_MEMBER(float, Damping)
-    DECLARE_MEMBER_CONST(bool, Finished)
-    DECLARE_MEMBER_CONST(int, NumberOfDeadParticles)
 };
 
 } // namespace Engine

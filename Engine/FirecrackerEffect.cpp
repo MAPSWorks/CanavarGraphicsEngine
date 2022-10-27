@@ -4,17 +4,15 @@
 
 Canavar::Engine::FirecrackerEffect::FirecrackerEffect(QObject *parent)
     : mNumberOfParticles(10000)
-    , mSpanAngle(180.0f)
+    , mSpanAngle(140.0f)
     , mGravityDirection(0, -1, 0)
     , mGravity(9.8f)
-    , mMaxLife(6.0f)
+    , mMaxLife(12.0f)
     , mMinLife(1.0f)
-    , mInitialSpeed(20.0f)
+    , mInitialSpeed(250.0f)
     , mLoop(false)
-    , mScale(0.1f)
+    , mScale(1.0f)
     , mDamping(1.0f)
-    , mFinished(false)
-    , mNumberOfDeadParticles(0)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
@@ -81,14 +79,9 @@ void Canavar::Engine::FirecrackerEffect::render(float ifps)
             if (mLoop)
                 mParticles[i] = generateParticle();
             else
-            {
                 mParticles[i].dead = true;
-                mNumberOfDeadParticles++;
-            }
         }
     }
-
-    mFinished = mNumberOfParticles == mNumberOfDeadParticles;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

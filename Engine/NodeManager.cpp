@@ -124,6 +124,9 @@ Canavar::Engine::Model *Canavar::Engine::NodeManager::createModel(const QString 
 
 void Canavar::Engine::NodeManager::removeNode(Node *node)
 {
+    if (node == nullptr)
+        return;
+
     // FIXME: If a node is removed, remove also its all children
     switch (node->type())
     {
@@ -156,7 +159,8 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
         break;
     }
     default: {
-        qWarning() << Q_FUNC_INFO << "Unkown Node. Implement deletion algorithm for this NodeType:" << (int) node->type();
+        qWarning() << Q_FUNC_INFO << "Unknown Node. Implement deletion algorithm for this NodeType:" << (int) node->type();
+        break;
     }
     }
 }

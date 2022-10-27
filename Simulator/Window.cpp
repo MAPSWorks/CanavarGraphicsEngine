@@ -3,6 +3,7 @@
 #include <CameraManager.h>
 #include <Controller.h>
 #include <Gui.h>
+#include <Helper.h>
 #include <Model.h>
 #include <Node.h>
 #include <NodeManager.h>
@@ -114,9 +115,6 @@ void Window::initializeGL()
         greenLightContainer->setPosition(QVector3D(11.42f, 0.16f, -0.83f));
         mJetRoot->addChild(greenLightContainer);
 
-        auto fireCracker = NodeManager::instance()->createNode(Node::NodeType::FirecrackerEffect);
-        fireCracker->setWorldPosition(QVector3D(0, 100, 0));
-
         Canavar::Engine::Sun::instance()->setDirection(QVector3D(1, -0.5, 1));
 
         mAircraftController->init();
@@ -221,4 +219,17 @@ void Window::wheelEvent(QWheelEvent *event)
         return;
 
     mController->wheelMoved(event);
+}
+
+FirecrackerEffect *Window::createEfect()
+{
+    auto fireCracker = dynamic_cast<FirecrackerEffect *>(NodeManager::instance()->createNode(Node::NodeType::FirecrackerEffect));
+    fireCracker->setWorldPosition(QVector3D(Helper::generateBetween(0, 1000), Helper::generateBetween(0, 1000), Helper::generateBetween(0, 1000)));
+    fireCracker->setGravity(20);
+    fireCracker->setSpanAngle(Helper::generateBetween(150, 170));
+    fireCracker->setMaxLife(Helper::generateBetween(10, 15));
+    fireCracker->setInitialSpeed(Helper::generateBetween(200, 300));
+    fireCracker->setScale(1);
+
+    return fireCracker;
 }

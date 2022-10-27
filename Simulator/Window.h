@@ -1,6 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <FirecrackerEffect.h>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLWindow>
 
@@ -37,6 +38,8 @@ private:
     void mouseReleaseEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *) override;
     void wheelEvent(QWheelEvent *) override;
+
+    Canavar::Engine::FirecrackerEffect *createEfect();
 
 private:
     long long mPreviousTime;
