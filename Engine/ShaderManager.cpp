@@ -331,6 +331,7 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addUniform("MVP");
         shader->addUniform("scale");
+        shader->addUniform("maxLife");
 
         shader->addAttribute("cubeVertexPosition");
         shader->addAttribute("position");

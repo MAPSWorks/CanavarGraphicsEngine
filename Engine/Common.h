@@ -16,6 +16,13 @@ public: \
 public: \
     inline void set##name(const type &var) { m##name = var; }
 
+#define DECLARE_MEMBER_CONST(type, name) \
+protected: \
+    type m##name; \
+\
+public: \
+    inline const type &get##name(void) const { return m##name; }
+
 namespace Canavar {
 namespace Engine {
 

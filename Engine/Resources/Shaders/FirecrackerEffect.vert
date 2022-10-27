@@ -6,6 +6,7 @@ layout(location = 3) in float deadAfter;
 
 uniform mat4 MVP;
 uniform float scale;
+uniform float maxLife;
 
 out vec3 fsPosition;
 out float fsLife;
@@ -17,5 +18,7 @@ void main()
     fsLife = life;
     fsDeadAfter = deadAfter;
 
-    gl_Position = MVP * vec4(position + scale * cubeVertexPosition, 1.0f);
+    gl_Position = MVP * vec4(position + scale * cubeVertexPosition, life >= deadAfter ? 0.0f : 1.0f);
+
+
 }

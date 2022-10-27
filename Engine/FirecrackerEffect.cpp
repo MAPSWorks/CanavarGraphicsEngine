@@ -12,6 +12,9 @@ Canavar::Engine::FirecrackerEffect::FirecrackerEffect(QObject *parent)
     , mInitialSpeed(20.0f)
     , mLoop(false)
     , mScale(0.1f)
+    , mDamping(1.0f)
+    , mFinished(false)
+    , mNumberOfDeadParticles(0)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();
@@ -64,10 +67,12 @@ void Canavar::Engine::FirecrackerEffect::render(float ifps)
 {
     for (int i = 0; i < mParticles.size(); i++)
     {
-        float x = Helper::generateBetween(-0.25, 0.25);
-        float z = Helper::generateBetween(-0.25, 0.25);
+        if (!mLoop && mParticles[i].dead)
+            continue;
 
-        mParticles[i].velocity += mGravity * (mGravityDirection + QVector3D(x, 0, z)) * ifps;
+        auto dampingFactor = mDamping * mParticles[i].velocity.length() * mParticles[i].velocity.normalized() * ifps;
+
+        mParticles[i].velocity += mGravity * mGravityDirection * ifps - dampingFactor;
         mParticles[i].position += mParticles[i].velocity * ifps;
         mParticles[i].life += ifps;
 
@@ -76,13 +81,22 @@ void Canavar::Engine::FirecrackerEffect::render(float ifps)
             if (mLoop)
                 mParticles[i] = generateParticle();
             else
-                mParticles[i].position = QVector3D(0, 0, 0);
+            {
+                mParticles[i].dead = true;
+                mNumberOfDeadParticles++;
+            }
         }
     }
+
+    mFinished = mNumberOfParticles == mNumberOfDeadParticles;
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     mShaderManager->bind(ShaderType::FirecrackerEffectShader);
     mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * worldTransformation());
     mShaderManager->setUniformValue("scale", mScale);
+    mShaderManager->setUniformValue("maxLife", mMaxLife);
 
     glBindVertexArray(mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
@@ -91,6 +105,8 @@ void Canavar::Engine::FirecrackerEffect::render(float ifps)
     glBindVertexArray(0);
 
     mShaderManager->release();
+
+    glDisable(GL_BLEND);
 }
 
 Canavar::Engine::FirecrackerEffect::Particle Canavar::Engine::FirecrackerEffect::generateParticle()
@@ -105,9 +121,9 @@ Canavar::Engine::FirecrackerEffect::Particle Canavar::Engine::FirecrackerEffect:
     float y = cos(theta);
 
     p.position = QVector3D(0, 0, 0);
-    p.velocity = mInitialSpeed * QVector3D(x, y, z);
+    p.velocity = Helper::generateBetween(0.5 * mInitialSpeed, mInitialSpeed) * QVector3D(x, y, z);
     p.life = 0.0f;
     p.deadAfter = mMinLife + Helper::generateFloat(mMaxLife - mMinLife);
-
+    p.dead = false;
     return p;
 }
