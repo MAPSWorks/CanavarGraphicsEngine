@@ -1,5 +1,6 @@
 #include "RendererManager.h"
 #include "CameraManager.h"
+#include "FirecrackerEffect.h"
 #include "Haze.h"
 #include "Helper.h"
 #include "LightManager.h"
@@ -128,13 +129,16 @@ void Canavar::Engine::RendererManager::render(float ifps)
                 data->render(RenderPass::Default, model);
     }
 
-    // Render Nozzle Effect
+    // Render Effects
     for (const auto &node : nodes)
     {
         if (!node->getVisible())
             continue;
 
         if (auto effect = dynamic_cast<NozzleEffect *>(node))
+            effect->render(ifps);
+
+        if (auto effect = dynamic_cast<FirecrackerEffect *>(node))
             effect->render(ifps);
     }
 

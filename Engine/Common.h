@@ -32,6 +32,7 @@ enum class ShaderType { //
     ScreenShader,
     MeshInfoShader,
     NozzleEffectShader,
+    FirecrackerEffectShader
 };
 
 enum class RenderPass { //

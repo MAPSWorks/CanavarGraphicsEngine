@@ -79,6 +79,10 @@ void Canavar::Engine::Gui::draw()
             draw(dynamic_cast<NozzleEffect *>(mSelectedNode));
             draw(dynamic_cast<Node *>(mSelectedNode));
             break;
+        case Canavar::Engine::Node::NodeType::FirecrackerEffect:
+            draw(dynamic_cast<FirecrackerEffect *>(mSelectedNode));
+            draw(dynamic_cast<Node *>(mSelectedNode));
+            break;
         default:
             break;
         }
@@ -303,10 +307,24 @@ void Canavar::Engine::Gui::draw(NozzleEffect *node)
     if (!ImGui::CollapsingHeader("Nozzle Effect Parameters##NozzleEffect"))
     {
         ImGui::SliderFloat("Max Radius##NozzleEffect", &node->getMaxRadius_nonConst(), 0.001f, 4.0f, "%.4f");
-        ImGui::SliderFloat("Max Life##NozzleEffect", &node->getMaxLife_nonConst(), 0.0000f, 20.0f, "%.5f");
+        ImGui::SliderFloat("Max Life##NozzleEffect", &node->getMaxLife_nonConst(), 0.0000f, 0.1f, "%.5f");
         ImGui::SliderFloat("Max Distance##NozzleEffect", &node->getMaxDistance_nonConst(), 1.0f, 30.0f, "%.3f");
         ImGui::SliderFloat("Min Distance##NozzleEffect", &node->getMinDistance_nonConst(), 1.0f, 30.0f, "%.3f");
         ImGui::SliderFloat("Speed##NozzleEffect", &node->getSpeed_nonConst(), 0.0f, 10.0f, "%.5f");
         ImGui::SliderFloat("Scale##NozzleEffect", &node->getScale_nonConst(), 0.001f, 0.1f, "%.4f");
+    }
+}
+
+void Canavar::Engine::Gui::draw(FirecrackerEffect *node)
+{
+    if (!ImGui::CollapsingHeader("Firecracker Effect Parameters##Firecracker"))
+    {
+        ImGui::SliderFloat("Span Angle##Firecracker", &node->getSpanAngle_nonConst(), 0.0f, 180.0f, "%.1f");
+        ImGui::SliderFloat("Gravity##Firecracker", &node->getGravity_nonConst(), 0.0f, 20.0f, "%.1f");
+        ImGui::SliderFloat("Max Life##Firecracker", &node->getMaxLife_nonConst(), 0.0f, 20.0f, "%.2f");
+        ImGui::SliderFloat("Min Life##Firecracker", &node->getMinLife_nonConst(), 0.0f, 20.0f, "%.2f");
+        ImGui::SliderFloat("Initial Speed##Firecracker", &node->getInitialSpeed_nonConst(), 0.0f, 200.0f, "%.1f");
+        ImGui::SliderFloat("Scale##Firecracker", &node->getScale_nonConst(), 0.001f, 1.0f, "%.4f");
+        ImGui::Checkbox("Loop##Firecracker", &node->getLoop_nonConst());
     }
 }

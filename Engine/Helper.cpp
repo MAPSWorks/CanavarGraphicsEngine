@@ -298,6 +298,11 @@ float Canavar::Engine::Helper::generateFloat(float bound)
     return mGenerator.bounded(bound);
 }
 
+float Canavar::Engine::Helper::generateBetween(float lower, float upper)
+{
+    return lower + mGenerator.bounded(upper - lower);
+}
+
 QVector3D Canavar::Engine::Helper::generateVec3(float x, float y, float z)
 {
     return QVector3D(generateFloat(x), generateFloat(y), generateFloat(z));

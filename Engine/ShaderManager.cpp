@@ -321,6 +321,26 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
+    // Firecracker Effect Shader
+    {
+        Shader *shader = new Shader(ShaderType::FirecrackerEffectShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/FirecrackerEffect.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/FirecrackerEffect.frag");
+
+        shader->addUniform("MVP");
+        shader->addUniform("scale");
+
+        shader->addAttribute("cubeVertexPosition");
+        shader->addAttribute("position");
+        shader->addAttribute("life");
+        shader->addAttribute("deadAfter");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

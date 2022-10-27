@@ -114,6 +114,9 @@ void Window::initializeGL()
         greenLightContainer->setPosition(QVector3D(11.42f, 0.16f, -0.83f));
         mJetRoot->addChild(greenLightContainer);
 
+        auto fireCracker = NodeManager::instance()->createNode(Node::NodeType::FirecrackerEffect);
+        fireCracker->setWorldPosition(QVector3D(0, 100, 0));
+
         Canavar::Engine::Sun::instance()->setDirection(QVector3D(1, -0.5, 1));
 
         mAircraftController->init();

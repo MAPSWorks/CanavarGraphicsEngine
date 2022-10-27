@@ -1,6 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include "FirecrackerEffect.h"
 #include "Model.h"
 #include "Node.h"
 #include "NozzleEffect.h"
@@ -34,6 +35,7 @@ private:
     static void draw(Canavar::Engine::PointLight *node);
     static void draw(Canavar::Engine::Haze *node);
     static void draw(Canavar::Engine::NozzleEffect *node);
+    static void draw(Canavar::Engine::FirecrackerEffect *node);
 
 private:
     static Canavar::Engine::Node *mSelectedNode;

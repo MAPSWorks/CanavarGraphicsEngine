@@ -20,5 +20,7 @@
         <file>Resources/Shaders/MeshInfo.frag</file>
         <file>Resources/Shaders/NozzleEffect.vert</file>
         <file>Resources/Shaders/NozzleEffect.frag</file>
+        <file>Resources/Shaders/FirecrackerEffect.vert</file>
+        <file>Resources/Shaders/FirecrackerEffect.frag</file>
     </qresource>
 </RCC>

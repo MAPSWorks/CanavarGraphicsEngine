@@ -34,6 +34,7 @@ public:
     static QQuaternion invert(const QQuaternion &rotation);
     static ModelData *loadModel(const QString &name, const QString &path);
     static float generateFloat(float bound);
+    static float generateBetween(float lower, float upper);
     static QVector3D generateVec3(float x, float y, float z);
     static QOpenGLTexture *createTexture(const QString &path);
 

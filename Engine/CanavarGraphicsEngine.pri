@@ -6,6 +6,7 @@ HEADERS += \
     $$PWD/Controller.h \
     $$PWD/DummyCamera.h \
     $$PWD/DummyNode.h \
+    $$PWD/FirecrackerEffect.h \
     $$PWD/FreeCamera.h \
     $$PWD/Gui.h \
     $$PWD/Haze.h \
@@ -47,6 +48,7 @@ SOURCES += \
     $$PWD/Controller.cpp \
     $$PWD/DummyCamera.cpp \
     $$PWD/DummyNode.cpp \
+    $$PWD/FirecrackerEffect.cpp \
     $$PWD/FreeCamera.cpp \
     $$PWD/Gui.cpp \
     $$PWD/Haze.cpp \

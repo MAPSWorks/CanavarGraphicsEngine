@@ -6,6 +6,7 @@
 #include "Model.h"
 
 #include "DummyNode.h"
+#include "FirecrackerEffect.h"
 #include "Haze.h"
 #include "NozzleEffect.h"
 #include "Sky.h"
@@ -23,6 +24,7 @@ Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     mTypeToName.insert(Node::NodeType::Model, "Model");
     mTypeToName.insert(Node::NodeType::PointLight, "Point Light");
     mTypeToName.insert(Node::NodeType::NozzleEffect, "Nozzle Effect");
+    mTypeToName.insert(Node::NodeType::FirecrackerEffect, "Firecracker Effect");
 }
 
 bool Canavar::Engine::NodeManager::init()
@@ -83,6 +85,12 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
         node = effect;
         break;
     }
+    case Node::NodeType::FirecrackerEffect: {
+        FirecrackerEffect *effect = new FirecrackerEffect;
+        effect->create();
+        node = effect;
+        break;
+    }
     default: {
         qWarning() << Q_FUNC_INFO << "Implement construction algorithm for this NodeType:" << (int) type;
         return nullptr;
@@ -121,7 +129,8 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
     {
     case Node::NodeType::Model:
     case Node::NodeType::DummyNode:
-    case Node::NodeType::NozzleEffect: {
+    case Node::NodeType::NozzleEffect:
+    case Node::NodeType::FirecrackerEffect: {
         // TODO: What will happen to node's children?
         if (node->mParent)
             node->mParent->removeChild(node);
