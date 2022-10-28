@@ -9,6 +9,7 @@
 #include "FirecrackerEffect.h"
 #include "Haze.h"
 #include "NozzleEffect.h"
+#include "PersecutorCamera.h"
 #include "Sky.h"
 #include "Sun.h"
 #include "Terrain.h"
@@ -25,6 +26,7 @@ Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     mTypeToName.insert(Node::NodeType::PointLight, "Point Light");
     mTypeToName.insert(Node::NodeType::NozzleEffect, "Nozzle Effect");
     mTypeToName.insert(Node::NodeType::FirecrackerEffect, "Firecracker Effect");
+    mTypeToName.insert(Node::NodeType::PersecutorCamera, "Persecutor Camera");
 }
 
 bool Canavar::Engine::NodeManager::init()
@@ -91,6 +93,11 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
         node = effect;
         break;
     }
+    case Node::NodeType::PersecutorCamera: {
+        node = new PersecutorCamera;
+        mCameraManager->addCamera(dynamic_cast<PersecutorCamera *>(node));
+        break;
+    }
     default: {
         qWarning() << Q_FUNC_INFO << "Implement construction algorithm for this NodeType:" << (int) type;
         return nullptr;
@@ -141,6 +148,7 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
         node->deleteLater();
         break;
     }
+    case Node::NodeType::PersecutorCamera:
     case Node::NodeType::DummyCamera:
     case Node::NodeType::FreeCamera: {
         if (node->mParent)

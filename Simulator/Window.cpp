@@ -10,6 +10,7 @@
 #include <PerspectiveCamera.h>
 #include <RendererManager.h>
 
+#include <PersecutorCamera.h>
 #include <QDateTime>
 #include <QKeyEvent>
 #include <QVector3D>
@@ -82,6 +83,11 @@ void Window::initializeGL()
         mDummyCamera->setVerticalFov(75.0f);
         mDummyCamera->setZNear(5.0f);
         mDummyCamera->setZFar(1000000.0f);
+
+        mPersecutorCamera = dynamic_cast<Canavar::Engine::PersecutorCamera *>(NodeManager::instance()->createNode(Node::NodeType::PersecutorCamera));
+        mPersecutorCamera->setZNear(5.0f);
+        mPersecutorCamera->setZFar(1000000.0f);
+        mPersecutorCamera->setTarget(mJetRoot);
 
         auto effect = NodeManager::instance()->createNode(Node::NodeType::NozzleEffect);
         effect->setPosition(QVector3D(0, 0.14f, 11.5f));
@@ -164,6 +170,8 @@ void Window::keyPressEvent(QKeyEvent *event)
         CameraManager::instance()->setActiveCamera(mFreeCamera);
     else if (event->key() == Qt::Key_2)
         CameraManager::instance()->setActiveCamera(mDummyCamera);
+    else if (event->key() == Qt::Key_3)
+        CameraManager::instance()->setActiveCamera(mPersecutorCamera);
 
     mController->keyPressed(event);
     mAircraftController->keyPressed(event);

@@ -31,7 +31,8 @@ public:
         Terrain,
         PointLight,
         NozzleEffect,
-        FirecrackerEffect
+        FirecrackerEffect,
+        PersecutorCamera
     };
 
     const QMatrix4x4 worldTransformation() const;

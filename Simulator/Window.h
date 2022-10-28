@@ -17,6 +17,7 @@ class Controller;
 class Node;
 class Model;
 class PerspectiveCamera;
+class PersecutorCamera;
 
 } // namespace Engine
 } // namespace Canavar
@@ -52,6 +53,7 @@ private:
 
     Canavar::Engine::PerspectiveCamera *mFreeCamera;
     Canavar::Engine::PerspectiveCamera *mDummyCamera;
+    Canavar::Engine::PersecutorCamera *mPersecutorCamera;
     Canavar::Engine::Model *mJet;
     Canavar::Engine::Node *mJetRoot;
 

@@ -28,6 +28,7 @@ HEADERS += \
     $$PWD/NozzleEffect.h \
     $$PWD/OpenGLFramebuffer.h \
     $$PWD/OpenGLVertexArrayObject.h \
+    $$PWD/PersecutorCamera.h \
     $$PWD/PerspectiveCamera.h \
     $$PWD/PointLight.h \
     $$PWD/RendererManager.h \
@@ -68,6 +69,7 @@ SOURCES += \
     $$PWD/NozzleEffect.cpp \
     $$PWD/OpenGLFramebuffer.cpp \
     $$PWD/OpenGLVertexArrayObject.cpp \
+    $$PWD/PersecutorCamera.cpp \
     $$PWD/PerspectiveCamera.cpp \
     $$PWD/PointLight.cpp \
     $$PWD/RendererManager.cpp \
