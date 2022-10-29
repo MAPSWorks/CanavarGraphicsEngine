@@ -60,10 +60,8 @@ void Canavar::Engine::PersecutorCamera::update(float ifps)
         mYaw += mSpeed.mAngularMultiplier * mSpeed.mAngular * mMouse.mDx * ifps;
         mPitch += mSpeed.mAngularMultiplier * mSpeed.mAngular * mMouse.mDy * ifps;
 
-        auto newWorldPosition = mTarget->worldPosition()
-                                + mDistance * QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mYaw) * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mPitch) * QVector3D(0, 0, 1);
-
         auto newRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mYaw) * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mPitch);
+        auto newWorldPosition = mTarget->worldPosition() + newRotation * QVector3D(0, 0, mDistance);
 
         setWorldPosition(newWorldPosition);
         setWorldRotation(newRotation);

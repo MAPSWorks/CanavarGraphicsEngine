@@ -38,10 +38,9 @@ public:
 
     const QList<Node *> &nodes() const;
 
-    void renderNodeInfoStuff();
-
 private:
     void assignName(Node *node, const QString &name);
+    void renderNodeInfoStuff();
 
 private:
     QList<Node *> mNodes;
