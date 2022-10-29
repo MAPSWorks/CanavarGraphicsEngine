@@ -49,6 +49,7 @@ void Canavar::Engine::Gui::draw()
         case Canavar::Engine::Node::NodeType::DummyNode:
             draw(mSelectedNode);
             break;
+        case Canavar::Engine::Node::NodeType::PersecutorCamera:
         case Canavar::Engine::Node::NodeType::FreeCamera:
         case Canavar::Engine::Node::NodeType::DummyCamera:
             draw(dynamic_cast<PerspectiveCamera *>(mSelectedNode));

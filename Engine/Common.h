@@ -37,14 +37,14 @@ enum class ShaderType { //
     BlurShader,
     PostProcessShader,
     ScreenShader,
-    MeshInfoShader,
+    NodeInfoShader,
     NozzleEffectShader,
     FirecrackerEffectShader
 };
 
 enum class RenderPass { //
     Default = 0x00,
-    MeshInfo = 0x01,
+    NodeInfo = 0x01,
     Custom = 0x02,
 };
 

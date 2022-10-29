@@ -157,9 +157,9 @@ void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Model *model)
         mShaderManager->release();
     }
 
-    if (renderPasses.testFlag(RenderPass::MeshInfo))
+    if (renderPasses.testFlag(RenderPass::NodeInfo))
     {
-        mShaderManager->bind(ShaderType::MeshInfoShader);
+        mShaderManager->bind(ShaderType::NodeInfoShader);
         mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation());
         mShaderManager->setUniformValue("nodeID", model->getID());
         mShaderManager->setUniformValue("meshID", mID);

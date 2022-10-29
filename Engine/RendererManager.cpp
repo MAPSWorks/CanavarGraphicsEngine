@@ -23,7 +23,6 @@ Canavar::Engine::RendererManager::RendererManager(QObject *parent)
     , mBlurPass(4)
     , mExposure(1.0f)
     , mGamma(1.0f)
-    , mNodeSelectionEnabled(true)
 {}
 
 Canavar::Engine::RendererManager *Canavar::Engine::RendererManager::instance()
@@ -75,17 +74,6 @@ void Canavar::Engine::RendererManager::resize(int w, int h)
 
     deleteFramebuffers();
     createFramebuffers(mWidth, mHeight);
-}
-
-Canavar::Engine::Node *Canavar::Engine::RendererManager::getNodeByScreenPosition(int x, int y)
-{
-    mMeshInfoFBO.bind();
-    int info[4];
-    glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, &info);
-    qDebug() << info[0] << info[1] << info[2] << info[3];
-    mMeshInfoFBO.release();
-
-    return nullptr;
 }
 
 void Canavar::Engine::RendererManager::render(float ifps)
@@ -178,25 +166,6 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mShaderManager->setUniformValue("gamma", mGamma);
     mModelDataManager->render(ModelDataManager::InternalModel::Quad);
     mShaderManager->release();
-
-    if (mNodeSelectionEnabled)
-    {
-        mMeshInfoFBO.bind();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0, 0, 0, 0);
-
-        for (const auto &node : nodes)
-        {
-            if (!node->getVisible())
-                continue;
-
-            if (auto model = dynamic_cast<Model *>(node))
-                if (auto data = mModelDataManager->getModelData(model->getModelName()))
-                    data->render(RenderPass::MeshInfo, model);
-        }
-
-        mMeshInfoFBO.release();
-    }
 }
 
 void Canavar::Engine::RendererManager::setCommonUniforms()
@@ -237,8 +206,6 @@ void Canavar::Engine::RendererManager::deleteFramebuffers()
     for (auto type : keys)
         if (mFBOs[type])
             delete mFBOs[type];
-
-    mMeshInfoFBO.destroy();
 }
 
 void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
@@ -258,6 +225,4 @@ void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
             mFBOs[FramebufferType::Default]->release();
         }
     }
-
-    mMeshInfoFBO.create(width, height);
 }

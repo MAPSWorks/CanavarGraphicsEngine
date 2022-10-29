@@ -33,6 +33,11 @@ QMatrix4x4 Canavar::Engine::Camera::getRotationMatrix()
     return rotation;
 }
 
+QVector3D Canavar::Engine::Camera::getViewDirection()
+{
+    return getRotationMatrix().map(QVector4D(0, 0, -1, 0)).toVector3D();
+}
+
 bool Canavar::Engine::Camera::active() const
 {
     return mActive;

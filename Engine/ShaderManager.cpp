@@ -274,13 +274,13 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
-    // Mesh Info Shader
+    // Node Info Shader
     {
-        Shader *shader = new Shader(ShaderType::MeshInfoShader);
+        Shader *shader = new Shader(ShaderType::NodeInfoShader);
         mShaders.insert(shader->type(), shader);
 
-        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MeshInfo.vert");
-        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MeshInfo.frag");
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NodeInfo.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NodeInfo.frag");
 
         shader->addUniform("MVP");
         shader->addUniform("nodeID");

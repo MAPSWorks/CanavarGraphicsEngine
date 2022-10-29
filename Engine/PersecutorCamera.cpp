@@ -7,6 +7,8 @@ Canavar::Engine::PersecutorCamera::PersecutorCamera(QObject *parent)
     , mYaw(0.0f)
     , mPitch(0.0f)
 {
+    mType = Node::NodeType::PersecutorCamera;
+
     connect(this, &Camera::activeChanged, this, [=]() { update(0); });
 }
 

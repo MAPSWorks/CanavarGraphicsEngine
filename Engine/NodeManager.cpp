@@ -8,6 +8,7 @@
 #include "DummyNode.h"
 #include "FirecrackerEffect.h"
 #include "Haze.h"
+#include "ModelDataManager.h"
 #include "NozzleEffect.h"
 #include "PersecutorCamera.h"
 #include "Sky.h"
@@ -17,6 +18,8 @@
 Canavar::Engine::NodeManager::NodeManager(QObject *parent)
     : Manager(parent)
     , mNumberOfNodes(0)
+    , mWidth(1600)
+    , mHeight(900)
 
 {
     mTypeToName.insert(Node::NodeType::DummyCamera, "Dummy Camera");
@@ -33,6 +36,7 @@ bool Canavar::Engine::NodeManager::init()
 {
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
+    mModelDataManager = ModelDataManager::instance();
 
     mNodes << Sun::instance();
     Sun::instance()->mID = mNumberOfNodes;
@@ -50,7 +54,20 @@ bool Canavar::Engine::NodeManager::init()
     Terrain::instance()->mID = mNumberOfNodes;
     mNumberOfNodes++;
 
+    initializeOpenGLFunctions();
+
+    mNodeInfoFBO.create(mWidth, mHeight);
+
     return true;
+}
+
+void Canavar::Engine::NodeManager::resize(int width, int height)
+{
+    mWidth = width;
+    mHeight = height;
+
+    mNodeInfoFBO.destroy();
+    mNodeInfoFBO.create(width, height);
 }
 
 Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType type, const QString &name)
@@ -173,10 +190,19 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
     }
 }
 
-Canavar::Engine::Node *Canavar::Engine::NodeManager::findNodeByID(int ID)
+Canavar::Engine::Node *Canavar::Engine::NodeManager::getNodeByID(int ID)
 {
     for (const auto &node : mNodes)
         if (node->getID() == ID)
+            return node;
+
+    return nullptr;
+}
+
+Canavar::Engine::Node *Canavar::Engine::NodeManager::getNodeByName(const QString &name)
+{
+    for (const auto &node : mNodes)
+        if (node->getName() == name)
             return node;
 
     return nullptr;
@@ -208,4 +234,40 @@ void Canavar::Engine::NodeManager::assignName(Node *node, const QString &name)
         node->setName(newName + " " + QString::number(count));
 
     mNames.insert(newName, ++count);
+}
+
+Canavar::Engine::Node *Canavar::Engine::NodeManager::getNodeByScreenPosition(int x, int y)
+{
+    renderNodeInfoStuff();
+
+    mNodeInfoFBO.bind();
+    int info[4]; // (nodeID, meshID, fsVertexID, 1)
+    glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, &info);
+    mNodeInfoFBO.release();
+
+    Node *node = nullptr;
+
+    if (info[3] == 1) // Node found
+        node = getNodeByID(info[0]);
+
+    return node;
+}
+
+void Canavar::Engine::NodeManager::renderNodeInfoStuff()
+{
+    mNodeInfoFBO.bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0, 0, 0, 0);
+
+    for (const auto &node : mNodes)
+    {
+        if (!node->getVisible())
+            continue;
+
+        if (auto model = dynamic_cast<Model *>(node))
+            if (auto data = mModelDataManager->getModelData(model->getModelName()))
+                data->render(RenderPass::NodeInfo, model);
+    }
+
+    mNodeInfoFBO.release();
 }

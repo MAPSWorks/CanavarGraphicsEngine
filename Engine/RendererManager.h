@@ -3,7 +3,6 @@
 
 #include "Camera.h"
 #include "Manager.h"
-#include "OpenGLFramebuffer.h"
 
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObjectFormat>
@@ -42,8 +41,6 @@ public:
     bool init() override;
     void resize(int width, int height) override;
 
-    Node *getNodeByScreenPosition(int x, int y);
-
     void render(float ifps);
 
 private:
@@ -75,12 +72,9 @@ private:
     int mWidth;
     int mHeight;
 
-    OpenGLFramebuffer mMeshInfoFBO;
-
     DECLARE_MEMBER(int, BlurPass)
     DECLARE_MEMBER(float, Exposure)
     DECLARE_MEMBER(float, Gamma)
-    DECLARE_MEMBER(bool, NodeSelectionEnabled)
 };
 
 } // namespace Engine

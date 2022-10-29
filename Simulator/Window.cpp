@@ -196,7 +196,7 @@ void Window::mousePressEvent(QMouseEvent *event)
 
     mController->mousePressed(event);
 
-    qDebug() << RendererManager::instance()->getNodeByScreenPosition(event->position().x(), event->position().y());
+    qDebug() << NodeManager::instance()->getNodeByScreenPosition(event->position().x(), event->position().y());
 }
 
 void Window::mouseReleaseEvent(QMouseEvent *event)
