@@ -39,8 +39,8 @@ public:
 
     ShaderType type() const;
 
+private:
     QString getShaderTypeString(QOpenGLShader::ShaderTypeBit type);
-    QString getShaderTypeString();
 
 private:
     QOpenGLShaderProgram *mProgram;

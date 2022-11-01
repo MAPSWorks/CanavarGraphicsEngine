@@ -102,7 +102,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mSky->render();
 
     // Render terrain
-    mTerrain->render(RenderPass::Default);
+    mTerrain->render();
 
     auto nodes = mNodeManager->nodes();
 
@@ -114,7 +114,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
         if (auto model = dynamic_cast<Model *>(node))
             if (auto data = mModelDataManager->getModelData(model->getModelName()))
-                data->render(RenderPass::Default, model);
+                data->render(RenderMode::Default, model);
     }
 
     // Render Effects
@@ -148,7 +148,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
         mShaderManager->bind(ShaderType::BlurShader);
         mShaderManager->setUniformValue("horizontal", i % 2 == 0);
         mShaderManager->setSampler("screenTexture", 0, mFBOs[i % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
-        mModelDataManager->render(ModelDataManager::InternalModel::Quad);
+        mModelDataManager->render(ModelDataManager::InternalBasicModel::Quad);
         mShaderManager->release();
     }
 
@@ -164,7 +164,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mShaderManager->setSampler("bloomBlurTexture", 1, mFBOs[qMax(0, mBlurPass) % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
     mShaderManager->setUniformValue("exposure", mExposure);
     mShaderManager->setUniformValue("gamma", mGamma);
-    mModelDataManager->render(ModelDataManager::InternalModel::Quad);
+    mModelDataManager->render(ModelDataManager::InternalBasicModel::Quad);
     mShaderManager->release();
 }
 

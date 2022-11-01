@@ -1,10 +1,9 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include "AABB.h"
 #include "Common.h"
 #include "Material.h"
-#include "Node.h"
-#include "PointLight.h"
 
 #include <QObject>
 #include <QOpenGLExtraFunctions>
@@ -42,11 +41,7 @@ public:
     void addIndex(unsigned int index);
     void setMaterial(Material *material);
     void create();
-
-    void render(RenderPasses renderPasses, Node *node);
-
-private:
-    void render(RenderPasses renderPasses, Model *model);
+    void render(RenderModes modes, Model *model, GLenum primitive = GL_TRIANGLES);
 
 private:
     QOpenGLVertexArrayObject *mVAO;

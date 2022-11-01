@@ -61,7 +61,7 @@ void Canavar::Engine::PersecutorCamera::update(float ifps)
         mPitch += mSpeed.mAngularMultiplier * mSpeed.mAngular * mMouse.mDy * ifps;
 
         auto newRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mYaw) * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mPitch);
-        auto newWorldPosition = mTarget->worldPosition() + newRotation * QVector3D(0, 0, mDistance);
+        auto newWorldPosition = mTarget->worldPosition() + mDistance * newRotation * QVector3D(0, 0, 1);
 
         setWorldPosition(newWorldPosition);
         setWorldRotation(newRotation);
@@ -78,7 +78,7 @@ void Canavar::Engine::PersecutorCamera::reset()
     mPitch = 0.0f;
 }
 
-Canavar::Engine::Node *Canavar::Engine::PersecutorCamera::target() const
+Canavar::Engine::Node *Canavar::Engine::PersecutorCamera::getTarget() const
 {
     return mTarget;
 }

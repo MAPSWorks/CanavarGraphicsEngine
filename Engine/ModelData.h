@@ -25,7 +25,7 @@ public:
     const QString &name() const;
     const QVector<Mesh *> &meshes() const;
 
-    void render(RenderPasses renderPasses, Node *node);
+    void render(RenderModes modes, Model *model, GLenum primitive = GL_TRIANGLES);
 
 private:
     QString mName;

@@ -6,13 +6,13 @@
 Canavar::Engine::Shader::Shader(ShaderType type, QObject *parent)
     : QObject(parent)
     , mType(type)
-{
-    mShaderName = getShaderTypeString();
-}
+{}
 
 bool Canavar::Engine::Shader::init()
 {
     initializeOpenGLFunctions();
+
+    mShaderName = mPaths.value(QOpenGLShader::Vertex).sliced(mPaths.value(QOpenGLShader::Vertex).lastIndexOf("/") + 1);
 
     qInfo() << mShaderName << "is initializing... ";
 
@@ -182,15 +182,6 @@ QString Canavar::Engine::Shader::getShaderTypeString(QOpenGLShader::ShaderTypeBi
         return "Tesselation Evaluation Shader";
     case QOpenGLShader::Compute:
         return "Compute Shader";
-    default:
-        return "Unknown Shader";
-    }
-}
-
-QString Canavar::Engine::Shader::getShaderTypeString()
-{
-    switch (mType)
-    {
     default:
         return "Unknown Shader";
     }

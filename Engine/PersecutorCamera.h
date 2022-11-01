@@ -26,13 +26,15 @@ public:
     void update(float) override;
     void reset() override;
 
-    Node *target() const;
+    Node *getTarget() const;
     void setTarget(Node *newTarget);
 
+private:
     void onTargetDestroyed();
 
 private:
     Node *mTarget;
+
     Mouse mMouse;
     Speed mSpeed;
 

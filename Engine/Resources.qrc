@@ -22,5 +22,9 @@
         <file>Resources/Shaders/NozzleEffect.frag</file>
         <file>Resources/Shaders/FirecrackerEffect.vert</file>
         <file>Resources/Shaders/FirecrackerEffect.frag</file>
+        <file>Resources/InternalModels/Cone/Cone.mtl</file>
+        <file>Resources/InternalModels/Cube/Cube.mtl</file>
+        <file>Resources/InternalModels/Cone/Cone.obj</file>
+        <file>Resources/InternalModels/Cube/Cube.obj</file>
     </qresource>
 </RCC>

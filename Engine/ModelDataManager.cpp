@@ -30,6 +30,7 @@ bool Canavar::Engine::ModelDataManager::init()
 
     initializeOpenGLFunctions();
 
+    // Internal models
     // Quad
     glGenVertexArrays(1, &mQuad.mVAO);
     glBindVertexArray(mQuad.mVAO);
@@ -53,42 +54,45 @@ bool Canavar::Engine::ModelDataManager::init()
     return true;
 }
 
-void Canavar::Engine::ModelDataManager::render(InternalModel internalModel)
+void Canavar::Engine::ModelDataManager::render(InternalBasicModel model, RenderMode mode, GLenum primitive, QVariant count)
 {
-    switch (internalModel)
+    switch (mode)
     {
-    case InternalModel::Quad:
-        glBindVertexArray(mQuad.mVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindVertexArray(0);
+    case RenderMode::Default:
+        switch (model)
+        {
+        case InternalBasicModel::Quad:
+            glBindVertexArray(mQuad.mVAO);
+            glDrawArrays(primitive, 0, 6);
+            glBindVertexArray(0);
+            break;
+        case InternalBasicModel::Cube:
+            glBindVertexArray(mCube.mVAO);
+            glDrawArrays(primitive, 0, 36);
+            glBindVertexArray(0);
+            break;
+        default:
+            qCritical() << Q_FUNC_INFO << "Not implemented yet!";
+            break;
+        }
         break;
-    case InternalModel::Cube:
-        glBindVertexArray(mCube.mVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-        break;
-    default:
-        qCritical() << Q_FUNC_INFO << "Not implemented yet!";
-        break;
-    }
-}
-
-void Canavar::Engine::ModelDataManager::renderInstanced(InternalModel internalModel, int instanceCount)
-{
-    switch (internalModel)
-    {
-    case InternalModel::Quad:
-        glBindVertexArray(mQuad.mVAO);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, instanceCount);
-        glBindVertexArray(0);
-        break;
-    case InternalModel::Cube:
-        glBindVertexArray(mCube.mVAO);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, instanceCount);
-        glBindVertexArray(0);
-        break;
-    default:
-        qCritical() << Q_FUNC_INFO << "Not implemented yet!";
+    case RenderMode::Instanced:
+        switch (model)
+        {
+        case InternalBasicModel::Quad:
+            glBindVertexArray(mQuad.mVAO);
+            glDrawArraysInstanced(primitive, 0, 6, count.toInt());
+            glBindVertexArray(0);
+            break;
+        case InternalBasicModel::Cube:
+            glBindVertexArray(mCube.mVAO);
+            glDrawArraysInstanced(primitive, 0, 36, count.toInt());
+            glBindVertexArray(0);
+            break;
+        default:
+            qCritical() << Q_FUNC_INFO << "Not implemented yet!";
+            break;
+        }
         break;
     }
 }
@@ -136,3 +140,5 @@ void Canavar::Engine::ModelDataManager::loadModels(const QString &path, const QS
 
     qInfo() << "All models are loaded at" << path;
 }
+
+void Canavar::Engine::ModelDataManager::loadInternalModels() {}

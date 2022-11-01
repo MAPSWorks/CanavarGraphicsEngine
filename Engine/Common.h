@@ -42,13 +42,13 @@ enum class ShaderType { //
     FirecrackerEffectShader
 };
 
-enum class RenderPass { //
+enum class RenderMode { //
     Default = 0x00,
     NodeInfo = 0x01,
     Custom = 0x02,
 };
 
-Q_DECLARE_FLAGS(RenderPasses, RenderPass);
+Q_DECLARE_FLAGS(RenderModes, RenderMode);
 
 extern const float CUBE[108];
 extern const float QUAD[24];
@@ -56,6 +56,6 @@ extern const float QUAD[24];
 } // namespace Engine
 } // namespace Canavar
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Canavar::Engine::RenderPasses)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Canavar::Engine::RenderModes)
 
 #endif // COMMON_H

@@ -266,7 +266,7 @@ void Canavar::Engine::NodeManager::renderNodeInfoStuff()
 
         if (auto model = dynamic_cast<Model *>(node))
             if (auto data = mModelDataManager->getModelData(model->getModelName()))
-                data->render(RenderPass::NodeInfo, model);
+                data->render(RenderMode::NodeInfo, model);
     }
 
     mNodeInfoFBO.release();

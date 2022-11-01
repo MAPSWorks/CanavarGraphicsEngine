@@ -79,22 +79,16 @@ void Canavar::Engine::Mesh::create()
     mVAO->release();
 }
 
-void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Node *node)
+void Canavar::Engine::Mesh::render(RenderModes modes, Model *model, GLenum primitive)
 {
-    if (renderPasses.testFlag(RenderPass::Custom))
+    if (modes.testFlag(RenderMode::Custom))
     {
         mVAO->bind();
-        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(primitive, mIndices.size(), GL_UNSIGNED_INT, 0);
         mVAO->release();
     }
 
-    if (auto model = dynamic_cast<Model *>(node))
-        render(renderPasses, model);
-}
-
-void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Model *model)
-{
-    if (renderPasses.testFlag(RenderPass::Default))
+    if (modes.testFlag(RenderMode::Default))
     {
         if (bool useTexture = mMaterial->getNumberOfTextures())
         {
@@ -151,13 +145,13 @@ void Canavar::Engine::Mesh::render(RenderPasses renderPasses, Model *model)
         mShaderManager->setUniformValue("model.specular", model->getSpecular());
 
         mVAO->bind();
-        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(primitive, mIndices.size(), GL_UNSIGNED_INT, 0);
         mVAO->release();
 
         mShaderManager->release();
     }
 
-    if (renderPasses.testFlag(RenderPass::NodeInfo))
+    if (modes.testFlag(RenderMode::NodeInfo))
     {
         mShaderManager->bind(ShaderType::NodeInfoShader);
         mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation());

@@ -18,22 +18,28 @@ private:
 public:
     static ModelDataManager *instance();
 
-    enum class InternalModel { //
+    enum class InternalBasicModel { //
         Quad,
         Cube
     };
 
+    enum class RenderMode { //
+        Default,
+        Instanced
+    };
+
     bool init();
-    void render(InternalModel internalModel);
-    void renderInstanced(InternalModel internalModel, int instanceCount);
+    void render(InternalBasicModel model, RenderMode mode = RenderMode::Default, GLenum primitive = GL_TRIANGLES, QVariant count = QVariant());
 
     ModelData *getModelData(const QString &modelName);
 
 private:
     void loadModels(const QString &path, const QStringList &formats);
+    void loadInternalModels();
 
 private:
     QMap<QString, ModelData *> mModelsData;
+    QMap<QString, ModelData *> mInternalModelsData;
     OpenGLVertexArrayObject mQuad;
     OpenGLVertexArrayObject mCube;
 };

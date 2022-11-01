@@ -3,6 +3,8 @@
 
 #include "Node.h"
 
+#include <QOpenGLFunctions>
+
 namespace Canavar {
 namespace Engine {
 
@@ -15,7 +17,7 @@ public:
 
     void addMeshIndex(int index);
 
-    void render(RenderPasses renderPasses, Node *node);
+    void render(RenderModes modes, Model *model, GLenum primitive = GL_TRIANGLES);
 
 private:
     ModelData *mModelData;
