@@ -64,6 +64,35 @@ bool Canavar::Engine::RendererManager::init()
 
     createFramebuffers(mWidth, mHeight);
 
+    // Quad
+    glGenVertexArrays(1, &mQuad.mVAO);
+    glBindVertexArray(mQuad.mVAO);
+    glGenBuffers(1, &mQuad.mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mQuad.mVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::QUAD), Canavar::Engine::QUAD, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(QVector2D), (void *) 0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(QVector2D), (void *) sizeof(QVector2D));
+
+    // Cube
+    glGenVertexArrays(1, &mCube.mVAO);
+    glBindVertexArray(mCube.mVAO);
+    glGenBuffers(1, &mCube.mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mCube.mVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::CUBE), CUBE, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(QVector3D), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    // Cube Strip
+    glGenVertexArrays(1, &mCubeStrip.mVAO);
+    glBindVertexArray(mCubeStrip.mVAO);
+    glGenBuffers(1, &mCubeStrip.mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mCubeStrip.mVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::CUBE_STRIP), CUBE_STRIP, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(QVector3D), (void *) 0);
+    glEnableVertexAttribArray(0);
+
     return true;
 }
 
@@ -130,6 +159,26 @@ void Canavar::Engine::RendererManager::render(float ifps)
             effect->render(ifps);
     }
 
+    // Selectables
+    mShaderManager->bind(ShaderType::BasicShader);
+    for (const auto &node : mSelectableRenderList)
+    {
+        if (auto model = dynamic_cast<Model *>(node))
+        {
+            if (auto data = mModelDataManager->getModelData(model->getModelName()))
+                mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * data->getAABB().getTransformation());
+            else
+                mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * node->getAABB().getTransformation());
+        } else
+            mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * node->getAABB().getTransformation());
+
+        glBindVertexArray(mCubeStrip.mVAO);
+        glDrawArrays(GL_LINE_STRIP, 0, 17);
+    }
+
+    mShaderManager->release();
+
+    // Default render pass is done
     mFBOs[FramebufferType::Default]->release();
 
     // Blur
@@ -148,7 +197,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
         mShaderManager->bind(ShaderType::BlurShader);
         mShaderManager->setUniformValue("horizontal", i % 2 == 0);
         mShaderManager->setSampler("screenTexture", 0, mFBOs[i % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
-        glBindVertexArray(mModelDataManager->mQuad.mVAO);
+        glBindVertexArray(mQuad.mVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         mShaderManager->release();
     }
@@ -165,7 +214,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mShaderManager->setSampler("bloomBlurTexture", 1, mFBOs[qMax(0, mBlurPass) % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
     mShaderManager->setUniformValue("exposure", mExposure);
     mShaderManager->setUniformValue("gamma", mGamma);
-    glBindVertexArray(mModelDataManager->mQuad.mVAO);
+    glBindVertexArray(mQuad.mVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     mShaderManager->release();
 }
@@ -227,4 +276,33 @@ void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
             mFBOs[FramebufferType::Default]->release();
         }
     }
+}
+
+void Canavar::Engine::RendererManager::addSelectable(Node *node)
+{
+    if (node)
+    {
+        if (!mSelectableRenderList.contains(node))
+        {
+            mSelectableRenderList << node;
+            connect(node, &QObject::destroyed, this, &RendererManager::onObjectDestroyed);
+        }
+    }
+}
+
+void Canavar::Engine::RendererManager::removeSelectable(Node *node)
+{
+    if (node)
+    {
+        if (mSelectableRenderList.contains(node))
+        {
+            disconnect(node, &QObject::destroyed, this, &RendererManager::onObjectDestroyed);
+            mSelectableRenderList.removeAll(node);
+        }
+    }
+}
+
+void Canavar::Engine::RendererManager::onObjectDestroyed(QObject *object)
+{
+    mSelectableRenderList.removeAll(object);
 }

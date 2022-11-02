@@ -29,7 +29,7 @@ void Canavar::Engine::PersecutorCamera::mouseReleased(QMouseEvent *event)
 
 void Canavar::Engine::PersecutorCamera::mouseMoved(QMouseEvent *event)
 {
-    if (mMouse.mPressedButton == Qt::LeftButton)
+    if (mMouse.mPressedButton == Qt::MiddleButton)
     {
         mMouse.mDx += mMouse.mX - event->position().x();
         mMouse.mDy += mMouse.mY - event->position().y();

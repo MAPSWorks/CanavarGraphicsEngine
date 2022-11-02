@@ -3,14 +3,13 @@
 
 #include "Manager.h"
 #include "ModelData.h"
-#include "OpenGLVertexArrayObject.h"
 
 #include <QMap>
 
 namespace Canavar {
 namespace Engine {
 
-class ModelDataManager : public Manager, protected QOpenGLExtraFunctions
+class ModelDataManager : public Manager
 {
 private:
     explicit ModelDataManager(QObject *parent = nullptr);
@@ -18,17 +17,9 @@ private:
 public:
     static ModelDataManager *instance();
 
-    enum class InternalBasicModel { //
-        Quad,
-        Cube
-    };
-
     bool init();
 
     ModelData *getModelData(const QString &modelName);
-
-    OpenGLVertexArrayObject mQuad;
-    OpenGLVertexArrayObject mCube;
 
 private:
     void loadModels(const QString &path, const QStringList &formats);

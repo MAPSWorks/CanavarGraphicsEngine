@@ -46,6 +46,7 @@ private:
     static Material *processMaterial(aiMaterial *aiMaterial, const QString &directory);
     static void processTexture(Material *material, aiMaterial *aiMaterial, aiTextureType aiType, Material::TextureType type, const QString &directory);
     static QMatrix4x4 toQMatrix(const aiMatrix4x4 &matrix);
+    static void calculateAABB(ModelData *data);
 
     static QRandomGenerator mGenerator;
 };

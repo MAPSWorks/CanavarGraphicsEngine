@@ -1,5 +1,4 @@
 #include "ModelDataManager.h"
-#include "Common.h"
 #include "Helper.h"
 
 #include <QDir>
@@ -24,32 +23,10 @@ bool Canavar::Engine::ModelDataManager::init()
                              << "*.blend"
                              << "*.dae"
                              << "*.glb"
-                             << "*.gltf");
+                             << "*.gltf"
+                             << ".*fbx");
 
-    loadModels("Resources/Models", QStringList() << "*.fbx");
-
-    initializeOpenGLFunctions();
-
-    // Internal models
-    // Quad
-    glGenVertexArrays(1, &mQuad.mVAO);
-    glBindVertexArray(mQuad.mVAO);
-    glGenBuffers(1, &mQuad.mVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, mQuad.mVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::QUAD), Canavar::Engine::QUAD, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) 0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) (2 * sizeof(float)));
-
-    // Cube
-    glGenVertexArrays(1, &mCube.mVAO);
-    glBindVertexArray(mCube.mVAO);
-    glGenBuffers(1, &mCube.mVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, mCube.mVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::CUBE), CUBE, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
-    glEnableVertexAttribArray(0);
+    qDebug() << mModelsData.keys();
 
     return true;
 }

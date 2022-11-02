@@ -2,8 +2,8 @@
 #define SELECTABLENODERENDERER_H
 
 #include "Manager.h"
-#include "Node.h"
 #include "OpenGLFramebuffer.h"
+#include "OpenGLVertexArrayObject.h"
 
 #include <QOpenGLExtraFunctions>
 
@@ -37,21 +37,13 @@ public:
 
     NodeInfo getNodeInfoByScreenPosition(int x, int y);
 
-    void add(Node *node);
-    void remove(Node *node);
-
-    const QList<Node *> &renderList() const;
-
-private:
-    void onObjectDestroyed(QObject *object);
-
 private:
     ShaderManager *mShaderManager;
     ModelDataManager *mModelDataManager;
     NodeManager *mNodeManager;
     CameraManager *mCameraManager;
 
-    QList<Node *> mRenderList; // Nodes whose AABB to be rendered
+    OpenGLVertexArrayObject mCube;
 
     OpenGLFramebuffer mNodeInfoFBO;
     int mWidth;

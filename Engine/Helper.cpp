@@ -5,6 +5,8 @@
 #include <QMultiMap>
 #include <QtMath>
 
+#include <limits>
+
 Canavar::Engine::Helper::Helper() {}
 
 float Canavar::Engine::Helper::calculateHorizontalFovForGivenVerticalFov(float verticalFov, float width, float height)
@@ -184,6 +186,8 @@ Canavar::Engine::ModelData *Canavar::Engine::Helper::loadModel(const QString &na
         data->addMesh(mesh);
     }
 
+    calculateAABB(data);
+
     return data;
 }
 
@@ -291,6 +295,43 @@ QMatrix4x4 Canavar::Engine::Helper::toQMatrix(const aiMatrix4x4 &matrix)
     transformation.setColumn(3, qPosition);
 
     return transformation;
+}
+
+void Canavar::Engine::Helper::calculateAABB(ModelData *data)
+{
+    float minX = std::numeric_limits<float>::infinity();
+    float minY = std::numeric_limits<float>::infinity();
+    float minZ = std::numeric_limits<float>::infinity();
+
+    float maxX = -std::numeric_limits<float>::infinity();
+    float maxY = -std::numeric_limits<float>::infinity();
+    float maxZ = -std::numeric_limits<float>::infinity();
+
+    for (const auto &mesh : data->meshes())
+    {
+        if (minX > mesh->getAABB().getMin().x())
+            minX = mesh->getAABB().getMin().x();
+
+        if (minY > mesh->getAABB().getMin().y())
+            minY = mesh->getAABB().getMin().y();
+
+        if (minZ > mesh->getAABB().getMin().z())
+            minZ = mesh->getAABB().getMin().z();
+
+        if (maxX < mesh->getAABB().getMax().x())
+            maxX = mesh->getAABB().getMax().x();
+
+        if (maxY < mesh->getAABB().getMax().y())
+            maxY = mesh->getAABB().getMax().y();
+
+        if (maxZ < mesh->getAABB().getMax().z())
+            maxZ = mesh->getAABB().getMax().z();
+    }
+
+    AABB aabb;
+    aabb.setMin(QVector3D(minX, minY, minZ));
+    aabb.setMax(QVector3D(maxX, maxY, maxZ));
+    data->setAABB(aabb);
 }
 
 float Canavar::Engine::Helper::generateFloat(float bound)

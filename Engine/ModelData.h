@@ -33,6 +33,8 @@ private:
     QVector<Mesh *> mMeshes;
     QVector<Material *> mMaterials;
     ModelDataNode *mRootNode;
+
+    DEFINE_MEMBER(AABB, AABB)
 };
 
 } // namespace Engine

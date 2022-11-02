@@ -22,6 +22,14 @@ bool Canavar::Engine::SelectableNodeRenderer::init()
     initializeOpenGLFunctions();
     mNodeInfoFBO.create(mWidth, mHeight);
 
+    glGenVertexArrays(1, &mCube.mVAO);
+    glBindVertexArray(mCube.mVAO);
+    glGenBuffers(1, &mCube.mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mCube.mVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::CUBE), CUBE, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
+
     return true;
 }
 
@@ -65,7 +73,7 @@ void Canavar::Engine::SelectableNodeRenderer::render(float)
             mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * node->getAABB().getTransformation());
             mShaderManager->setUniformValue("nodeID", node->getID());
             mShaderManager->setUniformValue("meshID", 0);
-            glBindVertexArray(mModelDataManager->mCube.mVAO);
+            glBindVertexArray(mCube.mVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
             mShaderManager->release();
         }
@@ -78,32 +86,4 @@ Canavar::Engine::SelectableNodeRenderer *Canavar::Engine::SelectableNodeRenderer
 {
     static SelectableNodeRenderer instance;
     return &instance;
-}
-
-void Canavar::Engine::SelectableNodeRenderer::add(Node *node)
-{
-    if (node)
-    {
-        mRenderList << node;
-        connect(node, &QObject::destroyed, this, &SelectableNodeRenderer::onObjectDestroyed);
-    }
-}
-
-void Canavar::Engine::SelectableNodeRenderer::remove(Node *node)
-{
-    if (node)
-    {
-        disconnect(node, &QObject::destroyed, this, &SelectableNodeRenderer::onObjectDestroyed);
-        mRenderList.removeAll(node);
-    }
-}
-
-void Canavar::Engine::SelectableNodeRenderer::onObjectDestroyed(QObject *object)
-{
-    mRenderList.removeAll(object);
-}
-
-const QList<Canavar::Engine::Node *> &Canavar::Engine::SelectableNodeRenderer::renderList() const
-{
-    return mRenderList;
 }

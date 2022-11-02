@@ -12,8 +12,8 @@ Canavar::Engine::Node::Node(QObject *parent)
     , mVisible(true)
     , mSelectable(true)
 {
-    mAABB.setMin(QVector3D(-0.5f, -0.5f, -0.5f));
-    mAABB.setMax(QVector3D(0.5f, 0.5f, 0.5f));
+    mAABB.setMin(QVector3D(-1.0f, -1.0f, -1.0f));
+    mAABB.setMax(QVector3D(1.0f, 1.0f, 1.0f));
 }
 
 Canavar::Engine::Node::~Node() {}

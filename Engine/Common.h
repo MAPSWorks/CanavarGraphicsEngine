@@ -51,8 +51,9 @@ enum class RenderMode { //
 
 Q_DECLARE_FLAGS(RenderModes, RenderMode);
 
-extern const float CUBE[108];
-extern const float QUAD[24];
+extern const QVector3D CUBE[36];
+extern const QVector2D QUAD[12];
+extern const QVector3D CUBE_STRIP[17];
 
 } // namespace Engine
 } // namespace Canavar

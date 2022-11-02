@@ -14,6 +14,7 @@ Canavar::Engine::Sun::Sun(QObject *parent)
 
     mType = Node::NodeType::Sun;
     mName = "Sun";
+    mSelectable = false;
 }
 
 Canavar::Engine::Sun *Canavar::Engine::Sun::instance()

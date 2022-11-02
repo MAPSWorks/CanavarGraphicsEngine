@@ -3,6 +3,7 @@
 
 #include "Camera.h"
 #include "Manager.h"
+#include "OpenGLVertexArrayObject.h"
 
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObjectFormat>
@@ -43,10 +44,15 @@ public:
 
     void render(float ifps) override;
 
+    // Custom render list
+    void addSelectable(Node *node);
+    void removeSelectable(Node *node);
+
 private:
     void setCommonUniforms();
     void deleteFramebuffers();
     void createFramebuffers(int width, int height);
+    void onObjectDestroyed(QObject *object);
 
 private:
     NodeManager *mNodeManager;
@@ -63,10 +69,16 @@ private:
 
     QVector<PointLight *> mClosePointLights;
 
+    QList<Node *> mSelectableRenderList; // Nodes whose AABB to be rendered
+
     QMap<FramebufferType, QOpenGLFramebufferObject *> mFBOs;
     QMap<FramebufferType, QOpenGLFramebufferObjectFormat *> mFBOFormats;
 
     GLuint *mColorAttachments;
+
+    OpenGLVertexArrayObject mQuad;
+    OpenGLVertexArrayObject mCube;
+    OpenGLVertexArrayObject mCubeStrip;
 
     int mWidth;
     int mHeight;
