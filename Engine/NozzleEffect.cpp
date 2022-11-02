@@ -2,8 +2,8 @@
 
 #include "Helper.h"
 
-Canavar::Engine::NozzleEffect::NozzleEffect()
-    : Node()
+Canavar::Engine::NozzleEffect::NozzleEffect(const QString &uuid)
+    : Node(uuid)
     , mNumberOfParticles(5000)
     , mMaxRadius(0.8f)
     , mMaxLife(0.0f)

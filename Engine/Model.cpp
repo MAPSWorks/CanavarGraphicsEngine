@@ -1,7 +1,7 @@
 #include "Model.h"
 
-Canavar::Engine::Model::Model(const QString &modelName)
-    : Node()
+Canavar::Engine::Model::Model(const QString &modelName, const QString &uuid)
+    : Node(uuid)
     , mModelName(modelName)
     , mColor(1, 1, 1, 1)
     , mOverlayColor(1, 1, 1, 1)

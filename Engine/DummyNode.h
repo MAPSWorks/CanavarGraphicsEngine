@@ -10,7 +10,7 @@ class DummyNode : public Node
 {
 protected:
     friend class NodeManager;
-    DummyNode();
+    DummyNode(const QString &uuid = QString());
     virtual ~DummyNode();
 };
 

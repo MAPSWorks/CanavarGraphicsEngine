@@ -24,8 +24,8 @@ public:
 
     bool init() override;
 
-    Node *createNode(Node::NodeType type, const QString &name = QString());
-    Model *createModel(const QString &modelName, const QString &name = QString());
+    Node *createNode(Node::NodeType type, const QString &name = QString(), const QString &uuid = QString());
+    Model *createModel(const QString &modelName, const QString &name = QString(), const QString &uuid = QString());
 
     void removeNode(Node *node);
 

@@ -2,8 +2,8 @@
 
 #include "Helper.h"
 
-Canavar::Engine::FirecrackerEffect::FirecrackerEffect()
-    : Node()
+Canavar::Engine::FirecrackerEffect::FirecrackerEffect(const QString &uuid)
+    : Node(uuid)
     , mNumberOfParticles(10000)
     , mSpanAngle(140.0f)
     , mGravityDirection(0, -1, 0)

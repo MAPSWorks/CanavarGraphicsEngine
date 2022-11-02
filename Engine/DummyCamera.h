@@ -10,7 +10,7 @@ class DummyCamera : public PerspectiveCamera
 {
 protected:
     friend class Canavar::Engine::NodeManager;
-    DummyCamera();
+    DummyCamera(const QString &uuid = QString());
 
 public:
     void mouseDoubleClicked(QMouseEvent *) override;

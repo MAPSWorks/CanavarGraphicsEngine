@@ -1,8 +1,8 @@
 #include "PerspectiveCamera.h"
 #include "Helper.h"
 
-Canavar::Engine::PerspectiveCamera::PerspectiveCamera()
-    : Camera()
+Canavar::Engine::PerspectiveCamera::PerspectiveCamera(const QString &uuid)
+    : Camera(uuid)
 {
     setVerticalFov(60);
 }

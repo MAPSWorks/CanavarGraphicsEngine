@@ -13,7 +13,7 @@ namespace Engine {
 class FirecrackerEffect : public Node, protected QOpenGLExtraFunctions
 {
 public:
-    FirecrackerEffect();
+    FirecrackerEffect(const QString &uuid = QString());
     ~FirecrackerEffect();
 
     struct Particle {

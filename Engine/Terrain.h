@@ -24,7 +24,7 @@ class Terrain : public Node, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 private:
-    Terrain();
+    Terrain(const QString &uuid = QString());
 
 public:
     static Terrain *instance();

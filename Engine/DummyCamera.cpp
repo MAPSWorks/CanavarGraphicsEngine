@@ -1,7 +1,7 @@
 #include "DummyCamera.h"
 
-Canavar::Engine::DummyCamera::DummyCamera()
-    : PerspectiveCamera()
+Canavar::Engine::DummyCamera::DummyCamera(const QString &uuid)
+    : PerspectiveCamera(uuid)
 {
     mType = Canavar::Engine::Node::NodeType::DummyCamera;
 }

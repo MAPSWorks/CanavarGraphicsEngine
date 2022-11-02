@@ -10,7 +10,7 @@ class PerspectiveCamera : public Camera
 {
     Q_OBJECT
 protected:
-    PerspectiveCamera();
+    PerspectiveCamera(const QString &uuid = QString());
 
 public:
     virtual QMatrix4x4 getProjectionMatrix() override;

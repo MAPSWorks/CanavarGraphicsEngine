@@ -11,7 +11,7 @@ class Haze : public Node
 {
     Q_OBJECT
 private:
-    Haze();
+    Haze(const QString &uuid = QString());
 
 public:
     static Haze *instance();

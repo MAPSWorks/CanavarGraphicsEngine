@@ -1,7 +1,7 @@
 #include "Haze.h"
 
-Canavar::Engine::Haze::Haze()
-    : Node()
+Canavar::Engine::Haze::Haze(const QString &uuid)
+    : Node(uuid)
     , mColor(0.33f, 0.38f, 0.47f)
     , mEnabled(true)
     , mDensity(1.0f)

@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-Canavar::Engine::Camera::Camera()
-    : Node()
+Canavar::Engine::Camera::Camera(const QString &uuid)
+    : Node(uuid)
     , mActive(false)
     , mWidth(1600)
     , mHeight(900)

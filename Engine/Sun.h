@@ -9,7 +9,7 @@ namespace Engine {
 class Sun : public Light
 {
 private:
-    Sun();
+    Sun(const QString &uuid = QString());
 
 public:
     static Sun *instance();

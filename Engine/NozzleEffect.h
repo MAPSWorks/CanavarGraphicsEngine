@@ -13,7 +13,7 @@ class NozzleEffect : public Node, protected QOpenGLExtraFunctions
 {
 protected:
     friend class NodeManager;
-    NozzleEffect();
+    NozzleEffect(const QString &uuid = QString());
     ~NozzleEffect();
 
     void create();

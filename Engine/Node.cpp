@@ -1,27 +1,29 @@
 #include "Node.h"
 
+#include <QUuid>
 #include <QtMath>
 
-Canavar::Engine::Node::Node()
+Canavar::Engine::Node::Node(const QString &uuid)
     : QObject()
     , mPosition(0, 0, 0)
     , mScale(1, 1, 1)
-    , mType(NodeType::DummyNode)
-    , mID(-1)
     , mParent(nullptr)
     , mVisible(true)
     , mSelectable(true)
+    , mUUID(uuid)
+    , mID(-1)
+    , mType(NodeType::DummyNode)
 {
     mAABB.setMin(QVector3D(-1.0f, -1.0f, -1.0f));
     mAABB.setMax(QVector3D(1.0f, 1.0f, 1.0f));
+
+    if (mUUID.isEmpty())
+        mUUID = QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
+
+    qDebug() << mUUID;
 }
 
 Canavar::Engine::Node::~Node() {}
-
-Canavar::Engine::Node::NodeType Canavar::Engine::Node::getType() const
-{
-    return mType;
-}
 
 Canavar::Engine::Node *Canavar::Engine::Node::findChildByNameRecursive(const QString &name)
 {
@@ -34,11 +36,6 @@ Canavar::Engine::Node *Canavar::Engine::Node::findChildByNameRecursive(const QSt
             return node;
 
     return nullptr;
-}
-
-int Canavar::Engine::Node::getID() const
-{
-    return mID;
 }
 
 const QMatrix4x4 Canavar::Engine::Node::worldTransformation() const

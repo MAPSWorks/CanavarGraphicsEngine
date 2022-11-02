@@ -1,7 +1,7 @@
 #include "Sun.h"
 
-Canavar::Engine::Sun::Sun()
-    : Light()
+Canavar::Engine::Sun::Sun(const QString &uuid)
+    : Light(uuid)
     , mDirection(0, -1, 0)
     , mEnabled(true)
 {

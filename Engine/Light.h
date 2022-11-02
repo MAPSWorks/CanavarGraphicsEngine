@@ -9,7 +9,7 @@ namespace Engine {
 class Light : public Node
 {
 protected:
-    Light();
+    Light(const QString &uuid = QString());
 
     DEFINE_MEMBER(QVector4D, Color)
     DEFINE_MEMBER(float, Ambient)

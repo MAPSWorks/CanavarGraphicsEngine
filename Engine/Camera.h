@@ -13,7 +13,7 @@ class Camera : public Node
 {
     Q_OBJECT
 protected:
-    Camera();
+    Camera(const QString &uuid = QString());
 
 public:
     virtual QMatrix4x4 getViewProjectionMatrix();

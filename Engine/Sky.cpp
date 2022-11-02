@@ -6,8 +6,8 @@
 // Sky model belongs to Hosek-Wilkie - An Analytic Model for Full Spectral Sky-Dome Radiance
 // Code is taken from https://github.com/diharaw/sky-models
 
-Canavar::Engine::Sky::Sky()
-    : Node()
+Canavar::Engine::Sky::Sky(const QString &uuid)
+    : Node(uuid)
     , mEnabled(true)
     , mAlbedo(0.1f)
     , mTurbidity(4.0f)

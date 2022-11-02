@@ -56,13 +56,13 @@ bool Canavar::Engine::NodeManager::init()
     return true;
 }
 
-Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType type, const QString &name)
+Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType type, const QString &name, const QString &uuid)
 {
     Node *node = nullptr;
     switch (type)
     {
     case Node::NodeType::DummyNode: {
-        node = new DummyNode;
+        node = new DummyNode(uuid);
         break;
     }
     case Node::NodeType::Model: {
@@ -70,34 +70,34 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
         break;
     }
     case Node::NodeType::FreeCamera: {
-        node = new FreeCamera;
+        node = new FreeCamera(uuid);
         mCameraManager->addCamera(dynamic_cast<FreeCamera *>(node));
         break;
     }
     case Node::NodeType::DummyCamera: {
-        node = new DummyCamera;
+        node = new DummyCamera(uuid);
         mCameraManager->addCamera(dynamic_cast<DummyCamera *>(node));
         break;
     }
     case Node::NodeType::PointLight: {
-        node = new PointLight;
+        node = new PointLight(uuid);
         mLightManager->addLight(dynamic_cast<Light *>(node));
         break;
     }
     case Node::NodeType::NozzleEffect: {
-        NozzleEffect *effect = new NozzleEffect;
+        NozzleEffect *effect = new NozzleEffect(uuid);
         effect->create();
         node = effect;
         break;
     }
     case Node::NodeType::FirecrackerEffect: {
-        FirecrackerEffect *effect = new FirecrackerEffect;
+        FirecrackerEffect *effect = new FirecrackerEffect(uuid);
         effect->create();
         node = effect;
         break;
     }
     case Node::NodeType::PersecutorCamera: {
-        node = new PersecutorCamera;
+        node = new PersecutorCamera(uuid);
         mCameraManager->addCamera(dynamic_cast<PersecutorCamera *>(node));
         break;
     }
@@ -119,9 +119,9 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
     return node;
 }
 
-Canavar::Engine::Model *Canavar::Engine::NodeManager::createModel(const QString &modelName, const QString &name)
+Canavar::Engine::Model *Canavar::Engine::NodeManager::createModel(const QString &modelName, const QString &name, const QString &uuid)
 {
-    Model *model = new Model(modelName);
+    Model *model = new Model(modelName, uuid);
 
     mTypeToCount.insert(Node::NodeType::Model, mTypeToCount.value(Node::NodeType::Model, 0) + 1);
     assignName(model, name);

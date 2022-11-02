@@ -17,7 +17,7 @@ class Node : public QObject
     Q_OBJECT
 protected:
     friend class NodeManager;
-    Node();
+    Node(const QString &uuid = QString());
     virtual ~Node();
 
 public:
@@ -68,10 +68,6 @@ public:
 
     Node *findChildByNameRecursive(const QString &name);
 
-    NodeType getType() const;
-
-    int getID() const;
-
     const QList<Node *> &children() const;
 
 private:
@@ -82,8 +78,6 @@ protected:
     QQuaternion mRotation;
     QVector3D mPosition;
     QVector3D mScale;
-    NodeType mType;
-    int mID;
 
     Node *mParent;
     QList<Node *> mChildren;
@@ -92,6 +86,10 @@ protected:
     DEFINE_MEMBER(QString, Name)
     DEFINE_MEMBER(AABB, AABB)
     DEFINE_MEMBER(bool, Selectable)
+
+    DEFINE_MEMBER_CONST(QString, UUID)
+    DEFINE_MEMBER_CONST(int, ID)
+    DEFINE_MEMBER_CONST(NodeType, Type)
 };
 
 } // namespace Engine

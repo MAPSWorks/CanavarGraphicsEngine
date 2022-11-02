@@ -6,8 +6,8 @@
 
 #include <QMatrix4x4>
 
-Canavar::Engine::Terrain::Terrain()
-    : Node()
+Canavar::Engine::Terrain::Terrain(const QString &uuid)
+    : Node(uuid)
 {
     mType = Node::NodeType::Terrain;
     mName = "Terrain";

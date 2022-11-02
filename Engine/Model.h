@@ -10,7 +10,7 @@ class Model : public Node
 {
 protected:
     friend class Canavar::Engine::NodeManager;
-    Model(const QString &modelName);
+    Model(const QString &modelName, const QString &uuid = QString());
 
 public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);

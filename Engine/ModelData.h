@@ -14,7 +14,7 @@ class ModelData : public QObject
     Q_OBJECT
 public:
     ModelData(const QString &name);
-    virtual ~ModelData();
+    ~ModelData();
 
     void addMesh(Mesh *mesh);
     void addMaterial(Material *material);

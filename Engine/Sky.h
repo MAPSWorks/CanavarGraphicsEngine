@@ -13,7 +13,7 @@ namespace Engine {
 class Sky : public Node, protected QOpenGLExtraFunctions
 {
 private:
-    Sky();
+    Sky(const QString &uuid = QString());
 
 public:
     static Sky *instance();
