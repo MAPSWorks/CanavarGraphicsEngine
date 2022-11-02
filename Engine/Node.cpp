@@ -10,7 +10,11 @@ Canavar::Engine::Node::Node(QObject *parent)
     , mID(-1)
     , mParent(dynamic_cast<Node *>(parent))
     , mVisible(true)
-{}
+    , mSelectable(true)
+{
+    mAABB.setMin(QVector3D(-0.5f, -0.5f, -0.5f));
+    mAABB.setMax(QVector3D(0.5f, 0.5f, 0.5f));
+}
 
 Canavar::Engine::Node::~Node() {}
 

@@ -1,6 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "AABB.h"
 #include "Common.h"
 
 #include <QMatrix4x4>
@@ -82,8 +83,10 @@ protected:
     Node *mParent;
     QList<Node *> mChildren;
 
-    DECLARE_MEMBER(bool, Visible)
-    DECLARE_MEMBER(QString, Name)
+    DEFINE_MEMBER(bool, Visible)
+    DEFINE_MEMBER(QString, Name)
+    DEFINE_MEMBER(AABB, AABB)
+    DEFINE_MEMBER(bool, Selectable)
 };
 
 } // namespace Engine

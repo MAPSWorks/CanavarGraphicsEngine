@@ -10,7 +10,7 @@ Canavar::Engine::NozzleEffect::NozzleEffect(QObject *parent)
     , mMaxDistance(10.0f)
     , mMinDistance(4.0f)
     , mSpeed(7.0f)
-    , mScale(0.02f)
+    , mScale(0.04f)
 {
     mShaderManager = ShaderManager::instance();
     mCameraManager = CameraManager::instance();

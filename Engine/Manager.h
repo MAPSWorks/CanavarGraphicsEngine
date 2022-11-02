@@ -23,6 +23,7 @@ public:
     virtual void keyReleased(QKeyEvent *event);
     virtual void resize(int width, int height);
     virtual void update(float ifps);
+    virtual void render(float ifps);
     virtual void reset();
 };
 

@@ -32,6 +32,7 @@ Canavar::Engine::Sky::Sky(QObject *parent)
 
     mType = Node::NodeType::Sky;
     mName = "Sky";
+    mSelectable = false;
 }
 
 Canavar::Engine::Sky *Canavar::Engine::Sky::instance()

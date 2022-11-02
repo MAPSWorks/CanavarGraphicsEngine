@@ -21,6 +21,7 @@ public:
     void setRootNode(ModelDataNode *newRootNode);
 
     Material *getMaterial(int index);
+    Mesh *getMeshByID(unsigned int id);
 
     const QString &name() const;
     const QVector<Mesh *> &meshes() const;

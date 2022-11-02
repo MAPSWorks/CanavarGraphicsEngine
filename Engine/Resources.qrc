@@ -26,5 +26,7 @@
         <file>Resources/InternalModels/Cube/Cube.mtl</file>
         <file>Resources/InternalModels/Cone/Cone.obj</file>
         <file>Resources/InternalModels/Cube/Cube.obj</file>
+        <file>Resources/Shaders/Basic.frag</file>
+        <file>Resources/Shaders/Basic.vert</file>
     </qresource>
 </RCC>

@@ -31,6 +31,15 @@ Canavar::Engine::Material *Canavar::Engine::ModelData::getMaterial(int index)
     return mMaterials[index];
 }
 
+Canavar::Engine::Mesh *Canavar::Engine::ModelData::getMeshByID(unsigned int id)
+{
+    for (const auto &mesh : mMeshes)
+        if (mesh->getID() == id)
+            return mesh;
+
+    return nullptr;
+}
+
 const QString &Canavar::Engine::ModelData::name() const
 {
     return mName;

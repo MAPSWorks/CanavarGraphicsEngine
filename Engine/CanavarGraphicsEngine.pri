@@ -32,7 +32,7 @@ HEADERS += \
     $$PWD/PerspectiveCamera.h \
     $$PWD/PointLight.h \
     $$PWD/RendererManager.h \
-    $$PWD/Selectable.h \
+    $$PWD/SelectableNodeRenderer.h \
     $$PWD/Shader.h \
     $$PWD/ShaderManager.h \
     $$PWD/Sky.h \
@@ -73,7 +73,7 @@ SOURCES += \
     $$PWD/PerspectiveCamera.cpp \
     $$PWD/PointLight.cpp \
     $$PWD/RendererManager.cpp \
-    $$PWD/Selectable.cpp \
+    $$PWD/SelectableNodeRenderer.cpp \
     $$PWD/Shader.cpp \
     $$PWD/ShaderManager.cpp \
     $$PWD/Sky.cpp \

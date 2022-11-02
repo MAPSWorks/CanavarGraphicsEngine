@@ -23,8 +23,6 @@ private:
 
 public:
     static void draw();
-
-private:
     static void draw(Canavar::Engine::Node *node);
     static void draw(Canavar::Engine::Model *node);
     static void draw(Canavar::Engine::Sky *node);

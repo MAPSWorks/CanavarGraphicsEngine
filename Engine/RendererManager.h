@@ -41,11 +41,10 @@ public:
     bool init() override;
     void resize(int width, int height) override;
 
-    void render(float ifps);
+    void render(float ifps) override;
 
 private:
     void setCommonUniforms();
-
     void deleteFramebuffers();
     void createFramebuffers(int width, int height);
 
@@ -72,9 +71,9 @@ private:
     int mWidth;
     int mHeight;
 
-    DECLARE_MEMBER(int, BlurPass)
-    DECLARE_MEMBER(float, Exposure)
-    DECLARE_MEMBER(float, Gamma)
+    DEFINE_MEMBER(int, BlurPass)
+    DEFINE_MEMBER(float, Exposure)
+    DEFINE_MEMBER(float, Gamma)
 };
 
 } // namespace Engine

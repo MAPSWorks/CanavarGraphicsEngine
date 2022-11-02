@@ -3,6 +3,7 @@
 
 #include "Common.h"
 
+#include <QMatrix4x4>
 #include <QVector3D>
 
 namespace Canavar {
@@ -15,9 +16,11 @@ public:
 
     QVector3D getCenter() const { return (mMin + mMax) / 2.0f; }
 
+    QMatrix4x4 getTransformation() const;
+
 private:
-    DECLARE_MEMBER(QVector3D, Min);
-    DECLARE_MEMBER(QVector3D, Max);
+    DEFINE_MEMBER(QVector3D, Min);
+    DEFINE_MEMBER(QVector3D, Max);
 };
 
 } // namespace Engine

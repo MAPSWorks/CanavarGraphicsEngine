@@ -2,8 +2,6 @@
 #define NOZZLEEFFECT_H
 
 #include "CameraManager.h"
-#include "Node.h"
-#include "Selectable.h"
 #include "ShaderManager.h"
 
 #include <QOpenGLExtraFunctions>
@@ -11,7 +9,7 @@
 namespace Canavar {
 namespace Engine {
 
-class NozzleEffect : public Node, public Selectable, protected QOpenGLExtraFunctions
+class NozzleEffect : public Node, protected QOpenGLExtraFunctions
 {
 protected:
     friend class NodeManager;
@@ -45,12 +43,12 @@ private:
     unsigned int mVBO;
     unsigned int mPBO;
 
-    DECLARE_MEMBER(float, MaxRadius)
-    DECLARE_MEMBER(float, MaxLife)
-    DECLARE_MEMBER(float, MaxDistance)
-    DECLARE_MEMBER(float, MinDistance)
-    DECLARE_MEMBER(float, Speed)
-    DECLARE_MEMBER(float, Scale)
+    DEFINE_MEMBER(float, MaxRadius)
+    DEFINE_MEMBER(float, MaxLife)
+    DEFINE_MEMBER(float, MaxDistance)
+    DEFINE_MEMBER(float, MinDistance)
+    DEFINE_MEMBER(float, Speed)
+    DEFINE_MEMBER(float, Scale)
 };
 
 } // namespace Engine

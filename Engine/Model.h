@@ -2,12 +2,11 @@
 #define MODEL_H
 
 #include "Node.h"
-#include "Selectable.h"
 
 namespace Canavar {
 namespace Engine {
 
-class Model : public Node, public Selectable
+class Model : public Node
 {
 protected:
     friend class Canavar::Engine::NodeManager;
@@ -31,13 +30,13 @@ protected:
     QMap<QString, float> mMeshOverlayColorFactors;
     QString mModelName;
 
-    DECLARE_MEMBER(QVector4D, Color)
-    DECLARE_MEMBER(QVector4D, OverlayColor)
-    DECLARE_MEMBER(float, OverlayColorFactor)
-    DECLARE_MEMBER(float, Ambient)
-    DECLARE_MEMBER(float, Diffuse)
-    DECLARE_MEMBER(float, Specular)
-    DECLARE_MEMBER(float, Shininess)
+    DEFINE_MEMBER(QVector4D, Color)
+    DEFINE_MEMBER(QVector4D, OverlayColor)
+    DEFINE_MEMBER(float, OverlayColorFactor)
+    DEFINE_MEMBER(float, Ambient)
+    DEFINE_MEMBER(float, Diffuse)
+    DEFINE_MEMBER(float, Specular)
+    DEFINE_MEMBER(float, Shininess)
 };
 
 } // namespace Engine

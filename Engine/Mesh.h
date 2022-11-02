@@ -52,9 +52,9 @@ private:
     QVector<unsigned int> mIndices;
     Material *mMaterial;
 
-    DECLARE_MEMBER(AABB, AABB)
-    DECLARE_MEMBER(QString, Name)
-    DECLARE_MEMBER(unsigned int, ID)
+    DEFINE_MEMBER(AABB, AABB)
+    DEFINE_MEMBER(QString, Name)
+    DEFINE_MEMBER(unsigned int, ID)
 
     // For rendering
     ShaderManager *mShaderManager;

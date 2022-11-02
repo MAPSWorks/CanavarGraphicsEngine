@@ -11,6 +11,7 @@ Canavar::Engine::Terrain::Terrain(QObject *parent)
 {
     mType = Node::NodeType::Terrain;
     mName = "Terrain";
+    mSelectable = false;
 
     initializeOpenGLFunctions();
 

@@ -23,25 +23,18 @@ public:
         Cube
     };
 
-    enum class RenderMode { //
-        Default,
-        Instanced
-    };
-
     bool init();
-    void render(InternalBasicModel model, RenderMode mode = RenderMode::Default, GLenum primitive = GL_TRIANGLES, QVariant count = QVariant());
 
     ModelData *getModelData(const QString &modelName);
 
+    OpenGLVertexArrayObject mQuad;
+    OpenGLVertexArrayObject mCube;
+
 private:
     void loadModels(const QString &path, const QStringList &formats);
-    void loadInternalModels();
 
 private:
     QMap<QString, ModelData *> mModelsData;
-    QMap<QString, ModelData *> mInternalModelsData;
-    OpenGLVertexArrayObject mQuad;
-    OpenGLVertexArrayObject mCube;
 };
 
 } // namespace Engine

@@ -16,10 +16,10 @@ private:
 public:
     static Haze *instance();
 
-    DECLARE_MEMBER(QVector3D, Color)
-    DECLARE_MEMBER(bool, Enabled)
-    DECLARE_MEMBER(float, Density)
-    DECLARE_MEMBER(float, Gradient)
+    DEFINE_MEMBER(QVector3D, Color)
+    DEFINE_MEMBER(bool, Enabled)
+    DEFINE_MEMBER(float, Density)
+    DEFINE_MEMBER(float, Gradient)
 };
 
 } // namespace Engine

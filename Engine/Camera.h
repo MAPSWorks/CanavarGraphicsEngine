@@ -43,10 +43,10 @@ signals:
 protected:
     bool mActive;
 
-    DECLARE_MEMBER(int, Width)
-    DECLARE_MEMBER(int, Height)
-    DECLARE_MEMBER(float, ZNear)
-    DECLARE_MEMBER(float, ZFar)
+    DEFINE_MEMBER(int, Width)
+    DEFINE_MEMBER(int, Height)
+    DEFINE_MEMBER(float, ZNear)
+    DEFINE_MEMBER(float, ZFar)
 };
 
 } // namespace Engine

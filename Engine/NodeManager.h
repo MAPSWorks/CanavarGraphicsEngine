@@ -3,7 +3,6 @@
 
 #include "Manager.h"
 #include "Node.h"
-#include "OpenGLFramebuffer.h"
 
 #include <QObject>
 
@@ -14,7 +13,7 @@ class CameraManager;
 class LightManager;
 class ModelDataManager;
 
-class NodeManager : public Manager, protected QOpenGLFunctions
+class NodeManager : public Manager
 {
     Q_OBJECT
 private:
@@ -23,9 +22,7 @@ private:
 public:
     static NodeManager *instance();
 
-    // Manager interface
     bool init() override;
-    void resize(int width, int height) override;
 
     Node *createNode(Node::NodeType type, const QString &name = QString());
     Model *createModel(const QString &modelName, const QString &name = QString());
@@ -40,7 +37,6 @@ public:
 
 private:
     void assignName(Node *node, const QString &name);
-    void renderNodeInfoStuff();
 
 private:
     QList<Node *> mNodes;
@@ -54,10 +50,6 @@ private:
     QMap<Node::NodeType, unsigned int> mTypeToCount;
 
     QMap<QString, int> mNames;
-
-    OpenGLFramebuffer mNodeInfoFBO;
-    int mWidth;
-    int mHeight;
 };
 
 } // namespace Engine

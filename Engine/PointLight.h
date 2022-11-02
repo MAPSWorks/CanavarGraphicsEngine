@@ -14,9 +14,9 @@ protected:
     friend class NodeManager;
     explicit PointLight(QObject *parent = nullptr);
 
-    DECLARE_MEMBER(float, Constant)
-    DECLARE_MEMBER(float, Linear)
-    DECLARE_MEMBER(float, Quadratic)
+    DEFINE_MEMBER(float, Constant)
+    DEFINE_MEMBER(float, Linear)
+    DEFINE_MEMBER(float, Quadratic)
 };
 
 } // namespace Engine

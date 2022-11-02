@@ -16,6 +16,7 @@ class ShaderManager;
 class NodeManager;
 class CameraManager;
 class LightManager;
+class SelectableNodeRenderer;
 class Manager;
 
 class Controller : public QObject, protected QOpenGLExtraFunctions
@@ -44,6 +45,7 @@ private:
     NodeManager *mNodeManager;
     CameraManager *mCameraManager;
     LightManager *mLightManager;
+    SelectableNodeRenderer *mSelectableNodeRenderer;
 
     QVector<Manager *> mManagers;
 

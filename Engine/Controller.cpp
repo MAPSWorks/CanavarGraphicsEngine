@@ -4,6 +4,7 @@
 #include "ModelDataManager.h"
 #include "NodeManager.h"
 #include "RendererManager.h"
+#include "SelectableNodeRenderer.h"
 #include "ShaderManager.h"
 
 Canavar::Engine::Controller::Controller(QObject *parent)
@@ -22,12 +23,14 @@ bool Canavar::Engine::Controller::init()
     mLightManager = LightManager::instance();
     mNodeManager = NodeManager::instance();
     mRendererManager = RendererManager::instance();
+    mSelectableNodeRenderer = SelectableNodeRenderer::instance();
 
     mManagers << mModelDataManager;
     mManagers << mShaderManager;
     mManagers << mCameraManager;
     mManagers << mLightManager;
     mManagers << mNodeManager;
+    mManagers << mSelectableNodeRenderer;
     mManagers << mRendererManager;
 
     for (const auto &manager : qAsConst(mManagers))
@@ -51,7 +54,8 @@ void Canavar::Engine::Controller::render(float ifps)
     for (const auto &manager : qAsConst(mManagers))
         manager->update(ifps);
 
-    mRendererManager->render(ifps);
+    for (const auto &manager : qAsConst(mManagers))
+        manager->render(ifps);
 }
 
 void Canavar::Engine::Controller::setWindow(QOpenGLWindow *newWindow)

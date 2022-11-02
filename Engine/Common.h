@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#define DECLARE_MEMBER(type, name) \
+#define DEFINE_MEMBER(type, name) \
 protected: \
     type m##name; \
 \
@@ -16,7 +16,7 @@ public: \
 public: \
     inline void set##name(const type &var) { m##name = var; }
 
-#define DECLARE_MEMBER_CONST(type, name) \
+#define DEFINE_MEMBER_CONST(type, name) \
 protected: \
     type m##name; \
 \
@@ -39,7 +39,8 @@ enum class ShaderType { //
     ScreenShader,
     NodeInfoShader,
     NozzleEffectShader,
-    FirecrackerEffectShader
+    FirecrackerEffectShader,
+    BasicShader
 };
 
 enum class RenderMode { //

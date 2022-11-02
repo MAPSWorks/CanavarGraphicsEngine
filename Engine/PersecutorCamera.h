@@ -11,10 +11,10 @@ namespace Engine {
 
 class PersecutorCamera : public PerspectiveCamera
 {
-public:
+protected:
+    friend class NodeManager;
     explicit PersecutorCamera(QObject *parent = nullptr);
 
-    // Camera interface
 public:
     void mouseDoubleClicked(QMouseEvent *) override;
     void mousePressed(QMouseEvent *) override;
@@ -38,9 +38,9 @@ private:
     Mouse mMouse;
     Speed mSpeed;
 
-    DECLARE_MEMBER_CONST(float, Distance)
-    DECLARE_MEMBER_CONST(float, Yaw)
-    DECLARE_MEMBER_CONST(float, Pitch)
+    DEFINE_MEMBER_CONST(float, Distance)
+    DEFINE_MEMBER_CONST(float, Yaw)
+    DEFINE_MEMBER_CONST(float, Pitch)
 };
 
 } // namespace Engine

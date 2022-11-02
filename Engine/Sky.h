@@ -34,10 +34,10 @@ private:
     QVector3D A, B, C, D, E, F, G, H, I;
     QVector3D Z;
 
-    DECLARE_MEMBER(bool, Enabled)
-    DECLARE_MEMBER(float, Albedo)
-    DECLARE_MEMBER(float, Turbidity)
-    DECLARE_MEMBER(float, NormalizedSunY)
+    DEFINE_MEMBER(bool, Enabled)
+    DEFINE_MEMBER(float, Albedo)
+    DEFINE_MEMBER(float, Turbidity)
+    DEFINE_MEMBER(float, NormalizedSunY)
 };
 
 } // namespace Engine

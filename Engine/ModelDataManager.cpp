@@ -54,49 +54,6 @@ bool Canavar::Engine::ModelDataManager::init()
     return true;
 }
 
-void Canavar::Engine::ModelDataManager::render(InternalBasicModel model, RenderMode mode, GLenum primitive, QVariant count)
-{
-    switch (mode)
-    {
-    case RenderMode::Default:
-        switch (model)
-        {
-        case InternalBasicModel::Quad:
-            glBindVertexArray(mQuad.mVAO);
-            glDrawArrays(primitive, 0, 6);
-            glBindVertexArray(0);
-            break;
-        case InternalBasicModel::Cube:
-            glBindVertexArray(mCube.mVAO);
-            glDrawArrays(primitive, 0, 36);
-            glBindVertexArray(0);
-            break;
-        default:
-            qCritical() << Q_FUNC_INFO << "Not implemented yet!";
-            break;
-        }
-        break;
-    case RenderMode::Instanced:
-        switch (model)
-        {
-        case InternalBasicModel::Quad:
-            glBindVertexArray(mQuad.mVAO);
-            glDrawArraysInstanced(primitive, 0, 6, count.toInt());
-            glBindVertexArray(0);
-            break;
-        case InternalBasicModel::Cube:
-            glBindVertexArray(mCube.mVAO);
-            glDrawArraysInstanced(primitive, 0, 36, count.toInt());
-            glBindVertexArray(0);
-            break;
-        default:
-            qCritical() << Q_FUNC_INFO << "Not implemented yet!";
-            break;
-        }
-        break;
-    }
-}
-
 Canavar::Engine::ModelData *Canavar::Engine::ModelDataManager::getModelData(const QString &modelName)
 {
     return mModelsData.value(modelName, nullptr);
@@ -140,5 +97,3 @@ void Canavar::Engine::ModelDataManager::loadModels(const QString &path, const QS
 
     qInfo() << "All models are loaded at" << path;
 }
-
-void Canavar::Engine::ModelDataManager::loadInternalModels() {}

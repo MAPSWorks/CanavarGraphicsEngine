@@ -42,18 +42,18 @@ private:
 
     QVector2D mPreviousTilePosition;
 
-    DECLARE_MEMBER(float, Amplitude)
-    DECLARE_MEMBER(float, Frequency)
-    DECLARE_MEMBER(int, Octaves)
-    DECLARE_MEMBER(float, Power)
-    DECLARE_MEMBER(QVector3D, Seed)
-    DECLARE_MEMBER(float, TessellationMultiplier)
+    DEFINE_MEMBER(float, Amplitude)
+    DEFINE_MEMBER(float, Frequency)
+    DEFINE_MEMBER(int, Octaves)
+    DEFINE_MEMBER(float, Power)
+    DEFINE_MEMBER(QVector3D, Seed)
+    DEFINE_MEMBER(float, TessellationMultiplier)
 
-    DECLARE_MEMBER(float, GrassCoverage)
-    DECLARE_MEMBER(float, Ambient)
-    DECLARE_MEMBER(float, Diffuse)
-    DECLARE_MEMBER(float, Specular)
-    DECLARE_MEMBER(float, Shininess)
+    DEFINE_MEMBER(float, GrassCoverage)
+    DEFINE_MEMBER(float, Ambient)
+    DEFINE_MEMBER(float, Diffuse)
+    DEFINE_MEMBER(float, Specular)
+    DEFINE_MEMBER(float, Shininess)
 };
 
 } // namespace Engine

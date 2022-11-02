@@ -2,12 +2,11 @@
 #define DUMMYNODE_H
 
 #include "Node.h"
-#include "Selectable.h"
 
 namespace Canavar {
 namespace Engine {
 
-class DummyNode : public Node, public Selectable
+class DummyNode : public Node
 {
 protected:
     friend class NodeManager;

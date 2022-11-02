@@ -3,7 +3,8 @@
 #include "Helper.h"
 
 Canavar::Engine::FirecrackerEffect::FirecrackerEffect(QObject *parent)
-    : mNumberOfParticles(10000)
+    : Node(parent)
+    , mNumberOfParticles(10000)
     , mSpanAngle(140.0f)
     , mGravityDirection(0, -1, 0)
     , mGravity(9.8f)

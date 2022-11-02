@@ -342,6 +342,23 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
+    // Basic Shader
+    {
+        Shader *shader = new Shader(ShaderType::BasicShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Basic.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Basic.frag");
+
+        shader->addUniform("MVP");
+        shader->addUniform("color");
+
+        shader->addAttribute("position");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

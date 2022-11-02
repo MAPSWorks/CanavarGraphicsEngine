@@ -9,6 +9,7 @@ Canavar::Engine::Haze::Haze(QObject *parent)
 {
     mType = Node::NodeType::Haze;
     mName = "Haze";
+    mSelectable = false;
 }
 
 Canavar::Engine::Haze *Canavar::Engine::Haze::instance()

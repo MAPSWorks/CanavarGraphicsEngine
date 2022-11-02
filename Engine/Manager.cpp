@@ -22,4 +22,6 @@ void Canavar::Engine::Manager::resize(int, int) {}
 
 void Canavar::Engine::Manager::update(float) {}
 
+void Canavar::Engine::Manager::render(float) {}
+
 void Canavar::Engine::Manager::reset() {}

@@ -148,7 +148,8 @@ void Canavar::Engine::RendererManager::render(float ifps)
         mShaderManager->bind(ShaderType::BlurShader);
         mShaderManager->setUniformValue("horizontal", i % 2 == 0);
         mShaderManager->setSampler("screenTexture", 0, mFBOs[i % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
-        mModelDataManager->render(ModelDataManager::InternalBasicModel::Quad);
+        glBindVertexArray(mModelDataManager->mQuad.mVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         mShaderManager->release();
     }
 
@@ -164,7 +165,8 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mShaderManager->setSampler("bloomBlurTexture", 1, mFBOs[qMax(0, mBlurPass) % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
     mShaderManager->setUniformValue("exposure", mExposure);
     mShaderManager->setUniformValue("gamma", mGamma);
-    mModelDataManager->render(ModelDataManager::InternalBasicModel::Quad);
+    glBindVertexArray(mModelDataManager->mQuad.mVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     mShaderManager->release();
 }
 

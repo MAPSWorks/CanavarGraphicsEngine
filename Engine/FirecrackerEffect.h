@@ -3,7 +3,6 @@
 
 #include "CameraManager.h"
 #include "Node.h"
-#include "Selectable.h"
 #include "ShaderManager.h"
 
 #include <QOpenGLExtraFunctions>
@@ -11,7 +10,7 @@
 namespace Canavar {
 namespace Engine {
 
-class FirecrackerEffect : public Node, public Selectable, protected QOpenGLExtraFunctions
+class FirecrackerEffect : public Node, protected QOpenGLExtraFunctions
 {
 public:
     explicit FirecrackerEffect(QObject *parent = nullptr);
@@ -45,15 +44,15 @@ private:
     unsigned int mVBO;
     unsigned int mPBO;
 
-    DECLARE_MEMBER(float, SpanAngle)
-    DECLARE_MEMBER(QVector3D, GravityDirection)
-    DECLARE_MEMBER(float, Gravity)
-    DECLARE_MEMBER(float, MaxLife)
-    DECLARE_MEMBER(float, MinLife)
-    DECLARE_MEMBER(float, InitialSpeed)
-    DECLARE_MEMBER(bool, Loop)
-    DECLARE_MEMBER(float, Scale)
-    DECLARE_MEMBER(float, Damping)
+    DEFINE_MEMBER(float, SpanAngle)
+    DEFINE_MEMBER(QVector3D, GravityDirection)
+    DEFINE_MEMBER(float, Gravity)
+    DEFINE_MEMBER(float, MaxLife)
+    DEFINE_MEMBER(float, MinLife)
+    DEFINE_MEMBER(float, InitialSpeed)
+    DEFINE_MEMBER(bool, Loop)
+    DEFINE_MEMBER(float, Scale)
+    DEFINE_MEMBER(float, Damping)
 };
 
 } // namespace Engine

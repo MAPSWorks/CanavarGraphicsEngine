@@ -17,8 +17,12 @@ class Shader;
 class ShaderManager : public Manager
 {
     Q_OBJECT
-public:
+
+private:
     explicit ShaderManager(QObject *parent = nullptr);
+
+public:
+    static ShaderManager *instance();
 
     Shader *getShader(ShaderType shader);
 
@@ -36,8 +40,6 @@ public:
     void setUniformValue(const QString &name, const QMatrix3x3 &value);
     void setUniformValueArray(const QString &name, const QVector<QVector3D> &values);
     void setSampler(const QString &name, unsigned int unit, unsigned int id, GLenum target = GL_TEXTURE_2D);
-
-    static ShaderManager *instance();
 
 private:
     ShaderType mActiveShader;
