@@ -1,8 +1,8 @@
 #include "CameraManager.h"
 #include <QtMath>
 
-Canavar::Engine::CameraManager::CameraManager(QObject *parent)
-    : Manager(parent)
+Canavar::Engine::CameraManager::CameraManager()
+    : Manager()
     , mActiveCamera(nullptr)
 {}
 

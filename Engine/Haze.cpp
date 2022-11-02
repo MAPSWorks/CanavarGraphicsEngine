@@ -1,7 +1,7 @@
 #include "Haze.h"
 
-Canavar::Engine::Haze::Haze(QObject *parent)
-    : Node(parent)
+Canavar::Engine::Haze::Haze()
+    : Node()
     , mColor(0.33f, 0.38f, 0.47f)
     , mEnabled(true)
     , mDensity(1.0f)

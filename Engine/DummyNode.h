@@ -10,7 +10,7 @@ class DummyNode : public Node
 {
 protected:
     friend class NodeManager;
-    explicit DummyNode(QObject *parent = nullptr);
+    DummyNode();
     virtual ~DummyNode();
 };
 

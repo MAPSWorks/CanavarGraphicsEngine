@@ -1,7 +1,7 @@
 #include "DummyNode.h"
 
-Canavar::Engine::DummyNode::DummyNode(QObject *parent)
-    : Node(parent)
+Canavar::Engine::DummyNode::DummyNode()
+    : Node()
 {
     mType = Node::NodeType::DummyNode;
 }

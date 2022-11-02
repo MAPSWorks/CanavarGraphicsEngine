@@ -12,7 +12,7 @@ namespace Engine {
 class ModelDataManager : public Manager
 {
 private:
-    explicit ModelDataManager(QObject *parent = nullptr);
+    ModelDataManager();
 
 public:
     static ModelDataManager *instance();

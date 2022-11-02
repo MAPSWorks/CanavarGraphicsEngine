@@ -24,7 +24,7 @@ class Terrain : public Node, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 private:
-    explicit Terrain(QObject *parent = nullptr);
+    Terrain();
 
 public:
     static Terrain *instance();

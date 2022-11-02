@@ -1,8 +1,8 @@
 #include "PerspectiveCamera.h"
 #include "Helper.h"
 
-Canavar::Engine::PerspectiveCamera::PerspectiveCamera(QObject *parent)
-    : Camera(parent)
+Canavar::Engine::PerspectiveCamera::PerspectiveCamera()
+    : Camera()
 {
     setVerticalFov(60);
 }

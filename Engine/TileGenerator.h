@@ -20,8 +20,8 @@ public:
         QVector2D texture;
     };
 
-    explicit TileGenerator(int resolution, int tiles, float width, QObject *parent = nullptr);
-    virtual ~TileGenerator();
+    TileGenerator(int resolution, int tiles, float width);
+    ~TileGenerator();
 
     void render(GLenum primitive);
 

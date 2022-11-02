@@ -247,7 +247,10 @@ Canavar::Engine::ModelDataNode *Canavar::Engine::Helper::processNode(ModelData *
     parent->setWorldTransformation(toQMatrix(aiParent->mTransformation));
 
     for (unsigned int i = 0; i < aiParent->mNumChildren; ++i)
-        parent->addChild(processNode(data, aiParent->mChildren[i]));
+    {
+        auto child = processNode(data, aiParent->mChildren[i]);
+        parent->addChild(child);
+    }
 
     return parent;
 }

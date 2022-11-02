@@ -15,8 +15,7 @@ class LightManager : public Manager
     Q_OBJECT
 private:
     friend class Canavar::Engine::NodeManager;
-
-    explicit LightManager(QObject *parent = nullptr);
+    LightManager();
 
 public:
     static LightManager *instance();

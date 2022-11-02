@@ -4,8 +4,8 @@
 #include "Model.h"
 #include "ShaderManager.h"
 
-Canavar::Engine::Mesh::Mesh(QObject *parent)
-    : QObject(parent)
+Canavar::Engine::Mesh::Mesh()
+    : QObject()
     , mVAO(nullptr)
     , mMaterial(nullptr)
 {

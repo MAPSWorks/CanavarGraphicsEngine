@@ -1,7 +1,7 @@
 #include "Sun.h"
 
-Canavar::Engine::Sun::Sun(QObject *parent)
-    : Light(parent)
+Canavar::Engine::Sun::Sun()
+    : Light()
     , mDirection(0, -1, 0)
     , mEnabled(true)
 {

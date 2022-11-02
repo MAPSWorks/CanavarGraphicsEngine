@@ -13,7 +13,7 @@ class ModelData : public QObject
 {
     Q_OBJECT
 public:
-    explicit ModelData(const QString &name, QObject *parent = nullptr);
+    ModelData(const QString &name);
     virtual ~ModelData();
 
     void addMesh(Mesh *mesh);

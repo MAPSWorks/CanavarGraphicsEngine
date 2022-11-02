@@ -13,15 +13,8 @@ class NozzleEffect : public Node, protected QOpenGLExtraFunctions
 {
 protected:
     friend class NodeManager;
-    explicit NozzleEffect(QObject *parent = nullptr);
+    NozzleEffect();
     ~NozzleEffect();
-
-    struct Particle {
-        QVector3D initialPosition;
-        QVector3D direction;
-        float life;
-        float deadAfter;
-    };
 
     void create();
 
@@ -29,6 +22,13 @@ public:
     void render(float ifps);
 
 private:
+    struct Particle {
+        QVector3D initialPosition;
+        QVector3D direction;
+        float life;
+        float deadAfter;
+    };
+
     Particle generateParticle();
 
 private:

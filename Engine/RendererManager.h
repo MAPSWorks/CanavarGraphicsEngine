@@ -27,7 +27,7 @@ class RendererManager : public Manager, protected QOpenGLExtraFunctions
     Q_OBJECT
 
 private:
-    explicit RendererManager(QObject *parent = nullptr);
+    RendererManager();
 
 public:
     static RendererManager *instance();

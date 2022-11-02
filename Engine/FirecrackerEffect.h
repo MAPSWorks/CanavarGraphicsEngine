@@ -13,7 +13,7 @@ namespace Engine {
 class FirecrackerEffect : public Node, protected QOpenGLExtraFunctions
 {
 public:
-    explicit FirecrackerEffect(QObject *parent = nullptr);
+    FirecrackerEffect();
     ~FirecrackerEffect();
 
     struct Particle {

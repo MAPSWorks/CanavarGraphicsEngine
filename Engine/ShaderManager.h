@@ -19,7 +19,7 @@ class ShaderManager : public Manager
     Q_OBJECT
 
 private:
-    explicit ShaderManager(QObject *parent = nullptr);
+    ShaderManager();
 
 public:
     static ShaderManager *instance();

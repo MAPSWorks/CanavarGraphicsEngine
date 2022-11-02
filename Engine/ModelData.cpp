@@ -1,7 +1,7 @@
 #include "ModelData.h"
 
-Canavar::Engine::ModelData::ModelData(const QString &name, QObject *parent)
-    : QObject(parent)
+Canavar::Engine::ModelData::ModelData(const QString &name)
+    : QObject()
     , mName(name)
     , mRootNode(nullptr)
 {}

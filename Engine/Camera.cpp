@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-Canavar::Engine::Camera::Camera(QObject *parent)
-    : Node(parent)
+Canavar::Engine::Camera::Camera()
+    : Node()
     , mActive(false)
     , mWidth(1600)
     , mHeight(900)

@@ -9,7 +9,7 @@ namespace Engine {
 class Sun : public Light
 {
 private:
-    explicit Sun(QObject *parent = nullptr);
+    Sun();
 
 public:
     static Sun *instance();

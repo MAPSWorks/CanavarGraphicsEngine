@@ -1,8 +1,8 @@
 #include "ShaderManager.h"
 #include "Shader.h"
 
-Canavar::Engine::ShaderManager::ShaderManager(QObject *parent)
-    : Manager(parent)
+Canavar::Engine::ShaderManager::ShaderManager()
+    : Manager()
     , mActiveShader(ShaderType::None)
 {}
 

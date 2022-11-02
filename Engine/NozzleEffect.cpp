@@ -2,8 +2,8 @@
 
 #include "Helper.h"
 
-Canavar::Engine::NozzleEffect::NozzleEffect(QObject *parent)
-    : Node(parent)
+Canavar::Engine::NozzleEffect::NozzleEffect()
+    : Node()
     , mNumberOfParticles(5000)
     , mMaxRadius(0.8f)
     , mMaxLife(0.0f)

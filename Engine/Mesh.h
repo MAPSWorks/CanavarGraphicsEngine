@@ -34,7 +34,7 @@ public:
         float weights[4];
     };
 
-    explicit Mesh(QObject *parent = nullptr);
+    Mesh();
     virtual ~Mesh();
 
     void addVertex(const Vertex &vertex);

@@ -6,8 +6,8 @@
 
 #include <QMatrix4x4>
 
-Canavar::Engine::Terrain::Terrain(QObject *parent)
-    : Node(parent)
+Canavar::Engine::Terrain::Terrain()
+    : Node()
 {
     mType = Node::NodeType::Terrain;
     mName = "Terrain";

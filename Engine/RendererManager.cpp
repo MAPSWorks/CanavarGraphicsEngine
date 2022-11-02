@@ -16,8 +16,8 @@
 
 #include <QDir>
 
-Canavar::Engine::RendererManager::RendererManager(QObject *parent)
-    : Manager(parent)
+Canavar::Engine::RendererManager::RendererManager()
+    : Manager()
     , mWidth(1600)
     , mHeight(900)
     , mBlurPass(4)

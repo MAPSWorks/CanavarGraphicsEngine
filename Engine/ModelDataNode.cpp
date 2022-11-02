@@ -2,8 +2,8 @@
 
 #include "ModelData.h"
 
-Canavar::Engine::ModelDataNode::ModelDataNode(ModelData *data, QObject *parent)
-    : Node(parent)
+Canavar::Engine::ModelDataNode::ModelDataNode(ModelData *data)
+    : Node()
     , mModelData(data)
 {}
 

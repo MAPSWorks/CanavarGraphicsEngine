@@ -3,8 +3,8 @@
 
 #include <QDir>
 
-Canavar::Engine::ModelDataManager::ModelDataManager(QObject *parent)
-    : Manager(parent)
+Canavar::Engine::ModelDataManager::ModelDataManager()
+    : Manager()
 {}
 
 Canavar::Engine::ModelDataManager *Canavar::Engine::ModelDataManager::instance()

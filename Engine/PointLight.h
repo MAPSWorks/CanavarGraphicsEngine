@@ -12,7 +12,7 @@ class PointLight : public Light
 {
 protected:
     friend class NodeManager;
-    explicit PointLight(QObject *parent = nullptr);
+    PointLight();
 
     DEFINE_MEMBER(float, Constant)
     DEFINE_MEMBER(float, Linear)

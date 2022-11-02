@@ -16,8 +16,8 @@
 #include "Sun.h"
 #include "Terrain.h"
 
-Canavar::Engine::NodeManager::NodeManager(QObject *parent)
-    : Manager(parent)
+Canavar::Engine::NodeManager::NodeManager()
+    : Manager()
     , mNumberOfNodes(0)
 
 {
@@ -137,7 +137,7 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
     if (node == nullptr)
         return;
 
-    switch (node->type())
+    switch (node->getType())
     {
     case Node::NodeType::Model:
     case Node::NodeType::DummyNode:
@@ -181,7 +181,7 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
         break;
     }
     default: {
-        qWarning() << Q_FUNC_INFO << "Unknown Node. Implement deletion algorithm for this NodeType:" << (int) node->type();
+        qWarning() << Q_FUNC_INFO << "Unknown Node. Implement deletion algorithm for this NodeType:" << (int) node->getType();
         break;
     }
     }

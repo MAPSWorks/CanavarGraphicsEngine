@@ -1,7 +1,7 @@
 #include "DummyCamera.h"
 
-Canavar::Engine::DummyCamera::DummyCamera(QObject *parent)
-    : PerspectiveCamera(parent)
+Canavar::Engine::DummyCamera::DummyCamera()
+    : PerspectiveCamera()
 {
     mType = Canavar::Engine::Node::NodeType::DummyCamera;
 }

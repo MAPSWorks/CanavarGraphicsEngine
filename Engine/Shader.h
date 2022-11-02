@@ -14,7 +14,7 @@ class Shader : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
-    explicit Shader(ShaderType type, QObject *parent = nullptr);
+    Shader(ShaderType type);
 
     bool init();
     bool bind();

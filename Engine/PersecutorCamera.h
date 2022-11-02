@@ -13,7 +13,7 @@ class PersecutorCamera : public PerspectiveCamera
 {
 protected:
     friend class NodeManager;
-    explicit PersecutorCamera(QObject *parent = nullptr);
+    PersecutorCamera();
 
 public:
     void mouseDoubleClicked(QMouseEvent *) override;

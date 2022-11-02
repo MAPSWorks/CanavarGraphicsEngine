@@ -2,13 +2,13 @@
 
 #include <QtMath>
 
-Canavar::Engine::Node::Node(QObject *parent)
-    : QObject(parent)
+Canavar::Engine::Node::Node()
+    : QObject()
     , mPosition(0, 0, 0)
     , mScale(1, 1, 1)
     , mType(NodeType::DummyNode)
     , mID(-1)
-    , mParent(dynamic_cast<Node *>(parent))
+    , mParent(nullptr)
     , mVisible(true)
     , mSelectable(true)
 {
@@ -18,7 +18,7 @@ Canavar::Engine::Node::Node(QObject *parent)
 
 Canavar::Engine::Node::~Node() {}
 
-Canavar::Engine::Node::NodeType Canavar::Engine::Node::type() const
+Canavar::Engine::Node::NodeType Canavar::Engine::Node::getType() const
 {
     return mType;
 }
@@ -157,33 +157,90 @@ Canavar::Engine::Node *Canavar::Engine::Node::parent() const
 
 void Canavar::Engine::Node::setParent(Node *newParent)
 {
-    // TODO: Do we need to update transformation?
-    QObject::setParent(newParent);
+    // TODO: Do we need to update transformation as well?
+
+    if (mParent == newParent)
+        return;
+
+    if (mParent)
+    {
+        if (isChildOf(mParent))
+            mParent->removeChild(this);
+    }
+
     mParent = newParent;
+
+    if (mParent)
+    {
+        if (!isChildOf(mParent))
+            mParent->addChild(this);
+    }
 }
 
 void Canavar::Engine::Node::addChild(Node *node)
 {
     // TODO: Check self assignment
     // TODO: Check if "node" is already child of this node
-    // TOOO: Check if "node" has alread a parent
-    if (!node || this == node || mChildren.contains(node) || node->parent())
-        return;
+    // TOOO: Check if "node" has already a parent
 
-    node->setParent(this);
+    if (!node)
+    {
+        qWarning() << "Node is nullptr";
+        return;
+    }
+
+    if (this == node)
+    {
+        qCritical() << "Cannot add a node to as a child of itself.";
+        return;
+    }
+
+    if (mChildren.contains(node))
+    {
+        qWarning() << "Node is already a child of this node.";
+        return;
+    }
+
+    if (node->parent())
+    {
+        qWarning() << "Node has already a parent.";
+        return;
+    }
+
     mChildren << node;
+    node->setParent(this);
 }
 
 void Canavar::Engine::Node::removeChild(Node *node)
 {
     if (node)
     {
-        node->setParent(nullptr);
         mChildren.removeAll(node);
+        node->setParent(nullptr);
     }
 }
 
 const QList<Canavar::Engine::Node *> &Canavar::Engine::Node::children() const
 {
     return mChildren;
+}
+
+bool Canavar::Engine::Node::isChildOf(Node *node)
+{
+    if (node)
+        for (const auto &child : node->children())
+            if (child == this)
+                return true;
+
+    return false;
+}
+
+bool Canavar::Engine::Node::isParentOf(Node *node)
+{
+    if (node)
+        for (const auto &child : mChildren)
+            if (child == node)
+                return true;
+
+    return false;
 }

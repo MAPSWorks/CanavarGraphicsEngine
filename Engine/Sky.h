@@ -13,7 +13,7 @@ namespace Engine {
 class Sky : public Node, protected QOpenGLExtraFunctions
 {
 private:
-    explicit Sky(QObject *parent = nullptr);
+    Sky();
 
 public:
     static Sky *instance();

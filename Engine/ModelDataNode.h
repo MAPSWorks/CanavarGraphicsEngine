@@ -13,7 +13,7 @@ class ModelData;
 class ModelDataNode : public Node
 {
 public:
-    explicit ModelDataNode(ModelData *data, QObject *parent = nullptr);
+    ModelDataNode(ModelData *data);
 
     void addMeshIndex(int index);
 

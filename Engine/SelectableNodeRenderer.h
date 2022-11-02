@@ -19,7 +19,7 @@ class SelectableNodeRenderer : public Manager, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 private:
-    explicit SelectableNodeRenderer(QObject *parent = nullptr);
+    SelectableNodeRenderer();
 
 public:
     struct NodeInfo {

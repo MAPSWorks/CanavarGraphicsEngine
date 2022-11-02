@@ -1,7 +1,7 @@
 #include "LightManager.h"
 
-Canavar::Engine::LightManager::LightManager(QObject *parent)
-    : Manager(parent)
+Canavar::Engine::LightManager::LightManager()
+    : Manager()
 {}
 
 Canavar::Engine::LightManager *Canavar::Engine::LightManager::instance()

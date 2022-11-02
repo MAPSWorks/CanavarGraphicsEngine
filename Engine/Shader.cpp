@@ -3,8 +3,8 @@
 
 #include <QDebug>
 
-Canavar::Engine::Shader::Shader(ShaderType type, QObject *parent)
-    : QObject(parent)
+Canavar::Engine::Shader::Shader(ShaderType type)
+    : QObject()
     , mType(type)
 {}
 

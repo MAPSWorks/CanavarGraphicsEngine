@@ -1,7 +1,7 @@
 #include "Model.h"
 
-Canavar::Engine::Model::Model(const QString &modelName, Node *parent)
-    : Node(parent)
+Canavar::Engine::Model::Model(const QString &modelName)
+    : Node()
     , mModelName(modelName)
     , mColor(1, 1, 1, 1)
     , mOverlayColor(1, 1, 1, 1)

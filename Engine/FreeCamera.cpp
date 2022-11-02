@@ -1,7 +1,7 @@
 #include "FreeCamera.h"
 
-Canavar::Engine::FreeCamera::FreeCamera(QObject *parent)
-    : PerspectiveCamera(parent)
+Canavar::Engine::FreeCamera::FreeCamera()
+    : PerspectiveCamera()
     , mUpdateRotation(true)
     , mUpdatePosition(true)
 {

@@ -1,7 +1,7 @@
 #include "Material.h"
 
-Canavar::Engine::Material::Material(QObject *parent)
-    : QObject(parent)
+Canavar::Engine::Material::Material()
+    : QObject()
 {}
 
 Canavar::Engine::Material::~Material()

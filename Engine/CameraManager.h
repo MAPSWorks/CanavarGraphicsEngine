@@ -16,7 +16,8 @@ class CameraManager : public Manager
 private:
     friend class Canavar::Engine::NodeManager;
 
-    explicit CameraManager(QObject *parent = nullptr);
+    CameraManager();
+
     void addCamera(Camera *camera);
     void removeCamera(Camera *camera);
 

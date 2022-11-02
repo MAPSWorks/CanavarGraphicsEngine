@@ -1,7 +1,7 @@
 #include "TileGenerator.h"
 
-Canavar::Engine::TileGenerator::TileGenerator(int resolution, int tiles, float width, QObject *parent)
-    : QObject{parent}
+Canavar::Engine::TileGenerator::TileGenerator(int resolution, int tiles, float width)
+    : QObject()
     , mResolution(resolution)
     , mTiles(tiles)
     , mWidth(width)

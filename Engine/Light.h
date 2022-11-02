@@ -9,7 +9,7 @@ namespace Engine {
 class Light : public Node
 {
 protected:
-    explicit Light(QObject *parent = nullptr);
+    Light();
 
     DEFINE_MEMBER(QVector4D, Color)
     DEFINE_MEMBER(float, Ambient)

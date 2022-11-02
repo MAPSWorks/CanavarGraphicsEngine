@@ -17,7 +17,7 @@ class Node : public QObject
     Q_OBJECT
 protected:
     friend class NodeManager;
-    explicit Node(QObject *parent = nullptr);
+    Node();
     virtual ~Node();
 
 public:
@@ -60,12 +60,15 @@ public:
     Node *parent() const;
     void setParent(Node *newParent);
 
+    bool isChildOf(Node *node);
+    bool isParentOf(Node *node);
+
     void addChild(Node *node);
     void removeChild(Node *node);
 
-    NodeType type() const;
-
     Node *findChildByNameRecursive(const QString &name);
+
+    NodeType getType() const;
 
     int getID() const;
 

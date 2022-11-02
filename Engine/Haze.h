@@ -11,7 +11,7 @@ class Haze : public Node
 {
     Q_OBJECT
 private:
-    explicit Haze(QObject *parent = nullptr);
+    Haze();
 
 public:
     static Haze *instance();

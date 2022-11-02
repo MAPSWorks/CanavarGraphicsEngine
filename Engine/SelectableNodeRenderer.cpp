@@ -6,8 +6,8 @@
 #include "NodeManager.h"
 #include "ShaderManager.h"
 
-Canavar::Engine::SelectableNodeRenderer::SelectableNodeRenderer(QObject *parent)
-    : Manager(parent)
+Canavar::Engine::SelectableNodeRenderer::SelectableNodeRenderer()
+    : Manager()
     , mWidth(1600)
     , mHeight(900)
 {}

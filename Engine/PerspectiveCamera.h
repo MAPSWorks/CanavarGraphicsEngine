@@ -10,7 +10,7 @@ class PerspectiveCamera : public Camera
 {
     Q_OBJECT
 protected:
-    explicit PerspectiveCamera(QObject *parent);
+    PerspectiveCamera();
 
 public:
     virtual QMatrix4x4 getProjectionMatrix() override;

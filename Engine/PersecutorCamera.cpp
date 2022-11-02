@@ -1,7 +1,7 @@
 #include "PersecutorCamera.h"
 
-Canavar::Engine::PersecutorCamera::PersecutorCamera(QObject *parent)
-    : PerspectiveCamera(parent)
+Canavar::Engine::PersecutorCamera::PersecutorCamera()
+    : PerspectiveCamera()
     , mTarget(nullptr)
     , mDistance(10.0f)
     , mYaw(0.0f)

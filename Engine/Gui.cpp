@@ -54,13 +54,13 @@ void Canavar::Engine::Gui::draw()
 
     if (mSelectedNode)
     {
-        ImGui::Text("Type: %d", mSelectedNode->type());
+        ImGui::Text("Type: %d", mSelectedNode->getType());
         ImGui::Text("Parent: 0x%p", mSelectedNode->parent());
 
         if (mSelectedNode->parent())
             ImGui::Text("Parent Name: %s", mSelectedNode->parent()->getName().toStdString().c_str());
 
-        switch (mSelectedNode->type())
+        switch (mSelectedNode->getType())
         {
         case Canavar::Engine::Node::NodeType::DummyNode:
             draw(mSelectedNode);

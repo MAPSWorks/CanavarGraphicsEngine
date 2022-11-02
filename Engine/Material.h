@@ -12,7 +12,7 @@ class Material : public QObject
 {
     Q_OBJECT
 public:
-    explicit Material(QObject *parent = nullptr);
+    Material();
     virtual ~Material();
 
     enum class TextureType //
