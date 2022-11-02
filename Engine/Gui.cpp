@@ -52,14 +52,40 @@ void Canavar::Engine::Gui::draw()
         ImGui::EndCombo();
     }
 
+    // Node actions
     if (mSelectedNode)
     {
-        ImGui::Text("Type: %d", mSelectedNode->getType());
-        ImGui::Text("Parent: 0x%p", mSelectedNode->parent());
+        if (!ImGui::CollapsingHeader("Actions"))
+        {
+            QString preview = mSelectedNode->parent() ? mSelectedNode->parent()->getName() : "-";
 
-        if (mSelectedNode->parent())
-            ImGui::Text("Parent Name: %s", mSelectedNode->parent()->getName().toStdString().c_str());
+            if (ImGui::BeginCombo("Assign a parent", preview.toStdString().c_str()))
+            {
+                if (ImGui::Selectable("-"))
+                    mSelectedNode->setParent(nullptr);
 
+                for (int i = 0; i < nodes.size(); ++i)
+                {
+                    if (mSelectedNode == nodes[i])
+                        continue;
+
+                    if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
+                        mSelectedNode->setParent(nodes[i]);
+                }
+
+                ImGui::EndCombo();
+            }
+
+            ImGui::Text("Type: %d", mSelectedNode->getType());
+            ImGui::Text("UUID: %s", mSelectedNode->getUUID().toStdString().c_str());
+
+            if (ImGui::Button("Remove this node"))
+                NodeManager::instance()->removeNode(mSelectedNode);
+        }
+    }
+
+    if (mSelectedNode)
+    {
         switch (mSelectedNode->getType())
         {
         case Canavar::Engine::Node::NodeType::DummyNode:
