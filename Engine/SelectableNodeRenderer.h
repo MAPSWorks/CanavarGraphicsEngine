@@ -48,6 +48,7 @@ private:
     OpenGLFramebuffer mNodeInfoFBO;
     int mWidth;
     int mHeight;
+    bool mResizeLater;
 };
 
 } // namespace Engine

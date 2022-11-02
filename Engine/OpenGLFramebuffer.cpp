@@ -5,6 +5,9 @@ Canavar::Engine::OpenGLFramebuffer::OpenGLFramebuffer()
     , mFBO(0)
     , mRBO(0)
     , mTexture(0)
+{}
+
+void Canavar::Engine::OpenGLFramebuffer::init()
 {
     initializeOpenGLFunctions();
 }
@@ -47,11 +50,11 @@ void Canavar::Engine::OpenGLFramebuffer::destroy()
     if (mFBO)
         glDeleteFramebuffers(1, &mFBO);
 
-    if (mRBO)
-        glDeleteBuffers(1, &mRBO);
-
     if (mTexture)
         glDeleteTextures(1, &mTexture);
+
+    if (mRBO)
+        glDeleteBuffers(1, &mRBO);
 
     mCreated = false;
 }

@@ -6,10 +6,13 @@
 #include "NodeManager.h"
 #include "ShaderManager.h"
 
+#include <QTimer>
+
 Canavar::Engine::SelectableNodeRenderer::SelectableNodeRenderer()
     : Manager()
     , mWidth(1600)
     , mHeight(900)
+    , mResizeLater(true)
 {}
 
 bool Canavar::Engine::SelectableNodeRenderer::init()
@@ -20,6 +23,7 @@ bool Canavar::Engine::SelectableNodeRenderer::init()
     mCameraManager = CameraManager::instance();
 
     initializeOpenGLFunctions();
+    mNodeInfoFBO.init();
     mNodeInfoFBO.create(mWidth, mHeight);
 
     glGenVertexArrays(1, &mCube.mVAO);
@@ -38,8 +42,16 @@ void Canavar::Engine::SelectableNodeRenderer::resize(int width, int height)
     mWidth = width;
     mHeight = height;
 
-    mNodeInfoFBO.destroy();
-    mNodeInfoFBO.create(width, height);
+    if (mResizeLater)
+    {
+        QTimer::singleShot(100, [=]() {
+            mNodeInfoFBO.destroy();
+            mNodeInfoFBO.create(mWidth, mHeight);
+            mResizeLater = true;
+        });
+
+        mResizeLater = false;
+    }
 }
 
 Canavar::Engine::SelectableNodeRenderer::NodeInfo Canavar::Engine::SelectableNodeRenderer::getNodeInfoByScreenPosition(int x, int y)

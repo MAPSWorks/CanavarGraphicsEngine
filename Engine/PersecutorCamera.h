@@ -30,9 +30,6 @@ public:
     void setTarget(Node *newTarget);
 
 private:
-    void onTargetDestroyed();
-
-private:
     Node *mTarget;
 
     Mouse mMouse;

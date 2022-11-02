@@ -11,6 +11,7 @@ class OpenGLFramebuffer : protected QOpenGLFunctions
 public:
     OpenGLFramebuffer();
 
+    void init();
     void create(int width, int height);
     void destroy();
 

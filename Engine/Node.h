@@ -17,6 +17,7 @@ class Node : public QObject
     Q_OBJECT
 protected:
     friend class NodeManager;
+
     Node(const QString &uuid = QString());
     virtual ~Node();
 

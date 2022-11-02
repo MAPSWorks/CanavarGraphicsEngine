@@ -223,12 +223,12 @@ void Canavar::Engine::NodeManager::assignName(Node *node, const QString &name)
     if (newName.isEmpty())
         newName = mTypeToName.value(node->mType);
 
+    if (auto model = dynamic_cast<Model *>(node))
+        newName += " " + model->getModelName();
+
     int count = mNames.value(newName, 0);
 
-    if (mNames.value(newName, 0) == 0)
-        node->setName(newName);
-    else
-        node->setName(newName + " " + QString::number(count));
+    node->setName(newName + " " + node->getUUID().first(6));
 
     mNames.insert(newName, ++count);
 }

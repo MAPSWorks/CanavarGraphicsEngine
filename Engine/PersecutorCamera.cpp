@@ -86,17 +86,12 @@ Canavar::Engine::Node *Canavar::Engine::PersecutorCamera::getTarget() const
 void Canavar::Engine::PersecutorCamera::setTarget(Node *newTarget)
 {
     if (mTarget)
-        disconnect(mTarget, &QObject::destroyed, this, &PersecutorCamera::onTargetDestroyed);
+        mTarget->disconnect(this);
 
     mTarget = newTarget;
 
     if (mTarget)
-        connect(mTarget, &QObject::destroyed, this, &PersecutorCamera::onTargetDestroyed);
+        connect(mTarget, &QObject::destroyed, this, [=]() { mTarget = nullptr; });
 
     reset();
-}
-
-void Canavar::Engine::PersecutorCamera::onTargetDestroyed()
-{
-    mTarget = nullptr;
 }

@@ -19,8 +19,6 @@ Canavar::Engine::Node::Node(const QString &uuid)
 
     if (mUUID.isEmpty())
         mUUID = QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
-
-    qDebug() << mUUID;
 }
 
 Canavar::Engine::Node::~Node() {}
