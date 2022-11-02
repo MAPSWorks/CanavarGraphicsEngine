@@ -44,7 +44,6 @@ public:
 
     void render(float ifps) override;
 
-    // Custom render list
     void addSelectable(Node *node);
     void removeSelectable(Node *node);
 
@@ -52,7 +51,6 @@ private:
     void setCommonUniforms();
     void deleteFramebuffers();
     void createFramebuffers(int width, int height);
-    void onObjectDestroyed(QObject *object);
 
 private:
     NodeManager *mNodeManager;

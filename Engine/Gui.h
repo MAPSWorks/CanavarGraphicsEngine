@@ -16,13 +16,16 @@
 namespace Canavar {
 namespace Engine {
 
-class Gui
+class Gui : public QObject
 {
 private:
-    Gui();
+    explicit Gui(QObject *parent = nullptr);
 
 public:
-    static void draw();
+    static Gui *instance();
+
+    void draw();
+
     static void draw(Canavar::Engine::Node *node);
     static void draw(Canavar::Engine::Model *node);
     static void draw(Canavar::Engine::Sky *node);
@@ -36,7 +39,7 @@ public:
     static void draw(Canavar::Engine::FirecrackerEffect *node);
 
 private:
-    static Canavar::Engine::Node *mSelectedNode;
+    Canavar::Engine::Node *mSelectedNode;
 };
 
 } // namespace Engine

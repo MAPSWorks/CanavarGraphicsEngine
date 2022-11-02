@@ -137,7 +137,6 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
     if (node == nullptr)
         return;
 
-    // FIXME: If a node is removed, remove also its all children
     switch (node->type())
     {
     case Node::NodeType::Model:
@@ -147,6 +146,10 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
         // TODO: What will happen to node's children?
         if (node->mParent)
             node->mParent->removeChild(node);
+
+        for (auto &child : node->children())
+            child->setParent(nullptr);
+
         mNodes.removeAll(node);
         node->deleteLater();
         break;
@@ -156,6 +159,10 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
     case Node::NodeType::FreeCamera: {
         if (node->mParent)
             node->mParent->removeChild(node);
+
+        for (auto &child : node->children())
+            child->setParent(nullptr);
+
         mCameraManager->removeCamera(dynamic_cast<Camera *>(node));
         mNodes.removeAll(node);
         node->deleteLater();
@@ -164,6 +171,10 @@ void Canavar::Engine::NodeManager::removeNode(Node *node)
     case Node::NodeType::PointLight: {
         if (node->mParent)
             node->mParent->removeChild(node);
+
+        for (auto &child : node->children())
+            child->setParent(nullptr);
+
         mLightManager->removeLight(dynamic_cast<Light *>(node));
         mNodes.removeAll(node);
         node->deleteLater();

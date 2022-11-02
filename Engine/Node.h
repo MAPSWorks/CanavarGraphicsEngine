@@ -69,6 +69,8 @@ public:
 
     int getID() const;
 
+    const QList<Node *> &children() const;
+
 private:
     virtual void updateTransformation();
 

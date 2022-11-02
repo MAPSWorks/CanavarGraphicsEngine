@@ -3,9 +3,17 @@
 #include "Helper.h"
 #include "RendererManager.h"
 
-Canavar::Engine::Gui::Gui() {}
+Canavar::Engine::Gui::Gui(QObject *parent)
+    : QObject(parent)
+    , mSelectedNode(nullptr)
+{}
 
-Canavar::Engine::Node *Canavar::Engine::Gui::mSelectedNode = nullptr;
+Canavar::Engine::Gui *Canavar::Engine::Gui::instance()
+{
+    static Gui instance;
+
+    return &instance;
+}
 
 void Canavar::Engine::Gui::draw()
 {
@@ -31,7 +39,15 @@ void Canavar::Engine::Gui::draw()
     {
         for (int i = 0; i < nodes.size(); ++i)
             if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
+            {
+                if (mSelectedNode)
+                    mSelectedNode->disconnect(this);
+
                 mSelectedNode = nodes[i];
+
+                if (mSelectedNode)
+                    connect(mSelectedNode, &QObject::destroyed, this, [=]() { mSelectedNode = nullptr; });
+            }
 
         ImGui::EndCombo();
     }

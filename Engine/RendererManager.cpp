@@ -169,7 +169,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
                 mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * data->getAABB().getTransformation());
             else
                 mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * node->getAABB().getTransformation());
-        } else
+        } else if (node)
             mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * node->getAABB().getTransformation());
 
         glBindVertexArray(mCubeStrip.mVAO);
@@ -285,7 +285,7 @@ void Canavar::Engine::RendererManager::addSelectable(Node *node)
         if (!mSelectableRenderList.contains(node))
         {
             mSelectableRenderList << node;
-            connect(node, &QObject::destroyed, this, &RendererManager::onObjectDestroyed);
+            connect(node, &QObject::destroyed, this, [=]() { mSelectableRenderList.removeAll(node); });
         }
     }
 }
@@ -296,13 +296,8 @@ void Canavar::Engine::RendererManager::removeSelectable(Node *node)
     {
         if (mSelectableRenderList.contains(node))
         {
-            disconnect(node, &QObject::destroyed, this, &RendererManager::onObjectDestroyed);
+            node->disconnect(this);
             mSelectableRenderList.removeAll(node);
         }
     }
-}
-
-void Canavar::Engine::RendererManager::onObjectDestroyed(QObject *object)
-{
-    mSelectableRenderList.removeAll(object);
 }

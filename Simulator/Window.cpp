@@ -149,7 +149,7 @@ void Window::paintGL()
 
     QtImGui::newFrame();
 
-    Gui::draw();
+    Gui::instance()->draw();
 
     mAircraftController->drawGUI();
 

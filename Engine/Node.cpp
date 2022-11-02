@@ -158,6 +158,7 @@ Canavar::Engine::Node *Canavar::Engine::Node::parent() const
 void Canavar::Engine::Node::setParent(Node *newParent)
 {
     // TODO: Do we need to update transformation?
+    QObject::setParent(newParent);
     mParent = newParent;
 }
 
@@ -165,20 +166,24 @@ void Canavar::Engine::Node::addChild(Node *node)
 {
     // TODO: Check self assignment
     // TODO: Check if "node" is already child of this node
-    // TOOD: Check if "node" has alread a parent
+    // TOOO: Check if "node" has alread a parent
+    if (!node || this == node || mChildren.contains(node) || node->parent())
+        return;
 
-    if (node)
-    {
-        node->setParent(this);
-        mChildren << node;
-    }
+    node->setParent(this);
+    mChildren << node;
 }
 
 void Canavar::Engine::Node::removeChild(Node *node)
 {
     if (node)
     {
-        node->deleteLater();
+        node->setParent(nullptr);
         mChildren.removeAll(node);
     }
+}
+
+const QList<Canavar::Engine::Node *> &Canavar::Engine::Node::children() const
+{
+    return mChildren;
 }

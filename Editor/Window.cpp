@@ -77,7 +77,7 @@ void Window::paintGL()
 
     QtImGui::newFrame();
 
-    Gui::draw();
+    Gui::instance()->draw();
 
     glViewport(0, 0, width() * devicePixelRatioF(), height() * devicePixelRatioF());
     ImGui::Render();
