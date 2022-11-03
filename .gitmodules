@@ -1,3 +1,0 @@
-[submodule "Engine/Dependencies/qtimgui"]
-	path = Engine/Dependencies/qtimgui
-	url = https://github.com/seanchas116/qtimgui.git

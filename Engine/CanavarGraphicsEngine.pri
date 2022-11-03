@@ -91,3 +91,5 @@ LIBS += -L$$PWD/Dependencies/Assimp/lib/ -lassimp-vc142-mt
 
 RESOURCES += \
     $$PWD/Resources.qrc
+
+include(Dependencies/qtimgui/qtimgui.pri)
