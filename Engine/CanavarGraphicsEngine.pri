@@ -33,6 +33,7 @@ HEADERS += \
     $$PWD/PointLight.h \
     $$PWD/RendererManager.h \
     $$PWD/SelectableNodeRenderer.h \
+    $$PWD/SelectedMeshParameters.h \
     $$PWD/Shader.h \
     $$PWD/ShaderManager.h \
     $$PWD/Sky.h \
@@ -74,6 +75,7 @@ SOURCES += \
     $$PWD/PointLight.cpp \
     $$PWD/RendererManager.cpp \
     $$PWD/SelectableNodeRenderer.cpp \
+    $$PWD/SelectedMeshParameters.cpp \
     $$PWD/Shader.cpp \
     $$PWD/ShaderManager.cpp \
     $$PWD/Sky.cpp \

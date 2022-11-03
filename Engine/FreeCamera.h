@@ -30,9 +30,10 @@ private:
     QMap<Qt::Key, bool> mPressedKeys;
 
     Mouse mMouse;
-    Speed mSpeed;
     bool mUpdateRotation;
     bool mUpdatePosition;
+
+    DEFINE_MEMBER(Speed, Speed)
 
     static const QMap<Qt::Key, QVector3D> KEY_BINDINGS;
 };

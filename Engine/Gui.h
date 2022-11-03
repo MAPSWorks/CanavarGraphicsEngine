@@ -11,6 +11,7 @@
 #include "Sun.h"
 #include "Terrain.h"
 
+#include <FreeCamera.h>
 #include <imgui.h>
 #include <QtImGui.h>
 
@@ -29,6 +30,7 @@ public:
     void draw(Canavar::Engine::Sky *node);
     void draw(Canavar::Engine::Sun *node);
     void draw(Canavar::Engine::PerspectiveCamera *node);
+    void draw(Canavar::Engine::FreeCamera *node);
     void draw(Canavar::Engine::Terrain *node);
     void draw(Canavar::Engine::Light *node);
     void draw(Canavar::Engine::PointLight *node);
@@ -44,11 +46,19 @@ public:
 
     void mousePressed(QMouseEvent *event);
 
+    int getSelectedVertexIndex() const;
+    void setSelectedVertexIndex(int newSelectedVertexIndex);
+
 private:
     Canavar::Engine::Node *mSelectedNode;
+    Canavar::Engine::Model *mSelectedModel; // Casted from mSelectedNode
     Canavar::Engine::Mesh *mSelectedMesh;
+    int mSelectedVertexIndex;
     bool mDrawAllBBs;
+
     bool mNodeSelectionEnabled;
+    bool mMeshSelectionEnabled;
+    bool mVertexSelectionEnabled;
 };
 
 } // namespace Engine

@@ -41,7 +41,12 @@ public:
     void addIndex(unsigned int index);
     void setMaterial(Material *material);
     void create();
-    void render(RenderModes modes, Model *model, GLenum primitive = GL_TRIANGLES);
+    void render(RenderModes modes, Model *model);
+
+    Vertex getVertex(int index) const;
+    int getNumberOfVertices();
+
+    QOpenGLVertexArrayObject *getVerticesVAO() const;
 
 private:
     QOpenGLVertexArrayObject *mVAO;
@@ -59,6 +64,10 @@ private:
     // For rendering
     ShaderManager *mShaderManager;
     CameraManager *mCameraManager;
+
+    // For vertex rendering
+    QOpenGLVertexArrayObject *mVerticesVAO;
+    unsigned int mVerticesVBO;
 };
 
 } // namespace Engine

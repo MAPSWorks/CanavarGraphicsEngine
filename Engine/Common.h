@@ -40,7 +40,9 @@ enum class ShaderType { //
     NodeInfoShader,
     NozzleEffectShader,
     FirecrackerEffectShader,
-    BasicShader
+    BasicShader,
+    MeshVertexRendererShader,
+    VertexInfoShader
 };
 
 enum class RenderMode { //

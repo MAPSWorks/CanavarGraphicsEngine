@@ -23,6 +23,7 @@ Canavar::Engine::RendererManager::RendererManager()
     , mBlurPass(4)
     , mExposure(1.0f)
     , mGamma(1.0f)
+    , mColorAttachments{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1}
 {}
 
 Canavar::Engine::RendererManager *Canavar::Engine::RendererManager::instance()
@@ -47,10 +48,6 @@ bool Canavar::Engine::RendererManager::init()
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-
-    mColorAttachments = new GLuint[2];
-    mColorAttachments[0] = GL_COLOR_ATTACHMENT0;
-    mColorAttachments[1] = GL_COLOR_ATTACHMENT1;
 
     // Default FBO format
     mFBOFormats.insert(FramebufferType::Default, new QOpenGLFramebufferObjectFormat);
@@ -161,12 +158,13 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
     // Selectables
     {
+        const auto &VP = mCamera->getViewProjectionMatrix();
+        const auto &nodes = mSelectableNodes.keys();
+        const auto &models = mSelectedMeshes.keys();
+
         mShaderManager->bind(ShaderType::BasicShader);
 
-        const auto &selectables = mSelectableRenderMap.keys();
-        const auto &VP = mCamera->getViewProjectionMatrix();
-
-        for (const auto &node : selectables)
+        for (const auto &node : nodes)
         {
             if (auto model = dynamic_cast<Model *>(node))
             {
@@ -177,9 +175,42 @@ void Canavar::Engine::RendererManager::render(float ifps)
             } else if (node)
                 mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
 
-            mShaderManager->setUniformValue("color", mSelectableRenderMap.value(node, QVector4D(1, 1, 1, 1)));
+            mShaderManager->setUniformValue("color", mSelectableNodes.value(node, QVector4D(1, 1, 1, 1)));
             glBindVertexArray(mCubeStrip.mVAO);
             glDrawArrays(GL_LINE_STRIP, 0, 17);
+        }
+
+        for (const auto &model : models)
+        {
+            const auto &parameters = mSelectedMeshes.value(model);
+            const auto &meshTransformation = model->getMeshTransformation(parameters.mMesh->getName());
+            mShaderManager->setUniformValue("MVP", VP * model->worldTransformation() * meshTransformation * parameters.mMesh->getAABB().getTransformation());
+            mShaderManager->setUniformValue("color", parameters.mMeshStripColor);
+            glBindVertexArray(mCubeStrip.mVAO);
+            glDrawArrays(GL_LINE_STRIP, 0, 17);
+        }
+
+        mShaderManager->release();
+
+        // Vertices of Mesh
+        mShaderManager->bind(ShaderType::MeshVertexRendererShader);
+
+        for (const auto &model : models)
+        {
+            const auto &parameters = mSelectedMeshes.value(model);
+
+            if (parameters.mRenderVertices)
+            {
+                mShaderManager->setUniformValue("MVP", VP * model->worldTransformation() * model->getMeshTransformation(parameters.mMesh->getName()));
+                mShaderManager->setUniformValue("scale", parameters.mScale);
+                mShaderManager->setUniformValue("selectedVertexID", parameters.mSelectedVertexID);
+                mShaderManager->setUniformValue("vertexColor", parameters.mVertexColor);
+                mShaderManager->setUniformValue("selectedVertexColor", parameters.mSelectedVertexColor);
+
+                parameters.mMesh->getVerticesVAO()->bind();
+                glDrawArraysInstanced(GL_TRIANGLES, 0, 36, parameters.mMesh->getNumberOfVertices());
+                parameters.mMesh->getVerticesVAO()->release();
+            }
         }
 
         mShaderManager->release();
@@ -285,20 +316,53 @@ void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
     }
 }
 
-void Canavar::Engine::RendererManager::addSelectable(Node *node, QVector4D color)
+void Canavar::Engine::RendererManager::addSelectableNode(Node *node, QVector4D color)
 {
     if (node && node->getSelectable())
     {
-        mSelectableRenderMap.insert(node, color);
-        connect(node, &QObject::destroyed, this, [=]() { mSelectableRenderMap.remove(node); });
+        mSelectableNodes.insert(node, color);
+        connect(node, &QObject::destroyed, this, [=]() { mSelectableNodes.remove(node); });
     }
 }
 
-void Canavar::Engine::RendererManager::removeSelectable(Node *node)
+void Canavar::Engine::RendererManager::removeSelectableNode(Node *node)
 {
     if (node)
     {
-        mSelectableRenderMap.remove(node);
+        mSelectableNodes.remove(node);
         node->disconnect(this);
     }
+}
+
+void Canavar::Engine::RendererManager::addSelectedMesh(Model *model, const SelectedMeshParameters &parameters)
+{
+    if (model)
+    {
+        mSelectedMeshes.insert(model, parameters);
+        connect(model, &QObject::destroyed, this, [=]() { mSelectedMeshes.remove(model); });
+    }
+}
+
+void Canavar::Engine::RendererManager::removeSelectedMesh(Model *model)
+{
+    if (model)
+    {
+        mSelectedMeshes.remove(model);
+        model->disconnect(this);
+    }
+}
+
+Canavar::Engine::SelectedMeshParameters Canavar::Engine::RendererManager::getSelectedMeshParameters(Model *model) const
+{
+    return mSelectedMeshes.value(model);
+}
+
+Canavar::Engine::SelectedMeshParameters &Canavar::Engine::RendererManager::getSelectedMeshParameters_Ref(Model *model)
+{
+    return mSelectedMeshes[model];
+}
+
+const QMap<Canavar::Engine::Model *, Canavar::Engine::SelectedMeshParameters> &Canavar::Engine::RendererManager::getSelectedMeshes() const
+{
+    return mSelectedMeshes;
 }

@@ -8,9 +8,13 @@
 Canavar::Engine::Gui::Gui(QObject *parent)
     : QObject(parent)
     , mSelectedNode(nullptr)
+    , mSelectedModel(nullptr)
     , mSelectedMesh(nullptr)
+    , mSelectedVertexIndex(-1)
     , mDrawAllBBs(false)
     , mNodeSelectionEnabled(true)
+    , mMeshSelectionEnabled(false)
+    , mVertexSelectionEnabled(false)
 {}
 
 void Canavar::Engine::Gui::draw()
@@ -32,21 +36,61 @@ void Canavar::Engine::Gui::draw()
 
     const auto &nodes = NodeManager::instance()->nodes();
 
+    // Draw All Bounding Boxes
     if (ImGui::Checkbox("Draw All Bounding Boxes", &mDrawAllBBs))
     {
         if (mDrawAllBBs)
             for (const auto &node : nodes)
-                RendererManager::instance()->addSelectable(node, QVector4D(1, 1, 1, 1));
+                RendererManager::instance()->addSelectableNode(node, QVector4D(1, 1, 1, 1));
         else
             for (const auto &node : nodes)
-                RendererManager::instance()->removeSelectable(node);
+                RendererManager::instance()->removeSelectableNode(node);
 
-        if (mSelectedNode)
-            RendererManager::instance()->addSelectable(mSelectedNode, QVector4D(1, 0, 0, 1));
+        if (mNodeSelectionEnabled)
+            if (mSelectedNode)
+                RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
     }
 
-    ImGui::Checkbox("Node Selection Enabled", &mNodeSelectionEnabled);
+    // Node Selection
+    if (ImGui::Checkbox("Node Selection", &mNodeSelectionEnabled))
+    {
+        if (mNodeSelectionEnabled)
+        {
+            RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
 
+        } else
+        {
+            if (mDrawAllBBs)
+                RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 1, 1, 1));
+            else
+                for (const auto &node : nodes)
+                    RendererManager::instance()->removeSelectableNode(node);
+
+            mMeshSelectionEnabled = false;
+            mVertexSelectionEnabled = false;
+            setSelectedMesh(nullptr);
+        }
+    }
+
+    // Mesh Selection
+    ImGui::BeginDisabled(!mSelectedModel || !mNodeSelectionEnabled);
+    if (ImGui::Checkbox("Mesh Selection", &mMeshSelectionEnabled))
+    {
+        setSelectedMesh(nullptr);
+        mVertexSelectionEnabled = false;
+    }
+    ImGui::EndDisabled();
+
+    // Vertex Selection
+    ImGui::BeginDisabled(!mSelectedMesh || !mMeshSelectionEnabled);
+    if (ImGui::Checkbox("Vertex Selection", &mVertexSelectionEnabled))
+    {
+        RendererManager::instance()->getSelectedMeshParameters_Ref(mSelectedModel).mRenderVertices = true;
+        setSelectedVertexIndex(-1);
+    }
+    ImGui::EndDisabled();
+
+    // Select a node
     if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->getName().toStdString().c_str() : "-"))
     {
         for (int i = 0; i < nodes.size(); ++i)
@@ -58,12 +102,13 @@ void Canavar::Engine::Gui::draw()
         ImGui::EndCombo();
     }
 
-    // Node actions
+    // Actions
     if (mSelectedNode)
     {
         if (!ImGui::CollapsingHeader("Actions"))
         {
             ImGui::Text("Type: %d", mSelectedNode->getType());
+            ImGui::Text("ID: %d", mSelectedNode->getID());
             ImGui::Text("UUID: %s", mSelectedNode->getUUID().toStdString().c_str());
 
             // Assign a parent
@@ -99,8 +144,12 @@ void Canavar::Engine::Gui::draw()
             draw(mSelectedNode);
             break;
         case Canavar::Engine::Node::NodeType::PersecutorCamera:
-        case Canavar::Engine::Node::NodeType::FreeCamera:
         case Canavar::Engine::Node::NodeType::DummyCamera:
+            draw(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
+            draw(mSelectedNode);
+            break;
+        case Canavar::Engine::Node::NodeType::FreeCamera:
+            draw(dynamic_cast<FreeCamera *>(mSelectedNode));
             draw(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
             draw(mSelectedNode);
             break;
@@ -255,6 +304,10 @@ void Canavar::Engine::Gui::draw(Model *model)
 
             if (mSelectedMesh)
             {
+                ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Info");
+                ImGui::Text("ID: %d", mSelectedMesh->getID());
+                ImGui::Text("Number of Vertices: %d", mSelectedMesh->getNumberOfVertices());
+
                 auto transformation = model->getMeshTransformation(mSelectedMesh->getName());
                 auto position = transformation.column(3);
                 auto rotation = QQuaternion::fromRotationMatrix(transformation.normalMatrix());
@@ -283,6 +336,14 @@ void Canavar::Engine::Gui::draw(Model *model)
                 transformation.setColumn(3, position);
                 transformation.rotate(rotation);
                 model->setMeshTransformation(mSelectedMesh->getName(), transformation);
+
+                if (mSelectedVertexIndex != -1)
+                {
+                    Mesh::Vertex vertex = mSelectedMesh->getVertex(mSelectedVertexIndex);
+                    ImGui::TextColored(ImVec4(1, 1, 0, 1), "Vertex Info");
+                    ImGui::Text("Selected vertex index: %d", mSelectedVertexIndex);
+                    ImGui::Text("Selected vertex position: (%.4f, %.4f, %.4f)", vertex.position[0], vertex.position[1], vertex.position[2]);
+                }
             }
         }
     }
@@ -345,6 +406,17 @@ void Canavar::Engine::Gui::draw(PerspectiveCamera *camera)
         ImGui::SliderFloat("FOV##PerspectiveCamera", &camera->getVerticalFov_nonConst(), 1.0f, 120.0);
         ImGui::SliderFloat("Z-Near##PerspectiveCamera", &camera->getZNear_nonConst(), 0.1f, 100.0f);
         ImGui::SliderFloat("Z-Far##PerspectiveCamera", &camera->getZFar_nonConst(), 1000.0f, 1000000.0f);
+    }
+}
+
+void Canavar::Engine::Gui::draw(FreeCamera *node)
+{
+    if (!ImGui::CollapsingHeader("Speed##Free Camera"))
+    {
+        ImGui::SliderFloat("Linear Speed##FreeCamera", &node->getSpeed_nonConst().mLinear, 0.1f, 10000.0f);
+        ImGui::SliderFloat("Linear Speed Multiplier##FreeCamera", &node->getSpeed_nonConst().mLinearMultiplier, 0.1f, 10.0f);
+        ImGui::SliderFloat("Angular Speed##FreeCamera", &node->getSpeed_nonConst().mAngular, 0.1f, 100.0f);
+        ImGui::SliderFloat("Angular Speed Multiplier##FreeCamera", &node->getSpeed_nonConst().mAngularMultiplier, 0.1f, 10.0f);
     }
 }
 
@@ -441,19 +513,20 @@ void Canavar::Engine::Gui::setSelectedNode(Canavar::Engine::Node *newSelectedNod
         mSelectedNode->disconnect(this);
 
         if (mDrawAllBBs)
-            RendererManager::instance()->addSelectable(mSelectedNode, QVector4D(1, 1, 1, 1));
+            RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 1, 1, 1));
         else
-            RendererManager::instance()->removeSelectable(mSelectedNode);
+            RendererManager::instance()->removeSelectableNode(mSelectedNode);
     }
 
     mSelectedNode = newSelectedNode;
 
     if (mSelectedNode)
     {
-        RendererManager::instance()->addSelectable(mSelectedNode, QVector4D(1, 0, 0, 1));
+        RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
         connect(mSelectedNode, &QObject::destroyed, this, [=]() { mSelectedNode = nullptr; });
     }
 
+    mSelectedModel = dynamic_cast<Model *>(mSelectedNode);
     setSelectedMesh(nullptr);
 }
 
@@ -464,12 +537,58 @@ Canavar::Engine::Mesh *Canavar::Engine::Gui::getSelectedMesh() const
 
 void Canavar::Engine::Gui::setSelectedMesh(Canavar::Engine::Mesh *newSelectedMesh)
 {
+    if (mSelectedMesh)
+        RendererManager::instance()->removeSelectedMesh(mSelectedModel);
+
     mSelectedMesh = newSelectedMesh;
+
+    if (mSelectedMesh)
+    {
+        SelectedMeshParameters parameters;
+        parameters.mMesh = mSelectedMesh;
+
+        RendererManager::instance()->addSelectedMesh(mSelectedModel, parameters);
+    }
+}
+
+int Canavar::Engine::Gui::getSelectedVertexIndex() const
+{
+    return mSelectedVertexIndex;
+}
+
+void Canavar::Engine::Gui::setSelectedVertexIndex(int newSelectedVertexIndex)
+{
+    mSelectedVertexIndex = newSelectedVertexIndex;
+
+    if (mSelectedModel)
+        RendererManager::instance()->getSelectedMeshParameters_Ref(mSelectedModel).mSelectedVertexID = mSelectedVertexIndex;
 }
 
 void Canavar::Engine::Gui::mousePressed(QMouseEvent *event)
 {
-    if (mNodeSelectionEnabled)
+    if (event->button() != Qt::LeftButton)
+        return;
+
+    if (mVertexSelectionEnabled)
+    {
+        auto info = SelectableNodeRenderer::instance()->getVertexInfoByScreenPosition(event->position().x(), event->position().y());
+
+        if (info.success)
+            if (mSelectedModel == NodeManager::instance()->getNodeByID(info.nodeID))
+                if (auto data = ModelDataManager::instance()->getModelData(mSelectedModel->getModelName()))
+                    if (data->getMeshByID(info.meshID) == mSelectedMesh)
+                        setSelectedVertexIndex(info.vertexID);
+
+    } else if (mMeshSelectionEnabled)
+    {
+        auto info = SelectableNodeRenderer::instance()->getNodeInfoByScreenPosition(event->position().x(), event->position().y());
+
+        if (info.success)
+            if (mSelectedModel == NodeManager::instance()->getNodeByID(info.nodeID))
+                if (auto data = ModelDataManager::instance()->getModelData(mSelectedModel->getModelName()))
+                    setSelectedMesh(data->getMeshByID(info.meshID));
+
+    } else if (mNodeSelectionEnabled)
     {
         auto info = SelectableNodeRenderer::instance()->getNodeInfoByScreenPosition(event->position().x(), event->position().y());
 

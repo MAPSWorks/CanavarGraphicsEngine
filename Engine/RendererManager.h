@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Manager.h"
 #include "OpenGLVertexArrayObject.h"
+#include "SelectedMeshParameters.h"
 
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObjectFormat>
@@ -44,8 +45,16 @@ public:
 
     void render(float ifps) override;
 
-    void addSelectable(Node *node, QVector4D color = QVector4D(1, 1, 1, 1));
-    void removeSelectable(Node *node);
+    void addSelectableNode(Node *node, QVector4D color = QVector4D(1, 1, 1, 1));
+    void removeSelectableNode(Node *node);
+
+    void addSelectedMesh(Model *model, const SelectedMeshParameters &parameters);
+    void removeSelectedMesh(Model *model);
+
+    SelectedMeshParameters getSelectedMeshParameters(Model *model) const;
+    SelectedMeshParameters &getSelectedMeshParameters_Ref(Model *model);
+
+    const QMap<Model *, SelectedMeshParameters> &getSelectedMeshes() const;
 
 private:
     void setCommonUniforms();
@@ -67,16 +76,11 @@ private:
 
     QVector<PointLight *> mClosePointLights;
 
-    QMap<Node *, QVector4D> mSelectableRenderMap; // Nodes whose AABB to be rendered -> Line color
+    QMap<Node *, QVector4D> mSelectableNodes; // Nodes whose AABB to be rendered -> Line color
+    QMap<Model *, SelectedMeshParameters> mSelectedMeshes;
 
     QMap<FramebufferType, QOpenGLFramebufferObject *> mFBOs;
     QMap<FramebufferType, QOpenGLFramebufferObjectFormat *> mFBOFormats;
-
-    GLuint *mColorAttachments;
-
-    OpenGLVertexArrayObject mQuad;
-    OpenGLVertexArrayObject mCube;
-    OpenGLVertexArrayObject mCubeStrip;
 
     int mWidth;
     int mHeight;
@@ -84,6 +88,12 @@ private:
     DEFINE_MEMBER(int, BlurPass)
     DEFINE_MEMBER(float, Exposure)
     DEFINE_MEMBER(float, Gamma)
+
+    OpenGLVertexArrayObject mQuad;
+    OpenGLVertexArrayObject mCube;
+    OpenGLVertexArrayObject mCubeStrip;
+
+    GLuint mColorAttachments[2];
 };
 
 } // namespace Engine

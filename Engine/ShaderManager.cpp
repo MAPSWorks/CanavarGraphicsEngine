@@ -285,6 +285,7 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addUniform("MVP");
         shader->addUniform("nodeID");
         shader->addUniform("meshID");
+        shader->addUniform("fillVertexInfo");
 
         shader->addAttribute("position");
         shader->addAttribute("normal");
@@ -354,6 +355,50 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addUniform("color");
 
         shader->addAttribute("position");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Mesh Vertex Renderer Shader
+    {
+        Shader *shader = new Shader(ShaderType::MeshVertexRendererShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MeshVertexRenderer.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MeshVertexRenderer.frag");
+
+        shader->addUniform("MVP");
+        shader->addUniform("scale");
+        shader->addUniform("selectedVertexID");
+        shader->addUniform("vertexColor");
+        shader->addUniform("selectedVertexColor");
+
+        shader->addAttribute("cubeVertexPosition");
+        shader->addAttribute("meshVertexPosition");
+        shader->addAttribute("meshVertexNormal");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Node Info Shader
+    {
+        Shader *shader = new Shader(ShaderType::VertexInfoShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MeshVertexRenderer.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NodeInfo.frag");
+
+        shader->addUniform("MVP");
+        shader->addUniform("nodeID");
+        shader->addUniform("meshID");
+        shader->addUniform("fillVertexInfo");
+        shader->addUniform("scale");
+
+        shader->addAttribute("cubeVertexPosition");
+        shader->addAttribute("meshVertexPosition");
+        shader->addAttribute("meshVertexNormal");
 
         if (!shader->init())
             return false;

@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "ModelDataManager.h"
 #include "NodeManager.h"
+#include "RendererManager.h"
 #include "ShaderManager.h"
 
 #include <QTimer>
@@ -21,6 +22,7 @@ bool Canavar::Engine::SelectableNodeRenderer::init()
     mNodeManager = NodeManager::instance();
     mModelDataManager = ModelDataManager::instance();
     mCameraManager = CameraManager::instance();
+    mRendererManager = RendererManager::instance();
 
     initializeOpenGLFunctions();
     mNodeInfoFBO.init();
@@ -57,6 +59,18 @@ void Canavar::Engine::SelectableNodeRenderer::resize(int width, int height)
 Canavar::Engine::SelectableNodeRenderer::NodeInfo Canavar::Engine::SelectableNodeRenderer::getNodeInfoByScreenPosition(int x, int y)
 {
     mNodeInfoFBO.bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    NodeInfo info;
+    glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_INT, &info);
+    mNodeInfoFBO.release();
+
+    return info;
+}
+
+Canavar::Engine::SelectableNodeRenderer::NodeInfo Canavar::Engine::SelectableNodeRenderer::getVertexInfoByScreenPosition(int x, int y)
+{
+    mNodeInfoFBO.bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT1);
     NodeInfo info;
     glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_INT, &info);
     mNodeInfoFBO.release();
@@ -70,6 +84,8 @@ void Canavar::Engine::SelectableNodeRenderer::render(float)
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    const auto &VP = mCameraManager->activeCamera()->getViewProjectionMatrix();
+
     for (const auto &node : mNodeManager->nodes())
     {
         if (!node->getVisible() || !node->getSelectable())
@@ -79,19 +95,34 @@ void Canavar::Engine::SelectableNodeRenderer::render(float)
         {
             if (auto data = mModelDataManager->getModelData(model->getModelName()))
                 data->render(RenderMode::NodeInfo, model);
+
+            const auto &params = mRendererManager->getSelectedMeshParameters(model);
+
+            if (params.mRenderVertices)
+            {
+                mShaderManager->bind(ShaderType::VertexInfoShader);
+                mShaderManager->setUniformValue("MVP", VP * model->worldTransformation() * model->getMeshTransformation(params.mMesh->getName()));
+                mShaderManager->setUniformValue("scale", params.mScale);
+                mShaderManager->setUniformValue("nodeID", node->getID());
+                mShaderManager->setUniformValue("meshID", params.mMesh->getID());
+                mShaderManager->setUniformValue("fillVertexInfo", true);
+                params.mMesh->getVerticesVAO()->bind();
+                glDrawArraysInstanced(GL_TRIANGLES, 0, 36, params.mMesh->getNumberOfVertices());
+                params.mMesh->getVerticesVAO()->release();
+            }
+
         } else
         {
             mShaderManager->bind(ShaderType::NodeInfoShader);
-            mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * node->getAABB().getTransformation());
+            mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
             mShaderManager->setUniformValue("nodeID", node->getID());
             mShaderManager->setUniformValue("meshID", 0);
+            mShaderManager->setUniformValue("fillVertexInfo", false);
             glBindVertexArray(mCube.mVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
             mShaderManager->release();
         }
     }
-
-    mNodeInfoFBO.release();
 }
 
 Canavar::Engine::SelectableNodeRenderer *Canavar::Engine::SelectableNodeRenderer::instance()

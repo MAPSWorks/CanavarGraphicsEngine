@@ -1,12 +1,12 @@
 #ifndef OPENGLFRAMEBUFFER_H
 #define OPENGLFRAMEBUFFER_H
 
-#include <QOpenGLFunctions>
+#include <QOpenGLExtraFunctions>
 
 namespace Canavar {
 namespace Engine {
 
-class OpenGLFramebuffer : protected QOpenGLFunctions
+class OpenGLFramebuffer : protected QOpenGLExtraFunctions
 {
 public:
     OpenGLFramebuffer();
@@ -22,7 +22,9 @@ private:
     bool mCreated;
     unsigned int mFBO;
     unsigned int mRBO;
-    unsigned int mTexture;
+    unsigned int mTextures[2];
+
+    GLuint mColorAttachments[2];
 };
 
 } // namespace Engine

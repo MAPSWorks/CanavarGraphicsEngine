@@ -17,7 +17,7 @@ public:
 
     void addMeshIndex(int index);
 
-    void render(RenderModes modes, Model *model, GLenum primitive = GL_TRIANGLES);
+    void render(RenderModes modes, Model *model);
 
 private:
     ModelData *mModelData;

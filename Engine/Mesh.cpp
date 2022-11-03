@@ -77,14 +77,37 @@ void Canavar::Engine::Mesh::create()
     glEnableVertexAttribArray(6);
 
     mVAO->release();
+
+    // Vertex Rendering
+
+    mVerticesVAO = new QOpenGLVertexArrayObject;
+    mVerticesVAO->create();
+    mVerticesVAO->bind();
+
+    glGenBuffers(1, &mVerticesVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVerticesVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CUBE), CUBE, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(QVector3D), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(2, 1);
+
+    mVerticesVAO->release();
 }
 
-void Canavar::Engine::Mesh::render(RenderModes modes, Model *model, GLenum primitive)
+void Canavar::Engine::Mesh::render(RenderModes modes, Model *model)
 {
     if (modes.testFlag(RenderMode::Custom))
     {
         mVAO->bind();
-        glDrawElements(primitive, mIndices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
         mVAO->release();
     }
 
@@ -145,7 +168,7 @@ void Canavar::Engine::Mesh::render(RenderModes modes, Model *model, GLenum primi
         mShaderManager->setUniformValue("model.specular", model->getSpecular());
 
         mVAO->bind();
-        glDrawElements(primitive, mIndices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
         mVAO->release();
 
         mShaderManager->release();
@@ -157,6 +180,7 @@ void Canavar::Engine::Mesh::render(RenderModes modes, Model *model, GLenum primi
         mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation());
         mShaderManager->setUniformValue("nodeID", model->getID());
         mShaderManager->setUniformValue("meshID", mID);
+        mShaderManager->setUniformValue("fillVertexInfo", false);
 
         mVAO->bind();
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
@@ -164,4 +188,24 @@ void Canavar::Engine::Mesh::render(RenderModes modes, Model *model, GLenum primi
 
         mShaderManager->release();
     }
+}
+
+Canavar::Engine::Mesh::Vertex Canavar::Engine::Mesh::getVertex(int index) const
+{
+    Vertex vertex;
+
+    if (0 <= index && index < mVertices.size())
+        vertex = mVertices.at(index);
+
+    return vertex;
+}
+
+int Canavar::Engine::Mesh::getNumberOfVertices()
+{
+    return mVertices.size();
+}
+
+QOpenGLVertexArrayObject *Canavar::Engine::Mesh::getVerticesVAO() const
+{
+    return mVerticesVAO;
 }

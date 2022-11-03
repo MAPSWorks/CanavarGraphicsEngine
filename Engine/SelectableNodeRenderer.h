@@ -14,6 +14,7 @@ class ShaderManager;
 class ModelDataManager;
 class NodeManager;
 class CameraManager;
+class RendererManager;
 
 class SelectableNodeRenderer : public Manager, protected QOpenGLExtraFunctions
 {
@@ -36,12 +37,14 @@ public:
     void resize(int width, int height) override;
 
     NodeInfo getNodeInfoByScreenPosition(int x, int y);
+    NodeInfo getVertexInfoByScreenPosition(int x, int y);
 
 private:
     ShaderManager *mShaderManager;
     ModelDataManager *mModelDataManager;
     NodeManager *mNodeManager;
     CameraManager *mCameraManager;
+    RendererManager *mRendererManager;
 
     OpenGLVertexArrayObject mCube;
 
