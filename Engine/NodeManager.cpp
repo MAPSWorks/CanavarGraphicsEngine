@@ -226,9 +226,9 @@ void Canavar::Engine::NodeManager::assignName(Node *node, const QString &name)
     if (auto model = dynamic_cast<Model *>(node))
         newName += " " + model->getModelName();
 
-    int count = mNames.value(newName, 0);
+    int count = mNames.value(newName, 1);
 
-    node->setName(newName + " " + node->getUUID().first(6));
+    node->setName(newName + " " + QString::number(count));
 
     mNames.insert(newName, ++count);
 }

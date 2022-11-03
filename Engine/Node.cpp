@@ -163,13 +163,13 @@ void Canavar::Engine::Node::setParent(Node *newParent)
             mParent->removeChild(this);
     }
 
-    mParent = newParent;
-
-    if (mParent)
+    if (newParent)
     {
-        if (!isChildOf(mParent))
-            mParent->addChild(this);
+        if (!isChildOf(newParent))
+            newParent->addChild(this);
     }
+
+    mParent = newParent;
 }
 
 void Canavar::Engine::Node::addChild(Node *node)

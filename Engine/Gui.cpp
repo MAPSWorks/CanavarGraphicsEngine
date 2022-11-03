@@ -1,19 +1,17 @@
 #include "Gui.h"
 #include "Haze.h"
 #include "Helper.h"
+#include "ModelDataManager.h"
 #include "RendererManager.h"
+#include "SelectableNodeRenderer.h"
 
 Canavar::Engine::Gui::Gui(QObject *parent)
     : QObject(parent)
     , mSelectedNode(nullptr)
+    , mSelectedMesh(nullptr)
+    , mDrawAllBBs(false)
+    , mNodeSelectionEnabled(true)
 {}
-
-Canavar::Engine::Gui *Canavar::Engine::Gui::instance()
-{
-    static Gui instance;
-
-    return &instance;
-}
 
 void Canavar::Engine::Gui::draw()
 {
@@ -32,21 +30,29 @@ void Canavar::Engine::Gui::draw()
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Nodes");
 
-    auto &nodes = NodeManager::instance()->nodes();
+    const auto &nodes = NodeManager::instance()->nodes();
 
-    QString preview = mSelectedNode ? mSelectedNode->getName() : "-";
-    if (ImGui::BeginCombo("Select a node", preview.toStdString().c_str()))
+    if (ImGui::Checkbox("Draw All Bounding Boxes", &mDrawAllBBs))
+    {
+        if (mDrawAllBBs)
+            for (const auto &node : nodes)
+                RendererManager::instance()->addSelectable(node, QVector4D(1, 1, 1, 1));
+        else
+            for (const auto &node : nodes)
+                RendererManager::instance()->removeSelectable(node);
+
+        if (mSelectedNode)
+            RendererManager::instance()->addSelectable(mSelectedNode, QVector4D(1, 0, 0, 1));
+    }
+
+    ImGui::Checkbox("Node Selection Enabled", &mNodeSelectionEnabled);
+
+    if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->getName().toStdString().c_str() : "-"))
     {
         for (int i = 0; i < nodes.size(); ++i)
             if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
             {
-                if (mSelectedNode)
-                    mSelectedNode->disconnect(this);
-
-                mSelectedNode = nodes[i];
-
-                if (mSelectedNode)
-                    connect(mSelectedNode, &QObject::destroyed, this, [=]() { mSelectedNode = nullptr; });
+                setSelectedNode(nodes[i]);
             }
 
         ImGui::EndCombo();
@@ -57,27 +63,28 @@ void Canavar::Engine::Gui::draw()
     {
         if (!ImGui::CollapsingHeader("Actions"))
         {
-            QString preview = mSelectedNode->parent() ? mSelectedNode->parent()->getName() : "-";
-
-            if (ImGui::BeginCombo("Assign a parent", preview.toStdString().c_str()))
-            {
-                if (ImGui::Selectable("-"))
-                    mSelectedNode->setParent(nullptr);
-
-                for (int i = 0; i < nodes.size(); ++i)
-                {
-                    if (mSelectedNode == nodes[i])
-                        continue;
-
-                    if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
-                        mSelectedNode->setParent(nodes[i]);
-                }
-
-                ImGui::EndCombo();
-            }
-
             ImGui::Text("Type: %d", mSelectedNode->getType());
             ImGui::Text("UUID: %s", mSelectedNode->getUUID().toStdString().c_str());
+
+            // Assign a parent
+            {
+                if (ImGui::BeginCombo("Assign a parent", mSelectedNode->parent() ? mSelectedNode->parent()->getName().toStdString().c_str() : "-"))
+                {
+                    if (ImGui::Selectable("-"))
+                        mSelectedNode->setParent(nullptr);
+
+                    for (int i = 0; i < nodes.size(); ++i)
+                    {
+                        if (mSelectedNode == nodes[i])
+                            continue;
+
+                        if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
+                            mSelectedNode->setParent(nodes[i]);
+                    }
+
+                    ImGui::EndCombo();
+                }
+            }
 
             if (ImGui::Button("Remove this node"))
                 NodeManager::instance()->removeNode(mSelectedNode);
@@ -230,6 +237,55 @@ void Canavar::Engine::Gui::draw(Model *model)
         ImGui::SliderFloat("Overlay Color Factor##Model", &model->getOverlayColorFactor_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::ColorEdit4("Overlay Color##Model", (float *) &model->getOverlayColor_nonConst());
     }
+
+    if (!ImGui::CollapsingHeader("Meshes##Model"))
+    {
+        if (auto data = ModelDataManager::instance()->getModelData(model->getModelName()))
+        {
+            const auto &meshes = data->meshes();
+
+            if (ImGui::BeginCombo("Select a mesh", mSelectedMesh ? mSelectedMesh->getName().toStdString().c_str() : "-"))
+            {
+                for (int i = 0; i < meshes.size(); ++i)
+                    if (ImGui::Selectable(meshes[i]->getName().toStdString().c_str()))
+                        setSelectedMesh(meshes[i]);
+
+                ImGui::EndCombo();
+            }
+
+            if (mSelectedMesh)
+            {
+                auto transformation = model->getMeshTransformation(mSelectedMesh->getName());
+                auto position = transformation.column(3);
+                auto rotation = QQuaternion::fromRotationMatrix(transformation.normalMatrix());
+
+                // Position
+
+                ImGui::TextColored(ImVec4(1, 1, 0, 1), "Position");
+                ImGui::DragFloat("x##MeshPosition", &position[0], 0.01f, -1000.0f, 1000.0f, "%.3f");
+                ImGui::DragFloat("y##MeshPosition", &position[1], 0.01f, -1000.0f, 1000.0f, "%.3f");
+                ImGui::DragFloat("z##MeshPosition", &position[2], 0.01f, -1000.0f, 1000.0f, "%.3f");
+
+                // Rotation
+                ImGui::TextColored(ImVec4(1, 1, 0, 1), "Rotation");
+                float yaw, pitch, roll;
+
+                Canavar::Engine::Helper::getEulerDegrees(rotation, yaw, pitch, roll);
+
+                if (ImGui::SliderFloat("Yaw##MeshRotation", &yaw, 0.0f, 359.999f, "%.3f"))
+                    rotation = Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll);
+                if (ImGui::SliderFloat("Pitch##MeshRotation", &pitch, -89.999f, 89.999f, "%.3f"))
+                    rotation = Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll);
+                if (ImGui::SliderFloat("Roll##MeshRotation", &roll, -179.999f, 179.999f, "%.3f"))
+                    rotation = Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll);
+
+                transformation.setToIdentity();
+                transformation.setColumn(3, position);
+                transformation.rotate(rotation);
+                model->setMeshTransformation(mSelectedMesh->getName(), transformation);
+            }
+        }
+    }
 }
 
 void Canavar::Engine::Gui::draw(Sky *node)
@@ -370,5 +426,56 @@ void Canavar::Engine::Gui::draw(FirecrackerEffect *node)
         ImGui::SliderFloat("Damping##Firecracker", &node->getDamping_nonConst(), 0.000f, 10.0f, "%.2f");
         ImGui::SliderFloat("Scale##Firecracker", &node->getScale_nonConst(), 0.001f, 10.0f, "%.4f");
         ImGui::Checkbox("Loop##Firecracker", &node->getLoop_nonConst());
+    }
+}
+
+Canavar::Engine::Node *Canavar::Engine::Gui::getSelectedNode() const
+{
+    return mSelectedNode;
+}
+
+void Canavar::Engine::Gui::setSelectedNode(Canavar::Engine::Node *newSelectedNode)
+{
+    if (mSelectedNode)
+    {
+        mSelectedNode->disconnect(this);
+
+        if (mDrawAllBBs)
+            RendererManager::instance()->addSelectable(mSelectedNode, QVector4D(1, 1, 1, 1));
+        else
+            RendererManager::instance()->removeSelectable(mSelectedNode);
+    }
+
+    mSelectedNode = newSelectedNode;
+
+    if (mSelectedNode)
+    {
+        RendererManager::instance()->addSelectable(mSelectedNode, QVector4D(1, 0, 0, 1));
+        connect(mSelectedNode, &QObject::destroyed, this, [=]() { mSelectedNode = nullptr; });
+    }
+
+    setSelectedMesh(nullptr);
+}
+
+Canavar::Engine::Mesh *Canavar::Engine::Gui::getSelectedMesh() const
+{
+    return mSelectedMesh;
+}
+
+void Canavar::Engine::Gui::setSelectedMesh(Canavar::Engine::Mesh *newSelectedMesh)
+{
+    mSelectedMesh = newSelectedMesh;
+}
+
+void Canavar::Engine::Gui::mousePressed(QMouseEvent *event)
+{
+    if (mNodeSelectionEnabled)
+    {
+        auto info = SelectableNodeRenderer::instance()->getNodeInfoByScreenPosition(event->position().x(), event->position().y());
+
+        if (info.success)
+            setSelectedNode(NodeManager::instance()->getNodeByID(info.nodeID));
+        else
+            setSelectedNode(nullptr);
     }
 }

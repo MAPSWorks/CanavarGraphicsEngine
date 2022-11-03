@@ -59,6 +59,10 @@ void Window::initializeGL()
 
         auto *pointLight = dynamic_cast<PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
         pointLight->setColor(QVector4D(1, 1, 1, 0.5));
+
+        mGui = new Gui;
+
+        Sun::instance()->setDirection(QVector3D(1, -1, 1));
     }
 }
 
@@ -77,7 +81,7 @@ void Window::paintGL()
 
     QtImGui::newFrame();
 
-    Gui::instance()->draw();
+    mGui->draw();
 
     glViewport(0, 0, width() * devicePixelRatioF(), height() * devicePixelRatioF());
     ImGui::Render();
@@ -103,6 +107,8 @@ void Window::mousePressEvent(QMouseEvent *event)
         return;
 
     mController->mousePressed(event);
+
+    mGui->mousePressed(event);
 }
 
 void Window::mouseReleaseEvent(QMouseEvent *event)

@@ -24,7 +24,7 @@ bool Canavar::Engine::ModelDataManager::init()
                              << "*.dae"
                              << "*.glb"
                              << "*.gltf"
-                             << ".*fbx");
+                             << "*.fbx");
 
     qDebug() << mModelsData.keys();
 

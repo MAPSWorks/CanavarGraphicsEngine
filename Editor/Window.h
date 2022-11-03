@@ -12,6 +12,7 @@ namespace Engine {
 
 class Controller;
 class PerspectiveCamera;
+class Gui;
 
 } // namespace Engine
 } // namespace Canavar
@@ -38,6 +39,8 @@ private:
     long long mPreviousTime;
     long long mCurrentTime;
     Canavar::Engine::Controller *mController;
+
+    Canavar::Engine::Gui *mGui;
 
     Canavar::Engine::PerspectiveCamera *mCamera;
 };

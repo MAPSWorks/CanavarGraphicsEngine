@@ -123,6 +123,7 @@ void Window::initializeGL()
 
         Canavar::Engine::Sun::instance()->setDirection(QVector3D(1, -0.5, 1));
 
+        mGui = new Canavar::Engine::Gui;
         mAircraftController->init();
         mAircraft->init();
     }
@@ -149,7 +150,7 @@ void Window::paintGL()
 
     QtImGui::newFrame();
 
-    Gui::instance()->draw();
+    mGui->draw();
 
     mAircraftController->drawGUI();
 

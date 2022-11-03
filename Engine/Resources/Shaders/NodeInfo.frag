@@ -5,9 +5,9 @@ uniform int meshID;
 
 flat in int fsVertexID; // Do not interpolate
 
-layout (location = 0) out uvec4 IDs;
+layout (location = 0) out ivec4 IDs;
 
 void main()
 {
-     IDs = uvec4(nodeID, meshID, fsVertexID, 1);
+     IDs = ivec4(nodeID, meshID, fsVertexID, 1);
 }

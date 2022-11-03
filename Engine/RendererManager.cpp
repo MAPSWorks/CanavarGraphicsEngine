@@ -133,7 +133,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     // Render terrain
     mTerrain->render();
 
-    auto nodes = mNodeManager->nodes();
+    const auto &nodes = mNodeManager->nodes();
 
     // Render Models
     for (const auto &node : nodes)
@@ -160,23 +160,30 @@ void Canavar::Engine::RendererManager::render(float ifps)
     }
 
     // Selectables
-    mShaderManager->bind(ShaderType::BasicShader);
-    for (const auto &node : mSelectableRenderList)
     {
-        if (auto model = dynamic_cast<Model *>(node))
+        mShaderManager->bind(ShaderType::BasicShader);
+
+        const auto &selectables = mSelectableRenderMap.keys();
+        const auto &VP = mCamera->getViewProjectionMatrix();
+
+        for (const auto &node : selectables)
         {
-            if (auto data = mModelDataManager->getModelData(model->getModelName()))
-                mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * data->getAABB().getTransformation());
-            else
-                mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * node->getAABB().getTransformation());
-        } else if (node)
-            mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * node->worldTransformation() * node->getAABB().getTransformation());
+            if (auto model = dynamic_cast<Model *>(node))
+            {
+                if (auto data = mModelDataManager->getModelData(model->getModelName()))
+                    mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * data->getAABB().getTransformation());
+                else
+                    mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
+            } else if (node)
+                mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
 
-        glBindVertexArray(mCubeStrip.mVAO);
-        glDrawArrays(GL_LINE_STRIP, 0, 17);
+            mShaderManager->setUniformValue("color", mSelectableRenderMap.value(node, QVector4D(1, 1, 1, 1)));
+            glBindVertexArray(mCubeStrip.mVAO);
+            glDrawArrays(GL_LINE_STRIP, 0, 17);
+        }
+
+        mShaderManager->release();
     }
-
-    mShaderManager->release();
 
     // Default render pass is done
     mFBOs[FramebufferType::Default]->release();
@@ -278,15 +285,12 @@ void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
     }
 }
 
-void Canavar::Engine::RendererManager::addSelectable(Node *node)
+void Canavar::Engine::RendererManager::addSelectable(Node *node, QVector4D color)
 {
-    if (node)
+    if (node && node->getSelectable())
     {
-        if (!mSelectableRenderList.contains(node))
-        {
-            mSelectableRenderList << node;
-            connect(node, &QObject::destroyed, this, [=]() { mSelectableRenderList.removeAll(node); });
-        }
+        mSelectableRenderMap.insert(node, color);
+        connect(node, &QObject::destroyed, this, [=]() { mSelectableRenderMap.remove(node); });
     }
 }
 
@@ -294,10 +298,7 @@ void Canavar::Engine::RendererManager::removeSelectable(Node *node)
 {
     if (node)
     {
-        if (mSelectableRenderList.contains(node))
-        {
-            node->disconnect(this);
-            mSelectableRenderList.removeAll(node);
-        }
+        mSelectableRenderMap.remove(node);
+        node->disconnect(this);
     }
 }

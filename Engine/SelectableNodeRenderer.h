@@ -23,10 +23,10 @@ private:
 
 public:
     struct NodeInfo {
-        unsigned int nodeID;
-        unsigned int meshID;
-        unsigned int vertexID;
-        unsigned int success;
+        int nodeID;
+        int meshID;
+        int vertexID;
+        int success;
     };
 
     static SelectableNodeRenderer *instance();

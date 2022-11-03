@@ -44,7 +44,7 @@ public:
 
     void render(float ifps) override;
 
-    void addSelectable(Node *node);
+    void addSelectable(Node *node, QVector4D color = QVector4D(1, 1, 1, 1));
     void removeSelectable(Node *node);
 
 private:
@@ -67,7 +67,7 @@ private:
 
     QVector<PointLight *> mClosePointLights;
 
-    QList<Node *> mSelectableRenderList; // Nodes whose AABB to be rendered
+    QMap<Node *, QVector4D> mSelectableRenderMap; // Nodes whose AABB to be rendered -> Line color
 
     QMap<FramebufferType, QOpenGLFramebufferObject *> mFBOs;
     QMap<FramebufferType, QOpenGLFramebufferObjectFormat *> mFBOFormats;

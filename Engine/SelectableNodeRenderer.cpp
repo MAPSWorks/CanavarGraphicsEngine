@@ -44,7 +44,7 @@ void Canavar::Engine::SelectableNodeRenderer::resize(int width, int height)
 
     if (mResizeLater)
     {
-        QTimer::singleShot(100, [=]() {
+        QTimer::singleShot(200, [=]() {
             mNodeInfoFBO.destroy();
             mNodeInfoFBO.create(mWidth, mHeight);
             mResizeLater = true;
@@ -58,7 +58,7 @@ Canavar::Engine::SelectableNodeRenderer::NodeInfo Canavar::Engine::SelectableNod
 {
     mNodeInfoFBO.bind();
     NodeInfo info;
-    glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_UNSIGNED_INT, &info);
+    glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_INT, &info);
     mNodeInfoFBO.release();
 
     return info;
@@ -67,8 +67,8 @@ Canavar::Engine::SelectableNodeRenderer::NodeInfo Canavar::Engine::SelectableNod
 void Canavar::Engine::SelectableNodeRenderer::render(float)
 {
     mNodeInfoFBO.bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const auto &node : mNodeManager->nodes())
     {
