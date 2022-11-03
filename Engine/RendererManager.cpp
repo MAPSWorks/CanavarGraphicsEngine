@@ -316,12 +316,22 @@ void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
     }
 }
 
+void Canavar::Engine::RendererManager::onSelectedNodeDestroyed()
+{
+    mSelectableNodes.remove(static_cast<Node *>(sender()));
+}
+
+void Canavar::Engine::RendererManager::onSelectedModelDestroyed()
+{
+    mSelectedMeshes.remove(static_cast<Model *>(sender()));
+}
+
 void Canavar::Engine::RendererManager::addSelectableNode(Node *node, QVector4D color)
 {
     if (node && node->getSelectable())
     {
         mSelectableNodes.insert(node, color);
-        connect(node, &QObject::destroyed, this, [=]() { mSelectableNodes.remove(node); });
+        connect(node, &QObject::destroyed, this, &RendererManager::onSelectedNodeDestroyed);
     }
 }
 
@@ -330,7 +340,7 @@ void Canavar::Engine::RendererManager::removeSelectableNode(Node *node)
     if (node)
     {
         mSelectableNodes.remove(node);
-        node->disconnect(this);
+        disconnect(node, &QObject::destroyed, this, &RendererManager::onSelectedNodeDestroyed);
     }
 }
 
@@ -339,7 +349,7 @@ void Canavar::Engine::RendererManager::addSelectedMesh(Model *model, const Selec
     if (model)
     {
         mSelectedMeshes.insert(model, parameters);
-        connect(model, &QObject::destroyed, this, [=]() { mSelectedMeshes.remove(model); });
+        connect(model, &QObject::destroyed, this, &RendererManager::onSelectedModelDestroyed);
     }
 }
 
@@ -348,7 +358,7 @@ void Canavar::Engine::RendererManager::removeSelectedMesh(Model *model)
     if (model)
     {
         mSelectedMeshes.remove(model);
-        model->disconnect(this);
+        disconnect(model, &QObject::destroyed, this, &RendererManager::onSelectedModelDestroyed);
     }
 }
 

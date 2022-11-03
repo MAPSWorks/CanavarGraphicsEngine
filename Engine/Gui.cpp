@@ -132,7 +132,12 @@ void Canavar::Engine::Gui::draw()
             }
 
             if (ImGui::Button("Remove this node"))
+            {
                 NodeManager::instance()->removeNode(mSelectedNode);
+                mNodeSelectionEnabled = false;
+                mMeshSelectionEnabled = false;
+                mVertexSelectionEnabled = false;
+            }
         }
     }
 
@@ -313,7 +318,6 @@ void Canavar::Engine::Gui::draw(Model *model)
                 auto rotation = QQuaternion::fromRotationMatrix(transformation.normalMatrix());
 
                 // Position
-
                 ImGui::TextColored(ImVec4(1, 1, 0, 1), "Position");
                 ImGui::DragFloat("x##MeshPosition", &position[0], 0.01f, -1000.0f, 1000.0f, "%.3f");
                 ImGui::DragFloat("y##MeshPosition", &position[1], 0.01f, -1000.0f, 1000.0f, "%.3f");
@@ -523,7 +527,7 @@ void Canavar::Engine::Gui::setSelectedNode(Canavar::Engine::Node *newSelectedNod
     if (mSelectedNode)
     {
         RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
-        connect(mSelectedNode, &QObject::destroyed, this, [=]() { mSelectedNode = nullptr; });
+        connect(mSelectedNode, &QObject::destroyed, this, [=]() { setSelectedNode(nullptr); });
     }
 
     mSelectedModel = dynamic_cast<Model *>(mSelectedNode);

@@ -61,6 +61,9 @@ private:
     void deleteFramebuffers();
     void createFramebuffers(int width, int height);
 
+    void onSelectedNodeDestroyed();
+    void onSelectedModelDestroyed();
+
 private:
     NodeManager *mNodeManager;
     CameraManager *mCameraManager;
