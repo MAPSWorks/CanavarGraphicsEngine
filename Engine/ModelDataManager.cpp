@@ -71,9 +71,9 @@ void Canavar::Engine::ModelDataManager::loadModels(const QString &path, const QS
 
                 mModelsData.insert(data->name(), data);
 
-                qInfo() << "Model" << dirName << "at" << path << "is loadded.";
+                qInfo() << "Model" << dirName << "at" << path << "is loaded.";
             } else
-                qWarning() << "Model" << dirName << "at" << path << "could not be loadded.";
+                qWarning() << "Model" << dirName << "at" << path << "could not be loaded.";
         }
     }
 
