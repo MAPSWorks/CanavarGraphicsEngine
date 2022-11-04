@@ -1,4 +1,5 @@
 #include "Gui.h"
+#include "Config.h"
 #include "Haze.h"
 #include "Helper.h"
 #include "ModelDataManager.h"
@@ -12,7 +13,7 @@ Canavar::Engine::Gui::Gui(QObject *parent)
     , mSelectedMesh(nullptr)
     , mSelectedVertexIndex(-1)
     , mDrawAllBBs(false)
-    , mNodeSelectionEnabled(true)
+    , mNodeSelectionEnabled(false)
     , mMeshSelectionEnabled(false)
     , mVertexSelectionEnabled(false)
 
@@ -37,241 +38,253 @@ Canavar::Engine::Gui::Gui(QObject *parent)
 void Canavar::Engine::Gui::draw()
 {
     // Render Settings
-    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Render Settings");
-
-    ImGui::SliderFloat("Exposure##RenderSettings", &RendererManager::instance()->getExposure_nonConst(), 0.01f, 2.0f, "%.3f");
-    ImGui::SliderFloat("Gamma##RenderSettings", &RendererManager::instance()->getGamma_nonConst(), 0.01f, 4.0f, "%.3f");
-    ImGui::SliderInt("Bloom Blur Pass##RenderSettings", &RendererManager::instance()->getBlurPass_nonConst(), 0, 100);
-
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::End();
-
-    // Create Node
-    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Create Node");
-
-    // Select a node type
-    if (ImGui::BeginCombo("Choose a node type", mSelectedNodeName.toStdString().c_str()))
     {
-        for (const auto &name : mCreatableNodeNames)
-            if (ImGui::Selectable(name.toStdString().c_str()))
-                mSelectedNodeName = name;
+        ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Render Settings");
 
-        ImGui::EndCombo();
+        ImGui::SliderFloat("Exposure##RenderSettings", &RendererManager::instance()->getExposure_nonConst(), 0.01f, 2.0f, "%.3f");
+        ImGui::SliderFloat("Gamma##RenderSettings", &RendererManager::instance()->getGamma_nonConst(), 0.01f, 4.0f, "%.3f");
+        ImGui::SliderInt("Bloom Blur Pass##RenderSettings", &RendererManager::instance()->getBlurPass_nonConst(), 0, 100);
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
     }
 
-    if (mSelectedNodeName == "Model")
+    // Create Node
     {
-        const auto &modelNames = ModelDataManager::instance()->getModelNames();
+        ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Create Node");
 
-        if (ImGui::BeginCombo("Choose a 3D Model", mSelectedModelName.toStdString().c_str()))
+        // Select a node type
+        if (ImGui::BeginCombo("Choose a node type", mSelectedNodeName.toStdString().c_str()))
         {
-            for (const auto &name : modelNames)
+            for (const auto &name : mCreatableNodeNames)
                 if (ImGui::Selectable(name.toStdString().c_str()))
-                    mSelectedModelName = name;
+                    mSelectedNodeName = name;
 
             ImGui::EndCombo();
         }
-    }
 
-    if (ImGui::Button("Create Node"))
-    {
-        Node *node = nullptr;
-
-        if (mSelectedNodeName == "Dummy Node")
-            node = NodeManager::instance()->createNode(Node::NodeType::DummyNode);
-        else if (mSelectedNodeName == "Free Camera")
-            node = NodeManager::instance()->createNode(Node::NodeType::FreeCamera);
-        else if (mSelectedNodeName == "Dummy Camera")
-            node = NodeManager::instance()->createNode(Node::NodeType::DummyCamera);
-        else if (mSelectedNodeName == "Point Light")
-            node = NodeManager::instance()->createNode(Node::NodeType::PointLight);
-        else if (mSelectedNodeName == "Nozzle Effect")
-            node = NodeManager::instance()->createNode(Node::NodeType::NozzleEffect);
-        else if (mSelectedNodeName == "Firecracker Effect")
-            node = NodeManager::instance()->createNode(Node::NodeType::FirecrackerEffect);
-        else if (mSelectedNodeName == "Persecutor Camera")
-            node = NodeManager::instance()->createNode(Node::NodeType::PersecutorCamera);
-        else if (mSelectedNodeName == "Model" && !mSelectedModelName.isEmpty())
-            node = NodeManager::instance()->createModel(mSelectedModelName);
-
-        if (node)
+        if (mSelectedNodeName == "Model")
         {
-            auto position = CameraManager::instance()->activeCamera()->worldPosition();
-            auto viewDir = CameraManager::instance()->activeCamera()->getViewDirection();
+            const auto &modelNames = ModelDataManager::instance()->getModelNames();
 
-            node->setWorldPosition(position + 10 * viewDir);
+            if (ImGui::BeginCombo("Choose a 3D Model", mSelectedModelName.toStdString().c_str()))
+            {
+                for (const auto &name : modelNames)
+                    if (ImGui::Selectable(name.toStdString().c_str()))
+                        mSelectedModelName = name;
+
+                ImGui::EndCombo();
+            }
         }
-    }
 
-    ImGui::End();
+        if (ImGui::Button("Create Node"))
+        {
+            Node *node = nullptr;
+
+            if (mSelectedNodeName == "Dummy Node")
+                node = NodeManager::instance()->createNode(Node::NodeType::DummyNode);
+            else if (mSelectedNodeName == "Free Camera")
+                node = NodeManager::instance()->createNode(Node::NodeType::FreeCamera);
+            else if (mSelectedNodeName == "Dummy Camera")
+                node = NodeManager::instance()->createNode(Node::NodeType::DummyCamera);
+            else if (mSelectedNodeName == "Point Light")
+                node = NodeManager::instance()->createNode(Node::NodeType::PointLight);
+            else if (mSelectedNodeName == "Nozzle Effect")
+                node = NodeManager::instance()->createNode(Node::NodeType::NozzleEffect);
+            else if (mSelectedNodeName == "Firecracker Effect")
+                node = NodeManager::instance()->createNode(Node::NodeType::FirecrackerEffect);
+            else if (mSelectedNodeName == "Persecutor Camera")
+                node = NodeManager::instance()->createNode(Node::NodeType::PersecutorCamera);
+            else if (mSelectedNodeName == "Model" && !mSelectedModelName.isEmpty())
+                node = NodeManager::instance()->createModel(mSelectedModelName);
+
+            if (node)
+            {
+                auto position = CameraManager::instance()->activeCamera()->worldPosition();
+                auto viewDir = CameraManager::instance()->activeCamera()->getViewDirection();
+
+                node->setWorldPosition(position + 10 * viewDir);
+            }
+        }
+
+        ImGui::End();
+    }
 
     // Nodes
-    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Nodes");
-
-    const auto &nodes = NodeManager::instance()->nodes();
-
-    // Draw All Bounding Boxes
-    if (ImGui::Checkbox("Draw All Bounding Boxes", &mDrawAllBBs))
     {
-        if (mDrawAllBBs)
-            for (const auto &node : nodes)
-                RendererManager::instance()->addSelectableNode(node, QVector4D(1, 1, 1, 1));
-        else
-            for (const auto &node : nodes)
-                RendererManager::instance()->removeSelectableNode(node);
+        ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Nodes");
 
-        if (mNodeSelectionEnabled)
-            if (mSelectedNode)
-                RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
-    }
+        const auto &nodes = NodeManager::instance()->nodes();
 
-    // Node Selection
-    if (ImGui::Checkbox("Node Selection", &mNodeSelectionEnabled))
-    {
-        if (mNodeSelectionEnabled)
-        {
-            RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
-
-        } else
+        // Draw All Bounding Boxes
+        if (ImGui::Checkbox("Draw All Bounding Boxes", &mDrawAllBBs))
         {
             if (mDrawAllBBs)
-                RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 1, 1, 1));
+                for (const auto &node : nodes)
+                    RendererManager::instance()->addSelectableNode(node, QVector4D(1, 1, 1, 1));
             else
                 for (const auto &node : nodes)
                     RendererManager::instance()->removeSelectableNode(node);
 
-            mMeshSelectionEnabled = false;
-            mVertexSelectionEnabled = false;
-            setSelectedMesh(nullptr);
+            if (mNodeSelectionEnabled)
+                if (mSelectedNode)
+                    RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
         }
-    }
 
-    // Mesh Selection
-    ImGui::BeginDisabled(!mSelectedModel || !mNodeSelectionEnabled);
-    if (ImGui::Checkbox("Mesh Selection", &mMeshSelectionEnabled))
-    {
-        setSelectedMesh(nullptr);
-        mVertexSelectionEnabled = false;
-    }
-    ImGui::EndDisabled();
-
-    // Vertex Selection
-    ImGui::BeginDisabled(!mSelectedMesh || !mMeshSelectionEnabled);
-    if (ImGui::Checkbox("Vertex Selection", &mVertexSelectionEnabled))
-    {
-        RendererManager::instance()->getSelectedMeshParameters_Ref(mSelectedModel).mRenderVertices = true;
-        setSelectedVertexIndex(-1);
-    }
-    ImGui::EndDisabled();
-
-    // Select a node
-    if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->getName().toStdString().c_str() : "-"))
-    {
-        for (int i = 0; i < nodes.size(); ++i)
-            if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
-            {
-                mMeshSelectionEnabled = false;
-                mVertexSelectionEnabled = false;
-                setSelectedNode(nodes[i]);
-            }
-
-        ImGui::EndCombo();
-    }
-
-    // Actions
-    if (mSelectedNode)
-    {
-        if (!ImGui::CollapsingHeader("Actions"))
+        // Node Selection
         {
-            ImGui::Text("Type: %d", mSelectedNode->getType());
-            ImGui::Text("ID: %d", mSelectedNode->getID());
-            ImGui::Text("UUID: %s", mSelectedNode->getUUID().toStdString().c_str());
+            ImGui::BeginDisabled(!Config::instance()->getNodeSelectionEnabled());
 
-            // Assign a parent
+            if (ImGui::Checkbox("Node Selection", &mNodeSelectionEnabled))
             {
-                if (ImGui::BeginCombo("Assign a parent", mSelectedNode->parent() ? mSelectedNode->parent()->getName().toStdString().c_str() : "-"))
+                if (mNodeSelectionEnabled)
                 {
-                    if (ImGui::Selectable("-"))
-                        mSelectedNode->setParent(nullptr);
+                    RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
 
-                    for (int i = 0; i < nodes.size(); ++i)
-                    {
-                        if (mSelectedNode == nodes[i])
-                            continue;
+                } else
+                {
+                    if (mDrawAllBBs)
+                        RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 1, 1, 1));
+                    else
+                        for (const auto &node : nodes)
+                            RendererManager::instance()->removeSelectableNode(node);
 
-                        if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
-                            mSelectedNode->setParent(nodes[i]);
-                    }
-
-                    ImGui::EndCombo();
+                    mMeshSelectionEnabled = false;
+                    mVertexSelectionEnabled = false;
+                    setSelectedMesh(nullptr);
                 }
             }
 
-            if (ImGui::Button("Remove this node"))
+            // Mesh Selection
+            ImGui::BeginDisabled(!mSelectedModel || !mNodeSelectionEnabled);
+            if (ImGui::Checkbox("Mesh Selection", &mMeshSelectionEnabled))
             {
-                NodeManager::instance()->removeNode(mSelectedNode);
-                mNodeSelectionEnabled = false;
-                mMeshSelectionEnabled = false;
+                setSelectedMesh(nullptr);
                 mVertexSelectionEnabled = false;
             }
-        }
-    }
+            ImGui::EndDisabled();
 
-    if (mSelectedNode)
-    {
-        switch (mSelectedNode->getType())
+            // Vertex Selection
+            ImGui::BeginDisabled(!mSelectedMesh || !mMeshSelectionEnabled);
+            if (ImGui::Checkbox("Vertex Selection", &mVertexSelectionEnabled))
+            {
+                RendererManager::instance()->getSelectedMeshParameters_Ref(mSelectedModel).mRenderVertices = true;
+                setSelectedVertexIndex(-1);
+            }
+            ImGui::EndDisabled();
+
+            ImGui::EndDisabled();
+        }
+
+        // Select a node
+        if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->getName().toStdString().c_str() : "-"))
         {
-        case Canavar::Engine::Node::NodeType::DummyNode:
-            draw(mSelectedNode);
-            break;
-        case Canavar::Engine::Node::NodeType::PersecutorCamera:
-        case Canavar::Engine::Node::NodeType::DummyCamera:
-            draw(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
-            draw(mSelectedNode);
-            break;
-        case Canavar::Engine::Node::NodeType::FreeCamera:
-            draw(dynamic_cast<FreeCamera *>(mSelectedNode));
-            draw(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
-            draw(mSelectedNode);
-            break;
-        case Canavar::Engine::Node::NodeType::Sky:
-            draw(dynamic_cast<Sky *>(mSelectedNode));
-            break;
-        case Canavar::Engine::Node::NodeType::Sun:
-            draw(dynamic_cast<Sun *>(mSelectedNode));
-            break;
-        case Canavar::Engine::Node::NodeType::Model:
-            draw(mSelectedNode);
-            draw(dynamic_cast<Model *>(mSelectedNode));
-            break;
-        case Canavar::Engine::Node::NodeType::Terrain:
-            draw(dynamic_cast<Terrain *>(mSelectedNode));
-            break;
-        case Canavar::Engine::Node::NodeType::Haze:
-            draw(dynamic_cast<Haze *>(mSelectedNode));
-            break;
-        case Canavar::Engine::Node::NodeType::PointLight:
-            draw(dynamic_cast<Light *>(mSelectedNode));
-            draw(dynamic_cast<PointLight *>(mSelectedNode));
-            draw(dynamic_cast<Node *>(mSelectedNode));
-            break;
-        case Canavar::Engine::Node::NodeType::NozzleEffect:
-            draw(dynamic_cast<NozzleEffect *>(mSelectedNode));
-            draw(dynamic_cast<Node *>(mSelectedNode));
-            break;
-        case Canavar::Engine::Node::NodeType::FirecrackerEffect:
-            draw(dynamic_cast<FirecrackerEffect *>(mSelectedNode));
-            draw(dynamic_cast<Node *>(mSelectedNode));
-            break;
-        default:
-            break;
-        }
-    }
+            for (int i = 0; i < nodes.size(); ++i)
+                if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
+                {
+                    mMeshSelectionEnabled = false;
+                    mVertexSelectionEnabled = false;
+                    setSelectedNode(nodes[i]);
+                }
 
-    ImGui::End();
+            ImGui::EndCombo();
+        }
+
+        // Actions
+        if (mSelectedNode)
+        {
+            if (!ImGui::CollapsingHeader("Actions"))
+            {
+                ImGui::Text("Type: %d", mSelectedNode->getType());
+                ImGui::Text("ID: %d", mSelectedNode->getID());
+                ImGui::Text("UUID: %s", mSelectedNode->getUUID().toStdString().c_str());
+
+                // Assign a parent
+                {
+                    if (ImGui::BeginCombo("Assign a parent", mSelectedNode->parent() ? mSelectedNode->parent()->getName().toStdString().c_str() : "-"))
+                    {
+                        if (ImGui::Selectable("-"))
+                            mSelectedNode->setParent(nullptr);
+
+                        for (int i = 0; i < nodes.size(); ++i)
+                        {
+                            if (mSelectedNode == nodes[i])
+                                continue;
+
+                            if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
+                                mSelectedNode->setParent(nodes[i]);
+                        }
+
+                        ImGui::EndCombo();
+                    }
+                }
+
+                if (ImGui::Button("Remove this node"))
+                {
+                    NodeManager::instance()->removeNode(mSelectedNode);
+                    mNodeSelectionEnabled = false;
+                    mMeshSelectionEnabled = false;
+                    mVertexSelectionEnabled = false;
+                }
+            }
+        }
+
+        if (mSelectedNode)
+        {
+            switch (mSelectedNode->getType())
+            {
+            case Canavar::Engine::Node::NodeType::DummyNode:
+                draw(mSelectedNode);
+                break;
+            case Canavar::Engine::Node::NodeType::PersecutorCamera:
+            case Canavar::Engine::Node::NodeType::DummyCamera:
+                draw(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
+                draw(mSelectedNode);
+                break;
+            case Canavar::Engine::Node::NodeType::FreeCamera:
+                draw(dynamic_cast<FreeCamera *>(mSelectedNode));
+                draw(dynamic_cast<PerspectiveCamera *>(mSelectedNode));
+                draw(mSelectedNode);
+                break;
+            case Canavar::Engine::Node::NodeType::Sky:
+                draw(dynamic_cast<Sky *>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::Sun:
+                draw(dynamic_cast<Sun *>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::Model:
+                draw(mSelectedNode);
+                draw(dynamic_cast<Model *>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::Terrain:
+                draw(dynamic_cast<Terrain *>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::Haze:
+                draw(dynamic_cast<Haze *>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::PointLight:
+                draw(dynamic_cast<Light *>(mSelectedNode));
+                draw(dynamic_cast<PointLight *>(mSelectedNode));
+                draw(dynamic_cast<Node *>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::NozzleEffect:
+                draw(dynamic_cast<NozzleEffect *>(mSelectedNode));
+                draw(dynamic_cast<Node *>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::FirecrackerEffect:
+                draw(dynamic_cast<FirecrackerEffect *>(mSelectedNode));
+                draw(dynamic_cast<Node *>(mSelectedNode));
+                break;
+            default:
+                break;
+            }
+        }
+
+        ImGui::End();
+    }
 }
 
 void Canavar::Engine::Gui::draw(Node *node)

@@ -15,6 +15,7 @@ class ModelDataManager;
 class NodeManager;
 class CameraManager;
 class RendererManager;
+class Config;
 
 class SelectableNodeRenderer : public Manager, protected QOpenGLExtraFunctions
 {
@@ -40,6 +41,7 @@ public:
     NodeInfo getVertexInfoByScreenPosition(int x, int y);
 
 private:
+    Config *mConfig;
     ShaderManager *mShaderManager;
     ModelDataManager *mModelDataManager;
     NodeManager *mNodeManager;

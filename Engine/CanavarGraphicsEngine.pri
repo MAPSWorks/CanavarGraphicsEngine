@@ -3,6 +3,7 @@ HEADERS += \
     $$PWD/Camera.h \
     $$PWD/CameraManager.h \
     $$PWD/Common.h \
+    $$PWD/Config.h \
     $$PWD/Controller.h \
     $$PWD/DummyCamera.h \
     $$PWD/DummyNode.h \
@@ -47,6 +48,7 @@ SOURCES += \
     $$PWD/Camera.cpp \
     $$PWD/CameraManager.cpp \
     $$PWD/Common.cpp \
+    $$PWD/Config.cpp \
     $$PWD/Controller.cpp \
     $$PWD/DummyCamera.cpp \
     $$PWD/DummyNode.cpp \

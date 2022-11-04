@@ -2,6 +2,7 @@
 #include "ModelData.h"
 
 #include <QFile>
+#include <QJsonDocument>
 #include <QMultiMap>
 #include <QtMath>
 
@@ -386,6 +387,23 @@ QVector<Canavar::Engine::PointLight *> Canavar::Engine::Helper::getClosePointLig
         result << nodesStorted[i];
 
     return result;
+}
+
+QJsonDocument Canavar::Engine::Helper::loadJson(const QString &path)
+{
+    QJsonDocument document;
+
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qCritical() << "Error occured while reading the file:" << path;
+        return document;
+    }
+
+    document = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    return document;
 }
 
 QRandomGenerator Canavar::Engine::Helper::mGenerator = QRandomGenerator::securelySeeded();

@@ -13,9 +13,12 @@ Canavar::Engine::Controller::Controller(QObject *parent)
     , mSuccess(true)
 {}
 
-bool Canavar::Engine::Controller::init()
+bool Canavar::Engine::Controller::init(const QString &configFile)
 {
     initializeOpenGLFunctions();
+
+    mConfig = Config::instance()->instance();
+    mConfig->load(configFile);
 
     mModelDataManager = ModelDataManager::instance();
     mShaderManager = ShaderManager::instance();

@@ -1,6 +1,8 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include "Config.h"
+
 #include <QObject>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions>
@@ -25,7 +27,7 @@ class Controller : public QObject, protected QOpenGLExtraFunctions
 public:
     explicit Controller(QObject *parent = nullptr);
 
-    bool init();
+    bool init(const QString &configFile = "Config.json");
     void mouseDoubleClicked(QMouseEvent *event);
     void mousePressed(QMouseEvent *event);
     void mouseReleased(QMouseEvent *event);
@@ -39,6 +41,7 @@ public:
     void setWindow(QOpenGLWindow *newWindow);
 
 private:
+    Config *mConfig;
     ModelDataManager *mModelDataManager;
     RendererManager *mRendererManager;
     ShaderManager *mShaderManager;

@@ -1,4 +1,5 @@
 #include "ModelDataManager.h"
+#include "Config.h"
 #include "Helper.h"
 
 #include <QDir>
@@ -16,15 +17,7 @@ Canavar::Engine::ModelDataManager *Canavar::Engine::ModelDataManager::instance()
 
 bool Canavar::Engine::ModelDataManager::init()
 {
-    // TODO: Read these paths from .json file
-
-    loadModels("Resources/Models",
-               QStringList() << "*.obj"
-                             << "*.blend"
-                             << "*.dae"
-                             << "*.glb"
-                             << "*.gltf"
-                             << "*.fbx");
+    loadModels(Config::instance()->getModelsRootFolder(), Config::instance()->getSupportedModelFormats());
 
     mModelNames = mModelsData.keys();
 

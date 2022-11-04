@@ -39,6 +39,7 @@ public:
     static QOpenGLTexture *createTexture(const QString &path);
 
     static QVector<PointLight *> getClosePointLights(const QList<PointLight *> &nodes, const QVector3D &position, int maxCount);
+    static QJsonDocument loadJson(const QString &path);
 
 private:
     static Mesh *processMesh(aiMesh *aiMesh);
