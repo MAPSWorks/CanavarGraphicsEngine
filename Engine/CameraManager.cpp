@@ -1,8 +1,10 @@
 #include "CameraManager.h"
+#include "NodeManager.h"
 #include <QtMath>
 
 Canavar::Engine::CameraManager::CameraManager()
     : Manager()
+    , mDefaultCamera(nullptr)
     , mActiveCamera(nullptr)
 {}
 
@@ -17,6 +19,13 @@ bool Canavar::Engine::CameraManager::init()
     return true;
 }
 
+void Canavar::Engine::CameraManager::postInit()
+{
+    mDefaultCamera = dynamic_cast<FreeCamera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera, "Default Free Camera"));
+
+    setActiveCamera(mDefaultCamera);
+}
+
 void Canavar::Engine::CameraManager::addCamera(Camera *camera)
 {
     mCameras << camera;
@@ -27,7 +36,7 @@ void Canavar::Engine::CameraManager::removeCamera(Camera *camera)
     if (camera)
     {
         if (camera == mActiveCamera)
-            mActiveCamera = nullptr;
+            setActiveCamera(nullptr);
 
         mCameras.removeAll(camera);
     }
@@ -54,48 +63,44 @@ void Canavar::Engine::CameraManager::setActiveCamera(Camera *newActiveCamera)
     }
 
     mActiveCamera = newActiveCamera;
+
+    if (!mActiveCamera)
+        setActiveCamera(mDefaultCamera);
 }
 
 void Canavar::Engine::CameraManager::mouseDoubleClicked(QMouseEvent *event)
 {
-    if (mActiveCamera)
-        mActiveCamera->mouseDoubleClicked(event);
+    mActiveCamera->mouseDoubleClicked(event);
 }
 
 void Canavar::Engine::CameraManager::mousePressed(QMouseEvent *event)
 {
-    if (mActiveCamera)
-        mActiveCamera->mousePressed(event);
+    mActiveCamera->mousePressed(event);
 }
 
 void Canavar::Engine::CameraManager::mouseReleased(QMouseEvent *event)
 {
-    if (mActiveCamera)
-        mActiveCamera->mouseReleased(event);
+    mActiveCamera->mouseReleased(event);
 }
 
 void Canavar::Engine::CameraManager::mouseMoved(QMouseEvent *event)
 {
-    if (mActiveCamera)
-        mActiveCamera->mouseMoved(event);
+    mActiveCamera->mouseMoved(event);
 }
 
 void Canavar::Engine::CameraManager::wheelMoved(QWheelEvent *event)
 {
-    if (mActiveCamera)
-        mActiveCamera->wheelMoved(event);
+    mActiveCamera->wheelMoved(event);
 }
 
 void Canavar::Engine::CameraManager::keyPressed(QKeyEvent *event)
 {
-    if (mActiveCamera)
-        mActiveCamera->keyPressed(event);
+    mActiveCamera->keyPressed(event);
 }
 
 void Canavar::Engine::CameraManager::keyReleased(QKeyEvent *event)
 {
-    if (mActiveCamera)
-        mActiveCamera->keyReleased(event);
+    mActiveCamera->keyReleased(event);
 }
 
 void Canavar::Engine::CameraManager::resize(int width, int height)
@@ -103,21 +108,16 @@ void Canavar::Engine::CameraManager::resize(int width, int height)
     mWidth = width;
     mHeight = height;
 
-    if (mActiveCamera)
-    {
-        mActiveCamera->setWidth(mWidth);
-        mActiveCamera->setHeight(mHeight);
-    }
+    mActiveCamera->setWidth(mWidth);
+    mActiveCamera->setHeight(mHeight);
 }
 
 void Canavar::Engine::CameraManager::update(float ifps)
 {
-    if (mActiveCamera)
-        mActiveCamera->update(ifps);
+    mActiveCamera->update(ifps);
 }
 
 void Canavar::Engine::CameraManager::reset()
 {
-    if (mActiveCamera)
-        mActiveCamera->reset();
+    mActiveCamera->reset();
 }

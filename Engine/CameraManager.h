@@ -2,6 +2,7 @@
 #define CAMERAMANAGER_H
 
 #include "Camera.h"
+#include "FreeCamera.h"
 #include "Manager.h"
 
 #include <QObject>
@@ -25,6 +26,7 @@ public:
     static CameraManager *instance();
 
     bool init() override;
+    void postInit() override;
     void mouseDoubleClicked(QMouseEvent *event) override;
     void wheelMoved(QWheelEvent *event) override;
     void mousePressed(QMouseEvent *event) override;
@@ -40,6 +42,7 @@ public:
     void setActiveCamera(Camera *newActiveCamera);
 
 private:
+    FreeCamera *mDefaultCamera;
     Camera *mActiveCamera;
     QList<Camera *> mCameras;
 
