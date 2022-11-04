@@ -50,6 +50,7 @@ public:
     void setSelectedVertexIndex(int newSelectedVertexIndex);
 
 private:
+    Canavar::Engine::NodeManager *mNodeManager;
     Canavar::Engine::Node *mSelectedNode;
     Canavar::Engine::Model *mSelectedModel; // Casted from mSelectedNode
     Canavar::Engine::Mesh *mSelectedMesh;
@@ -59,6 +60,11 @@ private:
     bool mNodeSelectionEnabled;
     bool mMeshSelectionEnabled;
     bool mVertexSelectionEnabled;
+
+    // Create a Node Window
+    QStringList mCreatableNodeNames;
+    QString mSelectedNodeName;
+    QString mSelectedModelName;
 };
 
 } // namespace Engine

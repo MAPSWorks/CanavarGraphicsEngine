@@ -20,12 +20,14 @@ public:
     bool init();
 
     ModelData *getModelData(const QString &modelName);
+    const QStringList &getModelNames() const;
 
 private:
     void loadModels(const QString &path, const QStringList &formats);
 
 private:
     QMap<QString, ModelData *> mModelsData;
+    QStringList mModelNames;
 };
 
 } // namespace Engine

@@ -35,6 +35,9 @@ public:
 
     const QList<Node *> &nodes() const;
 
+signals:
+    void nodeCreated(Canavar::Engine::Node *node);
+
 private:
     void assignName(Node *node, const QString &name);
 

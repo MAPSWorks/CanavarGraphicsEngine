@@ -26,7 +26,7 @@ bool Canavar::Engine::ModelDataManager::init()
                              << "*.gltf"
                              << "*.fbx");
 
-    qDebug() << mModelsData.keys();
+    mModelNames = mModelsData.keys();
 
     return true;
 }
@@ -34,6 +34,11 @@ bool Canavar::Engine::ModelDataManager::init()
 Canavar::Engine::ModelData *Canavar::Engine::ModelDataManager::getModelData(const QString &modelName)
 {
     return mModelsData.value(modelName, nullptr);
+}
+
+const QStringList &Canavar::Engine::ModelDataManager::getModelNames() const
+{
+    return mModelNames;
 }
 
 void Canavar::Engine::ModelDataManager::loadModels(const QString &path, const QStringList &formats)

@@ -114,6 +114,8 @@ Canavar::Engine::Node *Canavar::Engine::NodeManager::createNode(Node::NodeType t
         node->mID = mNumberOfNodes;
         mNodes << node;
         mNumberOfNodes++;
+
+        emit nodeCreated(node);
     }
 
     return node;
@@ -128,6 +130,8 @@ Canavar::Engine::Model *Canavar::Engine::NodeManager::createModel(const QString 
     model->mID = mNumberOfNodes;
     mNodes << model;
     mNumberOfNodes++;
+
+    emit nodeCreated(model);
 
     return model;
 }

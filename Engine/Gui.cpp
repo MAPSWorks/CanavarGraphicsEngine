@@ -15,7 +15,24 @@ Canavar::Engine::Gui::Gui(QObject *parent)
     , mNodeSelectionEnabled(true)
     , mMeshSelectionEnabled(false)
     , mVertexSelectionEnabled(false)
-{}
+
+{
+    mCreatableNodeNames << "Dummy Node"
+                        << "Model"
+                        << "Free Camera"
+                        << "Dummy Camera"
+                        << "Point Light"
+                        << "Nozzle Effect"
+                        << "Firecracker Effect"
+                        << "Persecutor Camera";
+
+    mNodeManager = NodeManager::instance();
+
+    connect(mNodeManager, &NodeManager::nodeCreated, this, [=](Canavar::Engine::Node *node) {
+        if (mDrawAllBBs)
+            RendererManager::instance()->addSelectableNode(node, QVector4D(1, 1, 1, 1));
+    });
+}
 
 void Canavar::Engine::Gui::draw()
 {
@@ -28,6 +45,66 @@ void Canavar::Engine::Gui::draw()
     ImGui::SliderInt("Bloom Blur Pass##RenderSettings", &RendererManager::instance()->getBlurPass_nonConst(), 0, 100);
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
+
+    // Create Node
+    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Create Node");
+
+    // Select a node type
+    if (ImGui::BeginCombo("Choose a node type", mSelectedNodeName.toStdString().c_str()))
+    {
+        for (const auto &name : mCreatableNodeNames)
+            if (ImGui::Selectable(name.toStdString().c_str()))
+                mSelectedNodeName = name;
+
+        ImGui::EndCombo();
+    }
+
+    if (mSelectedNodeName == "Model")
+    {
+        const auto &modelNames = ModelDataManager::instance()->getModelNames();
+
+        if (ImGui::BeginCombo("Choose a 3D Model", mSelectedModelName.toStdString().c_str()))
+        {
+            for (const auto &name : modelNames)
+                if (ImGui::Selectable(name.toStdString().c_str()))
+                    mSelectedModelName = name;
+
+            ImGui::EndCombo();
+        }
+    }
+
+    if (ImGui::Button("Create Node"))
+    {
+        Node *node = nullptr;
+
+        if (mSelectedNodeName == "Dummy Node")
+            node = NodeManager::instance()->createNode(Node::NodeType::DummyNode);
+        else if (mSelectedNodeName == "Free Camera")
+            node = NodeManager::instance()->createNode(Node::NodeType::FreeCamera);
+        else if (mSelectedNodeName == "Dummy Camera")
+            node = NodeManager::instance()->createNode(Node::NodeType::DummyCamera);
+        else if (mSelectedNodeName == "Point Light")
+            node = NodeManager::instance()->createNode(Node::NodeType::PointLight);
+        else if (mSelectedNodeName == "Nozzle Effect")
+            node = NodeManager::instance()->createNode(Node::NodeType::NozzleEffect);
+        else if (mSelectedNodeName == "Firecracker Effect")
+            node = NodeManager::instance()->createNode(Node::NodeType::FirecrackerEffect);
+        else if (mSelectedNodeName == "Persecutor Camera")
+            node = NodeManager::instance()->createNode(Node::NodeType::PersecutorCamera);
+        else if (mSelectedNodeName == "Model" && !mSelectedModelName.isEmpty())
+            node = NodeManager::instance()->createModel(mSelectedModelName);
+
+        if (node)
+        {
+            auto position = CameraManager::instance()->activeCamera()->worldPosition();
+            auto viewDir = CameraManager::instance()->activeCamera()->getViewDirection();
+
+            node->setWorldPosition(position + 10 * viewDir);
+        }
+    }
+
     ImGui::End();
 
     // Nodes
