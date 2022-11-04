@@ -96,6 +96,8 @@ void Canavar::Engine::Gui::draw()
         for (int i = 0; i < nodes.size(); ++i)
             if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
             {
+                mMeshSelectionEnabled = false;
+                mVertexSelectionEnabled = false;
                 setSelectedNode(nodes[i]);
             }
 
@@ -512,6 +514,9 @@ Canavar::Engine::Node *Canavar::Engine::Gui::getSelectedNode() const
 
 void Canavar::Engine::Gui::setSelectedNode(Canavar::Engine::Node *newSelectedNode)
 {
+    setSelectedMesh(nullptr);
+    mSelectedModel = dynamic_cast<Model *>(newSelectedNode);
+
     if (mSelectedNode)
     {
         mSelectedNode->disconnect(this);
@@ -529,9 +534,6 @@ void Canavar::Engine::Gui::setSelectedNode(Canavar::Engine::Node *newSelectedNod
         RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
         connect(mSelectedNode, &QObject::destroyed, this, [=]() { setSelectedNode(nullptr); });
     }
-
-    mSelectedModel = dynamic_cast<Model *>(mSelectedNode);
-    setSelectedMesh(nullptr);
 }
 
 Canavar::Engine::Mesh *Canavar::Engine::Gui::getSelectedMesh() const
