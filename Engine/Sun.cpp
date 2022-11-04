@@ -1,7 +1,7 @@
 #include "Sun.h"
 
-Canavar::Engine::Sun::Sun(const QString &uuid)
-    : Light(uuid)
+Canavar::Engine::Sun::Sun()
+    : Light()
     , mDirection(0, -1, 0)
     , mEnabled(true)
 {
@@ -54,4 +54,29 @@ bool Canavar::Engine::Sun::getEnabled() const
 void Canavar::Engine::Sun::setEnabled(bool newEnabled)
 {
     mEnabled = newEnabled;
+}
+
+void Canavar::Engine::Sun::toJson(QJsonObject &object)
+{
+    Light::toJson(object);
+
+    QJsonObject direction;
+    direction.insert("x", mDirection.x());
+    direction.insert("y", mDirection.y());
+    direction.insert("z", mDirection.z());
+    object.insert("direction", direction);
+    object.insert("enabled", mEnabled);
+}
+
+void Canavar::Engine::Sun::fromJson(const QJsonObject &object)
+{
+    Light::fromJson(object);
+
+    // Direction
+    float x = object["direction"]["x"].toDouble();
+    float y = object["direction"]["y"].toDouble();
+    float z = object["direction"]["z"].toDouble();
+    setDirection(QVector3D(x, y, z));
+
+    mEnabled = object["enabled"].toBool();
 }

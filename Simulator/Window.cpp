@@ -47,12 +47,12 @@ void Window::initializeGL()
     mController = new Canavar::Engine::Controller;
     mController->setWindow(this);
 
-    mSuccess = mController->init();
+    mSuccess = mController->init("Resources/Config/Config.json");
 
     if (mSuccess)
     {
-        mJet = NodeManager::instance()->createModel("f16c");
-        mJetRoot = NodeManager::instance()->createNode(Node::NodeType::DummyNode, "JET_ROOT_NODE");
+        mJet = dynamic_cast<Canavar::Engine::Model *>(NodeManager::instance()->getNodeByName("Model f16c"));
+        mJetRoot = NodeManager::instance()->getNodeByName("JET_ROOT_NODE");
         mJetRoot->addChild(mJet);
 
         mAircraft = new Aircraft;
@@ -69,58 +69,12 @@ void Window::initializeGL()
         connect(
             mAircraft, &Aircraft::pfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
 
-        mFreeCamera = dynamic_cast<Canavar::Engine::PerspectiveCamera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera));
-        mFreeCamera->setPosition(QVector3D(0, 100, 0));
-        mFreeCamera->setVerticalFov(60.0f);
-        mFreeCamera->setZNear(2.0f);
-        mFreeCamera->setZFar(1000000.0f);
-        CameraManager::instance()->setActiveCamera(mFreeCamera);
-
-        mDummyCamera = dynamic_cast<Canavar::Engine::PerspectiveCamera *>(NodeManager::instance()->createNode(Node::NodeType::DummyCamera));
-
-        mJetRoot->addChild(mDummyCamera);
-        mDummyCamera->setPosition(QVector3D(0, 5, 40));
-        mDummyCamera->setVerticalFov(75.0f);
-        mDummyCamera->setZNear(5.0f);
-        mDummyCamera->setZFar(1000000.0f);
-
-        mPersecutorCamera = dynamic_cast<Canavar::Engine::PersecutorCamera *>(NodeManager::instance()->createNode(Node::NodeType::PersecutorCamera));
-        mPersecutorCamera->setZNear(5.0f);
-        mPersecutorCamera->setZFar(1000000.0f);
+        mFreeCamera = dynamic_cast<Canavar::Engine::PerspectiveCamera *>(NodeManager::instance()->getNodeByName("Free Camera"));
+        mDummyCamera = dynamic_cast<Canavar::Engine::PerspectiveCamera *>(NodeManager::instance()->getNodeByName("Dummy Camera"));
+        mPersecutorCamera = dynamic_cast<Canavar::Engine::PersecutorCamera *>(NodeManager::instance()->getNodeByName("Persecutor Camera"));
         mPersecutorCamera->setTarget(mJetRoot);
 
-        auto effect = NodeManager::instance()->createNode(Node::NodeType::NozzleEffect);
-        effect->setPosition(QVector3D(0, 0.14f, 11.5f));
-        mJetRoot->addChild(effect);
-
-        auto redLight = dynamic_cast<Canavar::Engine::PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
-        redLight->setName("Red Light");
-        redLight->setColor(QVector4D(1, 0, 0, 1));
-        redLight->setConstant(0.075f);
-        redLight->setLinear(0.25f);
-        redLight->setQuadratic(0.1f);
-
-        auto redLightContainer = NodeManager::instance()->createModel("Sphere");
-        redLightContainer->setColor(QVector4D(1, 0, 0, 1));
-        redLightContainer->setScale(QVector3D(0.5, 0.5, 0.5));
-        redLightContainer->addChild(redLight);
-        redLightContainer->setPosition(QVector3D(-11.42f, 0.16f, -0.83f));
-        mJetRoot->addChild(redLightContainer);
-
-        auto greenLight = dynamic_cast<Canavar::Engine::PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
-        greenLight->setName("Green Light");
-        greenLight->setColor(QVector4D(0, 1, 0, 1));
-        greenLight->setConstant(0.075f);
-        greenLight->setLinear(0.25f);
-        greenLight->setQuadratic(0.1f);
-
-        auto greenLightContainer = NodeManager::instance()->createModel("Sphere");
-        greenLightContainer->setColor(QVector4D(0, 1, 0, 1));
-        greenLightContainer->setScale(QVector3D(0.5, 0.5, 0.5));
-        greenLightContainer->addChild(greenLight);
-        greenLightContainer->setPosition(QVector3D(11.42f, 0.16f, -0.83f));
-        mJetRoot->addChild(greenLightContainer);
-
+        CameraManager::instance()->setActiveCamera(mFreeCamera);
         Canavar::Engine::Sun::instance()->setDirection(QVector3D(1, -0.5, 1));
 
         mGui = new Canavar::Engine::Gui;
@@ -196,6 +150,8 @@ void Window::mousePressEvent(QMouseEvent *event)
         return;
 
     mController->mousePressed(event);
+
+    mGui->mousePressed(event);
 }
 
 void Window::mouseReleaseEvent(QMouseEvent *event)

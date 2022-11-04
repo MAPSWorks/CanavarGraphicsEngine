@@ -406,4 +406,22 @@ QJsonDocument Canavar::Engine::Helper::loadJson(const QString &path)
     return document;
 }
 
+bool Canavar::Engine::Helper::writeToFile(const QString &path, const QByteArray &content)
+{
+    QFile file(path);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&file);
+        stream.setEncoding(QStringConverter::Utf8);
+        stream << content;
+        stream.flush();
+        file.close();
+        return true;
+    } else
+    {
+        qCritical() << Q_FUNC_INFO << "Couldn't write to file" << path;
+        return false;
+    }
+}
+
 QRandomGenerator Canavar::Engine::Helper::mGenerator = QRandomGenerator::securelySeeded();

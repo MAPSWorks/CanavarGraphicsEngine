@@ -13,7 +13,7 @@ class FreeCamera : public PerspectiveCamera
     Q_OBJECT
 protected:
     friend class NodeManager;
-    FreeCamera(const QString &uuid = QString());
+    FreeCamera();
 
 public:
     void mouseDoubleClicked(QMouseEvent *) override;

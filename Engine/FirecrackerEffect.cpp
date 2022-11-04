@@ -2,8 +2,8 @@
 
 #include "Helper.h"
 
-Canavar::Engine::FirecrackerEffect::FirecrackerEffect(const QString &uuid)
-    : Node(uuid)
+Canavar::Engine::FirecrackerEffect::FirecrackerEffect()
+    : Node()
     , mNumberOfParticles(10000)
     , mSpanAngle(140.0f)
     , mGravityDirection(0, -1, 0)
@@ -60,6 +60,51 @@ void Canavar::Engine::FirecrackerEffect::create()
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
+}
+
+void Canavar::Engine::FirecrackerEffect::toJson(QJsonObject &object)
+{
+    Node::toJson(object);
+
+    QJsonObject gravityDir;
+    gravityDir.insert("x", mGravityDirection.x());
+    gravityDir.insert("y", mGravityDirection.y());
+    gravityDir.insert("z", mGravityDirection.z());
+    object.insert("gravity_direction", gravityDir);
+
+    object.insert("number_of_particles", mNumberOfParticles);
+    object.insert("span_angle", mSpanAngle);
+    object.insert("gravity", mGravity);
+    object.insert("max_life", mMaxLife);
+    object.insert("min_life", mMinLife);
+    object.insert("initial_speed", mInitialSpeed);
+    object.insert("loop", mLoop);
+    object.insert("scale", mScale);
+    object.insert("damping", mDamping);
+}
+
+void Canavar::Engine::FirecrackerEffect::fromJson(const QJsonObject &object)
+{
+    Node::fromJson(object);
+
+    // Gravity Direction
+    {
+        float x = object["gravity_direction"]["x"].toDouble();
+        float y = object["gravity_direction"]["y"].toDouble();
+        float z = object["gravity_direction"]["z"].toDouble();
+
+        mGravityDirection = QVector3D(x, y, z);
+    }
+
+    mNumberOfParticles = object["number_of_particles"].toInt();
+    mSpanAngle = object["span_angle"].toDouble();
+    mGravity = object["gravity"].toDouble();
+    mMaxLife = object["max_life"].toDouble();
+    mMinLife = object["min_life"].toDouble();
+    mInitialSpeed = object["initial_speed"].toDouble();
+    mLoop = object["loop"].toBool();
+    mScale = object["scale"].toDouble();
+    mDamping = object["damping"].toDouble();
 }
 
 void Canavar::Engine::FirecrackerEffect::render(float ifps)

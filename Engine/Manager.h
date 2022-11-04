@@ -14,6 +14,7 @@ public:
     explicit Manager(QObject *parent = nullptr);
 
     virtual bool init() = 0;
+    virtual void postInit();
     virtual void mouseDoubleClicked(QMouseEvent *event);
     virtual void mousePressed(QMouseEvent *event);
     virtual void mouseReleased(QMouseEvent *event);

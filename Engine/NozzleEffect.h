@@ -13,12 +13,14 @@ class NozzleEffect : public Node, protected QOpenGLExtraFunctions
 {
 protected:
     friend class NodeManager;
-    NozzleEffect(const QString &uuid = QString());
+    NozzleEffect();
     ~NozzleEffect();
 
     void create();
 
 public:
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
     void render(float ifps);
 
 private:

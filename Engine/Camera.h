@@ -13,7 +13,7 @@ class Camera : public Node
 {
     Q_OBJECT
 protected:
-    Camera(const QString &uuid = QString());
+    Camera();
 
 public:
     virtual QMatrix4x4 getViewProjectionMatrix();
@@ -36,6 +36,9 @@ public:
 
     bool active() const;
     void setActive(bool newActive);
+
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
 signals:
     void activeChanged();

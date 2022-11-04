@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-Canavar::Engine::Camera::Camera(const QString &uuid)
-    : Node(uuid)
+Canavar::Engine::Camera::Camera()
+    : Node()
     , mActive(false)
     , mWidth(1600)
     , mHeight(900)
@@ -51,6 +51,22 @@ void Canavar::Engine::Camera::setActive(bool newActive)
         return;
     mActive = newActive;
     emit activeChanged();
+}
+
+void Canavar::Engine::Camera::toJson(QJsonObject &object)
+{
+    Node::toJson(object);
+
+    object.insert("z_near", mZNear);
+    object.insert("z_far", mZFar);
+}
+
+void Canavar::Engine::Camera::fromJson(const QJsonObject &object)
+{
+    Node::fromJson(object);
+
+    setZNear(object["z_near"].toDouble());
+    setZFar(object["z_far"].toDouble());
 }
 
 void Canavar::Engine::Camera::resize(int width, int height)

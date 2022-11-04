@@ -3,14 +3,14 @@
 #include <QUuid>
 #include <QtMath>
 
-Canavar::Engine::Node::Node(const QString &uuid)
+Canavar::Engine::Node::Node()
     : QObject()
     , mPosition(0, 0, 0)
     , mScale(1, 1, 1)
     , mParent(nullptr)
     , mVisible(true)
     , mSelectable(true)
-    , mUUID(uuid)
+    , mUUID()
     , mID(-1)
     , mType(NodeType::DummyNode)
 {
@@ -218,6 +218,77 @@ void Canavar::Engine::Node::removeChild(Node *node)
 const QList<Canavar::Engine::Node *> &Canavar::Engine::Node::children() const
 {
     return mChildren;
+}
+
+void Canavar::Engine::Node::toJson(QJsonObject &object)
+{
+    QJsonObject rotation;
+    rotation.insert("x", mRotation.x());
+    rotation.insert("y", mRotation.y());
+    rotation.insert("z", mRotation.z());
+    rotation.insert("w", mRotation.scalar());
+    object.insert("rotation", rotation);
+
+    QJsonObject position;
+    position.insert("x", mPosition.x());
+    position.insert("y", mPosition.y());
+    position.insert("z", mPosition.z());
+    object.insert("position", position);
+
+    QJsonObject scale;
+    scale.insert("x", mScale.x());
+    scale.insert("y", mScale.y());
+    scale.insert("z", mScale.z());
+    object.insert("scale", scale);
+
+    if (mParent)
+        object.insert("parent", mParent->getUUID());
+
+    object.insert("visible", mVisible);
+    object.insert("name", mName);
+    object.insert("uuid", mUUID);
+    object.insert("type", (int) mType);
+    object.insert("selectable", mSelectable);
+
+    mAABB.toJson(object);
+}
+
+void Canavar::Engine::Node::fromJson(const QJsonObject &object)
+{
+    // Rotation
+    {
+        float x = object["rotation"]["x"].toDouble();
+        float y = object["rotation"]["y"].toDouble();
+        float z = object["rotation"]["z"].toDouble();
+        float w = object["rotation"]["w"].toDouble();
+
+        setRotation(QQuaternion(w, x, y, z));
+    }
+
+    // Position
+    {
+        float x = object["position"]["x"].toDouble();
+        float y = object["position"]["y"].toDouble();
+        float z = object["position"]["z"].toDouble();
+
+        setPosition(QVector3D(x, y, z));
+    }
+
+    // Scale
+    {
+        float x = object["scale"]["x"].toDouble();
+        float y = object["scale"]["y"].toDouble();
+        float z = object["scale"]["z"].toDouble();
+
+        setScale(QVector3D(x, y, z));
+    }
+
+    mVisible = object["visible"].toBool();
+    mName = object["name"].toString();
+    mUUID = object["uuid"].toString();
+    mSelectable = object["selectable"].toBool();
+
+    mAABB.fromJson(object);
 }
 
 bool Canavar::Engine::Node::isChildOf(Node *node)

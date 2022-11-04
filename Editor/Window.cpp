@@ -39,30 +39,12 @@ void Window::initializeGL()
     mController = new Canavar::Engine::Controller;
     mController->setWindow(this);
 
-    if (mController->init())
+    if (mController->init("Resources/Config/Config.json"))
     {
-        NodeManager::instance()->createModel("f16c")->setWorldPosition(QVector3D(0, 100, 0));
-
-        NodeManager::instance()->createModel("Nanosuit")->setWorldPosition(QVector3D(0, 10, 0));
-        NodeManager::instance()->createModel("Cyborg")->setWorldPosition(QVector3D(0, 30, 0));
-        NodeManager::instance()->createModel("Planet")->setWorldPosition(QVector3D(0, 40, 0));
-        NodeManager::instance()->createModel("Suzanne")->setWorldPosition(QVector3D(0, 50, 0));
-        NodeManager::instance()->createModel("Backpack")->setWorldPosition(QVector3D(0, 60, 0));
-        NodeManager::instance()->createModel("Backpack")->setWorldPosition(QVector3D(0, 70, 0));
-        NodeManager::instance()->createModel("Backpack")->setWorldPosition(QVector3D(0, 80, 0));
-        NodeManager::instance()->createModel("Cube")->setWorldPosition(QVector3D(0, 90, 0));
-
-        mCamera = dynamic_cast<PerspectiveCamera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera));
+        mCamera = dynamic_cast<PerspectiveCamera *>(NodeManager::instance()->getNodeByName("Free Camera"));
         CameraManager::instance()->setActiveCamera(mCamera);
 
-        mCamera->setWorldPosition(QVector3D(0, 5, 0));
-
-        auto *pointLight = dynamic_cast<PointLight *>(NodeManager::instance()->createNode(Node::NodeType::PointLight));
-        pointLight->setColor(QVector4D(1, 1, 1, 0.5));
-
         mGui = new Gui;
-
-        Sun::instance()->setDirection(QVector3D(1, -1, 1));
     }
 }
 

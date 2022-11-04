@@ -4,6 +4,8 @@ Canavar::Engine::Manager::Manager(QObject *parent)
     : QObject(parent)
 {}
 
+void Canavar::Engine::Manager::postInit() {}
+
 void Canavar::Engine::Manager::mouseDoubleClicked(QMouseEvent *) {}
 
 void Canavar::Engine::Manager::mousePressed(QMouseEvent *) {}

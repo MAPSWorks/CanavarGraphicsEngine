@@ -24,13 +24,16 @@ class Terrain : public Node, protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 private:
-    Terrain(const QString &uuid = QString());
+    Terrain();
 
 public:
     static Terrain *instance();
 
     void render();
     void reset();
+
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
 private:
     ShaderManager *mShaderManager;

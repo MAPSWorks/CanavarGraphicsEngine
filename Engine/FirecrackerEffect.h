@@ -12,8 +12,9 @@ namespace Engine {
 
 class FirecrackerEffect : public Node, protected QOpenGLExtraFunctions
 {
-public:
-    FirecrackerEffect(const QString &uuid = QString());
+private:
+    friend class NodeManager;
+    FirecrackerEffect();
     ~FirecrackerEffect();
 
     struct Particle {
@@ -25,12 +26,13 @@ public:
     };
 
     void create();
+    Particle generateParticle();
 
 public:
-    void render(float ifps);
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
-private:
-    Particle generateParticle();
+    void render(float ifps);
 
 private:
     ShaderManager *mShaderManager;

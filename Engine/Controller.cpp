@@ -43,6 +43,10 @@ bool Canavar::Engine::Controller::init(const QString &configFile)
             break;
         }
 
+    if (mSuccess)
+        for (const auto &manager : qAsConst(mManagers))
+            manager->postInit();
+
     return mSuccess;
 }
 

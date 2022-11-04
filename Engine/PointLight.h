@@ -12,7 +12,11 @@ class PointLight : public Light
 {
 protected:
     friend class NodeManager;
-    PointLight(const QString &uuid = QString());
+    PointLight();
+
+public:
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
     DEFINE_MEMBER(float, Constant)
     DEFINE_MEMBER(float, Linear)

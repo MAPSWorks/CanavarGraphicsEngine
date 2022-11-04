@@ -1,7 +1,7 @@
 #include "DummyNode.h"
 
-Canavar::Engine::DummyNode::DummyNode(const QString &uuid)
-    : Node(uuid)
+Canavar::Engine::DummyNode::DummyNode()
+    : Node()
 {
     mType = Node::NodeType::DummyNode;
 }

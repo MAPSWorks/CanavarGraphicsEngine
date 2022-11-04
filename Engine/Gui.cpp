@@ -6,6 +6,9 @@
 #include "RendererManager.h"
 #include "SelectableNodeRenderer.h"
 
+#include <QFileDialog>
+#include <QJsonDocument>
+
 Canavar::Engine::Gui::Gui(QObject *parent)
     : QObject(parent)
     , mSelectedNode(nullptr)
@@ -33,6 +36,24 @@ Canavar::Engine::Gui::Gui(QObject *parent)
         if (mDrawAllBBs)
             RendererManager::instance()->addSelectableNode(node, QVector4D(1, 1, 1, 1));
     });
+
+    connect(
+        this,
+        &Gui::showFileDialog,
+        this,
+        [=]() { //
+            QString path = QFileDialog::getSaveFileName(nullptr, "Save as JSON", "", "*.json");
+            if (!path.isEmpty())
+            {
+                QJsonDocument document;
+                QJsonObject object;
+                mNodeManager->toJson(object);
+                document.setObject(object);
+                QByteArray content = document.toJson(QJsonDocument::Indented);
+                Helper::writeToFile(path, content);
+            }
+        },
+        Qt::QueuedConnection);
 }
 
 void Canavar::Engine::Gui::draw()
@@ -115,7 +136,20 @@ void Canavar::Engine::Gui::draw()
     // Nodes
     {
         ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-        ImGui::Begin("Nodes");
+        ImGui::Begin("Nodes", NULL, ImGuiWindowFlags_MenuBar);
+
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("Export World to JSON File"))
+                    emit showFileDialog();
+
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMenuBar();
+        }
 
         const auto &nodes = NodeManager::instance()->nodes();
 
@@ -183,7 +217,7 @@ void Canavar::Engine::Gui::draw()
         if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->getName().toStdString().c_str() : "-"))
         {
             for (int i = 0; i < nodes.size(); ++i)
-                if (ImGui::Selectable(nodes[i]->getName().toStdString().c_str()))
+                if (ImGui::Selectable((nodes[i]->getName() + "##" + nodes[i]->getUUID()).toStdString().c_str()))
                 {
                     mMeshSelectionEnabled = false;
                     mVertexSelectionEnabled = false;

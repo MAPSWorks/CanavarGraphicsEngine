@@ -10,7 +10,7 @@ class Model : public Node
 {
 protected:
     friend class Canavar::Engine::NodeManager;
-    Model(const QString &modelName, const QString &uuid = QString());
+    Model(const QString &modelName);
 
 public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);
@@ -23,6 +23,9 @@ public:
     void setMeshOverlayColorFactor(const QString &meshName, float factor);
 
     const QString &getModelName() const { return mModelName; }
+
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
 protected:
     QMap<QString, QMatrix4x4> mMeshTransformations;

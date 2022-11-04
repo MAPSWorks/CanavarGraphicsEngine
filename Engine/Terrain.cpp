@@ -6,8 +6,8 @@
 
 #include <QMatrix4x4>
 
-Canavar::Engine::Terrain::Terrain(const QString &uuid)
-    : Node(uuid)
+Canavar::Engine::Terrain::Terrain()
+    : Node()
 {
     mType = Node::NodeType::Terrain;
     mName = "Terrain";
@@ -81,6 +81,53 @@ void Canavar::Engine::Terrain::reset()
     mDiffuse = 0.6f;
     mShininess = 8.0f;
     mSpecular = 0.05f;
+}
+
+void Canavar::Engine::Terrain::toJson(QJsonObject &object)
+{
+    Node::toJson(object);
+
+    object.insert("amplitude", mAmplitude);
+    object.insert("frequency", mFrequency);
+    object.insert("octaves", mOctaves);
+    object.insert("power", mPower);
+    object.insert("tessellation_multiplier", mTessellationMultiplier);
+    object.insert("grass_coverage", mGrassCoverage);
+    object.insert("ambient", mAmbient);
+    object.insert("diffuse", mDiffuse);
+    object.insert("specular", mSpecular);
+    object.insert("shininess", mShininess);
+
+    QJsonObject seed;
+    seed.insert("x", mSeed.x());
+    seed.insert("y", mSeed.y());
+    seed.insert("z", mSeed.z());
+
+    object.insert("seed", seed);
+}
+
+void Canavar::Engine::Terrain::fromJson(const QJsonObject &object)
+{
+    Node::fromJson(object);
+
+    mAmplitude = object["amplitude"].toDouble();
+    mFrequency = object["frequency"].toDouble();
+    mOctaves = object["octaves"].toInt();
+    mPower = object["power"].toDouble();
+    mTessellationMultiplier = object["tessellation_multiplier"].toDouble();
+    mGrassCoverage = object["grass_coverage"].toDouble();
+    mAmbient = object["ambient"].toDouble();
+    mDiffuse = object["diffuse"].toDouble();
+    mSpecular = object["specular"].toDouble();
+    mShininess = object["shininess"].toDouble();
+
+    // Seed
+
+    float x = object["seed"]["x"].toDouble();
+    float y = object["seed"]["y"].toDouble();
+    float z = object["seed"]["z"].toDouble();
+
+    mSeed = QVector3D(x, y, z);
 }
 
 Canavar::Engine::Terrain *Canavar::Engine::Terrain::instance()

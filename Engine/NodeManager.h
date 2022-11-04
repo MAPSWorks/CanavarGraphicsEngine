@@ -23,17 +23,21 @@ public:
     static NodeManager *instance();
 
     bool init() override;
+    void postInit() override;
 
-    Node *createNode(Node::NodeType type, const QString &name = QString(), const QString &uuid = QString());
-    Model *createModel(const QString &modelName, const QString &name = QString(), const QString &uuid = QString());
+    Node *createNode(Node::NodeType type, const QString &name = QString());
+    Model *createModel(const QString &modelName, const QString &name = QString());
 
     void removeNode(Node *node);
 
     Node *getNodeByID(int ID);
+    Node *getNodeByUUID(const QString &uuid);
     Node *getNodeByName(const QString &name);
     Node *getNodeByScreenPosition(int x, int y);
 
     const QList<Node *> &nodes() const;
+
+    void toJson(QJsonObject &object);
 
 signals:
     void nodeCreated(Canavar::Engine::Node *node);
@@ -50,9 +54,6 @@ private:
     ModelDataManager *mModelDataManager;
 
     QMap<Node::NodeType, QString> mTypeToName;
-    QMap<Node::NodeType, unsigned int> mTypeToCount;
-
-    QMap<QString, int> mNames;
 };
 
 } // namespace Engine

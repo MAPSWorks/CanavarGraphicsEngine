@@ -27,6 +27,7 @@ void Canavar::Engine::Config::load(const QString &configFile)
         mSupportedModelFormats << "*.obj"
                                << "*.blend"
                                << "*.fbx";
+
         return;
     }
 
@@ -34,6 +35,8 @@ void Canavar::Engine::Config::load(const QString &configFile)
 
     mModelsRootFolder = object.value("models_root_folder").toString(mModelsRootFolder);
     mNodeSelectionEnabled = object.value("node_selection_enabled").toBool();
+    mWorldFilePath = object.value("world_file_path").toString();
+
     auto formats = object.value("model_formats").toArray();
 
     for (const auto &format : formats)

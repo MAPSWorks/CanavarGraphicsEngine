@@ -13,7 +13,7 @@ class PersecutorCamera : public PerspectiveCamera
 {
 protected:
     friend class NodeManager;
-    PersecutorCamera(const QString &uuid = QString());
+    PersecutorCamera();
 
 public:
     void mouseDoubleClicked(QMouseEvent *) override;

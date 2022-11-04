@@ -1,5 +1,6 @@
 #include "RendererManager.h"
 #include "CameraManager.h"
+#include "Config.h"
 #include "FirecrackerEffect.h"
 #include "Haze.h"
 #include "Helper.h"
@@ -34,6 +35,7 @@ Canavar::Engine::RendererManager *Canavar::Engine::RendererManager::instance()
 
 bool Canavar::Engine::RendererManager::init()
 {
+    mConfig = Config::instance();
     mNodeManager = NodeManager::instance();
     mCameraManager = CameraManager::instance();
     mLightManager = LightManager::instance();
@@ -157,6 +159,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
     }
 
     // Selectables
+    if (mConfig->getNodeSelectionEnabled())
     {
         const auto &VP = mCamera->getViewProjectionMatrix();
         const auto &nodes = mSelectableNodes.keys();

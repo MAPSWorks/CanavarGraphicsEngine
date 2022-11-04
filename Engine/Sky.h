@@ -13,10 +13,13 @@ namespace Engine {
 class Sky : public Node, protected QOpenGLExtraFunctions
 {
 private:
-    Sky(const QString &uuid = QString());
+    Sky();
 
 public:
     static Sky *instance();
+
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
     void render();
 

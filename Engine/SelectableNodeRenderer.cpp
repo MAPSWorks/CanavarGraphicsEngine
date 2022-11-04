@@ -46,36 +46,49 @@ void Canavar::Engine::SelectableNodeRenderer::resize(int width, int height)
     mWidth = width;
     mHeight = height;
 
-    if (mResizeLater)
+    if (mConfig->getNodeSelectionEnabled())
     {
-        QTimer::singleShot(200, [=]() {
-            mNodeInfoFBO.destroy();
-            mNodeInfoFBO.create(mWidth, mHeight);
-            mResizeLater = true;
-        });
+        if (mResizeLater)
+        {
+            QTimer::singleShot(200, [=]() {
+                mNodeInfoFBO.destroy();
+                mNodeInfoFBO.create(mWidth, mHeight);
+                mResizeLater = true;
+            });
 
-        mResizeLater = false;
+            mResizeLater = false;
+        }
     }
 }
 
 Canavar::Engine::SelectableNodeRenderer::NodeInfo Canavar::Engine::SelectableNodeRenderer::getNodeInfoByScreenPosition(int x, int y)
 {
-    mNodeInfoFBO.bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
     NodeInfo info;
-    glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_INT, &info);
-    mNodeInfoFBO.release();
+
+    if (mConfig->getNodeSelectionEnabled())
+    {
+        mNodeInfoFBO.bind();
+        glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+        glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_INT, &info);
+        mNodeInfoFBO.release();
+    }
 
     return info;
 }
 
 Canavar::Engine::SelectableNodeRenderer::NodeInfo Canavar::Engine::SelectableNodeRenderer::getVertexInfoByScreenPosition(int x, int y)
 {
-    mNodeInfoFBO.bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT1);
     NodeInfo info;
-    glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_INT, &info);
-    mNodeInfoFBO.release();
+
+    if (mConfig->getNodeSelectionEnabled())
+    {
+        mNodeInfoFBO.bind();
+        glReadBuffer(GL_COLOR_ATTACHMENT1);
+
+        glReadPixels(x, mHeight - y, 1, 1, GL_RGBA_INTEGER, GL_INT, &info);
+        mNodeInfoFBO.release();
+    }
 
     return info;
 }

@@ -9,7 +9,7 @@ namespace Engine {
 class Sun : public Light
 {
 private:
-    Sun(const QString &uuid = QString());
+    Sun();
 
 public:
     static Sun *instance();
@@ -21,6 +21,9 @@ public:
 
     bool getEnabled() const;
     void setEnabled(bool newEnabled);
+
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
 protected:
     QVector3D mDirection;

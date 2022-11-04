@@ -11,10 +11,13 @@ class Haze : public Node
 {
     Q_OBJECT
 private:
-    Haze(const QString &uuid = QString());
+    Haze();
 
 public:
     static Haze *instance();
+
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
     DEFINE_MEMBER(QVector3D, Color)
     DEFINE_MEMBER(bool, Enabled)

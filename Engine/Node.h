@@ -4,6 +4,8 @@
 #include "AABB.h"
 #include "Common.h"
 
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QMatrix4x4>
 #include <QObject>
 #include <QQuaternion>
@@ -18,7 +20,7 @@ class Node : public QObject
 protected:
     friend class NodeManager;
 
-    Node(const QString &uuid = QString());
+    Node();
     virtual ~Node();
 
 public:
@@ -70,6 +72,9 @@ public:
     Node *findChildByNameRecursive(const QString &name);
 
     const QList<Node *> &children() const;
+
+    virtual void toJson(QJsonObject &object);
+    virtual void fromJson(const QJsonObject &object);
 
 private:
     virtual void updateTransformation();

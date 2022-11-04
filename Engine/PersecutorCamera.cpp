@@ -1,7 +1,7 @@
 #include "PersecutorCamera.h"
 
-Canavar::Engine::PersecutorCamera::PersecutorCamera(const QString &uuid)
-    : PerspectiveCamera(uuid)
+Canavar::Engine::PersecutorCamera::PersecutorCamera()
+    : PerspectiveCamera()
     , mTarget(nullptr)
     , mDistance(10.0f)
     , mYaw(0.0f)

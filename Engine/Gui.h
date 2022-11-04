@@ -20,6 +20,8 @@ namespace Engine {
 
 class Gui : public QObject
 {
+    Q_OBJECT
+
 public:
     explicit Gui(QObject *parent = nullptr);
 
@@ -48,6 +50,9 @@ public:
 
     int getSelectedVertexIndex() const;
     void setSelectedVertexIndex(int newSelectedVertexIndex);
+
+signals:
+    void showFileDialog();
 
 private:
     Canavar::Engine::NodeManager *mNodeManager;

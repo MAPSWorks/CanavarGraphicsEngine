@@ -2,8 +2,8 @@
 
 #include "Helper.h"
 
-Canavar::Engine::NozzleEffect::NozzleEffect(const QString &uuid)
-    : Node(uuid)
+Canavar::Engine::NozzleEffect::NozzleEffect()
+    : Node()
     , mNumberOfParticles(5000)
     , mMaxRadius(0.8f)
     , mMaxLife(0.0f)
@@ -57,6 +57,32 @@ void Canavar::Engine::NozzleEffect::create()
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
+}
+
+void Canavar::Engine::NozzleEffect::toJson(QJsonObject &object)
+{
+    Node::toJson(object);
+
+    object.insert("number_of_particles", mNumberOfParticles);
+    object.insert("max_radius", mMaxRadius);
+    object.insert("max_life", mMaxLife);
+    object.insert("max_distance", mMaxDistance);
+    object.insert("min_distance", mMinDistance);
+    object.insert("speed", mSpeed);
+    object.insert("scale_nozzle", NozzleEffect::mScale);
+}
+
+void Canavar::Engine::NozzleEffect::fromJson(const QJsonObject &object)
+{
+    Node::fromJson(object);
+
+    mNumberOfParticles = object["number_of_particles"].toInt();
+    mMaxRadius = object["max_radius"].toDouble();
+    mMaxLife = object["max_life"].toDouble();
+    mMaxDistance = object["max_distance"].toDouble();
+    mMinDistance = object["min_distance"].toDouble();
+    mSpeed = object["speed"].toDouble();
+    NozzleEffect::mScale = object["scale_nozzle"].toDouble();
 }
 
 void Canavar::Engine::NozzleEffect::render(float ifps)

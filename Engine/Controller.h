@@ -27,7 +27,7 @@ class Controller : public QObject, protected QOpenGLExtraFunctions
 public:
     explicit Controller(QObject *parent = nullptr);
 
-    bool init(const QString &configFile = "Config.json");
+    bool init(const QString &configFile = "Resources/Config/Config.json");
     void mouseDoubleClicked(QMouseEvent *event);
     void mousePressed(QMouseEvent *event);
     void mouseReleased(QMouseEvent *event);

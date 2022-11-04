@@ -6,8 +6,8 @@
 // Sky model belongs to Hosek-Wilkie - An Analytic Model for Full Spectral Sky-Dome Radiance
 // Code is taken from https://github.com/diharaw/sky-models
 
-Canavar::Engine::Sky::Sky(const QString &uuid)
-    : Node(uuid)
+Canavar::Engine::Sky::Sky()
+    : Node()
     , mEnabled(true)
     , mAlbedo(0.1f)
     , mTurbidity(4.0f)
@@ -39,6 +39,26 @@ Canavar::Engine::Sky *Canavar::Engine::Sky::instance()
 {
     static Sky instance;
     return &instance;
+}
+
+void Canavar::Engine::Sky::toJson(QJsonObject &object)
+{
+    Node::toJson(object);
+
+    object.insert("enabled", mEnabled);
+    object.insert("albedo", mAlbedo);
+    object.insert("turbidity", mTurbidity);
+    object.insert("normalized_sun_y", mNormalizedSunY);
+}
+
+void Canavar::Engine::Sky::fromJson(const QJsonObject &object)
+{
+    Node::fromJson(object);
+
+    mEnabled = object["enabled"].toBool();
+    mAlbedo = object["albedo"].toDouble();
+    mTurbidity = object["turbidity"].toDouble();
+    mNormalizedSunY = object["normalized_sun_y"].toDouble();
 }
 
 void Canavar::Engine::Sky::render()

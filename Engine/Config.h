@@ -19,8 +19,8 @@ public:
 
     void load(const QString &configFile);
 
-private:
     DEFINE_MEMBER_CONST(QString, ModelsRootFolder)
+    DEFINE_MEMBER_CONST(QString, WorldFilePath)
     DEFINE_MEMBER_CONST(QStringList, SupportedModelFormats)
     DEFINE_MEMBER_CONST(bool, NodeSelectionEnabled)
 };

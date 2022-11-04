@@ -9,7 +9,11 @@ namespace Engine {
 class Light : public Node
 {
 protected:
-    Light(const QString &uuid = QString());
+    Light();
+
+public:
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
     DEFINE_MEMBER(QVector4D, Color)
     DEFINE_MEMBER(float, Ambient)

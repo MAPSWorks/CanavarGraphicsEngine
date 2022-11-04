@@ -1,7 +1,7 @@
 #include "FreeCamera.h"
 
-Canavar::Engine::FreeCamera::FreeCamera(const QString &uuid)
-    : PerspectiveCamera(uuid)
+Canavar::Engine::FreeCamera::FreeCamera()
+    : PerspectiveCamera()
     , mUpdateRotation(true)
     , mUpdatePosition(true)
 {

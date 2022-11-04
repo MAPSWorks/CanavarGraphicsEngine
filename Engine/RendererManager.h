@@ -22,6 +22,7 @@ class Sky;
 class Terrain;
 class PointLight;
 class Sun;
+class Config;
 
 class RendererManager : public Manager, protected QOpenGLExtraFunctions
 {
@@ -76,6 +77,7 @@ private:
     Sky *mSky;
     Haze *mHaze;
     Terrain *mTerrain;
+    Config *mConfig;
 
     QVector<PointLight *> mClosePointLights;
 
