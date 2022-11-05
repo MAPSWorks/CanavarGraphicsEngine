@@ -11,6 +11,11 @@ class Sun : public Light
 private:
     Sun();
 
+protected:
+    friend class NodeManager;
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
+
 public:
     static Sun *instance();
 
@@ -21,9 +26,6 @@ public:
 
     bool getEnabled() const;
     void setEnabled(bool newEnabled);
-
-    virtual void toJson(QJsonObject &object) override;
-    virtual void fromJson(const QJsonObject &object) override;
 
 protected:
     QVector3D mDirection;

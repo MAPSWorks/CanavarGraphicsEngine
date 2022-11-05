@@ -15,11 +15,13 @@ class Sky : public Node, protected QOpenGLExtraFunctions
 private:
     Sky();
 
-public:
-    static Sky *instance();
-
+protected:
+    friend class NodeManager;
     virtual void toJson(QJsonObject &object) override;
     virtual void fromJson(const QJsonObject &object) override;
+
+public:
+    static Sky *instance();
 
     void render();
 

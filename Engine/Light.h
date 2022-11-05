@@ -10,8 +10,6 @@ class Light : public Node
 {
 protected:
     Light();
-
-public:
     virtual void toJson(QJsonObject &object) override;
     virtual void fromJson(const QJsonObject &object) override;
 

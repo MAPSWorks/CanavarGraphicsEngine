@@ -16,11 +16,12 @@ protected:
     NozzleEffect();
     ~NozzleEffect();
 
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
+
     void create();
 
 public:
-    virtual void toJson(QJsonObject &object) override;
-    virtual void fromJson(const QJsonObject &object) override;
     void render(float ifps);
 
 private:

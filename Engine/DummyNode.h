@@ -11,7 +11,6 @@ class DummyNode : public Node
 protected:
     friend class NodeManager;
     DummyNode();
-    virtual ~DummyNode();
 };
 
 } // namespace Engine

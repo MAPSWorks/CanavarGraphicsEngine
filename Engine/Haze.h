@@ -13,11 +13,13 @@ class Haze : public Node
 private:
     Haze();
 
-public:
-    static Haze *instance();
-
+protected:
+    friend class NodeManager;
     virtual void toJson(QJsonObject &object) override;
     virtual void fromJson(const QJsonObject &object) override;
+
+public:
+    static Haze *instance();
 
     DEFINE_MEMBER(QVector3D, Color)
     DEFINE_MEMBER(bool, Enabled)

@@ -17,6 +17,11 @@ private:
     FirecrackerEffect();
     ~FirecrackerEffect();
 
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
+
+    void create();
+
     struct Particle {
         QVector3D position;
         QVector3D velocity;
@@ -25,13 +30,9 @@ private:
         bool dead;
     };
 
-    void create();
     Particle generateParticle();
 
 public:
-    virtual void toJson(QJsonObject &object) override;
-    virtual void fromJson(const QJsonObject &object) override;
-
     void render(float ifps);
 
 private:

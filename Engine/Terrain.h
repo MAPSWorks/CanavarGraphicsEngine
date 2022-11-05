@@ -26,14 +26,16 @@ class Terrain : public Node, protected QOpenGLExtraFunctions
 private:
     Terrain();
 
+protected:
+    friend class NodeManager;
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
+
 public:
     static Terrain *instance();
 
     void render();
     void reset();
-
-    virtual void toJson(QJsonObject &object) override;
-    virtual void fromJson(const QJsonObject &object) override;
 
 private:
     ShaderManager *mShaderManager;

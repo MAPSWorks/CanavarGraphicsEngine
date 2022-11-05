@@ -11,6 +11,8 @@ class PerspectiveCamera : public Camera
     Q_OBJECT
 protected:
     PerspectiveCamera();
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
 public:
     virtual QMatrix4x4 getProjectionMatrix() override;
@@ -22,9 +24,6 @@ public:
     const float &getHorizontalFov() const;
     float &getHorizontalFov_nonConst();
     void setHorizontalFov(float newHorizontalFov);
-
-    virtual void toJson(QJsonObject &object) override;
-    virtual void fromJson(const QJsonObject &object) override;
 
 protected:
     float mVerticalFov;

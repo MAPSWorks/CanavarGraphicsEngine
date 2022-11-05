@@ -13,8 +13,6 @@ class PointLight : public Light
 protected:
     friend class NodeManager;
     PointLight();
-
-public:
     virtual void toJson(QJsonObject &object) override;
     virtual void fromJson(const QJsonObject &object) override;
 

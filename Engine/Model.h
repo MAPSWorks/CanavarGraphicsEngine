@@ -9,8 +9,11 @@ namespace Engine {
 class Model : public Node
 {
 protected:
-    friend class Canavar::Engine::NodeManager;
+    friend class NodeManager;
     Model(const QString &modelName);
+
+    virtual void toJson(QJsonObject &object) override;
+    virtual void fromJson(const QJsonObject &object) override;
 
 public:
     QMatrix4x4 getMeshTransformation(const QString &meshName);
@@ -23,9 +26,6 @@ public:
     void setMeshOverlayColorFactor(const QString &meshName, float factor);
 
     const QString &getModelName() const { return mModelName; }
-
-    virtual void toJson(QJsonObject &object) override;
-    virtual void fromJson(const QJsonObject &object) override;
 
 protected:
     QMap<QString, QMatrix4x4> mMeshTransformations;

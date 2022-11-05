@@ -5,5 +5,3 @@ Canavar::Engine::DummyNode::DummyNode()
 {
     mType = Node::NodeType::DummyNode;
 }
-
-Canavar::Engine::DummyNode::~DummyNode() {}

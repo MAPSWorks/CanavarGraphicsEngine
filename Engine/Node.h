@@ -23,6 +23,9 @@ protected:
     Node();
     virtual ~Node();
 
+    virtual void toJson(QJsonObject &object);
+    virtual void fromJson(const QJsonObject &object);
+
 public:
     enum class NodeType { //
         DummyNode,
@@ -72,9 +75,6 @@ public:
     Node *findChildByNameRecursive(const QString &name);
 
     const QList<Node *> &children() const;
-
-    virtual void toJson(QJsonObject &object);
-    virtual void fromJson(const QJsonObject &object);
 
 private:
     virtual void updateTransformation();
