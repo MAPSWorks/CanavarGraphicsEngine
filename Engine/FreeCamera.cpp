@@ -74,11 +74,11 @@ void Canavar::Engine::FreeCamera::update(float ifps)
         const QList<Qt::Key> keys = mPressedKeys.keys();
 
         if (mPressedKeys[Qt::Key_Control])
-            mSpeed.mLinear = 2000.0f;
+            mSpeed.mLinear = 1000.0f;
         else if (mPressedKeys[Qt::Key_Shift])
-            mSpeed.mLinear = 20.0f;
+            mSpeed.mLinear = 100.0f;
         else
-            mSpeed.mLinear = 5.0f;
+            mSpeed.mLinear = 10.0f;
 
         for (auto key : keys)
             if (mPressedKeys.value(key, false))
