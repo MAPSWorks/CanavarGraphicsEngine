@@ -6,6 +6,8 @@
 namespace Canavar {
 namespace Engine {
 
+class ModelData;
+
 class Model : public Node
 {
 protected:
@@ -32,6 +34,7 @@ protected:
     QMap<QString, QVector4D> mMeshOverlayColors;
     QMap<QString, float> mMeshOverlayColorFactors;
     QString mModelName;
+    ModelData *mData;
 
     DEFINE_MEMBER(QVector4D, Color)
     DEFINE_MEMBER(QVector4D, OverlayColor)

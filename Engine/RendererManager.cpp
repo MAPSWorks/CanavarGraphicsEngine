@@ -169,14 +169,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
         for (const auto &node : nodes)
         {
-            if (auto model = dynamic_cast<Model *>(node))
-            {
-                if (auto data = mModelDataManager->getModelData(model->getModelName()))
-                    mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * data->getAABB().getTransformation());
-                else
-                    mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
-            } else if (node)
-                mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
+            mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
 
             mShaderManager->setUniformValue("color", mSelectableNodes.value(node, QVector4D(1, 1, 1, 1)));
             glBindVertexArray(mCubeStrip.mVAO);

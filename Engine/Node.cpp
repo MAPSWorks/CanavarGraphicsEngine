@@ -249,8 +249,6 @@ void Canavar::Engine::Node::toJson(QJsonObject &object)
     object.insert("uuid", mUUID);
     object.insert("type", (int) mType);
     object.insert("selectable", mSelectable);
-
-    mAABB.toJson(object);
 }
 
 void Canavar::Engine::Node::fromJson(const QJsonObject &object)
@@ -287,8 +285,6 @@ void Canavar::Engine::Node::fromJson(const QJsonObject &object)
     mName = object["name"].toString();
     mUUID = object["uuid"].toString();
     mSelectable = object["selectable"].toBool();
-
-    mAABB.fromJson(object["aabb"].toObject());
 }
 
 bool Canavar::Engine::Node::isChildOf(Node *node)

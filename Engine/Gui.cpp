@@ -259,7 +259,6 @@ void Canavar::Engine::Gui::draw()
                 if (ImGui::Button("Remove this node"))
                 {
                     NodeManager::instance()->removeNode(mSelectedNode);
-                    mNodeSelectionEnabled = false;
                     mMeshSelectionEnabled = false;
                     mVertexSelectionEnabled = false;
                 }
@@ -655,7 +654,9 @@ void Canavar::Engine::Gui::setSelectedNode(Canavar::Engine::Node *newSelectedNod
 
     if (mSelectedNode)
     {
-        RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
+        if (mNodeSelectionEnabled)
+            RendererManager::instance()->addSelectableNode(mSelectedNode, QVector4D(1, 0, 0, 1));
+
         connect(mSelectedNode, &QObject::destroyed, this, [=]() { setSelectedNode(nullptr); });
     }
 }

@@ -1,8 +1,11 @@
 #include "Model.h"
+#include "ModelData.h"
+#include "ModelDataManager.h"
 
 Canavar::Engine::Model::Model(const QString &modelName)
     : Node()
     , mModelName(modelName)
+    , mData(nullptr)
     , mColor(1, 1, 1, 1)
     , mOverlayColor(1, 1, 1, 1)
     , mOverlayColorFactor(0.0f)
@@ -13,6 +16,10 @@ Canavar::Engine::Model::Model(const QString &modelName)
 {
     mName = modelName;
     mType = Node::NodeType::Model;
+    mData = ModelDataManager::instance()->getModelData(mModelName);
+
+    if (mData)
+        setAABB(mData->getAABB());
 }
 
 QMatrix4x4 Canavar::Engine::Model::getMeshTransformation(const QString &meshName)
