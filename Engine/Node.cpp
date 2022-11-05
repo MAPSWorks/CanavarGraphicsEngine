@@ -288,7 +288,7 @@ void Canavar::Engine::Node::fromJson(const QJsonObject &object)
     mUUID = object["uuid"].toString();
     mSelectable = object["selectable"].toBool();
 
-    mAABB.fromJson(object);
+    mAABB.fromJson(object["aabb"].toObject());
 }
 
 bool Canavar::Engine::Node::isChildOf(Node *node)

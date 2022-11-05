@@ -67,7 +67,7 @@ void Canavar::Engine::NodeManager::postInit()
 
     if (doc.isNull() || doc.isNull())
     {
-        qCritical() << "World json at" << Config::instance()->getWorldFilePath() << "is not valid";
+        qCritical() << "World json at" << Config::instance()->getWorldFilePath() << "is not valid.";
         return;
     }
 
@@ -92,15 +92,13 @@ void Canavar::Engine::NodeManager::postInit()
         case Node::NodeType::PointLight:
         case Node::NodeType::NozzleEffect:
         case Node::NodeType::FirecrackerEffect:
-        case Node::NodeType::PersecutorCamera: {
+        case Node::NodeType::PersecutorCamera:
             createNode(type, object["name"].toString())->fromJson(object);
             break;
-        }
 
-        case Node::NodeType::Model: {
+        case Node::NodeType::Model:
             createModel(object["model_name"].toString(), object["name"].toString())->fromJson(object);
             break;
-        }
         case Node::NodeType::Sun:
             Sun::instance()->fromJson(object);
             break;
