@@ -30,6 +30,8 @@ QMatrix4x4 Canavar::Engine::Model::getMeshTransformation(const QString &meshName
 void Canavar::Engine::Model::setMeshTransformation(const QString &meshName, const QMatrix4x4 &transformation)
 {
     mMeshTransformations.insert(meshName, transformation);
+
+    updateAABB();
 }
 
 QVector4D Canavar::Engine::Model::getMeshOverlayColor(const QString &meshName)
@@ -50,6 +52,42 @@ float Canavar::Engine::Model::getMeshOverlayColorFactor(const QString &meshName)
 void Canavar::Engine::Model::setMeshOverlayColorFactor(const QString &meshName, float factor)
 {
     mMeshOverlayColorFactors.insert(meshName, factor);
+}
+
+void Canavar::Engine::Model::updateAABB()
+{
+    if (mData)
+    {
+        float inf = std::numeric_limits<float>::infinity();
+        QVector3D min(inf, inf, inf);
+        QVector3D max(-inf, -inf, -inf);
+
+        for (const auto &mesh : mData->meshes())
+        {
+            auto aabb = mesh->getAABB().transform(mMeshTransformations.value(mesh->getName()));
+
+            if (min[0] > aabb.getMin().x())
+                min[0] = aabb.getMin().x();
+
+            if (min[1] > aabb.getMin().y())
+                min[1] = aabb.getMin().y();
+
+            if (min[2] > aabb.getMin().z())
+                min[2] = aabb.getMin().z();
+
+            if (max[0] < aabb.getMax().x())
+                max[0] = aabb.getMax().x();
+
+            if (max[1] < aabb.getMax().y())
+                max[1] = aabb.getMax().y();
+
+            if (max[2] < aabb.getMax().z())
+                max[2] = aabb.getMax().z();
+        }
+
+        mAABB.setMin(min);
+        mAABB.setMax(max);
+    }
 }
 
 void Canavar::Engine::Model::toJson(QJsonObject &object)

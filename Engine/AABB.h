@@ -19,6 +19,7 @@ public:
     QVector3D getCenter() const { return (mMin + mMax) / 2.0f; }
 
     QMatrix4x4 getTransformation() const;
+    AABB transform(const QMatrix4x4 &transformation) const;
 
     void toJson(QJsonObject &object);
     void fromJson(const QJsonObject &object);

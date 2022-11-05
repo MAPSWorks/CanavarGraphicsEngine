@@ -29,6 +29,9 @@ public:
 
     const QString &getModelName() const { return mModelName; }
 
+private:
+    void updateAABB();
+
 protected:
     QMap<QString, QMatrix4x4> mMeshTransformations;
     QMap<QString, QVector4D> mMeshOverlayColors;
