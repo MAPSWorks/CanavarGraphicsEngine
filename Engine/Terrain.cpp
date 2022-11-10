@@ -8,6 +8,7 @@
 
 Canavar::Engine::Terrain::Terrain()
     : Node()
+    , mEnabled(true)
 {
     mType = Node::NodeType::Terrain;
     mName = "Terrain";
@@ -34,6 +35,9 @@ Canavar::Engine::Terrain::Terrain()
 
 void Canavar::Engine::Terrain::render()
 {
+    if (!mEnabled)
+        return;
+
     QVector2D currentTilePosition = mTileGenerator->whichTile(mCameraManager->activeCamera()->worldPosition());
 
     if (currentTilePosition != mPreviousTilePosition)

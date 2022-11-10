@@ -47,6 +47,9 @@ public:
     void setSelectedMesh(Canavar::Engine::Mesh *newSelectedMesh);
 
     void mousePressed(QMouseEvent *event);
+    void mouseMoved(QMouseEvent *event);
+    void mouseReleased(QMouseEvent *event);
+    void resize(int w, int h);
 
     int getSelectedVertexIndex() const;
     void setSelectedVertexIndex(int newSelectedVertexIndex);
@@ -70,6 +73,17 @@ private:
     QStringList mCreatableNodeNames;
     QString mSelectedNodeName;
     QString mSelectedModelName;
+
+    // Move
+    Canavar::Engine::Mouse mMouse;
+    int mWidth;
+    int mHeight;
+
+    bool mMoveEnabled;
+    bool mLockNode;
+    bool mLockAxisX;
+    bool mLockAxisY;
+    bool mLockAxisZ;
 };
 
 } // namespace Engine

@@ -19,6 +19,13 @@ Canavar::Engine::Gui::Gui(QObject *parent)
     , mNodeSelectionEnabled(false)
     , mMeshSelectionEnabled(false)
     , mVertexSelectionEnabled(false)
+    , mWidth(1600)
+    , mHeight(900)
+    , mMoveEnabled(false)
+    , mLockNode(false)
+    , mLockAxisX(false)
+    , mLockAxisY(false)
+    , mLockAxisZ(false)
 
 {
     mCreatableNodeNames << "Dummy Node"
@@ -153,6 +160,8 @@ void Canavar::Engine::Gui::draw()
 
         const auto &nodes = NodeManager::instance()->nodes();
 
+        ImGui::Text("Selection");
+
         // Draw All Bounding Boxes
         if (ImGui::Checkbox("Draw All Bounding Boxes", &mDrawAllBBs))
         {
@@ -188,9 +197,16 @@ void Canavar::Engine::Gui::draw()
 
                     mMeshSelectionEnabled = false;
                     mVertexSelectionEnabled = false;
+                    mLockNode = false;
                     setSelectedMesh(nullptr);
                 }
             }
+
+            // Lock Node
+            ImGui::BeginDisabled(!mSelectedNode);
+            ImGui::SameLine();
+            ImGui::Checkbox("Lock Node", &mLockNode);
+            ImGui::EndDisabled();
 
             // Mesh Selection
             ImGui::BeginDisabled(!mSelectedModel || !mNodeSelectionEnabled);
@@ -213,7 +229,18 @@ void Canavar::Engine::Gui::draw()
             ImGui::EndDisabled();
         }
 
+        // Move
+        ImGui::Text("Move");
+        ImGui::Checkbox("Move enabled", &mMoveEnabled);
+        ImGui::BeginDisabled(!mMoveEnabled);
+        ImGui::Checkbox("Move only on x-Axis", &mLockAxisX);
+        ImGui::Checkbox("Move only on y-Axis", &mLockAxisY);
+        ImGui::Checkbox("Move only on z-Axis", &mLockAxisZ);
+        ImGui::EndDisabled();
+
         // Select a node
+        ImGui::Text("Nodes");
+
         if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->getName().toStdString().c_str() : "-"))
         {
             for (int i = 0; i < nodes.size(); ++i)
@@ -329,11 +356,11 @@ void Canavar::Engine::Gui::draw(Node *node)
         float y = node->position().y();
         float z = node->position().z();
 
-        if (ImGui::DragFloat("x##NodePosition", &x, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+        if (ImGui::DragFloat("x##NodePosition", &x, 1.0f, -10e10, 10e10, "%.3f"))
             node->setPosition(QVector3D(x, y, z));
-        if (ImGui::DragFloat("y##NodePosition", &y, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+        if (ImGui::DragFloat("y##NodePosition", &y, 1.0f, -10e10, 10e10, "%.3f"))
             node->setPosition(QVector3D(x, y, z));
-        if (ImGui::DragFloat("z##NodePosition", &z, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+        if (ImGui::DragFloat("z##NodePosition", &z, 1.0f, -10e10, 10e10, "%.3f"))
             node->setPosition(QVector3D(x, y, z));
     }
 
@@ -344,11 +371,11 @@ void Canavar::Engine::Gui::draw(Node *node)
 
         Canavar::Engine::Helper::getEulerDegrees(node->rotation(), yaw, pitch, roll);
 
-        if (ImGui::SliderFloat("Yaw##NodeRotation", &yaw, 0.0f, 359.999f, "%.3f"))
+        if (ImGui::SliderFloat("Yaw##NodeRotation", &yaw, 0.0f, 360.0f, "%.3f"))
             node->setRotation(Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll));
         if (ImGui::SliderFloat("Pitch##NodeRotation", &pitch, -89.999f, 89.999f, "%.3f"))
             node->setRotation(Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll));
-        if (ImGui::SliderFloat("Roll##NodeRotation", &roll, -179.999f, 179.999f, "%.3f"))
+        if (ImGui::SliderFloat("Roll##NodeRotation", &roll, -180.0f, 180.0f, "%.3f"))
             node->setRotation(Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll));
     }
 
@@ -360,11 +387,11 @@ void Canavar::Engine::Gui::draw(Node *node)
         float y = position.y();
         float z = position.z();
 
-        if (ImGui::DragFloat("x##NodeWorldPosition", &x, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+        if (ImGui::DragFloat("x##NodeWorldPosition", &x, 1.0f, -10e10, 10e10, "%.3f"))
             node->setWorldPosition(QVector3D(x, y, z));
-        if (ImGui::DragFloat("y##NodeWorldPosition", &y, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+        if (ImGui::DragFloat("y##NodeWorldPosition", &y, 1.0f, -10e10, 10e10, "%.3f"))
             node->setWorldPosition(QVector3D(x, y, z));
-        if (ImGui::DragFloat("z##NodeWorldPosition", &z, 0.01f, -1000.0f, 1000.0f, "%.3f"))
+        if (ImGui::DragFloat("z##NodeWorldPosition", &z, 1.0f, -10e10, 10e10, "%.3f"))
             node->setWorldPosition(QVector3D(x, y, z));
     }
 
@@ -376,11 +403,11 @@ void Canavar::Engine::Gui::draw(Node *node)
 
         Helper::getEulerDegrees(rotation, yaw, pitch, roll);
 
-        if (ImGui::SliderFloat("Yaw##NodeRotation", &yaw, 0.0f, 359.999f, "%.3f"))
+        if (ImGui::SliderFloat("Yaw##NodeRotation", &yaw, 0.0f, 360.0f, "%.3f"))
             node->setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
         if (ImGui::SliderFloat("Pitch##NodeRotation", &pitch, -89.999f, 89.999f, "%.3f"))
             node->setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
-        if (ImGui::SliderFloat("Roll##NodeRotation", &roll, -179.999f, 179.999f, "%.3f"))
+        if (ImGui::SliderFloat("Roll##NodeRotation", &roll, -180.0f, 180.0f, "%.3f"))
             node->setWorldRotation(Helper::constructFromEulerDegrees(yaw, pitch, roll));
     }
 
@@ -454,11 +481,11 @@ void Canavar::Engine::Gui::draw(Model *model)
 
                 Canavar::Engine::Helper::getEulerDegrees(rotation, yaw, pitch, roll);
 
-                if (ImGui::SliderFloat("Yaw##MeshRotation", &yaw, 0.0f, 359.999f, "%.3f"))
+                if (ImGui::SliderFloat("Yaw##MeshRotation", &yaw, 0.0f, 360.0f, "%.3f"))
                     rotation = Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll);
                 if (ImGui::SliderFloat("Pitch##MeshRotation", &pitch, -89.999f, 89.999f, "%.3f"))
                     rotation = Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll);
-                if (ImGui::SliderFloat("Roll##MeshRotation", &roll, -179.999f, 179.999f, "%.3f"))
+                if (ImGui::SliderFloat("Roll##MeshRotation", &roll, -180.0f, 180.0f, "%.3f"))
                     rotation = Canavar::Engine::Helper::constructFromEulerDegrees(yaw, pitch, roll);
 
                 transformation.setToIdentity();
@@ -562,6 +589,7 @@ void Canavar::Engine::Gui::draw(Terrain *node)
         ImGui::SliderFloat("Diffuse##Terrain", &node->getDiffuse_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Specular##Terrain", &node->getSpecular_nonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Shininess##Terrain", &node->getShininess_nonConst(), 0.1f, 128.0f, "%.3f");
+        ImGui::Checkbox("Enabled", &node->getEnabled_nonConst());
 
         if (ImGui::Button("Generate Seed##Terrain"))
             node->setSeed(Canavar::Engine::Helper::generateVec3(1, 1, 1));
@@ -697,6 +725,11 @@ void Canavar::Engine::Gui::setSelectedVertexIndex(int newSelectedVertexIndex)
 
 void Canavar::Engine::Gui::mousePressed(QMouseEvent *event)
 {
+    auto info = SelectableNodeRenderer::instance()->getNodeInfoByScreenPosition(event->position().x(), event->position().y());
+    mMouse.mPressedButton = NodeManager::instance()->getNodeByID(info.nodeID) == mSelectedNode ? event->button() : Qt::NoButton;
+    mMouse.mX = event->position().x();
+    mMouse.mY = event->position().y();
+
     if (event->button() != Qt::LeftButton)
         return;
 
@@ -719,7 +752,7 @@ void Canavar::Engine::Gui::mousePressed(QMouseEvent *event)
                 if (auto data = ModelDataManager::instance()->getModelData(mSelectedModel->getModelName()))
                     setSelectedMesh(data->getMeshByID(info.meshID));
 
-    } else if (mNodeSelectionEnabled)
+    } else if (mNodeSelectionEnabled && !mLockNode)
     {
         auto info = SelectableNodeRenderer::instance()->getNodeInfoByScreenPosition(event->position().x(), event->position().y());
 
@@ -728,4 +761,64 @@ void Canavar::Engine::Gui::mousePressed(QMouseEvent *event)
         else
             setSelectedNode(nullptr);
     }
+}
+
+void Canavar::Engine::Gui::mouseMoved(QMouseEvent *event)
+{
+    if (mMoveEnabled && mNodeSelectionEnabled && mSelectedNode && mMouse.mPressedButton == Qt::LeftButton)
+    {
+        auto vp = CameraManager::instance()->activeCamera()->getViewProjectionMatrix();
+        auto ssc = vp * QVector4D(mSelectedNode->worldPosition(), 1);
+
+        QVector4D prevMouseWorldPos;
+        QVector4D currMouseWorldPos;
+
+        {
+            float x = (mMouse.mX - 0.5f * mWidth) / (0.5f * mWidth);
+            float y = (0.5f * mHeight - mMouse.mY) / (0.5f * mHeight);
+            float z = ssc.z();
+            float w = ssc.w();
+            prevMouseWorldPos = vp.inverted() * QVector4D(x * w, y * w, z, w);
+
+            mMouse.mX = event->position().x();
+            mMouse.mY = event->position().y();
+        }
+
+        {
+            float x = (event->position().x() - 0.5f * mWidth) / (0.5f * mWidth);
+            float y = (0.5f * mHeight - event->position().y()) / (0.5f * mHeight);
+            float z = ssc.z();
+            float w = ssc.w();
+            currMouseWorldPos = vp.inverted() * QVector4D(x * w, y * w, z, w);
+        }
+
+        auto delta = (currMouseWorldPos - prevMouseWorldPos).toVector3D();
+
+        QVector3D newWorldPos = mSelectedNode->worldPosition();
+
+        if (mLockAxisX)
+            newWorldPos += QVector3D(delta.x(), 0, 0);
+
+        if (mLockAxisY)
+            newWorldPos += QVector3D(0, delta.y(), 0);
+
+        if (mLockAxisZ)
+            newWorldPos += QVector3D(0, 0, delta.z());
+
+        if (!mLockAxisX && !mLockAxisY && !mLockAxisZ)
+            newWorldPos += delta;
+
+        mSelectedNode->setWorldPosition(newWorldPos);
+    }
+}
+
+void Canavar::Engine::Gui::mouseReleased(QMouseEvent *event)
+{
+    mMouse.mPressedButton = Qt::NoButton;
+}
+
+void Canavar::Engine::Gui::resize(int w, int h)
+{
+    mWidth = w;
+    mHeight = h;
 }

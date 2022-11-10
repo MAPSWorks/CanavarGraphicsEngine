@@ -167,23 +167,31 @@ void Canavar::Engine::RendererManager::render(float ifps)
 
         mShaderManager->bind(ShaderType::BasicShader);
 
-        for (const auto &node : nodes)
-        {
-            mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
+        //qDebug() << nodes;
 
-            mShaderManager->setUniformValue("color", mSelectableNodes.value(node, QVector4D(1, 1, 1, 1)));
-            glBindVertexArray(mCubeStrip.mVAO);
-            glDrawArrays(GL_LINE_STRIP, 0, 17);
+        for (const auto &e : nodes)
+        {
+            if (auto node = dynamic_cast<Node *>(e))
+            {
+                mShaderManager->setUniformValue("MVP", VP * node->worldTransformation() * node->getAABB().getTransformation());
+
+                mShaderManager->setUniformValue("color", mSelectableNodes.value(node, QVector4D(1, 1, 1, 1)));
+                glBindVertexArray(mCubeStrip.mVAO);
+                glDrawArrays(GL_LINE_STRIP, 0, 17);
+            }
         }
 
-        for (const auto &model : models)
+        for (const auto &e : models)
         {
-            const auto &parameters = mSelectedMeshes.value(model);
-            const auto &meshTransformation = model->getMeshTransformation(parameters.mMesh->getName());
-            mShaderManager->setUniformValue("MVP", VP * model->worldTransformation() * meshTransformation * parameters.mMesh->getAABB().getTransformation());
-            mShaderManager->setUniformValue("color", parameters.mMeshStripColor);
-            glBindVertexArray(mCubeStrip.mVAO);
-            glDrawArrays(GL_LINE_STRIP, 0, 17);
+            if (auto model = dynamic_cast<Model *>(e))
+            {
+                const auto &parameters = mSelectedMeshes.value(model);
+                const auto &meshTransformation = model->getMeshTransformation(parameters.mMesh->getName());
+                mShaderManager->setUniformValue("MVP", VP * model->worldTransformation() * meshTransformation * parameters.mMesh->getAABB().getTransformation());
+                mShaderManager->setUniformValue("color", parameters.mMeshStripColor);
+                glBindVertexArray(mCubeStrip.mVAO);
+                glDrawArrays(GL_LINE_STRIP, 0, 17);
+            }
         }
 
         mShaderManager->release();
@@ -191,21 +199,24 @@ void Canavar::Engine::RendererManager::render(float ifps)
         // Vertices of Mesh
         mShaderManager->bind(ShaderType::MeshVertexRendererShader);
 
-        for (const auto &model : models)
+        for (const auto &e : models)
         {
-            const auto &parameters = mSelectedMeshes.value(model);
-
-            if (parameters.mRenderVertices)
+            if (auto model = dynamic_cast<Model *>(e))
             {
-                mShaderManager->setUniformValue("MVP", VP * model->worldTransformation() * model->getMeshTransformation(parameters.mMesh->getName()));
-                mShaderManager->setUniformValue("scale", parameters.mScale);
-                mShaderManager->setUniformValue("selectedVertexID", parameters.mSelectedVertexID);
-                mShaderManager->setUniformValue("vertexColor", parameters.mVertexColor);
-                mShaderManager->setUniformValue("selectedVertexColor", parameters.mSelectedVertexColor);
+                const auto &parameters = mSelectedMeshes.value(e);
 
-                parameters.mMesh->getVerticesVAO()->bind();
-                glDrawArraysInstanced(GL_TRIANGLES, 0, 36, parameters.mMesh->getNumberOfVertices());
-                parameters.mMesh->getVerticesVAO()->release();
+                if (parameters.mRenderVertices)
+                {
+                    mShaderManager->setUniformValue("MVP", VP * model->worldTransformation() * model->getMeshTransformation(parameters.mMesh->getName()));
+                    mShaderManager->setUniformValue("scale", parameters.mScale);
+                    mShaderManager->setUniformValue("selectedVertexID", parameters.mSelectedVertexID);
+                    mShaderManager->setUniformValue("vertexColor", parameters.mVertexColor);
+                    mShaderManager->setUniformValue("selectedVertexColor", parameters.mSelectedVertexColor);
+
+                    parameters.mMesh->getVerticesVAO()->bind();
+                    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, parameters.mMesh->getNumberOfVertices());
+                    parameters.mMesh->getVerticesVAO()->release();
+                }
             }
         }
 
@@ -312,14 +323,14 @@ void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
     }
 }
 
-void Canavar::Engine::RendererManager::onSelectedNodeDestroyed()
+void Canavar::Engine::RendererManager::onSelectedNodeDestroyed(QObject *node)
 {
-    mSelectableNodes.remove(static_cast<Node *>(sender()));
+    mSelectableNodes.remove(node);
 }
 
-void Canavar::Engine::RendererManager::onSelectedModelDestroyed()
+void Canavar::Engine::RendererManager::onSelectedModelDestroyed(QObject *model)
 {
-    mSelectedMeshes.remove(static_cast<Model *>(sender()));
+    mSelectedMeshes.remove(model);
 }
 
 void Canavar::Engine::RendererManager::addSelectableNode(Node *node, QVector4D color)
@@ -358,17 +369,17 @@ void Canavar::Engine::RendererManager::removeSelectedMesh(Model *model)
     }
 }
 
-Canavar::Engine::SelectedMeshParameters Canavar::Engine::RendererManager::getSelectedMeshParameters(Model *model) const
+Canavar::Engine::SelectedMeshParameters Canavar::Engine::RendererManager::getSelectedMeshParameters(QObject *model) const
 {
     return mSelectedMeshes.value(model);
 }
 
-Canavar::Engine::SelectedMeshParameters &Canavar::Engine::RendererManager::getSelectedMeshParameters_Ref(Model *model)
+Canavar::Engine::SelectedMeshParameters &Canavar::Engine::RendererManager::getSelectedMeshParameters_Ref(QObject *model)
 {
     return mSelectedMeshes[model];
 }
 
-const QMap<Canavar::Engine::Model *, Canavar::Engine::SelectedMeshParameters> &Canavar::Engine::RendererManager::getSelectedMeshes() const
+const QMap<QObject *, Canavar::Engine::SelectedMeshParameters> &Canavar::Engine::RendererManager::getSelectedMeshes() const
 {
     return mSelectedMeshes;
 }
