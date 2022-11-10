@@ -356,11 +356,11 @@ void Canavar::Engine::Gui::draw(Node *node)
         float y = node->position().y();
         float z = node->position().z();
 
-        if (ImGui::DragFloat("x##NodePosition", &x, 1.0f, -10e10, 10e10, "%.3f"))
+        if (ImGui::DragFloat("x##NodePosition", &x, 1.0f, -10e10f, 10e10f, "%.3f"))
             node->setPosition(QVector3D(x, y, z));
-        if (ImGui::DragFloat("y##NodePosition", &y, 1.0f, -10e10, 10e10, "%.3f"))
+        if (ImGui::DragFloat("y##NodePosition", &y, 1.0f, -10e10f, 10e10f, "%.3f"))
             node->setPosition(QVector3D(x, y, z));
-        if (ImGui::DragFloat("z##NodePosition", &z, 1.0f, -10e10, 10e10, "%.3f"))
+        if (ImGui::DragFloat("z##NodePosition", &z, 1.0f, -10e10f, 10e10f, "%.3f"))
             node->setPosition(QVector3D(x, y, z));
     }
 
@@ -387,11 +387,11 @@ void Canavar::Engine::Gui::draw(Node *node)
         float y = position.y();
         float z = position.z();
 
-        if (ImGui::DragFloat("x##NodeWorldPosition", &x, 1.0f, -10e10, 10e10, "%.3f"))
+        if (ImGui::DragFloat("x##NodeWorldPosition", &x, 1.0f, -10e10f, 10e10f, "%.3f"))
             node->setWorldPosition(QVector3D(x, y, z));
-        if (ImGui::DragFloat("y##NodeWorldPosition", &y, 1.0f, -10e10, 10e10, "%.3f"))
+        if (ImGui::DragFloat("y##NodeWorldPosition", &y, 1.0f, -10e10f, 10e10f, "%.3f"))
             node->setWorldPosition(QVector3D(x, y, z));
-        if (ImGui::DragFloat("z##NodeWorldPosition", &z, 1.0f, -10e10, 10e10, "%.3f"))
+        if (ImGui::DragFloat("z##NodeWorldPosition", &z, 1.0f, -10e10f, 10e10f, "%.3f"))
             node->setWorldPosition(QVector3D(x, y, z));
     }
 
