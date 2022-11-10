@@ -303,6 +303,9 @@ void Canavar::Engine::NodeManager::toJson(QJsonObject &object)
 
     for (auto &node : mNodes)
     {
+        if (node->getExcludeFromExport())
+            continue;
+
         QJsonObject nodeJson;
         node->toJson(nodeJson);
         array.append(nodeJson);

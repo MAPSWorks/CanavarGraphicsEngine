@@ -22,7 +22,7 @@ bool Canavar::Engine::CameraManager::init()
 void Canavar::Engine::CameraManager::postInit()
 {
     mDefaultCamera = dynamic_cast<FreeCamera *>(NodeManager::instance()->createNode(Node::NodeType::FreeCamera, "Default Free Camera"));
-
+    mDefaultCamera->setExcludeFromExport(true);
     setActiveCamera(mDefaultCamera);
 }
 

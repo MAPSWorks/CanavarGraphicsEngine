@@ -96,6 +96,8 @@ protected:
     DEFINE_MEMBER_CONST(QString, UUID)
     DEFINE_MEMBER_CONST(int, ID)
     DEFINE_MEMBER_CONST(NodeType, Type)
+
+    DEFINE_MEMBER(bool, ExcludeFromExport)
 };
 
 } // namespace Engine

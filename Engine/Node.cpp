@@ -13,6 +13,7 @@ Canavar::Engine::Node::Node()
     , mUUID()
     , mID(-1)
     , mType(NodeType::DummyNode)
+    , mExcludeFromExport(false)
 {
     mAABB.setMin(QVector3D(-1.0f, -1.0f, -1.0f));
     mAABB.setMax(QVector3D(1.0f, 1.0f, 1.0f));
