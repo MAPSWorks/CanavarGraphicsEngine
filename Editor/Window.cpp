@@ -78,6 +78,8 @@ void Window::keyPressEvent(QKeyEvent *event)
         return;
 
     mController->keyPressed(event);
+
+    mGui->keyPressed(event);
 }
 
 void Window::keyReleaseEvent(QKeyEvent *event)

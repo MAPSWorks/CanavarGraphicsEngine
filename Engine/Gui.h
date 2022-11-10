@@ -49,6 +49,8 @@ public:
     void mousePressed(QMouseEvent *event);
     void mouseMoved(QMouseEvent *event);
     void mouseReleased(QMouseEvent *event);
+    void keyPressed(QKeyEvent *event);
+
     void resize(int w, int h);
 
     int getSelectedVertexIndex() const;

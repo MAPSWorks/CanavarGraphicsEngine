@@ -101,6 +101,7 @@ void Canavar::Engine::Terrain::toJson(QJsonObject &object)
     object.insert("diffuse", mDiffuse);
     object.insert("specular", mSpecular);
     object.insert("shininess", mShininess);
+    object.insert("enabled", mEnabled);
 
     QJsonObject seed;
     seed.insert("x", mSeed.x());
@@ -124,9 +125,9 @@ void Canavar::Engine::Terrain::fromJson(const QJsonObject &object)
     mDiffuse = object["diffuse"].toDouble();
     mSpecular = object["specular"].toDouble();
     mShininess = object["shininess"].toDouble();
+    mEnabled = object["enabled"].toBool(mEnabled);
 
     // Seed
-
     float x = object["seed"]["x"].toDouble();
     float y = object["seed"]["y"].toDouble();
     float z = object["seed"]["z"].toDouble();

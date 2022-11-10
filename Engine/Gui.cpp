@@ -817,6 +817,19 @@ void Canavar::Engine::Gui::mouseReleased(QMouseEvent *event)
     mMouse.mPressedButton = Qt::NoButton;
 }
 
+void Canavar::Engine::Gui::keyPressed(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Delete)
+    {
+        if (mSelectedNode)
+        {
+            NodeManager::instance()->removeNode(mSelectedNode);
+            mMeshSelectionEnabled = false;
+            mVertexSelectionEnabled = false;
+        }
+    }
+}
+
 void Canavar::Engine::Gui::resize(int w, int h)
 {
     mWidth = w;
