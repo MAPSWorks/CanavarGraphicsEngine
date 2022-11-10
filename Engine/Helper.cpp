@@ -259,7 +259,9 @@ Canavar::Engine::ModelDataNode *Canavar::Engine::Helper::processNode(ModelData *
 Canavar::Engine::Material *Canavar::Engine::Helper::processMaterial(aiMaterial *aiMaterial, const QString &directory)
 {
     Material *material = new Material;
-    processTexture(material, aiMaterial, aiTextureType_AMBIENT, Material::TextureType::Ambient, directory);
+    if (!processTexture(material, aiMaterial, aiTextureType_AMBIENT, Material::TextureType::Ambient, directory))
+        processTexture(material, aiMaterial, aiTextureType_BASE_COLOR, Material::TextureType::Ambient, directory);
+
     processTexture(material, aiMaterial, aiTextureType_DIFFUSE, Material::TextureType::Diffuse, directory);
     processTexture(material, aiMaterial, aiTextureType_SPECULAR, Material::TextureType::Specular, directory);
     processTexture(material, aiMaterial, aiTextureType_HEIGHT, Material::TextureType::Normal, directory);
@@ -267,8 +269,10 @@ Canavar::Engine::Material *Canavar::Engine::Helper::processMaterial(aiMaterial *
     return material;
 }
 
-void Canavar::Engine::Helper::processTexture(Material *material, aiMaterial *aiMaterial, aiTextureType aiType, Material::TextureType type, const QString &directory)
+bool Canavar::Engine::Helper::processTexture(Material *material, aiMaterial *aiMaterial, aiTextureType aiType, Material::TextureType type, const QString &directory)
 {
+    bool success = false;
+
     for (int i = 0; i < qMin(1, int(aiMaterial->GetTextureCount(aiType))); i++)
     {
         aiString str;
@@ -277,8 +281,13 @@ void Canavar::Engine::Helper::processTexture(Material *material, aiMaterial *aiM
         auto path = directory + "/" + filename;
 
         if (auto texture = createTexture(path))
+        {
             material->insert(type, texture);
+            success = true;
+        }
     }
+
+    return success;
 }
 
 QMatrix4x4 Canavar::Engine::Helper::toQMatrix(const aiMatrix4x4 &matrix)
@@ -356,6 +365,7 @@ QVector3D Canavar::Engine::Helper::generateVec3(float x, float y, float z)
 QOpenGLTexture *Canavar::Engine::Helper::createTexture(const QString &path)
 {
     QImage image(path);
+
     if (image.isNull())
     {
         qWarning() << "An image at " + path + " is null.";

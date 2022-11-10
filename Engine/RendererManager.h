@@ -52,18 +52,18 @@ public:
     void addSelectedMesh(Model *model, const SelectedMeshParameters &parameters);
     void removeSelectedMesh(Model *model);
 
-    SelectedMeshParameters getSelectedMeshParameters(Model *model) const;
-    SelectedMeshParameters &getSelectedMeshParameters_Ref(Model *model);
+    SelectedMeshParameters getSelectedMeshParameters(QObject *model) const;
+    SelectedMeshParameters &getSelectedMeshParameters_Ref(QObject *model);
 
-    const QMap<Model *, SelectedMeshParameters> &getSelectedMeshes() const;
+    const QMap<QObject *, SelectedMeshParameters> &getSelectedMeshes() const;
 
 private:
     void setCommonUniforms();
     void deleteFramebuffers();
     void createFramebuffers(int width, int height);
 
-    void onSelectedNodeDestroyed();
-    void onSelectedModelDestroyed();
+    void onSelectedNodeDestroyed(QObject *node);
+    void onSelectedModelDestroyed(QObject *model);
 
 private:
     NodeManager *mNodeManager;
@@ -81,8 +81,8 @@ private:
 
     QVector<PointLight *> mClosePointLights;
 
-    QMap<Node *, QVector4D> mSelectableNodes; // Nodes whose AABB to be rendered -> Line color
-    QMap<Model *, SelectedMeshParameters> mSelectedMeshes;
+    QMap<QObject *, QVector4D> mSelectableNodes; // Nodes whose AABB to be rendered -> Line color
+    QMap<QObject *, SelectedMeshParameters> mSelectedMeshes;
 
     QMap<FramebufferType, QOpenGLFramebufferObject *> mFBOs;
     QMap<FramebufferType, QOpenGLFramebufferObjectFormat *> mFBOFormats;

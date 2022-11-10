@@ -59,6 +59,8 @@ private:
     DEFINE_MEMBER(float, Diffuse)
     DEFINE_MEMBER(float, Specular)
     DEFINE_MEMBER(float, Shininess)
+
+    DEFINE_MEMBER(bool, Enabled)
 };
 
 } // namespace Engine

@@ -51,6 +51,8 @@ void Window::initializeGL()
 void Window::resizeGL(int w, int h)
 {
     mController->resize(w, h);
+
+    mGui->resize(w, h);
 }
 
 void Window::paintGL()
@@ -96,6 +98,8 @@ void Window::mousePressEvent(QMouseEvent *event)
 void Window::mouseReleaseEvent(QMouseEvent *event)
 {
     mController->mouseReleased(event);
+
+    mGui->mouseReleased(event);
 }
 
 void Window::mouseMoveEvent(QMouseEvent *event)
@@ -104,6 +108,8 @@ void Window::mouseMoveEvent(QMouseEvent *event)
         return;
 
     mController->mouseMoved(event);
+
+    mGui->mouseMoved(event);
 }
 
 void Window::wheelEvent(QWheelEvent *event)
