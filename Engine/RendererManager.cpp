@@ -55,6 +55,7 @@ bool Canavar::Engine::RendererManager::init()
     mFBOFormats.insert(FramebufferType::Default, new QOpenGLFramebufferObjectFormat);
     mFBOFormats[FramebufferType::Default]->setSamples(4);
     mFBOFormats[FramebufferType::Default]->setAttachment(QOpenGLFramebufferObject::Depth);
+    mFBOFormats[FramebufferType::Default]->setInternalTextureFormat(GL_RGBA32F);
 
     // Other formats
     mFBOFormats.insert(FramebufferType::Temporary, new QOpenGLFramebufferObjectFormat);
@@ -303,7 +304,7 @@ void Canavar::Engine::RendererManager::createFramebuffers(int width, int height)
 
         if (type == FramebufferType::Default)
         {
-            mFBOs[FramebufferType::Default]->addColorAttachment(width, height, GL_RGBA16F);
+            mFBOs[FramebufferType::Default]->addColorAttachment(width, height, GL_RGBA32F);
 
             mFBOs[FramebufferType::Default]->bind();
             glDrawBuffers(2, mColorAttachments);
