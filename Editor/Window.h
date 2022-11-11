@@ -39,9 +39,7 @@ private:
     long long mPreviousTime;
     long long mCurrentTime;
     Canavar::Engine::Controller *mController;
-
     Canavar::Engine::Gui *mGui;
-
     Canavar::Engine::PerspectiveCamera *mCamera;
 };
 #endif // WINDOW_H

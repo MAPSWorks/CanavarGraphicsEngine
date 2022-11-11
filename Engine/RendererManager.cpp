@@ -123,8 +123,8 @@ void Canavar::Engine::RendererManager::render(float ifps)
     mShaderManager->release();
 
     mFBOs[FramebufferType::Default]->bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render Sky
     mSky->render();
@@ -240,8 +240,8 @@ void Canavar::Engine::RendererManager::render(float ifps)
     QOpenGLFramebufferObject::blitFramebuffer(mFBOs[FramebufferType::Temporary], mFBOs[FramebufferType::Default]);
 
     QOpenGLFramebufferObject::bindDefault();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     mShaderManager->bind(ShaderType::PostProcessShader);
     mShaderManager->setSampler("sceneTexture", 0, mFBOs[FramebufferType::Temporary]->texture());

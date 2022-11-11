@@ -2,6 +2,7 @@
 #define GUI_H
 
 #include "FirecrackerEffect.h"
+#include "FreeCamera.h"
 #include "Mesh.h"
 #include "Model.h"
 #include "Node.h"
@@ -11,7 +12,6 @@
 #include "Sun.h"
 #include "Terrain.h"
 
-#include <FreeCamera.h>
 #include <imgui.h>
 #include <QtImGui.h>
 

@@ -20,7 +20,7 @@ Window::Window(QWindow *parent)
     format.setMajorVersion(4);
     format.setMinorVersion(3);
     format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setSamples(1);
+    format.setSamples(0);
     format.setSwapInterval(1);
     setFormat(format);
 
@@ -51,7 +51,6 @@ void Window::initializeGL()
 void Window::resizeGL(int w, int h)
 {
     mController->resize(w, h);
-
     mGui->resize(w, h);
 }
 
@@ -64,9 +63,7 @@ void Window::paintGL()
     mController->render(ifps);
 
     QtImGui::newFrame();
-
     mGui->draw();
-
     glViewport(0, 0, width() * devicePixelRatioF(), height() * devicePixelRatioF());
     ImGui::Render();
     QtImGui::render();
@@ -78,7 +75,6 @@ void Window::keyPressEvent(QKeyEvent *event)
         return;
 
     mController->keyPressed(event);
-
     mGui->keyPressed(event);
 }
 
@@ -93,14 +89,12 @@ void Window::mousePressEvent(QMouseEvent *event)
         return;
 
     mController->mousePressed(event);
-
     mGui->mousePressed(event);
 }
 
 void Window::mouseReleaseEvent(QMouseEvent *event)
 {
     mController->mouseReleased(event);
-
     mGui->mouseReleased(event);
 }
 
@@ -110,7 +104,6 @@ void Window::mouseMoveEvent(QMouseEvent *event)
         return;
 
     mController->mouseMoved(event);
-
     mGui->mouseMoved(event);
 }
 
