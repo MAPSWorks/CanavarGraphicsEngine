@@ -17,10 +17,10 @@ void main()
     hdrColor += bloomColor;
 
     // Tone mapping
-    vec3 result = vec3(1) - exp(-hdrColor * exposure);
+    // vec3 result = vec3(1) - exp(-hdrColor * exposure);
 
     // Also gamma correct while we're at it
-    result = pow(result, vec3(1.0f / gamma));
+    // result = pow(result, vec3(1.0f / gamma));
 
-    outColor = vec4(result, 1);
+    outColor = vec4(hdrColor, 1);
 }
