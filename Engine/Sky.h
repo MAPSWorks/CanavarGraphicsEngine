@@ -31,7 +31,6 @@ private:
     LightManager *mLightManager;
 
     // OpenGL Stuff
-    QVector<unsigned int> mVertices;
     unsigned int mVAO;
     unsigned int mVBO;
 

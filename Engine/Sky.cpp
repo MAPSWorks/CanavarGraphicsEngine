@@ -13,22 +13,19 @@ Canavar::Engine::Sky::Sky()
     , mTurbidity(4.0f)
     , mNormalizedSunY(1.15f)
 {
-    mVertices << 0 << 0 << 0 << 0;
-
     mShaderManager = Canavar::Engine::ShaderManager::instance();
     mCameraManager = Canavar::Engine::CameraManager::instance();
     mLightManager = Canavar::Engine::LightManager::instance();
 
     initializeOpenGLFunctions();
+
     glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);
-
     glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(mVertices), mVertices.constData(), GL_STATIC_DRAW);
-
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::QUAD), Canavar::Engine::QUAD, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(unsigned int), (void *) 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(QVector2D), (void *) 0);
 
     mType = Node::NodeType::Sky;
     mName = "Sky";
@@ -107,7 +104,7 @@ void Canavar::Engine::Sky::render()
     mShaderManager->setUniformValue("Z", Z);
 
     glBindVertexArray(mVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     mShaderManager->release();
 
     glBindVertexArray(0);

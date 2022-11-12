@@ -152,6 +152,8 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addUniform("Z");
         shader->addUniform("sunDir");
 
+        shader->addAttribute("position");
+
         if (!shader->init())
             return false;
     }
