@@ -42,7 +42,8 @@ enum class ShaderType { //
     FirecrackerEffectShader,
     BasicShader,
     MeshVertexRendererShader,
-    VertexInfoShader
+    VertexInfoShader,
+    LineStripShader
 };
 
 enum class RenderMode { //

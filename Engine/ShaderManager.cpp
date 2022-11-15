@@ -406,6 +406,23 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
+    // Basic Shader
+    {
+        Shader *shader = new Shader(ShaderType::LineStripShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/LineStrip.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/LineStrip.frag");
+
+        shader->addUniform("VP");
+        shader->addUniform("color");
+
+        shader->addAttribute("point");
+
+        if (!shader->init())
+            return false;
+    }
+
     return true;
 }
 

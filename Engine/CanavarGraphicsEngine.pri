@@ -16,6 +16,7 @@ HEADERS += \
     $$PWD/HosekFunctions.h \
     $$PWD/Light.h \
     $$PWD/LightManager.h \
+    $$PWD/LineStrip.h \
     $$PWD/Manager.h \
     $$PWD/Material.h \
     $$PWD/Mesh.h \
@@ -59,6 +60,7 @@ SOURCES += \
     $$PWD/Helper.cpp \
     $$PWD/Light.cpp \
     $$PWD/LightManager.cpp \
+    $$PWD/LineStrip.cpp \
     $$PWD/Manager.cpp \
     $$PWD/Material.cpp \
     $$PWD/Mesh.cpp \

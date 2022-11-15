@@ -2,6 +2,7 @@
 #define RENDERERMANAGER_H
 
 #include "Camera.h"
+#include "LineStrip.h"
 #include "Manager.h"
 #include "OpenGLVertexArrayObject.h"
 #include "SelectedMeshParameters.h"
@@ -34,13 +35,6 @@ private:
 public:
     static RendererManager *instance();
 
-    enum class FramebufferType { //
-        Default,
-        Temporary,
-        Ping,
-        Pong,
-    };
-
     bool init() override;
     void resize(int width, int height) override;
 
@@ -52,18 +46,29 @@ public:
     void addSelectedMesh(Model *model, const SelectedMeshParameters &parameters);
     void removeSelectedMesh(Model *model);
 
+    void addLineStrip(LineStrip *lineStrip);
+    void removeLineStrip(LineStrip *lineStrip);
+
     SelectedMeshParameters getSelectedMeshParameters(Model *model) const;
     SelectedMeshParameters &getSelectedMeshParameters_Ref(Model *model);
 
     const QMap<Model *, SelectedMeshParameters> &getSelectedMeshes() const;
 
 private:
+    enum class FramebufferType { //
+        Default,
+        Temporary,
+        Ping,
+        Pong,
+    };
+
     void setCommonUniforms();
     void deleteFramebuffers();
     void createFramebuffers(int width, int height);
 
     void onSelectedNodeDestroyed(QObject *node);
     void onSelectedModelDestroyed(QObject *model);
+    void onLineStripDestroyed(QObject *lineStrip);
 
 private:
     NodeManager *mNodeManager;
@@ -84,6 +89,8 @@ private:
     QMap<Node *, QVector4D> mSelectableNodes; // Nodes whose AABB to be rendered -> Line color
     QMap<Model *, SelectedMeshParameters> mSelectedMeshes;
 
+    QList<LineStrip *> mLineStrips;
+
     QMap<FramebufferType, QOpenGLFramebufferObject *> mFBOs;
     QMap<FramebufferType, QOpenGLFramebufferObjectFormat *> mFBOFormats;
 
@@ -97,6 +104,7 @@ private:
     OpenGLVertexArrayObject mQuad;
     OpenGLVertexArrayObject mCube;
     OpenGLVertexArrayObject mCubeStrip;
+    OpenGLVertexArrayObject mLineStripHandle;
 
     GLuint mColorAttachments[2];
 };

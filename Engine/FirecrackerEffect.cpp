@@ -129,9 +129,6 @@ void Canavar::Engine::FirecrackerEffect::render(float ifps)
         }
     }
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     mShaderManager->bind(ShaderType::FirecrackerEffectShader);
     mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * worldTransformation());
     mShaderManager->setUniformValue("scale", mScale);
@@ -144,8 +141,6 @@ void Canavar::Engine::FirecrackerEffect::render(float ifps)
     glBindVertexArray(0);
 
     mShaderManager->release();
-
-    glDisable(GL_BLEND);
 }
 
 Canavar::Engine::FirecrackerEffect::Particle Canavar::Engine::FirecrackerEffect::generateParticle()

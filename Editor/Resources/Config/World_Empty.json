@@ -100,7 +100,7 @@
             "ambient": 0.5,
             "amplitude": 20,
             "diffuse": 0.6000000238418579,
-            "enabled": true,
+            "enabled": false,
             "frequency": 0.009999999776482582,
             "grass_coverage": 0.44999998807907104,
             "name": "Terrain",
@@ -139,15 +139,15 @@
             "h_fov": 35.9833984375,
             "name": "Free Camera",
             "position": {
-                "x": -995.0497436523438,
-                "y": 491.8685607910156,
-                "z": 736.7567749023438
+                "x": -62.8526725769043,
+                "y": 40.802886962890625,
+                "z": -40.3307991027832
             },
             "rotation": {
-                "w": 0.8888203501701355,
-                "x": -0.1213604211807251,
-                "y": -0.437836229801178,
-                "z": -0.05978035926818848
+                "w": 0.4952425956726074,
+                "x": -0.1525954306125641,
+                "y": -0.8173363208770752,
+                "z": -0.2518404722213745
             },
             "scale": {
                 "x": 1,
@@ -161,6 +161,88 @@
             "visible": true,
             "z_far": 1000000,
             "z_near": 1
+        },
+        {
+            "ambient": 0.800000011920929,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.75,
+            "model_name": "JetFighter",
+            "name": "Model JetFighter",
+            "overlay_color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "overlay_color_factor": 0,
+            "position": {
+                "x": -577.7587280273438,
+                "y": -1264.12548828125,
+                "z": 297.8734130859375
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 40.529998779296875,
+                "y": 40.529998779296875,
+                "z": 40.529998779296875
+            },
+            "selectable": true,
+            "shininess": 32,
+            "specular": 0.25,
+            "type": 1,
+            "uuid": "ff614b89-682e-4bac-a6cc-82628da13143",
+            "visible": true
+        },
+        {
+            "ambient": 0.800000011920929,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.75,
+            "model_name": "Plane",
+            "name": "Model Plane",
+            "overlay_color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "overlay_color_factor": 0,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "shininess": 32,
+            "specular": 0.25,
+            "type": 1,
+            "uuid": "1e844e26-0924-462d-ba17-81bd4c6e7445",
+            "visible": true
         }
     ]
 }

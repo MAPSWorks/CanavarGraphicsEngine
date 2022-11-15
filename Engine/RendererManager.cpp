@@ -50,10 +50,14 @@ bool Canavar::Engine::RendererManager::init()
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(1.5f);
 
     // Default FBO format
     mFBOFormats.insert(FramebufferType::Default, new QOpenGLFramebufferObjectFormat);
-    mFBOFormats[FramebufferType::Default]->setSamples(4);
+    mFBOFormats[FramebufferType::Default]->setSamples(8);
     mFBOFormats[FramebufferType::Default]->setAttachment(QOpenGLFramebufferObject::Depth);
     mFBOFormats[FramebufferType::Default]->setInternalTextureFormat(GL_RGBA32F);
 
@@ -90,6 +94,15 @@ bool Canavar::Engine::RendererManager::init()
     glGenBuffers(1, &mCubeStrip.mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mCubeStrip.mVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Canavar::Engine::CUBE_STRIP), CUBE_STRIP, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(QVector3D), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    // Line Strip
+    glGenVertexArrays(1, &mLineStripHandle.mVAO);
+    glBindVertexArray(mLineStripHandle.mVAO);
+    glGenBuffers(1, &mLineStripHandle.mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mLineStripHandle.mVBO);
+    glBufferData(GL_ARRAY_BUFFER, 64 * sizeof(QVector3D), nullptr, GL_DYNAMIC_COPY);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(QVector3D), (void *) 0);
     glEnableVertexAttribArray(0);
 
@@ -213,6 +226,23 @@ void Canavar::Engine::RendererManager::render(float ifps)
         mShaderManager->release();
     }
 
+    // Line Strip
+    {
+        mShaderManager->bind(ShaderType::LineStripShader);
+        mShaderManager->setUniformValue("VP", mCamera->getViewProjectionMatrix());
+        glBindVertexArray(mLineStripHandle.mVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, mLineStripHandle.mVBO);
+
+        for (const auto &lineStrip : mLineStrips)
+        {
+            glBufferSubData(GL_ARRAY_BUFFER, 0, lineStrip->points().size() * sizeof(QVector3D), lineStrip->points().constData());
+            mShaderManager->setUniformValue("color", lineStrip->getColor());
+            glDrawArrays(GL_LINE_STRIP, 0, lineStrip->points().size());
+        }
+
+        mShaderManager->release();
+    }
+
     // Default render pass is done
     mFBOs[FramebufferType::Default]->release();
 
@@ -323,6 +353,11 @@ void Canavar::Engine::RendererManager::onSelectedModelDestroyed(QObject *model)
     mSelectedMeshes.remove(static_cast<Model *>(model));
 }
 
+void Canavar::Engine::RendererManager::onLineStripDestroyed(QObject *lineStrip)
+{
+    mLineStrips.removeAll(static_cast<LineStrip *>(lineStrip));
+}
+
 void Canavar::Engine::RendererManager::addSelectableNode(Node *node, QVector4D color)
 {
     if (node && node->getSelectable())
@@ -356,6 +391,24 @@ void Canavar::Engine::RendererManager::removeSelectedMesh(Model *model)
     {
         mSelectedMeshes.remove(model);
         disconnect(model, &QObject::destroyed, this, &RendererManager::onSelectedModelDestroyed);
+    }
+}
+
+void Canavar::Engine::RendererManager::addLineStrip(LineStrip *lineStrip)
+{
+    if (lineStrip)
+    {
+        mLineStrips << lineStrip;
+        connect(lineStrip, &QObject::destroyed, this, &RendererManager::onLineStripDestroyed, Qt::QueuedConnection);
+    }
+}
+
+void Canavar::Engine::RendererManager::removeLineStrip(LineStrip *lineStrip)
+{
+    if (lineStrip)
+    {
+        mLineStrips.removeAll(lineStrip);
+        disconnect(lineStrip, &QObject::destroyed, this, &RendererManager::onLineStripDestroyed);
     }
 }
 

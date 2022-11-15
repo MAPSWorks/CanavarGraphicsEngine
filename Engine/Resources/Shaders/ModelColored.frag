@@ -71,7 +71,7 @@ vec4 processSun(vec3 normal, vec3 viewDir)
     vec3 halfwayDir = normalize(sun.direction + viewDir);
     float specular = pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * model.specular * sun.specular;
 
-    return (ambient + diffuse + specular) * model.color * sun.color;
+    return clamp(ambient + diffuse + specular, 0.0f, 1.0f) * model.color * sun.color;
 }
 
 
@@ -141,5 +141,5 @@ void main()
     if(brightness > 1.0f)
         brightColor = vec4(result.rgb, 1.0f);
     else
-        brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        brightColor = vec4(0.0f);
 }
