@@ -615,8 +615,8 @@ void Canavar::Engine::Gui::draw(PointLight *node)
     if (!ImGui::CollapsingHeader("Attenuation##PointLight"))
     {
         ImGui::SliderFloat("Constant##PointLight", &node->getConstant_nonConst(), 0.0f, 10.0f, "%.3f");
-        ImGui::SliderFloat("Linear##PointLight", &node->getLinear_nonConst(), 0.0f, 1.0f, "%.3f");
-        ImGui::SliderFloat("Quadratic##PointLight", &node->getQuadratic_nonConst(), 0.00001f, 0.1f, "%.6f");
+        ImGui::SliderFloat("Linear##PointLight", &node->getLinear_nonConst(), 0.0f, 0.1f, "%.3f");
+        ImGui::SliderFloat("Quadratic##PointLight", &node->getQuadratic_nonConst(), 0.00001f, 0.001f, "%.6f");
     }
 }
 
