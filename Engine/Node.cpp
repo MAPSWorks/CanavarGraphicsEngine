@@ -42,8 +42,17 @@ const QMatrix4x4 Canavar::Engine::Node::worldTransformation() const
     // TODO: Scaling issue
 
     if (mParent)
-        return mParent->worldTransformation() * mTransformation;
-    else
+    {
+        // Remove scaling
+        auto pos = mParent->worldPosition();
+        auto rot = mParent->worldRotation();
+
+        QMatrix4x4 tr;
+        tr.rotate(rot);
+        tr.setColumn(3, QVector4D(pos, 1.0f));
+
+        return tr * mTransformation;
+    } else
         return mTransformation;
 }
 
