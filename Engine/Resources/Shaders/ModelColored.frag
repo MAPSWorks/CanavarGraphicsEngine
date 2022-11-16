@@ -135,7 +135,9 @@ void main()
     // Final
     result = processHaze(distance, fsPosition.xyz, result);
     result = mix(result, model.overlayColor, model.overlayColorFactor);
-    fragColor = mix(result, model.meshOverlayColor, model.meshOverlayColorFactor);
+    result = mix(result, model.meshOverlayColor, model.meshOverlayColorFactor);
+
+    fragColor = vec4(result.xyz, 1);
 
     float brightness = dot(result.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)

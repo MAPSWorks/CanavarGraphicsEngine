@@ -28,5 +28,7 @@
         <file>Resources/Shaders/MeshVertexRenderer.vert</file>
         <file>Resources/Shaders/LineStrip.frag</file>
         <file>Resources/Shaders/LineStrip.vert</file>
+        <file>Resources/Shaders/Raycaster.frag</file>
+        <file>Resources/Shaders/Raycaster.vert</file>
     </qresource>
 </RCC>

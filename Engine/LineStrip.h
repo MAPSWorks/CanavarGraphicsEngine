@@ -16,11 +16,11 @@ public:
     explicit LineStrip(QObject *parent = nullptr);
 
     void appendPoint(const QVector3D &point);
-    void insertPoint(int index, const QVector3D &point);
     void removePoint(int index);
     void removeAllPoints();
 
     const QVector<QVector3D> &points() const;
+    QVector<QVector3D> &points_nonConst();
 
 private:
     QVector<QVector3D> mPoints;

@@ -43,7 +43,6 @@ public:
 private:
     Config *mConfig;
     ShaderManager *mShaderManager;
-    ModelDataManager *mModelDataManager;
     NodeManager *mNodeManager;
     CameraManager *mCameraManager;
     RendererManager *mRendererManager;

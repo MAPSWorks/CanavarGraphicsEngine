@@ -29,6 +29,8 @@ public:
 
     const QString &getModelName() const { return mModelName; }
 
+    void render(RenderMode renderMode);
+
 private:
     void updateAABB();
 

@@ -43,13 +43,15 @@ enum class ShaderType { //
     BasicShader,
     MeshVertexRendererShader,
     VertexInfoShader,
-    LineStripShader
+    LineStripShader,
+    RaycasterShader
 };
 
 enum class RenderMode { //
     Default = 0x00,
     NodeInfo = 0x01,
     Custom = 0x02,
+    Raycaster = 0x04
 };
 
 Q_DECLARE_FLAGS(RenderModes, RenderMode);

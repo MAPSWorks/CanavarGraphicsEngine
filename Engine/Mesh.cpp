@@ -111,6 +111,15 @@ void Canavar::Engine::Mesh::render(RenderModes modes, Model *model)
         mVAO->release();
     }
 
+    if (modes.testFlag(RenderMode::Raycaster))
+    {
+        mShaderManager->setUniformValue("M", model->worldTransformation() * model->getMeshTransformation(mName));
+
+        mVAO->bind();
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        mVAO->release();
+    }
+
     if (modes.testFlag(RenderMode::Default))
     {
         if (bool useTexture = mMaterial->getNumberOfTextures())

@@ -19,6 +19,7 @@ class NodeManager;
 class CameraManager;
 class LightManager;
 class SelectableNodeRenderer;
+class IntersectionManager;
 class Manager;
 
 class Controller : public QObject, protected QOpenGLExtraFunctions
@@ -49,6 +50,7 @@ private:
     CameraManager *mCameraManager;
     LightManager *mLightManager;
     SelectableNodeRenderer *mSelectableNodeRenderer;
+    IntersectionManager *mIntersectionManager;
 
     QVector<Manager *> mManagers;
 

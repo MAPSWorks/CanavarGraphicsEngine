@@ -54,6 +54,12 @@ void Canavar::Engine::Model::setMeshOverlayColorFactor(const QString &meshName, 
     mMeshOverlayColorFactors.insert(meshName, factor);
 }
 
+void Canavar::Engine::Model::render(RenderMode renderMode)
+{
+    if (mData)
+        mData->render(renderMode, this);
+}
+
 void Canavar::Engine::Model::updateAABB()
 {
     if (mData)

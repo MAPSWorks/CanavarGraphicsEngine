@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "Haze.h"
 #include "Helper.h"
+#include "IntersectionManager.h"
 #include "ModelDataManager.h"
 #include "RendererManager.h"
 #include "SelectableNodeRenderer.h"
@@ -61,10 +62,46 @@ Canavar::Engine::Gui::Gui(QObject *parent)
             }
         },
         Qt::QueuedConnection);
+
+    mLineStrip = new LineStrip;
+    mLineStrip->appendPoint(QVector3D(0, 10, 0));
+    mLineStrip->appendPoint(QVector3D(0, 0, 0));
+
+    RendererManager::instance()->addLineStrip(mLineStrip);
+
+    mCube = NodeManager::instance()->createModel("Cube");
+    mCube->setColor(QVector4D(0, 1, 0, 1));
+
+    mRayDirection = QVector3D(0, -1, 0);
 }
 
 void Canavar::Engine::Gui::draw()
 {
+    // Intersection Debug
+    {
+        ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Intersection Manager Debug");
+
+        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Origin");
+        ImGui::DragFloat("x##IntersectionManagerOrigin", &mLineStrip->points_nonConst()[0][0], 0.1f, -100, 100);
+        ImGui::DragFloat("y##IntersectionManagerOrigin", &mLineStrip->points_nonConst()[0][1], 0.1f, -100, 100);
+        ImGui::DragFloat("z##IntersectionManagerOrigin", &mLineStrip->points_nonConst()[0][2], 0.1f, -100, 100);
+
+        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ray Direction");
+        ImGui::SliderFloat("x##IntersectionManagerRayDirection", &mRayDirection[0], -1, 1);
+        ImGui::SliderFloat("y##IntersectionManagerRayDirection", &mRayDirection[1], -1, 1);
+        ImGui::SliderFloat("z##IntersectionManagerRayDirection", &mRayDirection[2], -1, 1);
+
+        auto result = IntersectionManager::instance()->raycast(mLineStrip->points().at(0), mRayDirection, QList<Model *>(), {mCube});
+
+        mLineStrip->points_nonConst()[1] = 1000 * mRayDirection;
+
+        if (result.success)
+            mCube->setWorldPosition(result.point);
+
+        ImGui::End();
+    }
+
     // Render Settings
     {
         ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);

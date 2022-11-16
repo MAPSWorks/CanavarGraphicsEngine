@@ -3,6 +3,7 @@
 
 #include "FirecrackerEffect.h"
 #include "FreeCamera.h"
+#include "LineStrip.h"
 #include "Mesh.h"
 #include "Model.h"
 #include "Node.h"
@@ -60,10 +61,10 @@ signals:
     void showFileDialog();
 
 private:
-    Canavar::Engine::NodeManager *mNodeManager;
-    Canavar::Engine::Node *mSelectedNode;
-    Canavar::Engine::Model *mSelectedModel; // Casted from mSelectedNode
-    Canavar::Engine::Mesh *mSelectedMesh;
+    NodeManager *mNodeManager;
+    Node *mSelectedNode;
+    Model *mSelectedModel; // Casted from mSelectedNode
+    Mesh *mSelectedMesh;
     int mSelectedVertexIndex;
     bool mDrawAllBBs;
 
@@ -77,7 +78,7 @@ private:
     QString mSelectedModelName;
 
     // Move
-    Canavar::Engine::Mouse mMouse;
+    Mouse mMouse;
     int mWidth;
     int mHeight;
 
@@ -86,6 +87,11 @@ private:
     bool mLockAxisX;
     bool mLockAxisY;
     bool mLockAxisZ;
+
+    // Intersection Debug
+    LineStrip *mLineStrip;
+    QVector3D mRayDirection;
+    Model *mCube;
 };
 
 } // namespace Engine

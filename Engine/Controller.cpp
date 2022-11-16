@@ -1,5 +1,6 @@
 #include "Controller.h"
 #include "CameraManager.h"
+#include "IntersectionManager.h"
 #include "LightManager.h"
 #include "ModelDataManager.h"
 #include "NodeManager.h"
@@ -27,6 +28,7 @@ bool Canavar::Engine::Controller::init(const QString &configFile)
     mNodeManager = NodeManager::instance();
     mRendererManager = RendererManager::instance();
     mSelectableNodeRenderer = SelectableNodeRenderer::instance();
+    mIntersectionManager = IntersectionManager::instance();
 
     mManagers << mModelDataManager;
     mManagers << mShaderManager;
@@ -35,6 +37,7 @@ bool Canavar::Engine::Controller::init(const QString &configFile)
     mManagers << mNodeManager;
     mManagers << mSelectableNodeRenderer;
     mManagers << mRendererManager;
+    mManagers << mIntersectionManager;
 
     for (const auto &manager : qAsConst(mManagers))
         if (!manager->init())

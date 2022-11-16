@@ -14,6 +14,7 @@ HEADERS += \
     $$PWD/Helper.h \
     $$PWD/HosekData.h \
     $$PWD/HosekFunctions.h \
+    $$PWD/IntersectionManager.h \
     $$PWD/Light.h \
     $$PWD/LightManager.h \
     $$PWD/LineStrip.h \
@@ -58,6 +59,7 @@ SOURCES += \
     $$PWD/Gui.cpp \
     $$PWD/Haze.cpp \
     $$PWD/Helper.cpp \
+    $$PWD/IntersectionManager.cpp \
     $$PWD/Light.cpp \
     $$PWD/LightManager.cpp \
     $$PWD/LineStrip.cpp \

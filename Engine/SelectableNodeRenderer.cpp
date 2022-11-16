@@ -2,8 +2,8 @@
 
 #include "CameraManager.h"
 #include "Config.h"
+#include "Mesh.h"
 #include "Model.h"
-#include "ModelDataManager.h"
 #include "NodeManager.h"
 #include "RendererManager.h"
 #include "ShaderManager.h"
@@ -22,7 +22,6 @@ bool Canavar::Engine::SelectableNodeRenderer::init()
     mConfig = Config::instance();
     mShaderManager = ShaderManager::instance();
     mNodeManager = NodeManager::instance();
-    mModelDataManager = ModelDataManager::instance();
     mCameraManager = CameraManager::instance();
     mRendererManager = RendererManager::instance();
 
@@ -110,8 +109,7 @@ void Canavar::Engine::SelectableNodeRenderer::render(float)
 
             if (auto model = dynamic_cast<Model *>(node))
             {
-                if (auto data = mModelDataManager->getModelData(model->getModelName()))
-                    data->render(RenderMode::NodeInfo, model);
+                model->render(RenderMode::NodeInfo);
 
                 const auto &params = mRendererManager->getSelectedMeshParameters(model);
 

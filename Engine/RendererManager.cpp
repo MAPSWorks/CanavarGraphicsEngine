@@ -50,14 +50,14 @@ bool Canavar::Engine::RendererManager::init()
     initializeOpenGLFunctions();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //    glEnable(GL_BLEND);
+    //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(1.5f);
 
     // Default FBO format
     mFBOFormats.insert(FramebufferType::Default, new QOpenGLFramebufferObjectFormat);
-    mFBOFormats[FramebufferType::Default]->setSamples(8);
+    mFBOFormats[FramebufferType::Default]->setSamples(4);
     mFBOFormats[FramebufferType::Default]->setAttachment(QOpenGLFramebufferObject::Depth);
     mFBOFormats[FramebufferType::Default]->setInternalTextureFormat(GL_RGBA32F);
 
@@ -155,8 +155,7 @@ void Canavar::Engine::RendererManager::render(float ifps)
             continue;
 
         if (auto model = dynamic_cast<Model *>(node))
-            if (auto data = mModelDataManager->getModelData(model->getModelName()))
-                data->render(RenderMode::Default, model);
+            model->render(RenderMode::Default);
     }
 
     // Render Effects

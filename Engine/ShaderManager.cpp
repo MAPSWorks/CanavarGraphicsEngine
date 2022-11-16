@@ -406,7 +406,7 @@ bool Canavar::Engine::ShaderManager::init()
             return false;
     }
 
-    // Basic Shader
+    // Line Strip Shader
     {
         Shader *shader = new Shader(ShaderType::LineStripShader);
         mShaders.insert(shader->type(), shader);
@@ -418,6 +418,23 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addUniform("color");
 
         shader->addAttribute("point");
+
+        if (!shader->init())
+            return false;
+    }
+
+    // Raycaster Shader
+    {
+        Shader *shader = new Shader(ShaderType::RaycasterShader);
+        mShaders.insert(shader->type(), shader);
+
+        shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Raycaster.vert");
+        shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Raycaster.frag");
+
+        shader->addUniform("M");
+        shader->addUniform("VP");
+
+        shader->addAttribute("position");
 
         if (!shader->init())
             return false;
