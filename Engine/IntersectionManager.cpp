@@ -26,7 +26,7 @@ bool Canavar::Engine::IntersectionManager::init()
 
     mFBO = new QOpenGLFramebufferObject(FBO_WIDTH, FBO_HEIGHT, mFBOFormat);
 
-    mProjection.perspective(60, 1, 0.1, 1000000);
+    mProjection.ortho(-10, 10, -10, 10, 0.1, 1000000);
 
     return true;
 }
