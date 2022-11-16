@@ -25,14 +25,20 @@ I will add following features:
 ![](Screenshot_2022_10_23.png)
 
 ## Build
-All dependencies is under `Dependencies` folder. I already built the libraries which are needed to be dynamically linked. The compiler and kit I used for compiling those libraries and developing this engine is  `Qt 6.3.0 MSVC 2019 64bit`.
-I have a post build script `PostBuild.bat` that does all necessary tasks for running the project. 
-In order to run the project, all you need to do is to add a custom build step to `Qt Creator`. 
-For the custom build step, set `command` as the absolute path of `PostBuild.bat`;
-set `arguments` as `%{buildDir}`
-and finally set the working directory as the project directory. 
-Then you can compile with `Qt 6.3.0 MSVC 2019 64bit` kit;
-the script should do all tasks in order to run the application.
+There are two projects; one is `CanavarGraphicsEngineEditor.pro` under `Engine` folder and the other one is `CanavarFlightSimulator.pro` under `Simulator` folder.
+Compiling those projects are similar. So I will only describe how to compile `CanavarFlightSimulator.pro` project.
+
+First clone the repo `git clone --recurse-submodules https://github.com/berkbavas/CanavarGraphicsEngine.git`.
+
+Then add a `Custom Process Step` in order to run `PostBuild.bat` script.
+
+Settings are as follows on my computer. Change those according to yours. Note the quotes `"%{buildDir}"`.
+
+![image](https://user-images.githubusercontent.com/53399385/202234025-6aec414d-3049-4e95-8683-36033d42c27c.png)
+
+Compile with `Qt 6.3.0 MSVC 2019 64bit` kit and then you can run the application.
+
+Compiling `CanavarGraphicsEngineEditor.pro` is similar.
 
 ## Usage
 Creating a model can be done with one liner:
