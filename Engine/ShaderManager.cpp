@@ -140,6 +140,7 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
 
         shader->addUniform("IVP"); // Inverse view-projection matrix
+        shader->addUniform("skyYOffset");
         shader->addUniform("A");
         shader->addUniform("B");
         shader->addUniform("C");

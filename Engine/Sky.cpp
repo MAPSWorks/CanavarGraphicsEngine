@@ -91,6 +91,7 @@ void Canavar::Engine::Sky::render()
 
     mShaderManager->bind(ShaderType::SkyShader);
     mShaderManager->setUniformValue("IVP", mCameraManager->activeCamera()->getRotationMatrix().inverted() * mCameraManager->activeCamera()->getProjectionMatrix().inverted());
+    mShaderManager->setUniformValue("skyYOffset", mCameraManager->activeCamera()->calculateSkyYOffset(30000.0f));
     mShaderManager->setUniformValue("sunDir", sunDir);
     mShaderManager->setUniformValue("A", A);
     mShaderManager->setUniformValue("B", B);

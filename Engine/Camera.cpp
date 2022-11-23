@@ -40,6 +40,16 @@ QVector3D Canavar::Engine::Camera::getViewDirection()
     return mRotation * QVector3D(0, 0, -1);
 }
 
+float Canavar::Engine::Camera::calculateSkyYOffset(float horizonDistance)
+{
+    auto transform = QMatrix4x4();
+
+    transform.setColumn(3, QVector4D(0, worldPosition().y(), 0, 1));
+    auto ndc = (getProjectionMatrix() * transform) * QVector4D(0, 0, horizonDistance, 1);
+
+    return ndc.y() / ndc.w();
+}
+
 bool Canavar::Engine::Camera::active() const
 {
     return mActive;

@@ -23,6 +23,7 @@ public:
     virtual QMatrix4x4 getRotationMatrix();
     virtual QVector3D getViewDirection();
     virtual QMatrix4x4 getProjectionMatrix() = 0;
+    virtual float calculateSkyYOffset(float horizonDistance);
 
     virtual void mouseDoubleClicked(QMouseEvent *) = 0;
     virtual void mousePressed(QMouseEvent *) = 0;

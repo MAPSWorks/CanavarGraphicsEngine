@@ -186,7 +186,7 @@ void Canavar::Engine::Mesh::render(RenderModes modes, Model *model)
     if (modes.testFlag(RenderMode::NodeInfo))
     {
         mShaderManager->bind(ShaderType::NodeInfoShader);
-        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation());
+        mShaderManager->setUniformValue("MVP", mCameraManager->activeCamera()->getViewProjectionMatrix() * model->worldTransformation() * model->getMeshTransformation(mName));
         mShaderManager->setUniformValue("nodeID", model->getID());
         mShaderManager->setUniformValue("meshID", mID);
         mShaderManager->setUniformValue("fillVertexInfo", false);
