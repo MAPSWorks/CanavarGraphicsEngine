@@ -30,5 +30,7 @@
         <file>Resources/Shaders/LineStrip.vert</file>
         <file>Resources/Shaders/Raycaster.frag</file>
         <file>Resources/Shaders/Raycaster.vert</file>
+        <file>Resources/Sky/SkyRGB.data</file>
+        <file>Resources/Sky/SkyRGBRad.data</file>
     </qresource>
 </RCC>

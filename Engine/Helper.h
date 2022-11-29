@@ -40,7 +40,9 @@ public:
 
     static QVector<PointLight *> getClosePointLights(const QList<PointLight *> &nodes, const QVector3D &position, int maxCount);
     static QJsonDocument loadJson(const QString &path);
-    static bool writeToFile(const QString &path, const QByteArray &content);
+    static bool writeTextToFile(const QString &path, const QByteArray &content);
+    static bool writeDataToFile(const QString &path, const QByteArray &content);
+    static QByteArray readDataFromFile(const QString &path);
 
 private:
     static Mesh *processMesh(aiMesh *aiMesh);

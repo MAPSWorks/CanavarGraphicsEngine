@@ -58,7 +58,7 @@ Canavar::Engine::Gui::Gui(QObject *parent)
                 mNodeManager->toJson(object);
                 document.setObject(object);
                 QByteArray content = document.toJson(QJsonDocument::Indented);
-                Helper::writeToFile(path, content);
+                Helper::writeTextToFile(path, content);
             }
         },
         Qt::QueuedConnection);

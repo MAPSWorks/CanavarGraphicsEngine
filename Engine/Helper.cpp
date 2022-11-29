@@ -416,7 +416,7 @@ QJsonDocument Canavar::Engine::Helper::loadJson(const QString &path)
     return document;
 }
 
-bool Canavar::Engine::Helper::writeToFile(const QString &path, const QByteArray &content)
+bool Canavar::Engine::Helper::writeTextToFile(const QString &path, const QByteArray &content)
 {
     QFile file(path);
     if (file.open(QIODevice::WriteOnly))
@@ -431,6 +431,39 @@ bool Canavar::Engine::Helper::writeToFile(const QString &path, const QByteArray 
     {
         qCritical() << Q_FUNC_INFO << "Couldn't write to file" << path;
         return false;
+    }
+}
+
+bool Canavar::Engine::Helper::writeDataToFile(const QString &path, const QByteArray &content)
+{
+    QFile file(path);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QDataStream stream(&file);
+        stream << content;
+        file.close();
+        return true;
+    } else
+    {
+        qCritical() << Q_FUNC_INFO << "Couldn't write to file" << path;
+        return false;
+    }
+}
+
+QByteArray Canavar::Engine::Helper::readDataFromFile(const QString &path)
+{
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QByteArray arr;
+        QDataStream stream(&file);
+        stream >> arr;
+        file.close();
+        return arr;
+    } else
+    {
+        qCritical() << Q_FUNC_INFO << "Couldn't read from file" << path;
+        return QByteArray();
     }
 }
 

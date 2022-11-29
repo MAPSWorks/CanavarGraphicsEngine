@@ -12,8 +12,6 @@ HEADERS += \
     $$PWD/Gui.h \
     $$PWD/Haze.h \
     $$PWD/Helper.h \
-    $$PWD/HosekData.h \
-    $$PWD/HosekFunctions.h \
     $$PWD/IntersectionManager.h \
     $$PWD/Light.h \
     $$PWD/LightManager.h \
