@@ -21,49 +21,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/ModelColored.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ModelColored.frag");
 
-        QStringList uniforms;
-        uniforms << "M"
-                 << "VP"
-                 << "sun.color"
-                 << "sun.ambient"
-                 << "sun.diffuse"
-                 << "sun.specular"
-                 << "sun.direction"
-                 << "model.color"
-                 << "model.overlayColor"
-                 << "model.overlayColorFactor"
-                 << "model.meshOverlayColor"
-                 << "model.meshOverlayColorFactor"
-                 << "model.ambient"
-                 << "model.diffuse"
-                 << "model.specular"
-                 << "model.shininess"
-                 << "haze.enabled"
-                 << "haze.color"
-                 << "haze.density"
-                 << "haze.gradient"
-                 << "cameraPos"
-                 << "numberOfPointLights";
-
-        shader->addUniforms(uniforms);
-
-        shader->setUniformArray("pointLights[%1].color", 8);
-        shader->setUniformArray("pointLights[%1].position", 8);
-        shader->setUniformArray("pointLights[%1].ambient", 8);
-        shader->setUniformArray("pointLights[%1].diffuse", 8);
-        shader->setUniformArray("pointLights[%1].specular", 8);
-        shader->setUniformArray("pointLights[%1].constant", 8);
-        shader->setUniformArray("pointLights[%1].linear", 8);
-        shader->setUniformArray("pointLights[%1].quadratic", 8);
-
-        shader->addAttribute("position");
-        shader->addAttribute("normal");
-        shader->addAttribute("textureCoords");
-        shader->addAttribute("tangent");
-        shader->addAttribute("bitangent");
-        shader->addAttribute("ids");
-        shader->addAttribute("weights");
-
         if (!shader->init())
             return false;
     }
@@ -76,57 +33,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/ModelTextured.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ModelTextured.frag");
 
-        QStringList uniforms;
-        uniforms << "M"
-                 << "N"
-                 << "VP"
-                 << "sun.color"
-                 << "sun.ambient"
-                 << "sun.diffuse"
-                 << "sun.specular"
-                 << "sun.direction"
-                 << "model.overlayColor"
-                 << "model.overlayColorFactor"
-                 << "model.meshOverlayColor"
-                 << "model.meshOverlayColorFactor"
-                 << "model.ambient"
-                 << "model.diffuse"
-                 << "model.specular"
-                 << "model.shininess"
-                 << "cameraPos"
-                 << "useTextureNormal"
-                 << "useTextureSpecular"
-                 << "useTextureDiffuse"
-                 << "useTextureAmbient"
-                 << "textureNormal"
-                 << "textureSpecular"
-                 << "textureDiffuse"
-                 << "textureAmbient"
-                 << "haze.enabled"
-                 << "haze.color"
-                 << "haze.density"
-                 << "haze.gradient"
-                 << "numberOfPointLights";
-
-        shader->addUniforms(uniforms);
-
-        shader->setUniformArray("pointLights[%1].color", 8);
-        shader->setUniformArray("pointLights[%1].position", 8);
-        shader->setUniformArray("pointLights[%1].ambient", 8);
-        shader->setUniformArray("pointLights[%1].diffuse", 8);
-        shader->setUniformArray("pointLights[%1].specular", 8);
-        shader->setUniformArray("pointLights[%1].constant", 8);
-        shader->setUniformArray("pointLights[%1].linear", 8);
-        shader->setUniformArray("pointLights[%1].quadratic", 8);
-
-        shader->addAttribute("position");
-        shader->addAttribute("normal");
-        shader->addAttribute("textureCoords");
-        shader->addAttribute("tangent");
-        shader->addAttribute("bitangent");
-        shader->addAttribute("ids");
-        shader->addAttribute("weights");
-
         if (!shader->init())
             return false;
     }
@@ -138,22 +44,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Sky.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
-
-        shader->addUniform("IVP"); // Inverse view-projection matrix
-        shader->addUniform("skyYOffset");
-        shader->addUniform("A");
-        shader->addUniform("B");
-        shader->addUniform("C");
-        shader->addUniform("D");
-        shader->addUniform("E");
-        shader->addUniform("F");
-        shader->addUniform("G");
-        shader->addUniform("H");
-        shader->addUniform("I");
-        shader->addUniform("Z");
-        shader->addUniform("sunDir");
-
-        shader->addAttribute("position");
 
         if (!shader->init())
             return false;
@@ -169,55 +59,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::TessellationControl, ":/Resources/Shaders/Terrain.tcs");
         shader->addPath(QOpenGLShader::TessellationEvaluation, ":/Resources/Shaders/Terrain.tes");
 
-        QStringList uniforms;
-        uniforms << "terrain.amplitude"
-                 << "terrain.frequency"
-                 << "terrain.octaves"
-                 << "terrain.power"
-                 << "terrain.seed"
-                 << "terrain.tessellationMultiplier"
-                 << "terrain.grassCoverage"
-                 << "terrain.ambient"
-                 << "terrain.diffuse"
-                 << "terrain.shininess"
-                 << "terrain.specular"
-                 << "haze.enabled"
-                 << "haze.color"
-                 << "haze.density"
-                 << "haze.gradient"
-                 << "sun.color"
-                 << "sun.direction"
-                 << "sun.ambient"
-                 << "sun.diffuse"
-                 << "sun.specular"
-                 << "waterHeight"
-                 << "cameraPos"
-                 << "M"
-                 << "VP"
-                 << "sand"
-                 << "grass"
-                 << "terrainTexture"
-                 << "snow"
-                 << "rock"
-                 << "rockNormal"
-                 << "numberOfPointLights";
-
-        shader->addUniforms(uniforms);
-
-        shader->setUniformArray("pointLights[%1].color", 8);
-        shader->setUniformArray("pointLights[%1].position", 8);
-        shader->setUniformArray("pointLights[%1].ambient", 8);
-        shader->setUniformArray("pointLights[%1].diffuse", 8);
-        shader->setUniformArray("pointLights[%1].specular", 8);
-        shader->setUniformArray("pointLights[%1].constant", 8);
-        shader->setUniformArray("pointLights[%1].linear", 8);
-        shader->setUniformArray("pointLights[%1].quadratic", 8);
-
-        shader->addAttribute("position");
-        shader->addAttribute("normal");
-        shader->addAttribute("textureCoord");
-        shader->addAttribute("offsetPosition");
-
         if (!shader->init())
             return false;
     }
@@ -229,12 +70,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
-
-        shader->addUniform("screenTexture");
-        shader->addUniform("horizontal");
-
-        shader->addAttribute("position");
-        shader->addAttribute("textureCoords");
 
         if (!shader->init())
             return false;
@@ -248,14 +83,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcess.frag");
 
-        shader->addUniform("sceneTexture");
-        shader->addUniform("bloomBlurTexture");
-        shader->addUniform("exposure");
-        shader->addUniform("gamma");
-
-        shader->addAttribute("position");
-        shader->addAttribute("textureCoords");
-
         if (!shader->init())
             return false;
     }
@@ -267,11 +94,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Screen.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Screen.frag");
-
-        shader->addUniform("screenTexture");
-
-        shader->addAttribute("position");
-        shader->addAttribute("textureCoords");
 
         if (!shader->init())
             return false;
@@ -285,19 +107,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NodeInfo.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NodeInfo.frag");
 
-        shader->addUniform("MVP");
-        shader->addUniform("nodeID");
-        shader->addUniform("meshID");
-        shader->addUniform("fillVertexInfo");
-
-        shader->addAttribute("position");
-        shader->addAttribute("normal");
-        shader->addAttribute("textureCoords");
-        shader->addAttribute("tangent");
-        shader->addAttribute("bitangent");
-        shader->addAttribute("ids");
-        shader->addAttribute("weights");
-
         if (!shader->init())
             return false;
     }
@@ -309,17 +118,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleEffect.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffect.frag");
-
-        shader->addUniform("MVP");
-        shader->addUniform("scale");
-        shader->addUniform("speed");
-        shader->addUniform("maxRadius");
-        shader->addUniform("maxDistance");
-
-        shader->addAttribute("vertexPosition");
-        shader->addAttribute("initialPosition");
-        shader->addAttribute("direction");
-        shader->addAttribute("life");
 
         if (!shader->init())
             return false;
@@ -333,15 +131,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/FirecrackerEffect.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/FirecrackerEffect.frag");
 
-        shader->addUniform("MVP");
-        shader->addUniform("scale");
-        shader->addUniform("maxLife");
-
-        shader->addAttribute("cubeVertexPosition");
-        shader->addAttribute("position");
-        shader->addAttribute("life");
-        shader->addAttribute("deadAfter");
-
         if (!shader->init())
             return false;
     }
@@ -353,11 +142,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Basic.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Basic.frag");
-
-        shader->addUniform("MVP");
-        shader->addUniform("color");
-
-        shader->addAttribute("position");
 
         if (!shader->init())
             return false;
@@ -371,16 +155,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MeshVertexRenderer.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MeshVertexRenderer.frag");
 
-        shader->addUniform("MVP");
-        shader->addUniform("scale");
-        shader->addUniform("selectedVertexID");
-        shader->addUniform("vertexColor");
-        shader->addUniform("selectedVertexColor");
-
-        shader->addAttribute("cubeVertexPosition");
-        shader->addAttribute("meshVertexPosition");
-        shader->addAttribute("meshVertexNormal");
-
         if (!shader->init())
             return false;
     }
@@ -392,16 +166,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/MeshVertexRenderer.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NodeInfo.frag");
-
-        shader->addUniform("MVP");
-        shader->addUniform("nodeID");
-        shader->addUniform("meshID");
-        shader->addUniform("fillVertexInfo");
-        shader->addUniform("scale");
-
-        shader->addAttribute("cubeVertexPosition");
-        shader->addAttribute("meshVertexPosition");
-        shader->addAttribute("meshVertexNormal");
 
         if (!shader->init())
             return false;
@@ -415,11 +179,6 @@ bool Canavar::Engine::ShaderManager::init()
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/LineStrip.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/LineStrip.frag");
 
-        shader->addUniform("VP");
-        shader->addUniform("color");
-
-        shader->addAttribute("point");
-
         if (!shader->init())
             return false;
     }
@@ -431,11 +190,6 @@ bool Canavar::Engine::ShaderManager::init()
 
         shader->addPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Raycaster.vert");
         shader->addPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Raycaster.frag");
-
-        shader->addUniform("M");
-        shader->addUniform("VP");
-
-        shader->addAttribute("position");
 
         if (!shader->init())
             return false;

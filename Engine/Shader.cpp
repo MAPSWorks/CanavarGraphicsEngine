@@ -44,32 +44,9 @@ bool Canavar::Engine::Shader::init()
         return false;
     }
 
-    for (const auto &uniform : qAsConst(mUniforms))
-    {
-        mLocations.insert(uniform, mProgram->uniformLocation(uniform));
-    }
-
-    auto uniformArrays = mUniformArrays.keys();
-    for (const auto &uniformArray : qAsConst(uniformArrays))
-    {
-        int size = mUniformArrays[uniformArray];
-
-        for (int i = 0; i < size; ++i)
-        {
-            QString name = uniformArray.arg(QString::number(i));
-            mLocations.insert(name, mProgram->uniformLocation(name));
-        }
-    }
-
-    for (int i = 0; i < mAttributes.size(); ++i)
-    {
-        mProgram->bindAttributeLocation(mAttributes[i], i);
-    }
-
     mProgram->release();
 
     qInfo() << mShaderName << "is initialized.";
-    qInfo() << "Uniform locations are:" << mLocations;
 
     return true;
 }
@@ -89,69 +66,44 @@ void Canavar::Engine::Shader::addPath(QOpenGLShader::ShaderTypeBit type, const Q
     mPaths.insert(type, path);
 }
 
-void Canavar::Engine::Shader::addUniform(const QString &uniform)
-{
-    mUniforms << uniform;
-}
-
-void Canavar::Engine::Shader::addUniforms(const QStringList &uniforms)
-{
-    mUniforms << uniforms;
-}
-
-void Canavar::Engine::Shader::setUniformArray(const QString &uniform, int size)
-{
-    mUniformArrays.insert(uniform, size);
-}
-
-void Canavar::Engine::Shader::addAttribute(const QString &attribute)
-{
-    mAttributes << attribute;
-}
-
-void Canavar::Engine::Shader::addAttributes(const QStringList &attributes)
-{
-    mAttributes << attributes;
-}
-
 void Canavar::Engine::Shader::setUniformValue(const QString &name, int value)
 {
-    mProgram->setUniformValue(mLocations[name], value);
+    mProgram->setUniformValue(mProgram->uniformLocation(name), value);
 }
 
 void Canavar::Engine::Shader::setUniformValue(const QString &name, unsigned int value)
 {
-    mProgram->setUniformValue(mLocations[name], value);
+    mProgram->setUniformValue(mProgram->uniformLocation(name), value);
 }
 
 void Canavar::Engine::Shader::setUniformValue(const QString &name, float value)
 {
-    mProgram->setUniformValue(mLocations[name], value);
+    mProgram->setUniformValue(mProgram->uniformLocation(name), value);
 }
 
 void Canavar::Engine::Shader::setUniformValue(const QString &name, const QVector3D &value)
 {
-    mProgram->setUniformValue(mLocations[name], value);
+    mProgram->setUniformValue(mProgram->uniformLocation(name), value);
 }
 
 void Canavar::Engine::Shader::setUniformValue(const QString &name, const QVector4D &value)
 {
-    mProgram->setUniformValue(mLocations[name], value);
+    mProgram->setUniformValue(mProgram->uniformLocation(name), value);
 }
 
 void Canavar::Engine::Shader::setUniformValue(const QString &name, const QMatrix4x4 &value)
 {
-    mProgram->setUniformValue(mLocations[name], value);
+    mProgram->setUniformValue(mProgram->uniformLocation(name), value);
 }
 
 void Canavar::Engine::Shader::setUniformValue(const QString &name, const QMatrix3x3 &value)
 {
-    mProgram->setUniformValue(mLocations[name], value);
+    mProgram->setUniformValue(mProgram->uniformLocation(name), value);
 }
 
 void Canavar::Engine::Shader::setUniformValueArray(const QString &name, const QVector<QVector3D> &values)
 {
-    mProgram->setUniformValueArray(mLocations[name], values.constData(), values.size());
+    mProgram->setUniformValueArray(mProgram->uniformLocation(name), values.constData(), values.size());
 }
 
 void Canavar::Engine::Shader::setSampler(const QString &name, unsigned int unit, unsigned int id, GLenum target)

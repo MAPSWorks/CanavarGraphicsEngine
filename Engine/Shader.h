@@ -21,11 +21,6 @@ public:
     void release();
 
     void addPath(QOpenGLShader::ShaderTypeBit type, const QString &path);
-    void addUniform(const QString &uniform);
-    void addUniforms(const QStringList &uniforms);
-    void setUniformArray(const QString &uniform, int size);
-    void addAttribute(const QString &attribute);
-    void addAttributes(const QStringList &attributes);
 
     void setUniformValue(const QString &name, int value);
     void setUniformValue(const QString &name, unsigned int value);
@@ -45,14 +40,11 @@ private:
 private:
     QOpenGLShaderProgram *mProgram;
     QMap<QOpenGLShader::ShaderTypeBit, QString> mPaths;
-    QMap<QString, GLuint> mLocations;
 
     ShaderType mType;
     QString mShaderName;
 
     QStringList mAttributes;
-    QStringList mUniforms;
-    QMap<QString, int> mUniformArrays;
 };
 
 } // namespace Engine
