@@ -22,7 +22,7 @@ I will add following features:
 - Post processing effects
 
 ## Screenshot
-![](Screenshot_2022_10_23.png)
+![Screenshot_2022_10_23](https://user-images.githubusercontent.com/53399385/210186793-719e9705-a4c3-439a-89b6-d2181f6b91d7.png)
 
 ## Build
 1) Install `CMake 3.25.1`.
