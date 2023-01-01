@@ -25,47 +25,42 @@ I will add following features:
 ![](Screenshot_2022_10_23.png)
 
 ## Build
-There are two projects; one is `CanavarGraphicsEngineEditor.pro` under `Engine` folder and the other one is `CanavarFlightSimulator.pro` under `Simulator` folder.
-Compiling those projects are similar. So I will only describe how to compile `CanavarFlightSimulator.pro` project.
-
-First clone the repo `git clone --recurse-submodules https://github.com/berkbavas/CanavarGraphicsEngine.git`.
-
-Then add a `Custom Process Step` in order to run `PostBuild.bat` script.
-
-Settings are as follows on my computer. Change those according to yours. Note the quotes `"%{buildDir}"`.
-
-![image](https://user-images.githubusercontent.com/53399385/202234025-6aec414d-3049-4e95-8683-36033d42c27c.png)
-
-Compile with `Qt 6.3.0 MSVC 2019 64bit` kit and then you can run the application.
-
-Compiling `CanavarGraphicsEngineEditor.pro` is similar.
+1) Install `CMake 3.25.1`.
+2) Install `Visual Studio 2019 and MSVC C++ Compiler`.
+3) Install `Qt 5.15.2 MSVC2019 64bit` kit.
+4) Clone the repo `git clone https://github.com/berkbavas/CanavarGraphicsEngine.git`.
+5) Create a folder `mkdir Build`.
+6) Enter the folder `cd Build`.
+7) Run CMake `cmake ..`.
+8) Open `Canavar.sln` with `Visual Studio 2019`.
+9) Build & Run.
 
 ## Usage
 Creating a model can be done with one liner:
 ```
-Node *aircraft = NodeManager::instance()->create(Node::NodeType::Model, "f16c");
+Node *aircraft = NodeManager::Instance()->CreateModel("f16c");
 ```
 `NodeManager` class automatically register this model to render list. You do not have to do anything else.
 Ownership belongs to `NodeManager`. You can remove any node with one liner again.
 ```
-NodeManager::instance()->removeNode(aircraft);
+NodeManager::Instance()->RemoveNode(aircraft);
 ```
 It is `NodeManager`'s responsibility to the clean up the resources.
 
 Attaching a camera to a node is also easy:
 ```
-Camera *camera = NodeManager::instance()->create(Node::NodeType::DummyCamera);
-aircraft->addChild(camera);
+Camera *camera = NodeManager::Instance()->Create(Node::NodeType::DummyCamera);
+aircraft->AddChild(camera);
 ```
 You can set local position of `camera`:
 
 ```
-camera->setPosition(QVector3D(0, 0, 10));
+camera->SetPosition(QVector3D(0, 0, 10));
 ```
 Now you can set `camera` as the active camera:
 
 ```
-CameraManager::instance()->setActiveCamera(camera);
+CameraManager::Instance()->SetActiveCamera(camera);
 ```
 
 ## Acknowledgements
