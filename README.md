@@ -33,7 +33,7 @@ I will add following features:
 6) Enter the folder `cd Build`.
 7) Run CMake `cmake ..`.
 8) Open `Canavar.sln` with `Visual Studio 2019`.
-9) Build & Run.
+9) Build & Run with `Release` config.
 
 ## Usage
 Creating a model can be done with one liner:
